@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE/editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Build / packaging
+build/
+dist/
+*.egg-info/
+
+# Runtime project data
+/data/indexes/
+/data/chroma/
+/data/repos/
+*.sqlite3
+*.db
+
+# Frontend
+node_modules/
+.next/
+coverage/
+
+# OS
+.DS_Store
+Thumbs.db
