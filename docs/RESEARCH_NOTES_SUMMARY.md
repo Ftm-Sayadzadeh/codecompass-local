@@ -110,7 +110,7 @@ Vector stores discussed:
 - FAISS — lightweight/faster alternative.
 - Qdrant/LanceDB — possible later alternatives.
 
-The selected starting direction is ChromaDB, with the retrieval provider kept replaceable.
+The final approved starting direction is `bge-m3` for embeddings and ChromaDB for vector indexing, both behind small replaceable abstractions.
 
 ## 7. LLM/runtime candidates
 
@@ -142,7 +142,7 @@ Improvements discussed:
 - Hybrid result fusion.
 - Optional reranking.
 
-The currently approved MVP+ promotes keyword baseline and semantic search, with hybrid retrieval and query expansion targeted when the three-week schedule remains healthy.
+Final approved scope keeps keyword baseline, semantic search, and hybrid retrieval in CORE. Query expansion is STRETCH because it adds more model variability and is not required before deterministic hybrid evaluation.
 
 ## 9. Persian retrieval challenge
 
@@ -166,7 +166,7 @@ Relevant code might use:
 - `guard`
 - `is_admin`
 
-Multilingual embeddings and optional query expansion are proposed approaches.
+Multilingual embeddings and stretch query expansion are proposed approaches.
 
 ## 10. Context and grounding
 
@@ -234,7 +234,7 @@ Baseline:
 
 - Keyword/regex-style search.
 
-Desired research comparison when implemented:
+Required retrieval comparison:
 
 - Keyword vs semantic vs hybrid.
 
@@ -322,10 +322,10 @@ Python repo
 → structure-aware function/method chunks
 → metadata-rich local index
 → Persian semantic retrieval
-→ optional hybrid/query expansion
+→ keyword + semantic + hybrid retrieval
 → grounded RAG
 → verified file/line citation
 → function documentation
-→ simple UI
+→ React + Vite UI with Monaco code explorer
 → quantitative evaluation
 ```

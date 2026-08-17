@@ -39,7 +39,7 @@ Do not silently expand scope based on ideas found only in the research notes.
 - Do not add dependencies without explaining why they are needed.
 - Avoid LangChain/LlamaIndex in the initial implementation; build the core pipeline explicitly so it is understandable and defensible.
 - Do not fine-tune models in the approved three-week plan.
-- Do not add TypeScript/JavaScript support in the Python MVP.
+- Do not add TypeScript/JavaScript repository-analysis support in the Python MVP; the approved frontend is still React + Vite.
 - Do not implement a full call graph in the Python MVP.
 - Do not add cloud deployment, authentication, multi-user support, or a VS Code extension unless the core project is complete and an explicit stretch-goal decision is made.
 
@@ -48,6 +48,7 @@ Do not silently expand scope based on ideas found only in the research notes.
 - Retrieval evidence must remain traceable to deterministic metadata.
 - File paths, symbol names, and line ranges shown as citations must come from the parser/index metadata, not from text invented by the LLM.
 - The LLM may explain retrieved evidence but must not fabricate source locations.
+- SQLite is the canonical source of project/code metadata. ChromaDB is a retrieval index keyed by stable chunk IDs, not the source of truth.
 - If retrieved evidence is insufficient, the answer should say that there is not enough evidence rather than guessing.
 - Evaluation results must be computed from saved ground truth and reproducible scripts; never hard-code favorable metrics.
 - Separate measured results from illustrative examples.
@@ -63,31 +64,35 @@ Do not silently expand scope based on ideas found only in the research notes.
 - Rich metadata with file path and line ranges.
 - SQLite metadata persistence.
 - Embedding provider abstraction.
+- `bge-m3` as the primary initial embedding model behind the provider abstraction.
+- ChromaDB vector index behind a small replaceable vector-index abstraction.
 - Local vector indexing and semantic retrieval.
 - Persian semantic search.
 - Keyword-search baseline.
-- Hybrid retrieval (vector + lexical) if schedule remains on track.
-- Persian query expansion if schedule remains on track.
+- Hybrid retrieval (vector + lexical).
 - RAG context construction.
 - Local LLM answer generation.
 - Verified file/symbol/line citations.
 - Function-level documentation generation.
 - FastAPI backend.
-- Simple web UI.
-- Code explorer with clickable citations.
-- Evaluation dataset and retrieval metrics: Top-1, Top-3, MRR.
-- Comparison of keyword vs semantic retrieval; hybrid comparison when implemented.
+- React + Vite frontend.
+- Monaco code explorer with clickable citations.
+- Evaluation dataset of approximately 30-50 Persian questions and retrieval metrics: Top-1, Top-3, MRR.
+- Comparison of keyword vs semantic vs hybrid retrieval.
+- End-to-end testing and final demo workflow.
 
 ### Should finish if core is stable
 
 - Incremental re-indexing using file hashes.
+- Indexing statistics.
+- Persisted generated documentation.
 - Evaluation dashboard.
 - Retrieval evidence/confidence indicator based on retrieval signals, not LLM self-confidence.
-- Persisted generated documentation.
-- Indexing statistics.
+- Search/index diagnostics useful for debugging and the final demo.
 
 ### Stretch only
 
+- Persian query expansion.
 - Mini multi-role review (Documentation, Maintainability, Security Hint).
 - Simple dependency/call visualization.
 - Embedding-model comparison.
@@ -107,9 +112,11 @@ If schedule slips, drop features in this order before weakening the core:
 4. Embedding-model comparison.
 5. Evaluation dashboard polish.
 6. Query expansion.
-7. Hybrid retrieval.
+7. Retrieval confidence UI.
+8. Incremental indexing polish.
+9. Persisted documentation polish.
 
-Do not drop verified citations, Persian semantic retrieval, function documentation, or evaluation unless the project owner explicitly changes the university scope.
+Do not drop Python structure-aware indexing, Persian semantic retrieval, keyword baseline, hybrid retrieval, verified citations, function documentation, retrieval evaluation, or grounded Q&A unless the project owner explicitly changes the approved scope.
 
 ## Testing expectations
 

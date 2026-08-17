@@ -1,10 +1,10 @@
 # CodeCompass Local
 
-A bachelor's final project for question-driven understanding of Python codebases using structured code indexing, semantic retrieval, RAG, Persian natural-language questions, and verifiable source citations.
+A bachelor's final project for structure-aware retrieval over Python codebases using Persian natural-language questions, followed by grounded explanation/documentation with deterministic source citations and quantitative retrieval evaluation.
 
 ## Current state
 
-This repository is initially a **project-planning starter pack for Codex**. Implementation has not started yet.
+This repository is currently a **final planning/bootstrap pack for Codex**. The approved architecture and scope are documented, but implementation has not started yet.
 
 ## Read first
 
@@ -30,12 +30,22 @@ Python Repository
 → Parse AST
 → Build structure-aware chunks
 → Store metadata
-→ Embed/index
-→ Persian semantic retrieval
+→ Embed with bge-m3 behind a provider abstraction
+→ Index in ChromaDB behind a vector-index abstraction
+→ Keyword + semantic + hybrid retrieval
 → Grounded RAG answer
 → Verified file/symbol/line citations
 → Function documentation
 → Evaluation
 ```
 
-The implementation should remain Python-only until the core MVP is complete.
+Repository analysis should remain Python-only until the core MVP is complete.
+
+## Approved core decisions
+
+- Hybrid retrieval is core; query expansion is stretch.
+- SQLite is the canonical metadata store; ChromaDB is only the retrieval index.
+- The planned frontend is React + Vite with Monaco Editor for code viewing and clickable citations.
+- The primary initial embedding model is `bge-m3`, accessed through an `EmbeddingProvider`.
+- The planned demo is local-first with Ollama where practical, but the official proposal does not require strict fully local execution.
+- Citations must be attached from deterministic scanner/parser/chunker metadata, never from LLM-generated citation text.

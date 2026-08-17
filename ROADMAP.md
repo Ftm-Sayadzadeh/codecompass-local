@@ -4,6 +4,8 @@
 
 Finish the critical path first. A feature is considered complete only when its acceptance criteria and relevant tests pass.
 
+Hybrid retrieval is part of the core plan. Persian query expansion is stretch-only and must not block the core workflow.
+
 ---
 
 ## Week 1 — Code Intelligence Engine
@@ -128,6 +130,7 @@ A real Python repository can be converted into a persistent, inspectable structu
 
 - Provider interface.
 - Local runtime adapter.
+- `bge-m3` as the primary initial model.
 - Batch embedding support when useful.
 - Model configuration outside business logic.
 
@@ -136,11 +139,12 @@ A real Python repository can be converted into a persistent, inspectable structu
 - Text is converted into valid vectors consistently.
 - Provider failures are surfaced clearly.
 
-### Day 9 — Vector Index
+### Day 9 — ChromaDB Vector Index
 
 **Implement**
 
 - Store chunk embeddings with project metadata.
+- Keep ChromaDB behind a small `VectorIndex` abstraction.
 - Project-scoped lookup.
 - Top-k vector retrieval.
 - Delete/rebuild project index.
@@ -165,52 +169,51 @@ A real Python repository can be converted into a persistent, inspectable structu
 
 Do not proceed to LLM answer generation if retrieval is clearly broken.
 
-### Day 11 — Keyword Baseline + Hybrid Retrieval
+### Day 11 — Keyword Baseline + Shared Retrieval Model
 
 **Implement**
 
 - Simple lexical search over symbol names, paths, docstrings, and/or code text.
 - Normalized result format.
-- Result fusion for vector + lexical retrieval if time remains on track.
 
 **Acceptance criteria**
 
 - Keyword and semantic modes can be evaluated using the same question set.
-- Hybrid results are deterministic for fixed inputs/configuration.
+- Keyword, semantic, and future hybrid results share the same result schema.
 
-### Day 12 — Persian Query Expansion + Retrieval Evaluation Core
+### Day 12 — Early Retrieval Evaluation Core
 
 **Implement**
 
 - Evaluation data schema.
 - Top-1, Top-3, MRR computation.
-- Optional/local query expansion that maps Persian intent to technical/code-oriented terms.
 
 **Acceptance criteria**
 
 - Evaluation script produces reproducible metrics.
-- Query expansion can be disabled for comparison.
+- Keyword and semantic retrieval can be compared on the same Persian smoke set.
 
 **Schedule fallback**
 
-If the project is behind, query expansion is the first core-adjacent feature to defer.
+Do not add query expansion here. It is stretch-only.
 
-### Day 13 — Context Builder + Local LLM Adapter
+### Day 13 — Hybrid Retrieval + Context Builder
 
 **Implement**
 
+- Deterministic fusion of vector and lexical evidence.
 - Deduplicate retrieved evidence.
 - Enforce context size policy.
 - Include file/symbol/line metadata.
 - Build grounded answer prompt.
-- Local LLM adapter.
 
 **Acceptance criteria**
 
+- Keyword, semantic, and hybrid modes produce reproducible metrics.
+- Hybrid retrieval is deterministic for fixed inputs/configuration.
 - Context builder is independently unit-tested.
-- The LLM adapter can answer from a provided context.
 
-### Day 14 — Grounded Q&A + Verified Citations
+### Day 14 — Local LLM + Grounded Q&A + Verified Citations
 
 **Implement**
 
@@ -222,8 +225,11 @@ Persian question
 → attach metadata-derived citations
 ```
 
+- Local LLM adapter.
+
 **Acceptance criteria**
 
+- The LLM adapter can answer from a provided context.
 - Source file/symbol/line citations are never copied from unverified LLM text.
 - At least ten demo questions produce usable answers or explicitly report insufficient evidence.
 
@@ -265,7 +271,7 @@ A Persian question over an indexed Python repository produces retrieved code, a 
 
 - Core workflow is usable through API/Swagger.
 
-### Day 17 — Frontend foundation
+### Day 17 — React + Vite frontend foundation
 
 **Implement**
 
@@ -273,16 +279,17 @@ A Persian question over an indexed Python repository produces retrieved code, a 
 - Index status/statistics.
 - Q&A screen.
 - Basic code/symbol browsing.
+- React + Vite app structure.
 
 **Acceptance criteria**
 
 - User can complete the main workflow without directly using CLI or Swagger.
 
-### Day 18 — Code Explorer + Clickable Citations
+### Day 18 — Monaco Code Explorer + Clickable Citations
 
 **Implement**
 
-- Code viewer.
+- Monaco code viewer.
 - Source navigation.
 - Highlight cited line range.
 - Retrieved-evidence panel.
@@ -297,8 +304,7 @@ A Persian question over an indexed Python repository produces retrieved code, a 
 
 - 30–50 Persian questions where feasible.
 - Human ground truth.
-- Keyword vs semantic metrics.
-- Hybrid metrics if available.
+- Keyword vs semantic vs hybrid metrics.
 - Documentation review set.
 
 **Acceptance criteria**
@@ -314,7 +320,8 @@ A Persian question over an indexed Python repository produces retrieved code, a 
 2. Incremental indexing if stable.
 3. Evaluation dashboard if stable.
 4. Retrieval evidence indicator.
-5. Only then consider a stretch feature.
+5. Search/index diagnostics if stable.
+6. Only then consider a stretch feature.
 
 ### Day 21 — Freeze and demo preparation
 
@@ -347,10 +354,11 @@ Add repo
 
 Recommended order:
 
-1. Mini multi-role review.
-2. Simple dependency visualization.
-3. Embedding model comparison.
-4. Export report.
-5. Second programming language.
+1. Persian query expansion.
+2. Mini multi-role review.
+3. Simple dependency visualization.
+4. Embedding model comparison.
+5. Export report.
+6. Second programming language.
 
 Do not start a stretch goal before creating a stable MVP tag.

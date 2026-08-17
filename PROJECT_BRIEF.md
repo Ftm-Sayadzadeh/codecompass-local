@@ -7,6 +7,12 @@
 
 This is a bachelor's final project. The university proposal defines the required academic scope and is stored at `docs/proposal.pdf`.
 
+The final approved positioning is:
+
+**Structure-aware retrieval over Python codebases using Persian natural-language questions, followed by grounded explanation/documentation with deterministic source citations and quantitative retrieval evaluation.**
+
+The project must not be reduced to "chat with a codebase"; its value is the measured retrieval and metadata-grounded explanation pipeline.
+
 ## 2. Problem
 
 Small and medium software projects, especially older or poorly documented ones, can become difficult to understand and maintain. Developers often need to locate where a behavior is implemented, understand relationships between code sections, and identify the role of functions or files. Traditional keyword search is limited when the developer's wording differs from the identifiers used in the code.
@@ -36,7 +42,7 @@ The goal is not fully automatic documentation of an entire repository and not tr
 
 ### Repository scope
 
-- Python only for the initial implementation.
+- Python repository analysis only for the initial implementation.
 - Small and medium repositories.
 - One selected repository per project/workspace in the MVP.
 
@@ -51,6 +57,38 @@ The goal is not fully automatic documentation of an entire repository and not tr
 - Open cited code at the relevant line range.
 - Generate structured documentation for a selected function/method.
 - View evaluation results for retrieval approaches.
+
+### Final MVP+ scope classification
+
+Core / must finish:
+
+- Scanner, Python AST parser, function/class/method extraction, structure-aware chunking, deterministic metadata, SQLite store.
+- Embedding provider abstraction with `bge-m3` as the primary initial model.
+- ChromaDB vector index behind a replaceable abstraction.
+- Persian semantic search, keyword baseline, and hybrid retrieval.
+- Context builder, local LLM adapter, grounded Persian Q&A, verified metadata-derived citations.
+- Function-level documentation.
+- FastAPI backend, React + Vite frontend, Monaco code explorer, clickable citations.
+- Evaluation dataset of approximately 30-50 Persian questions with Top-1, Top-3, MRR, and keyword vs semantic vs hybrid comparison.
+- End-to-end testing and final demo workflow.
+
+Should finish after the core is stable:
+
+- Incremental indexing using file/content hashes.
+- Indexing statistics.
+- Persisted generated documentation.
+- Evaluation dashboard.
+- Retrieval evidence/confidence indicator based on retrieval signals.
+- Search/index diagnostics useful for debugging and the final demo.
+
+Stretch only:
+
+- Persian query expansion.
+- Mini multi-role review.
+- Simple dependency/call visualization.
+- Embedding-model comparison.
+- Markdown/PDF report export.
+- Second programming language.
 
 ## 5. Approved MVP+ architecture direction
 
@@ -75,7 +113,7 @@ Semantic Retrieval
         +
 Keyword Retrieval
         ↓
-Hybrid Fusion / Optional Query Expansion
+Hybrid Retrieval
         ↓
 Context Builder
         ↓
@@ -96,15 +134,17 @@ These are preferred engineering choices, not academic claims. If a choice causes
 - Backend: FastAPI
 - Parser: Python built-in `ast` for the Python MVP
 - Metadata persistence: SQLite
-- Vector database/index: ChromaDB initially
+- Vector database/index: ChromaDB behind a small `VectorIndex` abstraction
 - Local model runtime: Ollama initially
-- Embedding model: start with a locally available embedding model; `nomic-embed-text` is the simplest initial candidate, while `bge-m3` is a candidate for Persian/multilingual comparison or improvement
+- Embedding model: `bge-m3` as the primary initial model behind an `EmbeddingProvider` abstraction
 - Answer model: a small local code-capable model; `qwen2.5-coder:3b` is an initial low-cost candidate, with a larger compatible model optional if hardware permits
-- Frontend: React/Next.js or another simple React setup
-- Code viewer: Monaco Editor when practical
+- Frontend: React + Vite
+- Code viewer: Monaco Editor
 - Backend tests: pytest
 
 Avoid adding orchestration frameworks before the explicit pipeline works end to end.
+
+The architecture is local-first for the planned demo, but the official proposal does not require strict fully local execution. Do not add cloud/API providers without explicit approval.
 
 ## 7. Important engineering distinctions
 
@@ -129,8 +169,8 @@ Models may be used for:
 - Embedding text/code representations.
 - Persian question answering from retrieved context.
 - Function-level documentation.
-- Optional query expansion.
 - Optional lightweight review.
+- Stretch query expansion.
 
 ## 8. Retrieval design
 
@@ -142,9 +182,9 @@ Primary retrieval modes:
 
 1. Keyword/lexical baseline.
 2. Vector semantic retrieval.
-3. Hybrid retrieval if core schedule permits.
+3. Hybrid retrieval.
 
-The system should keep retrieval scores and metadata available for analysis.
+All three modes must return a shared normalized result model with chunk ID, file path, symbol, line range, score, and retrieval method. The system should keep retrieval scores and metadata available for analysis.
 
 ## 9. Citation design
 
@@ -164,6 +204,18 @@ app/auth/service.py — authenticate_user — lines 12–39
 ```
 
 The LLM must never be treated as the authority for these fields.
+
+Expected flow:
+
+```text
+Retriever
+→ verified metadata
+→ Context Builder
+→ LLM explanation
+→ system attaches verified citations
+```
+
+Do not parse or trust LLM-generated citation strings.
 
 ## 10. Function documentation
 
@@ -193,9 +245,9 @@ Required retrieval metrics:
 
 Required baseline comparison:
 
-- Keyword retrieval vs semantic retrieval.
+- Keyword retrieval vs semantic retrieval vs hybrid retrieval.
 
-If hybrid retrieval is implemented, compare it as a third method.
+Target dataset size: approximately 30-50 manually verified Persian questions.
 
 Documentation evaluation should use a small human-reviewed set and criteria such as:
 
@@ -242,5 +294,69 @@ Add Python repository
 - Cloud deployment.
 - Authentication/multi-user product features.
 - Complex multi-agent architecture.
+- Treating query expansion as a core prerequisite.
 
 These may only be considered after the core system is frozen and tagged.
+
+## 14. Data ownership
+
+- Scanner owns repository-relative path, file size, modification information, SHA-256/content hash, and file read errors.
+- AST parser owns symbol type, names, qualified name, parent class, imports, parameters, docstring, and exact start/end lines.
+- Chunker owns stable chunk ID, chunk type, chunk source, embedding text, and content hash.
+- SQLite owns canonical metadata.
+- Vector index owns searchable embeddings keyed by stable chunk ID.
+- Retriever owns ranked evidence.
+- Context builder owns evidence packaging.
+- LLM owns only natural-language generation.
+- Citation builder owns final verified citations.
+
+## 15. Planned module boundaries
+
+```text
+src/
+  codecompass/
+    scanner/
+      models.py
+      ignore.py
+      service.py
+    parser/
+      models.py
+      python_ast.py
+    chunker/
+      models.py
+      service.py
+    storage/
+      models.py
+      sqlite.py
+      repositories.py
+    indexing/
+      service.py
+    embeddings/
+      base.py
+      ollama.py
+    vector_index/
+      base.py
+      chroma.py
+    retrieval/
+      models.py
+      keyword.py
+      semantic.py
+      hybrid.py
+    rag/
+      context.py
+      llm.py
+      answers.py
+      citations.py
+    documentation/
+      generator.py
+    evaluation/
+      dataset.py
+      metrics.py
+      runner.py
+    api/
+      app.py
+      schemas.py
+      routes/
+```
+
+Keep the boundaries simple. Do not introduce Clean Architecture ceremony, DDD layers, CQRS, microservices, event buses, or dependency-injection frameworks unless a real need emerges.
