@@ -4,7 +4,7 @@ A bachelor's final project for structure-aware retrieval over Python codebases u
 
 ## Current state
 
-This repository is currently a **final planning/bootstrap pack for Codex**. The approved architecture and scope are documented, but implementation has not started yet.
+This repository now contains the approved planning/bootstrap documents plus the completed M0/M1 foundation and repository scanner.
 
 ## Read first
 
@@ -40,6 +40,15 @@ Python Repository
 ```
 
 Repository analysis should remain Python-only until the core MVP is complete.
+
+## Development
+
+```powershell
+python -m pip install -e ".[dev]"
+python -m pytest
+```
+
+The scanner runtime code uses only the Python standard library.
 
 ## Approved core decisions
 

@@ -15,8 +15,8 @@ This file tracks the approved implementation plan. Codex should update milestone
 
 | ID | Milestone | Status | Depends on |
 |---|---|---|---|
-| M0 | Project foundation | NOT STARTED | — |
-| M1 | Repository scanner | NOT STARTED | M0 |
+| M0 | Project foundation | DONE | — |
+| M1 | Repository scanner | DONE | M0 |
 | M2 | Python AST parser | NOT STARTED | M1 |
 | M3 | Structure-aware chunker | NOT STARTED | M2 |
 | M4 | SQLite metadata store | NOT STARTED | M3 |
