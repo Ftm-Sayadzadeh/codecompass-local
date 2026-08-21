@@ -18,7 +18,7 @@ This file tracks the approved implementation plan. Codex should update milestone
 | M0 | Project foundation | DONE | — |
 | M1 | Repository scanner | DONE | M0 |
 | M2 | Python AST parser | DONE | M1 |
-| M3 | Structure-aware chunker | NOT STARTED | M2 |
+| M3 | Structure-aware chunker | DONE | M2 |
 | M4 | SQLite metadata store | NOT STARTED | M3 |
 | M5 | Project indexing pipeline | NOT STARTED | M1–M4 |
 | M6 | Embedding provider (`bge-m3` primary) | NOT STARTED | M5 |
