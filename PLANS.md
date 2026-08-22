@@ -23,9 +23,9 @@ This file tracks the approved implementation plan. Codex should update milestone
 | M5 | Project indexing pipeline | DONE | M1–M4 |
 | M6 | Embedding provider (`bge-m3` primary) | DONE | M5 |
 | M7 | ChromaDB vector index | DONE | M6 |
-| M8 | Persian semantic retrieval | NOT STARTED | M7 |
-| M9 | Keyword baseline | NOT STARTED | M5 |
-| M10 | Hybrid retrieval | NOT STARTED | M8, M9, M12 |
+| M8 | Retrieval pipeline: semantic + keyword baseline + hybrid RRF | DONE | M7 |
+| M9 | Keyword baseline (completed within M8) | DONE | M8 |
+| M10 | Hybrid retrieval (completed within M8) | DONE | M8, M9 |
 | M12 | Retrieval evaluation core | NOT STARTED | M8, M9 |
 | M13 | RAG context builder | NOT STARTED | M10 |
 | M14 | Local LLM answer adapter | NOT STARTED | M13 |
@@ -45,11 +45,9 @@ The minimum academic path is:
 ```text
 M0 → M1 → M2 → M3 → M4 → M5 → M6 → M7 → M8
                                   ↓
-                                 M9
+                           M9 and M10
                                   ↓
                                  M12
-                                  ↓
-                                 M10
 
 M10 → M13 → M14 → M15 → M17 → M18 → M19 → M20 → M21
                      ↘ M16 ↗
