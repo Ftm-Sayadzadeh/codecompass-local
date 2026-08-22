@@ -28,7 +28,7 @@ This file tracks the approved implementation plan. Codex should update milestone
 | M10 | Hybrid retrieval (completed within M8) | DONE | M8, M9 |
 | M12 | Retrieval evaluation core | DONE | M8, M9 |
 | M13 | RAG context builder | DONE | M10 |
-| M14 | Local LLM answer adapter | NOT STARTED | M13 |
+| M14 | Local LLM answer adapter | DONE | M13 |
 | M15 | Grounded Q&A + verified citations | NOT STARTED | M13, M14 |
 | M16 | Function documentation | NOT STARTED | M5, M14 |
 | M17 | FastAPI backend surface | NOT STARTED | M5, M8, M15, M16 |
