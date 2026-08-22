@@ -7,7 +7,7 @@ name = "codecompass-local"
 version = "0.1.0"
 description = "Structure-aware retrieval over Python codebases with Persian Q&A."
 requires-python = ">=3.11"
-dependencies = []
+dependencies = ["chromadb>=0.5"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
