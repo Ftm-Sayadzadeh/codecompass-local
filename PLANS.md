@@ -21,7 +21,7 @@ This file tracks the approved implementation plan. Codex should update milestone
 | M3 | Structure-aware chunker | DONE | M2 |
 | M4 | SQLite metadata store | DONE | M3 |
 | M5 | Project indexing pipeline | DONE | M1–M4 |
-| M6 | Embedding provider (`bge-m3` primary) | NOT STARTED | M5 |
+| M6 | Embedding provider (`bge-m3` primary) | DONE | M5 |
 | M7 | ChromaDB vector index | NOT STARTED | M6 |
 | M8 | Persian semantic retrieval | NOT STARTED | M7 |
 | M9 | Keyword baseline | NOT STARTED | M5 |
