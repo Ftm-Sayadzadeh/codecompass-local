@@ -4,7 +4,15 @@ A bachelor's final project for structure-aware retrieval over Python codebases u
 
 ## Current state
 
-This repository now contains the approved planning/bootstrap documents plus the completed M0/M1 foundation and repository scanner.
+This repository contains the completed local Code RAG core through M15:
+
+- Repository scanner, Python AST parser, structure-aware chunker, and SQLite metadata store.
+- Ollama embedding provider and ChromaDB vector index behind small replaceable abstractions.
+- Lexical, semantic, and hybrid retrieval with retrieval evaluation metrics.
+- RAG context construction, local Ollama LLM adapter, grounded Q&A, and metadata-derived verified citations.
+- CLI supervisor demo runner in `src/codecompass/demo.py`.
+
+Not started yet: function documentation, FastAPI backend, React/Vite frontend, Monaco citation navigation, and final MVP release polish.
 
 ## Read first
 
@@ -48,7 +56,7 @@ python -m pip install -e ".[dev]"
 python -m pytest
 ```
 
-The scanner runtime code uses only the Python standard library.
+The core metadata pipeline uses mostly the Python standard library. ChromaDB is used for vector indexing, and Ollama is used for local embedding and answer-generation smoke tests.
 
 ## Approved core decisions
 
