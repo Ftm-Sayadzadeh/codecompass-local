@@ -58,6 +58,7 @@ def test_demo_prompt_adds_presentation_instructions() -> None:
     assert DEMO_RESPONSE_INSTRUCTIONS not in system_prompt
     assert "Question:\nWhich function escapes HTML?" in prompt
     assert DEMO_RESPONSE_INSTRUCTIONS in prompt
+    assert "If the question is Persian, answer in Persian." in prompt
 
 
 def test_format_answer_handles_fence_only_model_output() -> None:

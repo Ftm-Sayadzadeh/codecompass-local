@@ -11,6 +11,7 @@ This repository contains the completed local Code RAG core through M15:
 - Lexical, semantic, and hybrid retrieval with retrieval evaluation metrics.
 - RAG context construction, local Ollama LLM adapter, grounded Q&A, and metadata-derived verified citations.
 - CLI supervisor demo runner in `src/codecompass/demo.py`.
+- Persian-question smoke validation in `docs/validation/m15-persian-demo-smoke-test-report.md`.
 
 Not started yet: function documentation, FastAPI backend, React/Vite frontend, Monaco citation navigation, and final MVP release polish.
 

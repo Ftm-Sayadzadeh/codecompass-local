@@ -17,7 +17,8 @@ from codecompass.vector_index import ChromaVectorIndex
 
 DISPLAY_CITATION_LIMIT = 3
 DEMO_RESPONSE_INSTRUCTIONS = (
-    "Begin with the function that directly answers the question, using exactly two concise natural-language sentences."
+    "Begin with the function that directly answers the question, using exactly two concise natural-language sentences. "
+    "If the question is Persian, answer in Persian."
 )
 NO_DISPLAYABLE_ANSWER = "The local model returned no displayable answer."
 
