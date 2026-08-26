@@ -4,13 +4,13 @@ from __future__ import annotations
 
 import argparse
 import json
-import subprocess
 from dataclasses import asdict
 from pathlib import Path
 from typing import Sequence
 
 from codecompass.embeddings import OllamaEmbeddingProvider
 from codecompass.indexing.service import IndexingService
+from codecompass.indexing.repository import RepositoryValidationError, validate_pinned_repository
 from codecompass.indexing.vectors import VectorIndexingService
 from codecompass.storage import SQLiteMetadataStore
 from codecompass.vector_index import ChromaVectorIndex
@@ -72,24 +72,10 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 
 def _validate_repository(repository: Path, expected_commit: str, parser: argparse.ArgumentParser) -> str:
-    commit = _git(repository, parser, "rev-parse", "HEAD")
-    if commit != expected_commit:
-        parser.error(f"repository commit mismatch: expected {expected_commit}, got {commit}")
-    if _git(repository, parser, "status", "--porcelain", "--untracked-files=normal"):
-        parser.error("repository worktree must be clean before indexing")
-    return commit
-
-
-def _git(repository: Path, parser: argparse.ArgumentParser, *args: str) -> str:
-    result = subprocess.run(
-        ["git", "-C", str(repository), *args],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    if result.returncode:
-        parser.error(f"Git command failed for repository: {result.stderr.strip()}")
-    return result.stdout.strip()
+    try:
+        return validate_pinned_repository(repository, expected_commit)
+    except RepositoryValidationError as error:
+        parser.error(str(error))
 
 
 def _parser() -> argparse.ArgumentParser:
