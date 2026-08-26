@@ -1,0 +1,1214 @@
+[
+  {
+    "id": "markupsafe_escape_html_en",
+    "pair_id": "markupsafe_escape_html",
+    "language": "en",
+    "category": "direct_symbol",
+    "repository_name": "pallets/markupsafe",
+    "repository_commit": "b2e4d9c7687be25695fffbe93a37622302b24fb1",
+    "repository_url": "https://github.com/pallets/markupsafe",
+    "ground_truth_verified": true,
+    "question": "Which module-level helper escapes text for safe insertion into HTML?",
+    "expected": [
+      {
+        "relative_path": "src/markupsafe/__init__.py",
+        "qualified_name": "escape",
+        "start_line": 24,
+        "end_line": 45
+      }
+    ]
+  },
+  {
+    "id": "markupsafe_escape_html_fa",
+    "pair_id": "markupsafe_escape_html",
+    "language": "fa",
+    "category": "direct_symbol",
+    "repository_name": "pallets/markupsafe",
+    "repository_commit": "b2e4d9c7687be25695fffbe93a37622302b24fb1",
+    "repository_url": "https://github.com/pallets/markupsafe",
+    "ground_truth_verified": true,
+    "question": "کدام تابع سطح ماژول، متن را برای قرار گرفتن امن در HTML گریزگذاری می‌کند؟",
+    "expected": [
+      {
+        "relative_path": "src/markupsafe/__init__.py",
+        "qualified_name": "escape",
+        "start_line": 24,
+        "end_line": 45
+      }
+    ]
+  },
+  {
+    "id": "markupsafe_escape_silent_none_en",
+    "pair_id": "markupsafe_escape_silent_none",
+    "language": "en",
+    "category": "function_behavior",
+    "repository_name": "pallets/markupsafe",
+    "repository_commit": "b2e4d9c7687be25695fffbe93a37622302b24fb1",
+    "repository_url": "https://github.com/pallets/markupsafe",
+    "ground_truth_verified": true,
+    "question": "How does escape_silent handle None?",
+    "expected": [
+      {
+        "relative_path": "src/markupsafe/__init__.py",
+        "qualified_name": "escape_silent",
+        "start_line": 48,
+        "end_line": 61
+      }
+    ]
+  },
+  {
+    "id": "markupsafe_escape_silent_none_fa",
+    "pair_id": "markupsafe_escape_silent_none",
+    "language": "fa",
+    "category": "function_behavior",
+    "repository_name": "pallets/markupsafe",
+    "repository_commit": "b2e4d9c7687be25695fffbe93a37622302b24fb1",
+    "repository_url": "https://github.com/pallets/markupsafe",
+    "ground_truth_verified": true,
+    "question": "تابع escape_silent با مقدار None چه کار می‌کند؟",
+    "expected": [
+      {
+        "relative_path": "src/markupsafe/__init__.py",
+        "qualified_name": "escape_silent",
+        "start_line": 48,
+        "end_line": 61
+      }
+    ]
+  },
+  {
+    "id": "markupsafe_safe_markup_class_en",
+    "pair_id": "markupsafe_safe_markup_class",
+    "language": "en",
+    "category": "semantic_behavior",
+    "repository_name": "pallets/markupsafe",
+    "repository_commit": "b2e4d9c7687be25695fffbe93a37622302b24fb1",
+    "repository_url": "https://github.com/pallets/markupsafe",
+    "ground_truth_verified": true,
+    "question": "Which class represents text that is already safe markup?",
+    "expected": [
+      {
+        "relative_path": "src/markupsafe/__init__.py",
+        "qualified_name": "Markup",
+        "start_line": 84,
+        "end_line": 329
+      }
+    ]
+  },
+  {
+    "id": "markupsafe_safe_markup_class_fa",
+    "pair_id": "markupsafe_safe_markup_class",
+    "language": "fa",
+    "category": "semantic_behavior",
+    "repository_name": "pallets/markupsafe",
+    "repository_commit": "b2e4d9c7687be25695fffbe93a37622302b24fb1",
+    "repository_url": "https://github.com/pallets/markupsafe",
+    "ground_truth_verified": true,
+    "question": "کدام کلاس متنی را نمایش می‌دهد که از قبل برای HTML امن است؟",
+    "expected": [
+      {
+        "relative_path": "src/markupsafe/__init__.py",
+        "qualified_name": "Markup",
+        "start_line": 84,
+        "end_line": 329
+      }
+    ]
+  },
+  {
+    "id": "markupsafe_unescape_entities_en",
+    "pair_id": "markupsafe_unescape_entities",
+    "language": "en",
+    "category": "function_behavior",
+    "repository_name": "pallets/markupsafe",
+    "repository_commit": "b2e4d9c7687be25695fffbe93a37622302b24fb1",
+    "repository_url": "https://github.com/pallets/markupsafe",
+    "ground_truth_verified": true,
+    "question": "Which method converts HTML entities back to plain text?",
+    "expected": [
+      {
+        "relative_path": "src/markupsafe/__init__.py",
+        "qualified_name": "Markup.unescape",
+        "start_line": 188,
+        "end_line": 197
+      }
+    ]
+  },
+  {
+    "id": "markupsafe_unescape_entities_fa",
+    "pair_id": "markupsafe_unescape_entities",
+    "language": "fa",
+    "category": "function_behavior",
+    "repository_name": "pallets/markupsafe",
+    "repository_commit": "b2e4d9c7687be25695fffbe93a37622302b24fb1",
+    "repository_url": "https://github.com/pallets/markupsafe",
+    "ground_truth_verified": true,
+    "question": "کدام متد entityهای HTML را دوباره به متن معمولی تبدیل می‌کند؟",
+    "expected": [
+      {
+        "relative_path": "src/markupsafe/__init__.py",
+        "qualified_name": "Markup.unescape",
+        "start_line": 188,
+        "end_line": 197
+      }
+    ]
+  },
+  {
+    "id": "markupsafe_escape_workflow_en",
+    "pair_id": "markupsafe_escape_workflow",
+    "language": "en",
+    "category": "multi_symbol",
+    "repository_name": "pallets/markupsafe",
+    "repository_commit": "b2e4d9c7687be25695fffbe93a37622302b24fb1",
+    "repository_url": "https://github.com/pallets/markupsafe",
+    "ground_truth_verified": true,
+    "question": "Which Markup methods escape a value added on the right and values joined from an iterable?",
+    "expected": [
+      {
+        "relative_path": "src/markupsafe/__init__.py",
+        "qualified_name": "Markup.__add__",
+        "start_line": 136,
+        "end_line": 140
+      },
+      {
+        "relative_path": "src/markupsafe/__init__.py",
+        "qualified_name": "Markup.join",
+        "start_line": 170,
+        "end_line": 171
+      }
+    ]
+  },
+  {
+    "id": "markupsafe_escape_workflow_fa",
+    "pair_id": "markupsafe_escape_workflow",
+    "language": "fa",
+    "category": "multi_symbol",
+    "repository_name": "pallets/markupsafe",
+    "repository_commit": "b2e4d9c7687be25695fffbe93a37622302b24fb1",
+    "repository_url": "https://github.com/pallets/markupsafe",
+    "ground_truth_verified": true,
+    "question": "کدام متدهای Markup مقدار اضافه‌شده از سمت راست و مقدارهای یک iterable را هنگام join کردن escape می‌کنند؟",
+    "expected": [
+      {
+        "relative_path": "src/markupsafe/__init__.py",
+        "qualified_name": "Markup.__add__",
+        "start_line": 136,
+        "end_line": 140
+      },
+      {
+        "relative_path": "src/markupsafe/__init__.py",
+        "qualified_name": "Markup.join",
+        "start_line": 170,
+        "end_line": 171
+      }
+    ]
+  },
+  {
+    "id": "itsdangerous_sign_value_en",
+    "pair_id": "itsdangerous_sign_value",
+    "language": "en",
+    "category": "direct_symbol",
+    "repository_name": "pallets/itsdangerous",
+    "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "repository_url": "https://github.com/pallets/itsdangerous",
+    "ground_truth_verified": true,
+    "question": "Which method on the base Signer class appends a signature to a value?",
+    "expected": [
+      {
+        "relative_path": "src/itsdangerous/signer.py",
+        "qualified_name": "Signer.sign",
+        "start_line": 222,
+        "end_line": 225
+      }
+    ]
+  },
+  {
+    "id": "itsdangerous_sign_value_fa",
+    "pair_id": "itsdangerous_sign_value",
+    "language": "fa",
+    "category": "direct_symbol",
+    "repository_name": "pallets/itsdangerous",
+    "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "repository_url": "https://github.com/pallets/itsdangerous",
+    "ground_truth_verified": true,
+    "question": "کدام متد کلاس پایه Signer یک signature به مقدار اضافه می‌کند؟",
+    "expected": [
+      {
+        "relative_path": "src/itsdangerous/signer.py",
+        "qualified_name": "Signer.sign",
+        "start_line": 222,
+        "end_line": 225
+      }
+    ]
+  },
+  {
+    "id": "itsdangerous_verify_signature_en",
+    "pair_id": "itsdangerous_verify_signature",
+    "language": "en",
+    "category": "function_behavior",
+    "repository_name": "pallets/itsdangerous",
+    "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "repository_url": "https://github.com/pallets/itsdangerous",
+    "ground_truth_verified": true,
+    "question": "Which method verifies a value signature?",
+    "expected": [
+      {
+        "relative_path": "src/itsdangerous/signer.py",
+        "qualified_name": "Signer.verify_signature",
+        "start_line": 227,
+        "end_line": 242
+      }
+    ]
+  },
+  {
+    "id": "itsdangerous_verify_signature_fa",
+    "pair_id": "itsdangerous_verify_signature",
+    "language": "fa",
+    "category": "function_behavior",
+    "repository_name": "pallets/itsdangerous",
+    "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "repository_url": "https://github.com/pallets/itsdangerous",
+    "ground_truth_verified": true,
+    "question": "کدام متد امضای یک مقدار را بررسی می‌کند؟",
+    "expected": [
+      {
+        "relative_path": "src/itsdangerous/signer.py",
+        "qualified_name": "Signer.verify_signature",
+        "start_line": 227,
+        "end_line": 242
+      }
+    ]
+  },
+  {
+    "id": "itsdangerous_base64_decode_en",
+    "pair_id": "itsdangerous_base64_decode",
+    "language": "en",
+    "category": "function_behavior",
+    "repository_name": "pallets/itsdangerous",
+    "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "repository_url": "https://github.com/pallets/itsdangerous",
+    "ground_truth_verified": true,
+    "question": "Which function decodes URL-safe base64 data?",
+    "expected": [
+      {
+        "relative_path": "src/itsdangerous/encoding.py",
+        "qualified_name": "base64_decode",
+        "start_line": 28,
+        "end_line": 38
+      }
+    ]
+  },
+  {
+    "id": "itsdangerous_base64_decode_fa",
+    "pair_id": "itsdangerous_base64_decode",
+    "language": "fa",
+    "category": "function_behavior",
+    "repository_name": "pallets/itsdangerous",
+    "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "repository_url": "https://github.com/pallets/itsdangerous",
+    "ground_truth_verified": true,
+    "question": "کدام تابع داده base64 امن برای URL را decode می‌کند؟",
+    "expected": [
+      {
+        "relative_path": "src/itsdangerous/encoding.py",
+        "qualified_name": "base64_decode",
+        "start_line": 28,
+        "end_line": 38
+      }
+    ]
+  },
+  {
+    "id": "itsdangerous_serializer_payload_load_en",
+    "pair_id": "itsdangerous_serializer_payload_load",
+    "language": "en",
+    "category": "semantic_behavior",
+    "repository_name": "pallets/itsdangerous",
+    "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "repository_url": "https://github.com/pallets/itsdangerous",
+    "ground_truth_verified": true,
+    "question": "Where is serialized payload data loaded and decoded?",
+    "expected": [
+      {
+        "relative_path": "src/itsdangerous/serializer.py",
+        "qualified_name": "Serializer.load_payload",
+        "start_line": 243,
+        "end_line": 269
+      }
+    ]
+  },
+  {
+    "id": "itsdangerous_serializer_payload_load_fa",
+    "pair_id": "itsdangerous_serializer_payload_load",
+    "language": "fa",
+    "category": "semantic_behavior",
+    "repository_name": "pallets/itsdangerous",
+    "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "repository_url": "https://github.com/pallets/itsdangerous",
+    "ground_truth_verified": true,
+    "question": "داده payload سریال‌شده کجا بارگذاری و decode می‌شود؟",
+    "expected": [
+      {
+        "relative_path": "src/itsdangerous/serializer.py",
+        "qualified_name": "Serializer.load_payload",
+        "start_line": 243,
+        "end_line": 269
+      }
+    ]
+  },
+  {
+    "id": "itsdangerous_timed_signing_en",
+    "pair_id": "itsdangerous_timed_signing",
+    "language": "en",
+    "category": "multi_symbol",
+    "repository_name": "pallets/itsdangerous",
+    "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "repository_url": "https://github.com/pallets/itsdangerous",
+    "ground_truth_verified": true,
+    "question": "Which methods attach a timestamp to a signed value and validate its timestamp and maximum age?",
+    "expected": [
+      {
+        "relative_path": "src/itsdangerous/timed.py",
+        "qualified_name": "TimestampSigner.sign",
+        "start_line": 45,
+        "end_line": 51
+      },
+      {
+        "relative_path": "src/itsdangerous/timed.py",
+        "qualified_name": "TimestampSigner.unsign",
+        "start_line": 72,
+        "end_line": 158
+      }
+    ]
+  },
+  {
+    "id": "itsdangerous_timed_signing_fa",
+    "pair_id": "itsdangerous_timed_signing",
+    "language": "fa",
+    "category": "multi_symbol",
+    "repository_name": "pallets/itsdangerous",
+    "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "repository_url": "https://github.com/pallets/itsdangerous",
+    "ground_truth_verified": true,
+    "question": "کدام متدها به مقدار امضاشده timestamp اضافه می‌کنند و timestamp و حداکثر عمر آن را اعتبارسنجی می‌کنند؟",
+    "expected": [
+      {
+        "relative_path": "src/itsdangerous/timed.py",
+        "qualified_name": "TimestampSigner.sign",
+        "start_line": 45,
+        "end_line": 51
+      },
+      {
+        "relative_path": "src/itsdangerous/timed.py",
+        "qualified_name": "TimestampSigner.unsign",
+        "start_line": 72,
+        "end_line": 158
+      }
+    ]
+  },
+  {
+    "id": "itsdangerous_make_signer_en",
+    "pair_id": "itsdangerous_make_signer",
+    "language": "en",
+    "category": "direct_symbol",
+    "repository_name": "pallets/itsdangerous",
+    "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "repository_url": "https://github.com/pallets/itsdangerous",
+    "ground_truth_verified": true,
+    "question": "Which method creates the configured signer instance for a serializer?",
+    "expected": [
+      {
+        "relative_path": "src/itsdangerous/serializer.py",
+        "qualified_name": "Serializer.make_signer",
+        "start_line": 278,
+        "end_line": 285
+      }
+    ]
+  },
+  {
+    "id": "itsdangerous_make_signer_fa",
+    "pair_id": "itsdangerous_make_signer",
+    "language": "fa",
+    "category": "direct_symbol",
+    "repository_name": "pallets/itsdangerous",
+    "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "repository_url": "https://github.com/pallets/itsdangerous",
+    "ground_truth_verified": true,
+    "question": "کدام متد نمونه signer تنظیم‌شده را برای یک serializer می‌سازد؟",
+    "expected": [
+      {
+        "relative_path": "src/itsdangerous/serializer.py",
+        "qualified_name": "Serializer.make_signer",
+        "start_line": 278,
+        "end_line": 285
+      }
+    ]
+  },
+  {
+    "id": "itsdangerous_unsign_value_en",
+    "pair_id": "itsdangerous_unsign_value",
+    "language": "en",
+    "category": "function_behavior",
+    "repository_name": "pallets/itsdangerous",
+    "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "repository_url": "https://github.com/pallets/itsdangerous",
+    "ground_truth_verified": true,
+    "question": "How does Signer.unsign separate a signed value and reject an invalid signature?",
+    "expected": [
+      {
+        "relative_path": "src/itsdangerous/signer.py",
+        "qualified_name": "Signer.unsign",
+        "start_line": 244,
+        "end_line": 256
+      }
+    ]
+  },
+  {
+    "id": "itsdangerous_unsign_value_fa",
+    "pair_id": "itsdangerous_unsign_value",
+    "language": "fa",
+    "category": "function_behavior",
+    "repository_name": "pallets/itsdangerous",
+    "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "repository_url": "https://github.com/pallets/itsdangerous",
+    "ground_truth_verified": true,
+    "question": "متد Signer.unsign چگونه مقدار امضاشده را از امضا جدا می‌کند و امضای نامعتبر را رد می‌کند؟",
+    "expected": [
+      {
+        "relative_path": "src/itsdangerous/signer.py",
+        "qualified_name": "Signer.unsign",
+        "start_line": 244,
+        "end_line": 256
+      }
+    ]
+  },
+  {
+    "id": "itsdangerous_serialize_and_sign_en",
+    "pair_id": "itsdangerous_serialize_and_sign",
+    "language": "en",
+    "category": "function_behavior",
+    "repository_name": "pallets/itsdangerous",
+    "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "repository_url": "https://github.com/pallets/itsdangerous",
+    "ground_truth_verified": true,
+    "question": "How does Serializer.dumps serialize an object and sign the resulting payload?",
+    "expected": [
+      {
+        "relative_path": "src/itsdangerous/serializer.py",
+        "qualified_name": "Serializer.dumps",
+        "start_line": 309,
+        "end_line": 320
+      }
+    ]
+  },
+  {
+    "id": "itsdangerous_serialize_and_sign_fa",
+    "pair_id": "itsdangerous_serialize_and_sign",
+    "language": "fa",
+    "category": "function_behavior",
+    "repository_name": "pallets/itsdangerous",
+    "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "repository_url": "https://github.com/pallets/itsdangerous",
+    "ground_truth_verified": true,
+    "question": "متد Serializer.dumps چگونه یک object را serialize و payload حاصل را امضا می‌کند؟",
+    "expected": [
+      {
+        "relative_path": "src/itsdangerous/serializer.py",
+        "qualified_name": "Serializer.dumps",
+        "start_line": 309,
+        "end_line": 320
+      }
+    ]
+  },
+  {
+    "id": "itsdangerous_urlsafe_payload_decode_en",
+    "pair_id": "itsdangerous_urlsafe_payload_decode",
+    "language": "en",
+    "category": "semantic_behavior",
+    "repository_name": "pallets/itsdangerous",
+    "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "repository_url": "https://github.com/pallets/itsdangerous",
+    "ground_truth_verified": true,
+    "question": "Where is a URL-safe payload base64-decoded and optionally decompressed before deserialization?",
+    "expected": [
+      {
+        "relative_path": "src/itsdangerous/url_safe.py",
+        "qualified_name": "URLSafeSerializerMixin.load_payload",
+        "start_line": 23,
+        "end_line": 53
+      }
+    ]
+  },
+  {
+    "id": "itsdangerous_urlsafe_payload_decode_fa",
+    "pair_id": "itsdangerous_urlsafe_payload_decode",
+    "language": "fa",
+    "category": "semantic_behavior",
+    "repository_name": "pallets/itsdangerous",
+    "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "repository_url": "https://github.com/pallets/itsdangerous",
+    "ground_truth_verified": true,
+    "question": "یک payload امن برای URL کجا پیش از deserialize شدن، از base64 decode و در صورت نیاز decompress می‌شود؟",
+    "expected": [
+      {
+        "relative_path": "src/itsdangerous/url_safe.py",
+        "qualified_name": "URLSafeSerializerMixin.load_payload",
+        "start_line": 23,
+        "end_line": 53
+      }
+    ]
+  },
+  {
+    "id": "itsdangerous_fallback_unsigners_en",
+    "pair_id": "itsdangerous_fallback_unsigners",
+    "language": "en",
+    "category": "multi_symbol",
+    "repository_name": "pallets/itsdangerous",
+    "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "repository_url": "https://github.com/pallets/itsdangerous",
+    "ground_truth_verified": true,
+    "question": "Which methods enumerate configured and fallback signers, then try them to verify and load signed data?",
+    "expected": [
+      {
+        "relative_path": "src/itsdangerous/serializer.py",
+        "qualified_name": "Serializer.iter_unsigners",
+        "start_line": 287,
+        "end_line": 307
+      },
+      {
+        "relative_path": "src/itsdangerous/serializer.py",
+        "qualified_name": "Serializer.loads",
+        "start_line": 328,
+        "end_line": 343
+      }
+    ]
+  },
+  {
+    "id": "itsdangerous_fallback_unsigners_fa",
+    "pair_id": "itsdangerous_fallback_unsigners",
+    "language": "fa",
+    "category": "multi_symbol",
+    "repository_name": "pallets/itsdangerous",
+    "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "repository_url": "https://github.com/pallets/itsdangerous",
+    "ground_truth_verified": true,
+    "question": "کدام متدها signerهای تنظیم‌شده و fallback را فهرست می‌کنند و سپس برای بررسی و بارگذاری داده امضاشده به کار می‌گیرند؟",
+    "expected": [
+      {
+        "relative_path": "src/itsdangerous/serializer.py",
+        "qualified_name": "Serializer.iter_unsigners",
+        "start_line": 287,
+        "end_line": 307
+      },
+      {
+        "relative_path": "src/itsdangerous/serializer.py",
+        "qualified_name": "Serializer.loads",
+        "start_line": 328,
+        "end_line": 343
+      }
+    ]
+  },
+  {
+    "id": "flask_jsonify_response_en",
+    "pair_id": "flask_jsonify_response",
+    "language": "en",
+    "category": "direct_symbol",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "Which function serializes values into an application/json response?",
+    "expected": [
+      {
+        "relative_path": "src/flask/json/__init__.py",
+        "qualified_name": "jsonify",
+        "start_line": 138,
+        "end_line": 170
+      }
+    ]
+  },
+  {
+    "id": "flask_jsonify_response_fa",
+    "pair_id": "flask_jsonify_response",
+    "language": "fa",
+    "category": "direct_symbol",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "کدام تابع مقدارها را به یک پاسخ با نوع application/json تبدیل می‌کند؟",
+    "expected": [
+      {
+        "relative_path": "src/flask/json/__init__.py",
+        "qualified_name": "jsonify",
+        "start_line": 138,
+        "end_line": 170
+      }
+    ]
+  },
+  {
+    "id": "flask_render_template_en",
+    "pair_id": "flask_render_template",
+    "language": "en",
+    "category": "direct_symbol",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "Which function renders a named template with a supplied context?",
+    "expected": [
+      {
+        "relative_path": "src/flask/templating.py",
+        "qualified_name": "render_template",
+        "start_line": 136,
+        "end_line": 148
+      }
+    ]
+  },
+  {
+    "id": "flask_render_template_fa",
+    "pair_id": "flask_render_template",
+    "language": "fa",
+    "category": "direct_symbol",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "کدام تابع یک template نام‌گذاری‌شده را با context داده‌شده render می‌کند؟",
+    "expected": [
+      {
+        "relative_path": "src/flask/templating.py",
+        "qualified_name": "render_template",
+        "start_line": 136,
+        "end_line": 148
+      }
+    ]
+  },
+  {
+    "id": "flask_prefixed_env_config_en",
+    "pair_id": "flask_prefixed_env_config",
+    "language": "en",
+    "category": "direct_symbol",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "Which method loads prefixed environment variables into the application configuration?",
+    "expected": [
+      {
+        "relative_path": "src/flask/config.py",
+        "qualified_name": "Config.from_prefixed_env",
+        "start_line": 126,
+        "end_line": 185
+      }
+    ]
+  },
+  {
+    "id": "flask_prefixed_env_config_fa",
+    "pair_id": "flask_prefixed_env_config",
+    "language": "fa",
+    "category": "direct_symbol",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "کدام متد متغیرهای محیطی دارای prefix را در تنظیمات برنامه بارگذاری می‌کند؟",
+    "expected": [
+      {
+        "relative_path": "src/flask/config.py",
+        "qualified_name": "Config.from_prefixed_env",
+        "start_line": 126,
+        "end_line": 185
+      }
+    ]
+  },
+  {
+    "id": "flask_flash_store_en",
+    "pair_id": "flask_flash_store",
+    "language": "en",
+    "category": "function_behavior",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "How does flash store a message for the next request?",
+    "expected": [
+      {
+        "relative_path": "src/flask/helpers.py",
+        "qualified_name": "flash",
+        "start_line": 326,
+        "end_line": 357
+      }
+    ]
+  },
+  {
+    "id": "flask_flash_store_fa",
+    "pair_id": "flask_flash_store",
+    "language": "fa",
+    "category": "function_behavior",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "تابع flash چگونه یک پیام را برای request بعدی ذخیره می‌کند؟",
+    "expected": [
+      {
+        "relative_path": "src/flask/helpers.py",
+        "qualified_name": "flash",
+        "start_line": 326,
+        "end_line": 357
+      }
+    ]
+  },
+  {
+    "id": "flask_flash_filter_en",
+    "pair_id": "flask_flash_filter",
+    "language": "en",
+    "category": "function_behavior",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "How does get_flashed_messages filter messages by category?",
+    "expected": [
+      {
+        "relative_path": "src/flask/helpers.py",
+        "qualified_name": "get_flashed_messages",
+        "start_line": 360,
+        "end_line": 399
+      }
+    ]
+  },
+  {
+    "id": "flask_flash_filter_fa",
+    "pair_id": "flask_flash_filter",
+    "language": "fa",
+    "category": "function_behavior",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "تابع get_flashed_messages چگونه پیام‌ها را براساس category فیلتر می‌کند؟",
+    "expected": [
+      {
+        "relative_path": "src/flask/helpers.py",
+        "qualified_name": "get_flashed_messages",
+        "start_line": 360,
+        "end_line": 399
+      }
+    ]
+  },
+  {
+    "id": "flask_stream_context_en",
+    "pair_id": "flask_stream_context",
+    "language": "en",
+    "category": "function_behavior",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "How does stream_with_context keep request data available while a response generator runs?",
+    "expected": [
+      {
+        "relative_path": "src/flask/helpers.py",
+        "qualified_name": "stream_with_context",
+        "start_line": 63,
+        "end_line": 148
+      }
+    ]
+  },
+  {
+    "id": "flask_stream_context_fa",
+    "pair_id": "flask_stream_context",
+    "language": "fa",
+    "category": "function_behavior",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "تابع stream_with_context چگونه هنگام اجرای generator پاسخ، داده‌های request را در دسترس نگه می‌دارد؟",
+    "expected": [
+      {
+        "relative_path": "src/flask/helpers.py",
+        "qualified_name": "stream_with_context",
+        "start_line": 63,
+        "end_line": 148
+      }
+    ]
+  },
+  {
+    "id": "flask_safe_directory_send_en",
+    "pair_id": "flask_safe_directory_send",
+    "language": "en",
+    "category": "function_behavior",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "How does Flask's send_from_directory helper delegate file serving with Flask-specific arguments?",
+    "expected": [
+      {
+        "relative_path": "src/flask/helpers.py",
+        "qualified_name": "send_from_directory",
+        "start_line": 543,
+        "end_line": 584
+      }
+    ]
+  },
+  {
+    "id": "flask_safe_directory_send_fa",
+    "pair_id": "flask_safe_directory_send",
+    "language": "fa",
+    "category": "function_behavior",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "تابع send_from_directory در Flask چگونه file serving را با argumentهای مخصوص Flask واگذار می‌کند؟",
+    "expected": [
+      {
+        "relative_path": "src/flask/helpers.py",
+        "qualified_name": "send_from_directory",
+        "start_line": 543,
+        "end_line": 584
+      }
+    ]
+  },
+  {
+    "id": "flask_ensure_sync_en",
+    "pair_id": "flask_ensure_sync",
+    "language": "en",
+    "category": "function_behavior",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "How does Flask ensure an async view can run under a synchronous WSGI worker?",
+    "expected": [
+      {
+        "relative_path": "src/flask/app.py",
+        "qualified_name": "Flask.ensure_sync",
+        "start_line": 1068,
+        "end_line": 1080
+      }
+    ]
+  },
+  {
+    "id": "flask_ensure_sync_fa",
+    "pair_id": "flask_ensure_sync",
+    "language": "fa",
+    "category": "function_behavior",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "Flask چگونه اطمینان می‌دهد که یک view غیرهمگام زیر worker همگام WSGI اجرا شود؟",
+    "expected": [
+      {
+        "relative_path": "src/flask/app.py",
+        "qualified_name": "Flask.ensure_sync",
+        "start_line": 1068,
+        "end_line": 1080
+      }
+    ]
+  },
+  {
+    "id": "flask_method_view_dispatch_en",
+    "pair_id": "flask_method_view_dispatch",
+    "language": "en",
+    "category": "function_behavior",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "How does MethodView choose the handler for the current HTTP method?",
+    "expected": [
+      {
+        "relative_path": "src/flask/views.py",
+        "qualified_name": "MethodView.dispatch_request",
+        "start_line": 182,
+        "end_line": 191
+      }
+    ]
+  },
+  {
+    "id": "flask_method_view_dispatch_fa",
+    "pair_id": "flask_method_view_dispatch",
+    "language": "fa",
+    "category": "function_behavior",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "کلاس MethodView چگونه handler مربوط به متد HTTP فعلی را انتخاب می‌کند؟",
+    "expected": [
+      {
+        "relative_path": "src/flask/views.py",
+        "qualified_name": "MethodView.dispatch_request",
+        "start_line": 182,
+        "end_line": 191
+      }
+    ]
+  },
+  {
+    "id": "flask_view_return_conversion_en",
+    "pair_id": "flask_view_return_conversion",
+    "language": "en",
+    "category": "semantic_behavior",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "Where are view return values such as strings, dictionaries, tuples, and generators converted into Response objects?",
+    "expected": [
+      {
+        "relative_path": "src/flask/app.py",
+        "qualified_name": "Flask.make_response",
+        "start_line": 1227,
+        "end_line": 1367
+      }
+    ]
+  },
+  {
+    "id": "flask_view_return_conversion_fa",
+    "pair_id": "flask_view_return_conversion",
+    "language": "fa",
+    "category": "semantic_behavior",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "مقدارهای بازگشتی view مانند string، dictionary، tuple و generator کجا به شیء Response تبدیل می‌شوند؟",
+    "expected": [
+      {
+        "relative_path": "src/flask/app.py",
+        "qualified_name": "Flask.make_response",
+        "start_line": 1227,
+        "end_line": 1367
+      }
+    ]
+  },
+  {
+    "id": "flask_after_request_processing_en",
+    "pair_id": "flask_after_request_processing",
+    "language": "en",
+    "category": "semantic_behavior",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "Where are after-request callbacks applied and the session saved before returning a response?",
+    "expected": [
+      {
+        "relative_path": "src/flask/app.py",
+        "qualified_name": "Flask.process_response",
+        "start_line": 1397,
+        "end_line": 1421
+      }
+    ]
+  },
+  {
+    "id": "flask_after_request_processing_fa",
+    "pair_id": "flask_after_request_processing",
+    "language": "fa",
+    "category": "semantic_behavior",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "callbackهای after-request کجا اجرا می‌شوند و session پیش از بازگرداندن پاسخ کجا ذخیره می‌شود؟",
+    "expected": [
+      {
+        "relative_path": "src/flask/app.py",
+        "qualified_name": "Flask.process_response",
+        "start_line": 1397,
+        "end_line": 1421
+      }
+    ]
+  },
+  {
+    "id": "flask_class_based_view_en",
+    "pair_id": "flask_class_based_view",
+    "language": "en",
+    "category": "semantic_behavior",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "Which method turns a class-based view into a route-compatible view function?",
+    "expected": [
+      {
+        "relative_path": "src/flask/views.py",
+        "qualified_name": "View.as_view",
+        "start_line": 86,
+        "end_line": 135
+      }
+    ]
+  },
+  {
+    "id": "flask_class_based_view_fa",
+    "pair_id": "flask_class_based_view",
+    "language": "fa",
+    "category": "semantic_behavior",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "کدام متد یک class-based view را به تابع view قابل ثبت برای route تبدیل می‌کند؟",
+    "expected": [
+      {
+        "relative_path": "src/flask/views.py",
+        "qualified_name": "View.as_view",
+        "start_line": 86,
+        "end_line": 135
+      }
+    ]
+  },
+  {
+    "id": "flask_route_registration_en",
+    "pair_id": "flask_route_registration",
+    "language": "en",
+    "category": "multi_symbol",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "Which code connects the route decorator to the application's URL rule registration?",
+    "expected": [
+      {
+        "relative_path": "src/flask/sansio/scaffold.py",
+        "qualified_name": "Scaffold.route",
+        "start_line": 344,
+        "end_line": 373
+      },
+      {
+        "relative_path": "src/flask/sansio/app.py",
+        "qualified_name": "App.add_url_rule",
+        "start_line": 605,
+        "end_line": 661
+      }
+    ]
+  },
+  {
+    "id": "flask_route_registration_fa",
+    "pair_id": "flask_route_registration",
+    "language": "fa",
+    "category": "multi_symbol",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "کدام بخش‌های کد decorator مربوط به route را به ثبت URL rule در برنامه متصل می‌کنند؟",
+    "expected": [
+      {
+        "relative_path": "src/flask/sansio/scaffold.py",
+        "qualified_name": "Scaffold.route",
+        "start_line": 344,
+        "end_line": 373
+      },
+      {
+        "relative_path": "src/flask/sansio/app.py",
+        "qualified_name": "App.add_url_rule",
+        "start_line": 605,
+        "end_line": 661
+      }
+    ]
+  },
+  {
+    "id": "flask_request_lifecycle_en",
+    "pair_id": "flask_request_lifecycle",
+    "language": "en",
+    "category": "multi_symbol",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "Which methods coordinate request dispatch, response conversion, and postprocessing?",
+    "expected": [
+      {
+        "relative_path": "src/flask/app.py",
+        "qualified_name": "Flask.full_dispatch_request",
+        "start_line": 995,
+        "end_line": 1022
+      },
+      {
+        "relative_path": "src/flask/app.py",
+        "qualified_name": "Flask.finalize_request",
+        "start_line": 1024,
+        "end_line": 1054
+      }
+    ]
+  },
+  {
+    "id": "flask_request_lifecycle_fa",
+    "pair_id": "flask_request_lifecycle",
+    "language": "fa",
+    "category": "multi_symbol",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "کدام متدها dispatch شدن request، تبدیل پاسخ و postprocessing را هماهنگ می‌کنند؟",
+    "expected": [
+      {
+        "relative_path": "src/flask/app.py",
+        "qualified_name": "Flask.full_dispatch_request",
+        "start_line": 995,
+        "end_line": 1022
+      },
+      {
+        "relative_path": "src/flask/app.py",
+        "qualified_name": "Flask.finalize_request",
+        "start_line": 1024,
+        "end_line": 1054
+      }
+    ]
+  },
+  {
+    "id": "flask_session_cookie_round_trip_en",
+    "pair_id": "flask_session_cookie_round_trip",
+    "language": "en",
+    "category": "multi_symbol",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "Which methods deserialize a signed session cookie on request and serialize it back on the response?",
+    "expected": [
+      {
+        "relative_path": "src/flask/sessions.py",
+        "qualified_name": "SecureCookieSessionInterface.open_session",
+        "start_line": 323,
+        "end_line": 335
+      },
+      {
+        "relative_path": "src/flask/sessions.py",
+        "qualified_name": "SecureCookieSessionInterface.save_session",
+        "start_line": 337,
+        "end_line": 385
+      }
+    ]
+  },
+  {
+    "id": "flask_session_cookie_round_trip_fa",
+    "pair_id": "flask_session_cookie_round_trip",
+    "language": "fa",
+    "category": "multi_symbol",
+    "repository_name": "pallets/flask",
+    "repository_commit": "d318b683471101618febed18996405ad26462110",
+    "repository_url": "https://github.com/pallets/flask",
+    "ground_truth_verified": true,
+    "question": "کدام متدها cookie امضاشده session را هنگام request deserialize و هنگام response دوباره serialize می‌کنند؟",
+    "expected": [
+      {
+        "relative_path": "src/flask/sessions.py",
+        "qualified_name": "SecureCookieSessionInterface.open_session",
+        "start_line": 323,
+        "end_line": 335
+      },
+      {
+        "relative_path": "src/flask/sessions.py",
+        "qualified_name": "SecureCookieSessionInterface.save_session",
+        "start_line": 337,
+        "end_line": 385
+      }
+    ]
+  }
+]

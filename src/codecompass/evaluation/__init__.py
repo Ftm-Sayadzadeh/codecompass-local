@@ -1,6 +1,6 @@
 """Retrieval evaluation utilities."""
 
-from codecompass.evaluation.dataset import load_questions, parse_questions
+from codecompass.evaluation.dataset import EvaluationDatasetError, load_questions, parse_questions
 from codecompass.evaluation.metrics import compute_metrics
 from codecompass.evaluation.models import (
     EvaluationError,
@@ -14,6 +14,7 @@ from codecompass.evaluation.runner import RetrievalEvaluator
 
 __all__ = [
     "EvaluationError",
+    "EvaluationDatasetError",
     "EvaluationPrediction",
     "EvaluationQuestion",
     "EvaluationRunResult",
