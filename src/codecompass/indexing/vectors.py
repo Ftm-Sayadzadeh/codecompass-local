@@ -1,0 +1,268 @@
+"""Reliable embedding and vector-index orchestration."""
+
+from __future__ import annotations
+
+import time
+from collections.abc import Sequence
+from dataclasses import dataclass
+
+from codecompass.embeddings import EmbeddingProvider, EmbeddingProviderError, EmbeddingResult
+from codecompass.indexing.models import (
+    TruncatedEmbedding,
+    VectorIndexingError,
+    VectorIndexingResult,
+    VectorIndexingStats,
+)
+from codecompass.storage import SQLiteMetadataStore, StoredChunk
+from codecompass.vector_index import VectorIndex, VectorIndexError, VectorRecord
+
+
+@dataclass(frozen=True, slots=True)
+class _EmbeddedChunk:
+    chunk: StoredChunk
+    embedding: EmbeddingResult
+
+
+class VectorIndexingService:
+    """Embed canonical SQLite chunks and verify an exact vector-index mirror."""
+
+    def __init__(
+        self,
+        store: SQLiteMetadataStore,
+        embedding_provider: EmbeddingProvider,
+        vector_index: VectorIndex,
+        batch_size: int = 32,
+        max_retries: int = 2,
+        retry_delay_seconds: float = 0.5,
+    ) -> None:
+        if batch_size < 1:
+            raise ValueError("Embedding batch size must be positive")
+        if getattr(embedding_provider, "truncate", False):
+            raise ValueError("Reliable indexing requires provider truncation to be disabled and observable")
+        if max_retries < 0 or retry_delay_seconds < 0:
+            raise ValueError("Retry limits and delay must be non-negative")
+        self.store = store
+        self.embedding_provider = embedding_provider
+        self.vector_index = vector_index
+        self.batch_size = batch_size
+        self.max_retries = max_retries
+        self.retry_delay_seconds = retry_delay_seconds
+        self._embedding_retries = 0
+
+    def index_project(self, project_id: int) -> VectorIndexingResult:
+        """Replace one project's vectors and verify exact chunk-id equality."""
+        self._embedding_retries = 0
+        if self.store.get_project(project_id) is None:
+            raise ValueError(f"Unknown project id: {project_id}")
+        chunks = self.store.list_chunks(project_id)
+        sqlite_ids = tuple(sorted(chunk.chunk_id for chunk in chunks))
+        embedded, truncated, errors = self._embed_chunks(chunks)
+
+        if errors:
+            vector_ids, vector_errors = self._current_ids(project_id)
+            errors.extend(vector_errors)
+            return self._result(project_id, sqlite_ids, vector_ids, embedded, truncated, errors)
+
+        records = tuple(
+            VectorRecord(
+                chunk_id=item.chunk.chunk_id,
+                vector=item.embedding.vector,
+                metadata={
+                    "project_id": project_id,
+                    "content_hash": item.chunk.content_hash,
+                    "embedding_model": item.embedding.model,
+                    "dimensions": item.embedding.dimensions,
+                },
+            )
+            for item in embedded
+        )
+        vector_ids: tuple[str, ...] = ()
+        try:
+            existing = set(self.vector_index.list_ids(project_id))
+            self.vector_index.upsert(records)
+            stale = tuple(sorted(existing - set(sqlite_ids)))
+            self.vector_index.delete(stale)
+            vector_ids = self.vector_index.list_ids(project_id)
+        except VectorIndexError as error:
+            errors.append(VectorIndexingError("vector", (), type(error).__name__, str(error)))
+            vector_ids, list_errors = self._current_ids(project_id)
+            errors.extend(list_errors)
+
+        if not errors and set(vector_ids) != set(sqlite_ids):
+            difference = tuple(sorted(set(vector_ids) ^ set(sqlite_ids)))
+            errors.append(
+                VectorIndexingError(
+                    "vector",
+                    difference,
+                    "IncompleteIndex",
+                    "SQLite and vector-index chunk ids do not match",
+                )
+            )
+        return self._result(project_id, sqlite_ids, vector_ids, embedded, truncated, errors)
+
+    def _embed_chunks(
+        self,
+        chunks: Sequence[StoredChunk],
+    ) -> tuple[list[_EmbeddedChunk], list[TruncatedEmbedding], list[VectorIndexingError]]:
+        embedded: list[_EmbeddedChunk] = []
+        truncated: list[TruncatedEmbedding] = []
+        errors: list[VectorIndexingError] = []
+        for start in range(0, len(chunks), self.batch_size):
+            batch_embedded, batch_truncated, batch_errors = self._embed_batch(chunks[start : start + self.batch_size])
+            embedded.extend(batch_embedded)
+            truncated.extend(batch_truncated)
+            errors.extend(batch_errors)
+        return embedded, truncated, errors
+
+    def _embed_batch(
+        self,
+        chunks: Sequence[StoredChunk],
+    ) -> tuple[list[_EmbeddedChunk], list[TruncatedEmbedding], list[VectorIndexingError]]:
+        if not chunks:
+            return [], [], []
+        try:
+            results = self._embed_with_retry(tuple(chunk.embedding_text for chunk in chunks))
+        except EmbeddingProviderError as error:
+            if error.error_type == "InputTooLong" and len(chunks) > 1:
+                midpoint = len(chunks) // 2
+                left = self._embed_batch(chunks[:midpoint])
+                right = self._embed_batch(chunks[midpoint:])
+                return [*left[0], *right[0]], [*left[1], *right[1]], [*left[2], *right[2]]
+            if error.error_type == "InputTooLong":
+                return self._embed_oversized(chunks[0])
+            return [], [], [self._embedding_error(chunks, error)]
+        return [_EmbeddedChunk(chunk, result) for chunk, result in zip(chunks, results, strict=True)], [], []
+
+    def _embed_oversized(
+        self,
+        chunk: StoredChunk,
+    ) -> tuple[list[_EmbeddedChunk], list[TruncatedEmbedding], list[VectorIndexingError]]:
+        original = chunk.embedding_text
+        try:
+            embedded_text, embedding = self._embed_compacted_lines(chunk)
+        except EmbeddingProviderError as error:
+            return [], [], [self._embedding_error((chunk,), error)]
+        diagnostic = TruncatedEmbedding(
+            chunk_id=chunk.chunk_id,
+            relative_path=chunk.relative_path,
+            qualified_name=chunk.qualified_name,
+            original_chars=len(original),
+            embedded_chars=len(embedded_text),
+            strategy="head_tail_lines",
+        )
+        return [_EmbeddedChunk(chunk, embedding)], [diagnostic], []
+
+    def _embed_compacted_lines(self, chunk: StoredChunk) -> tuple[str, EmbeddingResult]:
+        source_section = f"\nsource:\n{chunk.code}"
+        if not chunk.embedding_text.endswith(source_section):
+            raise EmbeddingProviderError(
+                "indexing",
+                None,
+                "InvalidInput",
+                "Embedding text does not end with canonical chunk source",
+            )
+        metadata = chunk.embedding_text[: -len(source_section)]
+        lines = chunk.code.splitlines(keepends=True)
+        if not lines:
+            raise EmbeddingProviderError("indexing", None, "InputTooLong", "Oversized input has no compactable source")
+
+        best: tuple[str, EmbeddingResult] | None = None
+        low, high = 1, max(1, len(lines) - 1)
+        while low <= high:
+            keep = (low + high) // 2
+            head_count = (keep + 1) // 2
+            tail_count = keep // 2
+            tail = lines[-tail_count:] if tail_count else []
+            candidate = "".join(
+                (
+                    metadata,
+                    "\nsource:\n",
+                    *lines[:head_count],
+                    "# ... source omitted from embedding input ...\n",
+                    *tail,
+                )
+            )
+            try:
+                embedding = self._embed_with_retry((candidate,))[0]
+            except EmbeddingProviderError as error:
+                if error.error_type != "InputTooLong":
+                    raise
+                high = keep - 1
+            else:
+                best = candidate, embedding
+                low = keep + 1
+        if best is None:
+            raise EmbeddingProviderError("indexing", None, "InputTooLong", "Could not compact embedding input")
+        return best
+
+    def _embed_with_retry(self, texts: tuple[str, ...]) -> tuple[EmbeddingResult, ...]:
+        transient = {
+            "ConnectionAbortedError",
+            "ConnectionResetError",
+            "RemoteDisconnected",
+            "TimeoutError",
+            "URLError",
+        }
+        for attempt in range(self.max_retries + 1):
+            try:
+                return self.embedding_provider.embed_texts(texts)
+            except EmbeddingProviderError as error:
+                if error.error_type not in transient or attempt == self.max_retries:
+                    raise
+                self._embedding_retries += 1
+                if self.retry_delay_seconds:
+                    time.sleep(self.retry_delay_seconds)
+        raise AssertionError("unreachable")
+
+    def _embedding_error(
+        self,
+        chunks: Sequence[StoredChunk],
+        error: EmbeddingProviderError,
+    ) -> VectorIndexingError:
+        return VectorIndexingError(
+            "embedding",
+            tuple(chunk.chunk_id for chunk in chunks),
+            error.error_type,
+            error.message,
+        )
+
+    def _current_ids(self, project_id: int) -> tuple[tuple[str, ...], list[VectorIndexingError]]:
+        try:
+            return self.vector_index.list_ids(project_id), []
+        except VectorIndexError as error:
+            return (), [VectorIndexingError("vector", (), type(error).__name__, str(error))]
+
+    def _result(
+        self,
+        project_id: int,
+        sqlite_ids: tuple[str, ...],
+        vector_ids: tuple[str, ...],
+        embedded: Sequence[_EmbeddedChunk],
+        truncated: Sequence[TruncatedEmbedding],
+        errors: Sequence[VectorIndexingError],
+    ) -> VectorIndexingResult:
+        embedding_failures = sum(len(error.chunk_ids) or 1 for error in errors if error.stage == "embedding")
+        vector_failures = sum(1 for error in errors if error.stage == "vector")
+        complete = (
+            not errors
+            and len(embedded) == len(sqlite_ids)
+            and set(vector_ids) == set(sqlite_ids)
+        )
+        stats = VectorIndexingStats(
+            chunks_expected=len(sqlite_ids),
+            embeddings_generated=len(embedded),
+            vectors_stored=len(vector_ids),
+            truncated_embeddings=len(truncated),
+            embedding_retries=self._embedding_retries,
+            embedding_failures=embedding_failures,
+            vector_failures=vector_failures,
+            complete=complete,
+        )
+        return VectorIndexingResult(
+            project_id=project_id,
+            stats=stats,
+            sqlite_chunk_ids=sqlite_ids,
+            vector_chunk_ids=tuple(sorted(vector_ids)),
+            truncated=tuple(truncated),
+            errors=tuple(errors),
+        )

@@ -60,7 +60,7 @@ class OllamaEmbeddingProvider:
             with urllib.request.urlopen(request, timeout=self.timeout_seconds) as response:
                 data = response.read().decode("utf-8")
         except urllib.error.HTTPError as error:
-            raise self._error("HTTPError", f"Ollama request failed with HTTP {error.code}") from error
+            raise self._http_error(error) from error
         except (OSError, socket.timeout, TimeoutError, urllib.error.URLError) as error:
             raise self._error(type(error).__name__, str(error)) from error
         try:
@@ -101,3 +101,15 @@ class OllamaEmbeddingProvider:
 
     def _error(self, error_type: str, message: str) -> EmbeddingProviderError:
         return EmbeddingProviderError("ollama", self.model, error_type, message)
+
+    def _http_error(self, error: urllib.error.HTTPError) -> EmbeddingProviderError:
+        message = f"Ollama request failed with HTTP {error.code}"
+        if error.fp is not None:
+            try:
+                body = json.loads(error.read().decode("utf-8"))
+            except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+                body = None
+            if isinstance(body, dict) and isinstance(body.get("error"), str):
+                message = body["error"].strip() or message
+        error_type = "InputTooLong" if error.code == 400 and "context length" in message.casefold() else "HTTPError"
+        return self._error(error_type, message)

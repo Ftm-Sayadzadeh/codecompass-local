@@ -89,6 +89,17 @@ def test_delete_removes_vector(tmp_path: Path) -> None:
     assert vector_index.get(("chunk-a",)) == ()
 
 
+def test_list_ids_can_be_scoped_by_project(tmp_path: Path) -> None:
+    vector_index = index(tmp_path)
+    other = record("chunk-b", [0.0, 1.0])
+    other = VectorRecord(other.chunk_id, other.vector, {**other.metadata, "project_id": 2})
+    vector_index.upsert((record("chunk-a", [1.0, 0.0]), other))
+
+    assert vector_index.list_ids() == ("chunk-a", "chunk-b")
+    assert vector_index.list_ids(1) == ("chunk-a",)
+    assert vector_index.list_ids(2) == ("chunk-b",)
+
+
 def test_empty_operations_are_noops(tmp_path: Path) -> None:
     vector_index = index(tmp_path)
 

@@ -108,6 +108,18 @@ class ChromaVectorIndex:
             raise VectorIndexError(f"Failed to get vectors: {error}") from error
         return self._stored_records(result)
 
+    def list_ids(self, project_id: int | None = None) -> tuple[str, ...]:
+        """Return stored vector ids, optionally scoped to one project."""
+        try:
+            kwargs = {"where": {"project_id": project_id}} if project_id is not None else {}
+            result = self._ready().get(include=["metadatas"], **kwargs)
+        except Exception as error:
+            raise VectorIndexError(f"Failed to list vector ids: {error}") from error
+        ids = result.get("ids") or []
+        if not isinstance(ids, list) or not all(isinstance(chunk_id, str) for chunk_id in ids):
+            raise VectorIndexError("Malformed Chroma id response")
+        return tuple(sorted(ids))
+
     def _ready(self) -> Any:
         if self._collection is None:
             self.initialize()
