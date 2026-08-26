@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from types import MappingProxyType
-from typing import Mapping
+from typing import Literal, Mapping
 
 from codecompass.retrieval.models import RetrievalMethod
 
@@ -24,6 +24,11 @@ class EvaluationQuestion:
     id: str
     question: str
     expected: tuple[ExpectedCitation, ...]
+    pair_id: str | None = None
+    language: Literal["fa", "en"] | None = None
+    category: str | None = None
+    repository_name: str | None = None
+    repository_commit: str | None = None
 
 
 @dataclass(frozen=True, slots=True)

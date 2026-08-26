@@ -76,6 +76,11 @@ def _question(item: Any) -> EvaluationQuestion:
         id=question_id,
         question=text,
         expected=tuple(_citation(value, question_id) for value in expected),
+        pair_id=_optional_string(item.get("pair_id"), "pair_id"),
+        language=_language(item.get("language")),
+        category=_optional_string(item.get("category"), "category"),
+        repository_name=_optional_string(item.get("repository_name"), "repository_name"),
+        repository_commit=_optional_string(item.get("repository_commit"), "repository_commit"),
     )
 
 
@@ -106,6 +111,13 @@ def _optional_string(value: Any, field: str) -> str | None:
     if not isinstance(value, str) or not value.strip():
         raise ValueError(f"{field} must be null or a non-empty string")
     return value
+
+
+def _language(value: Any) -> str | None:
+    language = _optional_string(value, "language")
+    if language is not None and language not in {"fa", "en"}:
+        raise ValueError("language must be 'fa' or 'en'")
+    return language
 
 
 def _positive_int(value: Any, field: str) -> int:
