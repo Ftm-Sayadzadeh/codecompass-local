@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from codecompass.evaluation import (
+    EvaluationDatasetError,
     EvaluationQuestion,
     ExpectedCitation,
     RetrievalEvaluator,
@@ -136,6 +137,56 @@ def test_load_questions_reads_json_file(tmp_path: Path) -> None:
     )
 
     assert load_questions(path) == (question(),)
+
+
+def test_load_questions_filters_benchmark_metadata(tmp_path: Path) -> None:
+    path = tmp_path / "dataset.json"
+    records = [
+        {
+            "id": "q-en",
+            "question": "find target",
+            "repository_name": "owner/repo",
+            "language": "en",
+            "category": "direct_symbol",
+            "expected": [
+                {
+                    "relative_path": "pkg/a.py",
+                    "qualified_name": "target",
+                    "start_line": 10,
+                    "end_line": 12,
+                }
+            ],
+        },
+        {
+            "id": "q-fa",
+            "question": "find target in Persian",
+            "repository_name": "owner/repo",
+            "language": "fa",
+            "category": "direct_symbol",
+            "expected": [
+                {
+                    "relative_path": "pkg/a.py",
+                    "qualified_name": "target",
+                    "start_line": 10,
+                    "end_line": 12,
+                }
+            ],
+        },
+    ]
+    path.write_text(json.dumps(records), encoding="utf-8")
+
+    selected = load_questions(path, repository_name="owner/repo", language="fa")
+
+    assert tuple(item.id for item in selected) == ("q-fa",)
+
+    with pytest.raises(EvaluationDatasetError, match="No evaluation questions match filters"):
+        load_questions(path, repository_name="missing/repo")
+    with pytest.raises(EvaluationDatasetError, match="No evaluation questions match filters"):
+        load_questions(path, language="de")
+    with pytest.raises(EvaluationDatasetError, match="No evaluation questions match filters"):
+        load_questions(path, category="semantic_behavior")
+    with pytest.raises(EvaluationDatasetError, match="must be a non-empty string"):
+        load_questions(path, repository_name=" ")
 
 
 def test_compute_metrics_uses_citation_metadata_not_chunk_id() -> None:

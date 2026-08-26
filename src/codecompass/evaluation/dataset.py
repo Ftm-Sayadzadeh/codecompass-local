@@ -9,15 +9,48 @@ from typing import Any
 from codecompass.evaluation.models import EvaluationQuestion, ExpectedCitation
 
 
-def load_questions(path: Path) -> tuple[EvaluationQuestion, ...]:
-    """Load evaluation questions from a JSON file."""
+class EvaluationDatasetError(ValueError):
+    """Raised when an evaluation dataset or requested slice is invalid."""
+
+
+def load_questions(
+    path: Path,
+    *,
+    repository_name: str | None = None,
+    language: str | None = None,
+    category: str | None = None,
+) -> tuple[EvaluationQuestion, ...]:
+    """Load evaluation questions from JSON, optionally selecting a benchmark slice."""
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except OSError as error:
         raise ValueError(f"Failed to read evaluation dataset: {error}") from error
     except json.JSONDecodeError as error:
         raise ValueError(f"Invalid evaluation dataset JSON: {error}") from error
-    return parse_questions(data)
+    questions = parse_questions(data)
+    filters = {
+        key: value
+        for key, value in {
+            "repository_name": repository_name,
+            "language": language,
+            "category": category,
+        }.items()
+        if value is not None
+    }
+    if not filters:
+        return questions
+    for key, value in filters.items():
+        if not isinstance(value, str) or not value.strip():
+            raise EvaluationDatasetError(f"{key} filter must be a non-empty string")
+    selected = tuple(
+        question
+        for item, question in zip(data, questions, strict=True)
+        if all(item.get(key) == value for key, value in filters.items())
+    )
+    if not selected:
+        description = ", ".join(f"{key}={value!r}" for key, value in filters.items())
+        raise EvaluationDatasetError(f"No evaluation questions match filters: {description}")
+    return selected
 
 
 def parse_questions(data: Any) -> tuple[EvaluationQuestion, ...]:
