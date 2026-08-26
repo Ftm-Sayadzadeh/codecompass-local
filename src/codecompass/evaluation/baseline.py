@@ -29,7 +29,7 @@ from codecompass.storage import SQLiteMetadataStore
 from codecompass.vector_index import ChromaVectorIndex
 
 METHODS = ("lexical", "semantic", "hybrid")
-OFFICIAL_DATASET_SHA256 = "8658342c774723078d92898a8fa97a4637b8a3c37fb9f24d468f79a7b4df0aa7"
+OFFICIAL_DATASET_SHA256 = "2a04a4f1b707481126c31673840670b4b72d3877c34b1990f12b2245688d69aa"
 OFFICIAL_EMBEDDING_MODEL = "nomic-embed-text-local:latest"
 OFFICIAL_MODEL_DIGEST = "8514df7f98ca618f7b4d4dcf3735492449d29a4020dc5da574d4056d6136047a"
 OFFICIAL_RETRIEVAL_LIMIT = 10
@@ -38,6 +38,12 @@ OFFICIAL_BATCH_SIZE = 32
 
 class BaselineEvaluationError(ValueError):
     """Raised when an official baseline run cannot be completed reliably."""
+
+
+def _dataset_sha256(path: Path) -> str:
+    """Hash dataset bytes with platform-independent line endings."""
+    content = path.read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    return hashlib.sha256(content).hexdigest()
 
 
 def run_baseline(
@@ -52,7 +58,7 @@ def run_baseline(
     clock: Callable[[], float] = time.perf_counter,
 ) -> dict[str, Any]:
     """Index pinned repositories and return raw and aggregate baseline results."""
-    dataset_hash = hashlib.sha256(dataset.read_bytes()).hexdigest()
+    dataset_hash = _dataset_sha256(dataset)
     if dataset_hash != OFFICIAL_DATASET_SHA256:
         raise BaselineEvaluationError("dataset does not match frozen Official Benchmark v1")
     if embedding_model != OFFICIAL_EMBEDDING_MODEL:

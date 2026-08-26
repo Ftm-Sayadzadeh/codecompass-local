@@ -5,7 +5,7 @@
   "benchmark": {
     "version": "bilingual_benchmark_v1",
     "dataset": "bilingual_benchmark_v1.json",
-    "dataset_sha256": "8658342c774723078d92898a8fa97a4637b8a3c37fb9f24d468f79a7b4df0aa7",
+    "dataset_sha256": "2a04a4f1b707481126c31673840670b4b72d3877c34b1990f12b2245688d69aa",
     "questions": 60,
     "concepts": 30,
     "languages": [

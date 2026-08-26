@@ -181,6 +181,15 @@ def repository_paths(tmp_path: Path) -> dict[str, Path]:
     return {name: tmp_path / name.rsplit("/", 1)[-1] for name in REPOSITORY_COUNTS}
 
 
+def test_dataset_hash_is_independent_of_line_endings(tmp_path: Path) -> None:
+    lf = tmp_path / "lf.json"
+    crlf = tmp_path / "crlf.json"
+    lf.write_bytes(b"[\n  {}\n]\n")
+    crlf.write_bytes(b"[\r\n  {}\r\n]\r\n")
+
+    assert baseline._dataset_sha256(lf) == baseline._dataset_sha256(crlf)
+
+
 def test_official_run_indexes_each_repository_once_and_records_all_runs(tmp_path: Path, monkeypatch) -> None:
     questions = benchmark_questions()
     configure_fakes(monkeypatch, questions)
@@ -403,7 +412,7 @@ def test_checked_in_official_artifact_matches_frozen_benchmark() -> None:
     runs = artifact["query_runs"]
 
     assert artifact["complete"] is True
-    assert artifact["benchmark"]["dataset_sha256"] == hashlib.sha256(DATASET.read_bytes()).hexdigest()
+    assert artifact["benchmark"]["dataset_sha256"] == baseline._dataset_sha256(DATASET)
     assert artifact["configuration"]["retrieval_limit"] == 10
     assert artifact["configuration"]["rrf_k"] == 60
     assert artifact["configuration"]["run_policy"]["selective_reruns"] is False
