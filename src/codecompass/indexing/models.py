@@ -50,3 +50,56 @@ class IndexingResult:
     def succeeded(self) -> bool:
         """Return whether indexing and persistence completed without errors."""
         return not self.errors
+
+
+@dataclass(frozen=True, slots=True)
+class TruncatedEmbedding:
+    """Diagnostic details for one compacted embedding input."""
+
+    chunk_id: str
+    relative_path: str
+    qualified_name: str | None
+    original_chars: int
+    embedded_chars: int
+    strategy: str
+
+
+@dataclass(frozen=True, slots=True)
+class VectorIndexingError:
+    """A structured embedding or vector-index failure."""
+
+    stage: Literal["embedding", "vector"]
+    chunk_ids: tuple[str, ...]
+    error_type: str
+    message: str
+
+
+@dataclass(frozen=True, slots=True)
+class VectorIndexingStats:
+    """Completeness counters for one vector-indexing run."""
+
+    chunks_expected: int = 0
+    embeddings_generated: int = 0
+    vectors_stored: int = 0
+    truncated_embeddings: int = 0
+    embedding_retries: int = 0
+    embedding_failures: int = 0
+    vector_failures: int = 0
+    complete: bool = False
+
+
+@dataclass(frozen=True, slots=True)
+class VectorIndexingResult:
+    """Result of embedding canonical SQLite chunks into a vector index."""
+
+    project_id: int
+    stats: VectorIndexingStats
+    sqlite_chunk_ids: tuple[str, ...]
+    vector_chunk_ids: tuple[str, ...]
+    truncated: tuple[TruncatedEmbedding, ...]
+    errors: tuple[VectorIndexingError, ...]
+
+    @property
+    def succeeded(self) -> bool:
+        """Return whether the vector index exactly matches canonical SQLite chunks."""
+        return self.stats.complete and not self.errors

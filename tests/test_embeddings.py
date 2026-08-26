@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import io
 import urllib.error
 from typing import Sequence
 
@@ -134,6 +135,25 @@ def test_ollama_invalid_model_http_error_is_structured(monkeypatch) -> None:
 
     assert raised.value.error_type == "HTTPError"
     assert "404" in raised.value.message
+
+
+def test_context_length_http_error_is_classified(monkeypatch) -> None:
+    def fail(*args, **kwargs):
+        raise urllib.error.HTTPError(
+            "http://localhost:11434/api/embed",
+            400,
+            "bad request",
+            {},
+            io.BytesIO(b'{"error":"the input length exceeds the context length"}'),
+        )
+
+    monkeypatch.setattr("urllib.request.urlopen", fail)
+
+    with pytest.raises(EmbeddingProviderError) as raised:
+        OllamaEmbeddingProvider(model="fake").embed_text("oversized")
+
+    assert raised.value.error_type == "InputTooLong"
+    assert raised.value.message == "the input length exceeds the context length"
 
 
 def test_invalid_json_response_is_structured(monkeypatch) -> None:
