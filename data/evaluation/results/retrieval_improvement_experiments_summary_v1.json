@@ -1,0 +1,1277 @@
+{
+  "schema_version": 1,
+  "summary_version": "retrieval_improvement_experiments_summary_v1",
+  "complete": true,
+  "manifest": {
+    "protocol_version": "retrieval_improvement_protocol_v1",
+    "protocol_sha256": "02612c26334190fb435c103713e1eaba4508d2a49cd696715610744aa4cd9ec8",
+    "frozen_input_sha256": {
+      "benchmark": "2a04a4f1b707481126c31673840670b4b72d3877c34b1990f12b2245688d69aa",
+      "official_baseline": "45c0b3fb1adb91224e24cf8a9f42611e632afcfb5cf4d492518492ffbe700edc",
+      "performance": "1e7ca71415f2490a4ca05986733735bf3fbb73451701fadfb0ac9411a0b62b23",
+      "error_analysis": "cf6e374722d66763897c148a13f162eb7f145435cf61fa449eccedc1fb438b7f",
+      "error_annotations": "7f606f51b6a8815edc7a81084c0f7c330dddaf9abe85f885ca983def23a26089"
+    },
+    "pinned_repository_commits": {
+      "pallets/flask": "d318b683471101618febed18996405ad26462110",
+      "pallets/itsdangerous": "672971d66a2ef9f85151e53283113f33d642dabd",
+      "pallets/markupsafe": "b2e4d9c7687be25695fffbe93a37622302b24fb1"
+    },
+    "embedding_model": "nomic-embed-text-local:latest",
+    "embedding_model_digest": "8514df7f98ca618f7b4d4dcf3735492449d29a4020dc5da574d4056d6136047a",
+    "retrieval_configuration": {
+      "embedding_model": "nomic-embed-text-local:latest",
+      "embedding_model_digest": "8514df7f98ca618f7b4d4dcf3735492449d29a4020dc5da574d4056d6136047a",
+      "embedding_dimensions": 768,
+      "lexical_field_weights": {
+        "code": 1,
+        "embedding_text": 1,
+        "qualified_name": 3,
+        "source_file": 2
+      },
+      "baseline_retrieval_limit": 10,
+      "baseline_rrf_k": 60,
+      "vector_index": {
+        "backend": "chromadb",
+        "distance_metric": "cosine",
+        "collection_per_repository": true
+      }
+    },
+    "experiment_matrix": [
+      {
+        "experiment_id": "E1",
+        "name": "candidate_depth_ablation",
+        "primary_variable": "candidate_depth",
+        "population": "60 questions x 3 methods",
+        "configurations": [
+          {
+            "configuration_id": "e1_depth_10_control",
+            "candidate_depth": 10
+          },
+          {
+            "configuration_id": "e1_depth_20",
+            "candidate_depth": 20
+          },
+          {
+            "configuration_id": "e1_depth_50",
+            "candidate_depth": 50
+          }
+        ],
+        "fixed": {
+          "evaluation_cutoff": 10,
+          "rrf_k": 60,
+          "lexical_weight": 1.0,
+          "semantic_weight": 1.0
+        },
+        "purpose": "Distinguish evidence absent at depth 10 from evidence retrieved only at ranks 11-50; official Top-1/3/10 remain the decision thresholds.",
+        "expected_records": 540
+      },
+      {
+        "experiment_id": "E2",
+        "name": "hybrid_fusion_weight_ablation",
+        "primary_variable": "lexical_to_semantic_rrf_weight_ratio",
+        "population": "60 questions, hybrid only",
+        "configurations": [
+          {
+            "configuration_id": "e2_equal_1_1_control",
+            "lexical_weight": 1.0,
+            "semantic_weight": 1.0
+          },
+          {
+            "configuration_id": "e2_lexical_2_semantic_1",
+            "lexical_weight": 2.0,
+            "semantic_weight": 1.0
+          },
+          {
+            "configuration_id": "e2_lexical_1_semantic_2",
+            "lexical_weight": 1.0,
+            "semantic_weight": 2.0
+          }
+        ],
+        "fixed": {
+          "candidate_depth": 10,
+          "output_limit": 10,
+          "rrf_k": 60
+        },
+        "purpose": "Test whether a predeclared lexical/semantic balance changes repairs, regressions, bilingual stability, or evidence coverage.",
+        "expected_records": 180
+      },
+      {
+        "experiment_id": "E3",
+        "name": "multi_symbol_candidate_aggregation",
+        "primary_variable": "candidate_aggregation_strategy",
+        "population": "12 multi-symbol bilingual questions",
+        "configurations": [
+          {
+            "configuration_id": "e3_rrf_control",
+            "strategy": "equal_weight_rrf"
+          },
+          {
+            "configuration_id": "e3_balanced_interleave",
+            "strategy": "lexical_semantic_round_robin_deduplicated"
+          }
+        ],
+        "fixed": {
+          "candidate_depth": 10,
+          "output_limit": 10,
+          "round_robin_start": "lexical"
+        },
+        "purpose": "Test a ground-truth-agnostic aggregation intervention on complete, partial, and missing required evidence.",
+        "expected_candidate_records": 24,
+        "expected_baseline_comparison_records": 36
+      },
+      {
+        "experiment_id": "E4",
+        "name": "semantic_supported_hypothesis_ablation",
+        "primary_variable": "query_language_text",
+        "population": "16 semantic pair-method disagreements annotated as supported cross-language identifier-gap hypotheses",
+        "configurations": [
+          {
+            "configuration_id": "e4_persian_original_control",
+            "query": "original Persian benchmark question"
+          },
+          {
+            "configuration_id": "e4_english_pair_substitution",
+            "query": "semantically equivalent English paired question"
+          }
+        ],
+        "fixed": {
+          "method": "semantic",
+          "candidate_depth": 10,
+          "ground_truth": "shared bilingual pair ground truth"
+        },
+        "causal_boundary": "This ablates complete paired query text, not language in isolation; wording and language cannot be causally separated.",
+        "compaction_ablation": {
+          "status": "not_executable_from_frozen_inputs",
+          "reason": "Frozen artifacts record three compacted Flask embeddings but not their exact chunk IDs."
+        },
+        "expected_pair_records": 16
+      },
+      {
+        "experiment_id": "E5",
+        "name": "bilingual_stability_analysis",
+        "primary_variable": "none_analysis_only",
+        "population": "the applicable bilingual pair-method population of every E1-E4 candidate",
+        "purpose": "Record language-specific repairs, regressions, resolved disagreements, and new disagreements without collapsing pair structure."
+      }
+    ],
+    "baseline_index_snapshot": {
+      "snapshot_id": "official_baseline_index_v1",
+      "snapshot_sha256": "3f48f259ff94670c0b62726b94983d0c1709c02fcfd41e48a86cd07748bda599",
+      "canonical_snapshot_identity": "3f48f259ff94670c0b62726b94983d0c1709c02fcfd41e48a86cd07748bda599"
+    },
+    "execution_id": "retrieval-improvements-20260827T192442Z",
+    "disposable_execution_copy_identity": "2fbfb2b37036e42d48afb1b9e6a2bf9e147d73ded4d8cca7f4907a6cfefdaf9b",
+    "chromadb_version": "1.5.9",
+    "execution_index_provenance": {
+      "pallets/flask": {
+        "stage": "after_indexing_before_queries",
+        "directory_sha256": "2a7ed4bdd80b6e6f8a846b276342bc985bc34ef21a06af2c0029b653108d7c63"
+      },
+      "pallets/itsdangerous": {
+        "stage": "after_indexing_before_queries",
+        "directory_sha256": "78740780be39b3ad0a138e744095bf0e4655a62d19e3135fac87581e72810d14"
+      },
+      "pallets/markupsafe": {
+        "stage": "after_indexing_before_queries",
+        "directory_sha256": "01841ff52ffe46d3b0e79180e2e2097416758ed46b00b21f6cbc37be4d4501bf"
+      }
+    },
+    "production_configuration_changed": false,
+    "repositories": [
+      {
+        "repository_name": "pallets/flask",
+        "repository_commit": "d318b683471101618febed18996405ad26462110",
+        "canonical_chunks": 1611,
+        "vectors": 1611,
+        "compacted_embeddings": 3,
+        "embedding_failures": 0,
+        "vector_failures": 0,
+        "sqlite_chroma_ids_equal": true,
+        "pre_query_index_directory_sha256": "2a7ed4bdd80b6e6f8a846b276342bc985bc34ef21a06af2c0029b653108d7c63",
+        "snapshot_id": "official_baseline_index_v1",
+        "snapshot_sha256": "3f48f259ff94670c0b62726b94983d0c1709c02fcfd41e48a86cd07748bda599",
+        "provenance_verified": true,
+        "complete": true
+      },
+      {
+        "repository_name": "pallets/itsdangerous",
+        "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+        "canonical_chunks": 144,
+        "vectors": 144,
+        "compacted_embeddings": 0,
+        "embedding_failures": 0,
+        "vector_failures": 0,
+        "sqlite_chroma_ids_equal": true,
+        "pre_query_index_directory_sha256": "78740780be39b3ad0a138e744095bf0e4655a62d19e3135fac87581e72810d14",
+        "snapshot_id": "official_baseline_index_v1",
+        "snapshot_sha256": "3f48f259ff94670c0b62726b94983d0c1709c02fcfd41e48a86cd07748bda599",
+        "provenance_verified": true,
+        "complete": true
+      },
+      {
+        "repository_name": "pallets/markupsafe",
+        "repository_commit": "b2e4d9c7687be25695fffbe93a37622302b24fb1",
+        "canonical_chunks": 116,
+        "vectors": 116,
+        "compacted_embeddings": 0,
+        "embedding_failures": 0,
+        "vector_failures": 0,
+        "sqlite_chroma_ids_equal": true,
+        "pre_query_index_directory_sha256": "01841ff52ffe46d3b0e79180e2e2097416758ed46b00b21f6cbc37be4d4501bf",
+        "snapshot_id": "official_baseline_index_v1",
+        "snapshot_sha256": "3f48f259ff94670c0b62726b94983d0c1709c02fcfd41e48a86cd07748bda599",
+        "provenance_verified": true,
+        "complete": true
+      }
+    ],
+    "environment": {
+      "python": "3.11.15",
+      "system": "Windows",
+      "machine": "AMD64",
+      "ollama_version": "0.22.0"
+    },
+    "source_experiment_id": "E1-E5",
+    "baseline_comparison_population": "five pre-registered candidate assessments plus the diagnostic E4 and pair-level E5 analyses",
+    "result_record_count": 5,
+    "experiment_artifact_sha256": {
+      "E1": "7f9509233171b50a45f28be63a76715c8153847d1f59783964d07f2834a1a7a1",
+      "E2": "9f894b8ae1839d72db6858a14d1f2275d6e11c6fbc0bd74273c55cc83848777c",
+      "E3": "46211e3b806454187d2f9b53d6014da17d96d0befe7eda3561908757bf6e6b6c",
+      "E4": "be784b32906ebb217be727e24b9db2a8e112041167e5a4e47ba6a9d734a92811",
+      "E5": "fd17267bacf12e7dc9b93ab859ddfd51cd37cc575ce159dbd64671cba547b151"
+    }
+  },
+  "candidate_assessments": [
+    {
+      "experiment_id": "E1",
+      "configuration_id": "e1_depth_20",
+      "control_configuration_id": "e1_depth_10_control",
+      "gates": {
+        "quality": false,
+        "threshold_transitions": false,
+        "bilingual_stability": true,
+        "multi_symbol": true,
+        "performance_screen": true
+      },
+      "passes_all_applicable_gates": false,
+      "candidate_global_metrics": {
+        "hybrid": {
+          "slice": {
+            "kind": "global_micro",
+            "value": "all"
+          },
+          "method": "hybrid",
+          "questions": 60,
+          "failures": 0,
+          "top_1": 0.6,
+          "top_3": 0.8,
+          "mrr_at_10": 0.7165277777777778,
+          "evidence_recall_at_3": 0.7333333333333333,
+          "evidence_recall_at_10": 0.8833333333333333,
+          "latency_ms": {
+            "samples": 60,
+            "min": 73.744,
+            "mean": 172.038,
+            "median": 182.762,
+            "p50": 182.762,
+            "p95": 270.818,
+            "max": 286.65
+          }
+        },
+        "lexical": {
+          "slice": {
+            "kind": "global_micro",
+            "value": "all"
+          },
+          "method": "lexical",
+          "questions": 60,
+          "failures": 0,
+          "top_1": 0.43333333333333335,
+          "top_3": 0.7166666666666667,
+          "mrr_at_10": 0.5808796296296297,
+          "evidence_recall_at_3": 0.6583333333333333,
+          "evidence_recall_at_10": 0.8166666666666667,
+          "latency_ms": {
+            "samples": 60,
+            "min": 5.654,
+            "mean": 63.243,
+            "median": 62.219,
+            "p50": 62.219,
+            "p95": 141.322,
+            "max": 146.282
+          }
+        },
+        "semantic": {
+          "slice": {
+            "kind": "global_micro",
+            "value": "all"
+          },
+          "method": "semantic",
+          "questions": 60,
+          "failures": 0,
+          "top_1": 0.35,
+          "top_3": 0.65,
+          "mrr_at_10": 0.5061309523809523,
+          "evidence_recall_at_3": 0.5666666666666667,
+          "evidence_recall_at_10": 0.7166666666666667,
+          "latency_ms": {
+            "samples": 60,
+            "min": 63.906,
+            "mean": 108.69,
+            "median": 100.493,
+            "p50": 100.493,
+            "p95": 158.657,
+            "max": 174.187
+          }
+        }
+      },
+      "control_global_metrics": {
+        "hybrid": {
+          "slice": {
+            "kind": "global_micro",
+            "value": "all"
+          },
+          "method": "hybrid",
+          "questions": 60,
+          "failures": 0,
+          "top_1": 0.6333333333333333,
+          "top_3": 0.7833333333333333,
+          "mrr_at_10": 0.7322222222222223,
+          "evidence_recall_at_3": 0.725,
+          "evidence_recall_at_10": 0.8666666666666667,
+          "latency_ms": {
+            "samples": 60,
+            "min": 57.861,
+            "mean": 178.722,
+            "median": 173.867,
+            "p50": 173.867,
+            "p95": 261.823,
+            "max": 858.857
+          }
+        },
+        "lexical": {
+          "slice": {
+            "kind": "global_micro",
+            "value": "all"
+          },
+          "method": "lexical",
+          "questions": 60,
+          "failures": 0,
+          "top_1": 0.43333333333333335,
+          "top_3": 0.7166666666666667,
+          "mrr_at_10": 0.5808796296296297,
+          "evidence_recall_at_3": 0.6583333333333333,
+          "evidence_recall_at_10": 0.8166666666666667,
+          "latency_ms": {
+            "samples": 60,
+            "min": 6.344,
+            "mean": 67.677,
+            "median": 60.224,
+            "p50": 60.224,
+            "p95": 133.323,
+            "max": 318.416
+          }
+        },
+        "semantic": {
+          "slice": {
+            "kind": "global_micro",
+            "value": "all"
+          },
+          "method": "semantic",
+          "questions": 60,
+          "failures": 0,
+          "top_1": 0.35,
+          "top_3": 0.65,
+          "mrr_at_10": 0.5061309523809523,
+          "evidence_recall_at_3": 0.5666666666666667,
+          "evidence_recall_at_10": 0.7166666666666667,
+          "latency_ms": {
+            "samples": 60,
+            "min": 46.874,
+            "mean": 110.992,
+            "median": 98.457,
+            "p50": 98.457,
+            "p95": 162.854,
+            "max": 540.356
+          }
+        }
+      },
+      "bilingual_diagnostic_counts_overlapping": {
+        "en_regression": 2,
+        "en_repaired_fa_unchanged": 2,
+        "fa_regression": 2,
+        "fa_repaired_en_unchanged": 1,
+        "new_disagreement": 3,
+        "resolved_disagreement": 3,
+        "unchanged_agreement": 263
+      },
+      "candidate_latency_ms": {
+        "mean": 114.657,
+        "p95": 245.544
+      },
+      "control_latency_ms": {
+        "mean": 119.13,
+        "p95": 235.163
+      },
+      "selection_policy": "A configuration is an improvement only if every applicable gate passes. Otherwise retain the frozen production configuration."
+    },
+    {
+      "experiment_id": "E1",
+      "configuration_id": "e1_depth_50",
+      "control_configuration_id": "e1_depth_10_control",
+      "gates": {
+        "quality": false,
+        "threshold_transitions": false,
+        "bilingual_stability": false,
+        "multi_symbol": false,
+        "performance_screen": true
+      },
+      "passes_all_applicable_gates": false,
+      "candidate_global_metrics": {
+        "hybrid": {
+          "slice": {
+            "kind": "global_micro",
+            "value": "all"
+          },
+          "method": "hybrid",
+          "questions": 60,
+          "failures": 0,
+          "top_1": 0.5833333333333334,
+          "top_3": 0.7833333333333333,
+          "mrr_at_10": 0.709510582010582,
+          "evidence_recall_at_3": 0.7166666666666667,
+          "evidence_recall_at_10": 0.8916666666666667,
+          "latency_ms": {
+            "samples": 60,
+            "min": 81.413,
+            "mean": 185.147,
+            "median": 197.226,
+            "p50": 197.226,
+            "p95": 278.598,
+            "max": 315.515
+          }
+        },
+        "lexical": {
+          "slice": {
+            "kind": "global_micro",
+            "value": "all"
+          },
+          "method": "lexical",
+          "questions": 60,
+          "failures": 0,
+          "top_1": 0.43333333333333335,
+          "top_3": 0.7166666666666667,
+          "mrr_at_10": 0.5808796296296297,
+          "evidence_recall_at_3": 0.6583333333333333,
+          "evidence_recall_at_10": 0.8166666666666667,
+          "latency_ms": {
+            "samples": 60,
+            "min": 5.939,
+            "mean": 64.346,
+            "median": 61.211,
+            "p50": 61.211,
+            "p95": 132.964,
+            "max": 149.799
+          }
+        },
+        "semantic": {
+          "slice": {
+            "kind": "global_micro",
+            "value": "all"
+          },
+          "method": "semantic",
+          "questions": 60,
+          "failures": 0,
+          "top_1": 0.35,
+          "top_3": 0.65,
+          "mrr_at_10": 0.5061309523809523,
+          "evidence_recall_at_3": 0.5666666666666667,
+          "evidence_recall_at_10": 0.7166666666666667,
+          "latency_ms": {
+            "samples": 60,
+            "min": 72.088,
+            "mean": 120.558,
+            "median": 113.375,
+            "p50": 113.375,
+            "p95": 176.682,
+            "max": 195.879
+          }
+        }
+      },
+      "control_global_metrics": {
+        "hybrid": {
+          "slice": {
+            "kind": "global_micro",
+            "value": "all"
+          },
+          "method": "hybrid",
+          "questions": 60,
+          "failures": 0,
+          "top_1": 0.6333333333333333,
+          "top_3": 0.7833333333333333,
+          "mrr_at_10": 0.7322222222222223,
+          "evidence_recall_at_3": 0.725,
+          "evidence_recall_at_10": 0.8666666666666667,
+          "latency_ms": {
+            "samples": 60,
+            "min": 57.861,
+            "mean": 178.722,
+            "median": 173.867,
+            "p50": 173.867,
+            "p95": 261.823,
+            "max": 858.857
+          }
+        },
+        "lexical": {
+          "slice": {
+            "kind": "global_micro",
+            "value": "all"
+          },
+          "method": "lexical",
+          "questions": 60,
+          "failures": 0,
+          "top_1": 0.43333333333333335,
+          "top_3": 0.7166666666666667,
+          "mrr_at_10": 0.5808796296296297,
+          "evidence_recall_at_3": 0.6583333333333333,
+          "evidence_recall_at_10": 0.8166666666666667,
+          "latency_ms": {
+            "samples": 60,
+            "min": 6.344,
+            "mean": 67.677,
+            "median": 60.224,
+            "p50": 60.224,
+            "p95": 133.323,
+            "max": 318.416
+          }
+        },
+        "semantic": {
+          "slice": {
+            "kind": "global_micro",
+            "value": "all"
+          },
+          "method": "semantic",
+          "questions": 60,
+          "failures": 0,
+          "top_1": 0.35,
+          "top_3": 0.65,
+          "mrr_at_10": 0.5061309523809523,
+          "evidence_recall_at_3": 0.5666666666666667,
+          "evidence_recall_at_10": 0.7166666666666667,
+          "latency_ms": {
+            "samples": 60,
+            "min": 46.874,
+            "mean": 110.992,
+            "median": 98.457,
+            "p50": 98.457,
+            "p95": 162.854,
+            "max": 540.356
+          }
+        }
+      },
+      "bilingual_diagnostic_counts_overlapping": {
+        "both_regression": 1,
+        "en_regression": 3,
+        "en_repaired_fa_unchanged": 2,
+        "fa_regression": 4,
+        "fa_repaired_en_unchanged": 3,
+        "new_disagreement": 5,
+        "resolved_disagreement": 5,
+        "unchanged_agreement": 257
+      },
+      "candidate_latency_ms": {
+        "mean": 123.35,
+        "p95": 250.85
+      },
+      "control_latency_ms": {
+        "mean": 119.13,
+        "p95": 235.163
+      },
+      "selection_policy": "A configuration is an improvement only if every applicable gate passes. Otherwise retain the frozen production configuration."
+    },
+    {
+      "experiment_id": "E2",
+      "configuration_id": "e2_lexical_1_semantic_2",
+      "control_configuration_id": "e2_equal_1_1_control",
+      "gates": {
+        "quality": false,
+        "threshold_transitions": false,
+        "bilingual_stability": false,
+        "multi_symbol": false,
+        "performance_screen": true
+      },
+      "passes_all_applicable_gates": false,
+      "candidate_global_metrics": {
+        "hybrid": {
+          "slice": {
+            "kind": "global_micro",
+            "value": "all"
+          },
+          "method": "hybrid",
+          "questions": 60,
+          "failures": 0,
+          "top_1": 0.4666666666666667,
+          "top_3": 0.6833333333333333,
+          "mrr_at_10": 0.5924999999999999,
+          "evidence_recall_at_3": 0.6166666666666667,
+          "evidence_recall_at_10": 0.7166666666666667,
+          "latency_ms": {
+            "samples": 60,
+            "min": 57.857,
+            "mean": 178.715,
+            "median": 173.858,
+            "p50": 173.858,
+            "p95": 261.82,
+            "max": 858.823
+          }
+        }
+      },
+      "control_global_metrics": {
+        "hybrid": {
+          "slice": {
+            "kind": "global_micro",
+            "value": "all"
+          },
+          "method": "hybrid",
+          "questions": 60,
+          "failures": 0,
+          "top_1": 0.6333333333333333,
+          "top_3": 0.7833333333333333,
+          "mrr_at_10": 0.7322222222222223,
+          "evidence_recall_at_3": 0.725,
+          "evidence_recall_at_10": 0.8666666666666667,
+          "latency_ms": {
+            "samples": 60,
+            "min": 57.864,
+            "mean": 178.723,
+            "median": 173.865,
+            "p50": 173.865,
+            "p95": 261.83,
+            "max": 858.849
+          }
+        }
+      },
+      "bilingual_diagnostic_counts_overlapping": {
+        "both_regression": 4,
+        "en_regression": 3,
+        "en_repaired_fa_unchanged": 2,
+        "fa_regression": 17,
+        "fa_repaired_en_unchanged": 1,
+        "new_disagreement": 18,
+        "resolved_disagreement": 5,
+        "unchanged_agreement": 63
+      },
+      "candidate_latency_ms": {
+        "mean": 178.715,
+        "p95": 261.82
+      },
+      "control_latency_ms": {
+        "mean": 178.723,
+        "p95": 261.83
+      },
+      "selection_policy": "A configuration is an improvement only if every applicable gate passes. Otherwise retain the frozen production configuration."
+    },
+    {
+      "experiment_id": "E2",
+      "configuration_id": "e2_lexical_2_semantic_1",
+      "control_configuration_id": "e2_equal_1_1_control",
+      "gates": {
+        "quality": false,
+        "threshold_transitions": false,
+        "bilingual_stability": true,
+        "multi_symbol": false,
+        "performance_screen": true
+      },
+      "passes_all_applicable_gates": false,
+      "candidate_global_metrics": {
+        "hybrid": {
+          "slice": {
+            "kind": "global_micro",
+            "value": "all"
+          },
+          "method": "hybrid",
+          "questions": 60,
+          "failures": 0,
+          "top_1": 0.5833333333333334,
+          "top_3": 0.8166666666666667,
+          "mrr_at_10": 0.7010185185185186,
+          "evidence_recall_at_3": 0.7666666666666667,
+          "evidence_recall_at_10": 0.8166666666666667,
+          "latency_ms": {
+            "samples": 60,
+            "min": 57.856,
+            "mean": 178.718,
+            "median": 173.862,
+            "p50": 173.862,
+            "p95": 261.822,
+            "max": 858.828
+          }
+        }
+      },
+      "control_global_metrics": {
+        "hybrid": {
+          "slice": {
+            "kind": "global_micro",
+            "value": "all"
+          },
+          "method": "hybrid",
+          "questions": 60,
+          "failures": 0,
+          "top_1": 0.6333333333333333,
+          "top_3": 0.7833333333333333,
+          "mrr_at_10": 0.7322222222222223,
+          "evidence_recall_at_3": 0.725,
+          "evidence_recall_at_10": 0.8666666666666667,
+          "latency_ms": {
+            "samples": 60,
+            "min": 57.864,
+            "mean": 178.723,
+            "median": 173.865,
+            "p50": 173.865,
+            "p95": 261.83,
+            "max": 858.849
+          }
+        }
+      },
+      "bilingual_diagnostic_counts_overlapping": {
+        "both_regression": 1,
+        "en_regression": 5,
+        "en_repaired_fa_unchanged": 1,
+        "fa_regression": 1,
+        "fa_repaired_en_unchanged": 3,
+        "new_disagreement": 4,
+        "resolved_disagreement": 6,
+        "unchanged_agreement": 79
+      },
+      "candidate_latency_ms": {
+        "mean": 178.718,
+        "p95": 261.822
+      },
+      "control_latency_ms": {
+        "mean": 178.723,
+        "p95": 261.83
+      },
+      "selection_policy": "A configuration is an improvement only if every applicable gate passes. Otherwise retain the frozen production configuration."
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_balanced_interleave",
+      "control_configuration_id": "e3_rrf_control",
+      "gates": {
+        "quality": false,
+        "threshold_transitions": false,
+        "bilingual_stability": false,
+        "multi_symbol": false,
+        "performance_screen": true
+      },
+      "passes_all_applicable_gates": false,
+      "candidate_global_metrics": {
+        "hybrid": {
+          "slice": {
+            "kind": "global_micro",
+            "value": "all"
+          },
+          "method": "hybrid",
+          "questions": 12,
+          "failures": 0,
+          "top_1": 0.3333333333333333,
+          "top_3": 0.6666666666666666,
+          "mrr_at_10": 0.5388888888888889,
+          "evidence_recall_at_3": 0.3333333333333333,
+          "evidence_recall_at_10": 0.625,
+          "latency_ms": {
+            "samples": 12,
+            "min": 95.069,
+            "mean": 187.302,
+            "median": 195.243,
+            "p50": 195.243,
+            "p95": 264.418,
+            "max": 264.418
+          }
+        }
+      },
+      "control_global_metrics": {
+        "hybrid": {
+          "slice": {
+            "kind": "global_micro",
+            "value": "all"
+          },
+          "method": "hybrid",
+          "questions": 12,
+          "failures": 0,
+          "top_1": 0.5833333333333334,
+          "top_3": 0.75,
+          "mrr_at_10": 0.725,
+          "evidence_recall_at_3": 0.4583333333333333,
+          "evidence_recall_at_10": 0.75,
+          "latency_ms": {
+            "samples": 12,
+            "min": 95.092,
+            "mean": 187.33,
+            "median": 195.267,
+            "p50": 195.267,
+            "p95": 264.466,
+            "max": 264.466
+          }
+        }
+      },
+      "bilingual_diagnostic_counts_overlapping": {
+        "both_regression": 1,
+        "en_repaired_fa_unchanged": 1,
+        "fa_regression": 3,
+        "new_disagreement": 2,
+        "resolved_disagreement": 2,
+        "unchanged_agreement": 13
+      },
+      "candidate_latency_ms": {
+        "mean": 187.302,
+        "p95": 264.418
+      },
+      "control_latency_ms": {
+        "mean": 187.33,
+        "p95": 264.466
+      },
+      "selection_policy": "A configuration is an improvement only if every applicable gate passes. Otherwise retain the frozen production configuration."
+    }
+  ],
+  "diagnostic_e4": {
+    "e4_english_pair_substitution": [
+      {
+        "slice": {
+          "kind": "global_micro",
+          "value": "all"
+        },
+        "method": "semantic",
+        "questions": 16,
+        "failures": 0,
+        "top_1": 0.5625,
+        "top_3": 0.75,
+        "mrr_at_10": 0.6708333333333333,
+        "evidence_recall_at_3": 0.6875,
+        "evidence_recall_at_10": 1.0,
+        "latency_ms": {
+          "samples": 16,
+          "min": 62.466,
+          "mean": 108.586,
+          "median": 80.085,
+          "p50": 80.085,
+          "p95": 540.356,
+          "max": 540.356
+        }
+      },
+      {
+        "slice": {
+          "kind": "language",
+          "value": "fa"
+        },
+        "method": "semantic",
+        "questions": 16,
+        "failures": 0,
+        "top_1": 0.5625,
+        "top_3": 0.75,
+        "mrr_at_10": 0.6708333333333333,
+        "evidence_recall_at_3": 0.6875,
+        "evidence_recall_at_10": 1.0,
+        "latency_ms": {
+          "samples": 16,
+          "min": 62.466,
+          "mean": 108.586,
+          "median": 80.085,
+          "p50": 80.085,
+          "p95": 540.356,
+          "max": 540.356
+        }
+      },
+      {
+        "slice": {
+          "kind": "repository_name",
+          "value": "pallets/flask"
+        },
+        "method": "semantic",
+        "questions": 9,
+        "failures": 0,
+        "top_1": 0.5555555555555556,
+        "top_3": 0.7777777777777778,
+        "mrr_at_10": 0.6777777777777777,
+        "evidence_recall_at_3": 0.6666666666666666,
+        "evidence_recall_at_10": 1.0,
+        "latency_ms": {
+          "samples": 9,
+          "min": 62.466,
+          "mean": 132.409,
+          "median": 79.986,
+          "p50": 79.986,
+          "p95": 540.356,
+          "max": 540.356
+        }
+      },
+      {
+        "slice": {
+          "kind": "repository_name",
+          "value": "pallets/itsdangerous"
+        },
+        "method": "semantic",
+        "questions": 4,
+        "failures": 0,
+        "top_1": 0.75,
+        "top_3": 0.75,
+        "mrr_at_10": 0.775,
+        "evidence_recall_at_3": 0.75,
+        "evidence_recall_at_10": 1.0,
+        "latency_ms": {
+          "samples": 4,
+          "min": 80.185,
+          "mean": 84.187,
+          "median": 83.587,
+          "p50": 83.587,
+          "p95": 89.39,
+          "max": 89.39
+        }
+      },
+      {
+        "slice": {
+          "kind": "repository_name",
+          "value": "pallets/markupsafe"
+        },
+        "method": "semantic",
+        "questions": 3,
+        "failures": 0,
+        "top_1": 0.3333333333333333,
+        "top_3": 0.6666666666666666,
+        "mrr_at_10": 0.5111111111111111,
+        "evidence_recall_at_3": 0.6666666666666666,
+        "evidence_recall_at_10": 1.0,
+        "latency_ms": {
+          "samples": 3,
+          "min": 67.181,
+          "mean": 69.65,
+          "median": 69.686,
+          "p50": 69.686,
+          "p95": 72.084,
+          "max": 72.084
+        }
+      },
+      {
+        "slice": {
+          "kind": "category",
+          "value": "direct_symbol"
+        },
+        "method": "semantic",
+        "questions": 6,
+        "failures": 0,
+        "top_1": 0.5,
+        "top_3": 0.6666666666666666,
+        "mrr_at_10": 0.6000000000000001,
+        "evidence_recall_at_3": 0.6666666666666666,
+        "evidence_recall_at_10": 1.0,
+        "latency_ms": {
+          "samples": 6,
+          "min": 66.122,
+          "mean": 77.477,
+          "median": 78.034,
+          "p50": 78.034,
+          "p95": 89.39,
+          "max": 89.39
+        }
+      },
+      {
+        "slice": {
+          "kind": "category",
+          "value": "function_behavior"
+        },
+        "method": "semantic",
+        "questions": 6,
+        "failures": 0,
+        "top_1": 0.6666666666666666,
+        "top_3": 0.8333333333333334,
+        "mrr_at_10": 0.7833333333333333,
+        "evidence_recall_at_3": 0.8333333333333334,
+        "evidence_recall_at_10": 1.0,
+        "latency_ms": {
+          "samples": 6,
+          "min": 62.466,
+          "mean": 76.08,
+          "median": 80.085,
+          "p50": 80.085,
+          "p95": 83.575,
+          "max": 83.575
+        }
+      },
+      {
+        "slice": {
+          "kind": "category",
+          "value": "multi_symbol"
+        },
+        "method": "semantic",
+        "questions": 2,
+        "failures": 0,
+        "top_1": 0.5,
+        "top_3": 1.0,
+        "mrr_at_10": 0.6666666666666666,
+        "evidence_recall_at_3": 0.5,
+        "evidence_recall_at_10": 1.0,
+        "latency_ms": {
+          "samples": 2,
+          "min": 96.397,
+          "mean": 101.797,
+          "median": 101.797,
+          "p50": 101.797,
+          "p95": 107.197,
+          "max": 107.197
+        }
+      },
+      {
+        "slice": {
+          "kind": "category",
+          "value": "semantic_behavior"
+        },
+        "method": "semantic",
+        "questions": 2,
+        "failures": 0,
+        "top_1": 0.5,
+        "top_3": 0.5,
+        "mrr_at_10": 0.55,
+        "evidence_recall_at_3": 0.5,
+        "evidence_recall_at_10": 1.0,
+        "latency_ms": {
+          "samples": 2,
+          "min": 72.084,
+          "mean": 306.22,
+          "median": 306.22,
+          "p50": 306.22,
+          "p95": 540.356,
+          "max": 540.356
+        }
+      }
+    ],
+    "e4_persian_original_control": [
+      {
+        "slice": {
+          "kind": "global_micro",
+          "value": "all"
+        },
+        "method": "semantic",
+        "questions": 16,
+        "failures": 0,
+        "top_1": 0.0,
+        "top_3": 0.25,
+        "mrr_at_10": 0.1542410714285714,
+        "evidence_recall_at_3": 0.21875,
+        "evidence_recall_at_10": 0.40625,
+        "latency_ms": {
+          "samples": 16,
+          "min": 83.615,
+          "mean": 124.978,
+          "median": 121.093,
+          "p50": 121.093,
+          "p95": 160.119,
+          "max": 160.119
+        }
+      },
+      {
+        "slice": {
+          "kind": "language",
+          "value": "fa"
+        },
+        "method": "semantic",
+        "questions": 16,
+        "failures": 0,
+        "top_1": 0.0,
+        "top_3": 0.25,
+        "mrr_at_10": 0.1542410714285714,
+        "evidence_recall_at_3": 0.21875,
+        "evidence_recall_at_10": 0.40625,
+        "latency_ms": {
+          "samples": 16,
+          "min": 83.615,
+          "mean": 124.978,
+          "median": 121.093,
+          "p50": 121.093,
+          "p95": 160.119,
+          "max": 160.119
+        }
+      },
+      {
+        "slice": {
+          "kind": "repository_name",
+          "value": "pallets/flask"
+        },
+        "method": "semantic",
+        "questions": 9,
+        "failures": 0,
+        "top_1": 0.0,
+        "top_3": 0.2222222222222222,
+        "mrr_at_10": 0.16309523809523807,
+        "evidence_recall_at_3": 0.16666666666666666,
+        "evidence_recall_at_10": 0.5,
+        "latency_ms": {
+          "samples": 9,
+          "min": 97.006,
+          "mean": 124.704,
+          "median": 118.505,
+          "p50": 118.505,
+          "p95": 149.806,
+          "max": 149.806
+        }
+      },
+      {
+        "slice": {
+          "kind": "repository_name",
+          "value": "pallets/itsdangerous"
+        },
+        "method": "semantic",
+        "questions": 4,
+        "failures": 0,
+        "top_1": 0.0,
+        "top_3": 0.5,
+        "mrr_at_10": 0.25,
+        "evidence_recall_at_3": 0.5,
+        "evidence_recall_at_10": 0.5,
+        "latency_ms": {
+          "samples": 4,
+          "min": 83.615,
+          "mean": 118.731,
+          "median": 115.594,
+          "p50": 115.594,
+          "p95": 160.119,
+          "max": 160.119
+        }
+      },
+      {
+        "slice": {
+          "kind": "repository_name",
+          "value": "pallets/markupsafe"
+        },
+        "method": "semantic",
+        "questions": 3,
+        "failures": 0,
+        "top_1": 0.0,
+        "top_3": 0.0,
+        "mrr_at_10": 0.0,
+        "evidence_recall_at_3": 0.0,
+        "evidence_recall_at_10": 0.0,
+        "latency_ms": {
+          "samples": 3,
+          "min": 123.109,
+          "mean": 134.13,
+          "median": 126.219,
+          "p50": 126.219,
+          "p95": 153.063,
+          "max": 153.063
+        }
+      },
+      {
+        "slice": {
+          "kind": "category",
+          "value": "direct_symbol"
+        },
+        "method": "semantic",
+        "questions": 6,
+        "failures": 0,
+        "top_1": 0.0,
+        "top_3": 0.3333333333333333,
+        "mrr_at_10": 0.16666666666666666,
+        "evidence_recall_at_3": 0.3333333333333333,
+        "evidence_recall_at_10": 0.3333333333333333,
+        "latency_ms": {
+          "samples": 6,
+          "min": 83.615,
+          "mean": 120.022,
+          "median": 118.426,
+          "p50": 118.426,
+          "p95": 153.063,
+          "max": 153.063
+        }
+      },
+      {
+        "slice": {
+          "kind": "category",
+          "value": "function_behavior"
+        },
+        "method": "semantic",
+        "questions": 6,
+        "failures": 0,
+        "top_1": 0.0,
+        "top_3": 0.16666666666666666,
+        "mrr_at_10": 0.12797619047619047,
+        "evidence_recall_at_3": 0.16666666666666666,
+        "evidence_recall_at_10": 0.5,
+        "latency_ms": {
+          "samples": 6,
+          "min": 97.006,
+          "mean": 126.46,
+          "median": 122.362,
+          "p50": 122.362,
+          "p95": 160.119,
+          "max": 160.119
+        }
+      },
+      {
+        "slice": {
+          "kind": "category",
+          "value": "multi_symbol"
+        },
+        "method": "semantic",
+        "questions": 2,
+        "failures": 0,
+        "top_1": 0.0,
+        "top_3": 0.5,
+        "mrr_at_10": 0.35,
+        "evidence_recall_at_3": 0.25,
+        "evidence_recall_at_10": 0.75,
+        "latency_ms": {
+          "samples": 2,
+          "min": 116.227,
+          "mean": 133.017,
+          "median": 133.017,
+          "p50": 133.017,
+          "p95": 149.806,
+          "max": 149.806
+        }
+      },
+      {
+        "slice": {
+          "kind": "category",
+          "value": "semantic_behavior"
+        },
+        "method": "semantic",
+        "questions": 2,
+        "failures": 0,
+        "top_1": 0.0,
+        "top_3": 0.0,
+        "mrr_at_10": 0.0,
+        "evidence_recall_at_3": 0.0,
+        "evidence_recall_at_10": 0.0,
+        "latency_ms": {
+          "samples": 2,
+          "min": 123.109,
+          "mean": 127.362,
+          "median": 127.362,
+          "p50": 127.362,
+          "p95": 131.614,
+          "max": 131.614
+        }
+      }
+    ]
+  },
+  "bilingual_e5": {
+    "pair_records": 372,
+    "diagnostic_counts_overlapping": {
+      "both_regression": 7,
+      "en_regression": 13,
+      "en_repaired_fa_unchanged": 8,
+      "fa_regression": 27,
+      "fa_repaired_en_unchanged": 8,
+      "new_disagreement": 32,
+      "resolved_disagreement": 21,
+      "unchanged_agreement": 1053
+    }
+  },
+  "decision": {
+    "outcome": "no_change",
+    "selected_configurations": [],
+    "production_configuration_changed": false,
+    "reason": "Experimental results do not change production configuration without a separately approved implementation milestone."
+  }
+}

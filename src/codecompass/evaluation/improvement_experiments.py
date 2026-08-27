@@ -35,6 +35,14 @@ E2_WEIGHTS = {
     "e2_lexical_2_semantic_1": (2.0, 1.0),
     "e2_lexical_1_semantic_2": (1.0, 2.0),
 }
+ARTIFACT_NAMES = {
+    "E1": "retrieval_experiment_e1_candidate_depth_v1.json",
+    "E2": "retrieval_experiment_e2_hybrid_fusion_v1.json",
+    "E3": "retrieval_experiment_e3_multi_symbol_v1.json",
+    "E4": "retrieval_experiment_e4_semantic_v1.json",
+    "E5": "retrieval_experiment_e5_bilingual_stability_v1.json",
+    "summary": "retrieval_improvement_experiments_summary_v1.json",
+}
 
 
 class ImprovementExperimentError(ValueError):
@@ -66,6 +74,7 @@ def run_experiments(
         raise ImprovementExperimentError("pinned repository commits differ from the frozen protocol")
     if work_directory.exists() and any(work_directory.iterdir()):
         raise ImprovementExperimentError("work directory must be empty for a fresh experiment run")
+    _assert_no_stale_artifacts(output_directory)
 
     snapshot_manifest = baseline_snapshot.verify_manifest(snapshot_root)
     verification = _read_json(
@@ -92,6 +101,8 @@ def run_experiments(
     canonical_snapshot_before = baseline_snapshot.directory_hash(snapshot_root)
     shutil.copytree(snapshot_root, work_directory, dirs_exist_ok=True)
     baseline_snapshot.verify_manifest(work_directory)
+    execution_copy_sha256 = baseline_snapshot.directory_hash(work_directory)
+    execution_id = "retrieval-improvements-" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     repository_records: list[dict[str, Any]] = []
     raw_candidates: dict[tuple[str, int, str], tuple[tuple[RetrievedChunk, ...], float]] = {}
 
@@ -138,13 +149,22 @@ def run_experiments(
                     raw_candidates[(question.id, depth, method)] = (result, latency_ms)
 
     baseline_runs = {(item["question_id"], item["method"]): item for item in official["query_runs"]}
-    common_manifest = _common_manifest(protocol, commits, ollama_metadata, repository_records)
+    common_manifest = _common_manifest(
+        protocol,
+        commits,
+        ollama_metadata,
+        repository_records,
+        snapshot_manifest=snapshot_manifest,
+        execution_id=execution_id,
+        execution_copy_sha256=execution_copy_sha256,
+    )
     e1 = _build_e1(questions, raw_candidates, baseline_runs, common_manifest, clock)
     _assert_depth_10_control(e1["raw_records"], baseline_runs)
     baseline_reproduction_passed = True
     e2 = _build_e2(questions, raw_candidates, baseline_runs, common_manifest, clock)
     e3 = _build_e3(questions, raw_candidates, baseline_runs, error_analysis, common_manifest, clock)
     e4 = _build_e4(questions, e1["raw_records"], annotations, common_manifest)
+    e5 = _build_e5((e1, e2, e3), e4, common_manifest)
     canonical_snapshot_unchanged = (
         baseline_snapshot.directory_hash(snapshot_root) == canonical_snapshot_before
     )
@@ -157,18 +177,13 @@ def run_experiments(
         snapshot_integrity_passed=canonical_snapshot_unchanged,
         exact_180_record_reproduction_passed=baseline_reproduction_passed,
     )
-    artifacts = {
-        "E1": output_directory / "retrieval_experiment_e1_candidate_depth_v1.json",
-        "E2": output_directory / "retrieval_experiment_e2_hybrid_fusion_v1.json",
-        "E3": output_directory / "retrieval_experiment_e3_multi_symbol_v1.json",
-        "E4": output_directory / "retrieval_experiment_e4_semantic_v1.json",
-    }
-    for experiment_id, payload in (("E1", e1), ("E2", e2), ("E3", e3), ("E4", e4)):
+    artifacts = {key: output_directory / ARTIFACT_NAMES[key] for key in ("E1", "E2", "E3", "E4", "E5")}
+    for experiment_id, payload in (("E1", e1), ("E2", e2), ("E3", e3), ("E4", e4), ("E5", e5)):
         baseline._validate_portable_payload(payload, (snapshot_root, work_directory))
         baseline._write_json(artifacts[experiment_id], payload)
 
-    summary = _build_summary(protocol, artifacts, (e1, e2, e3, e4), common_manifest)
-    summary_path = output_directory / "retrieval_improvement_experiments_summary_v1.json"
+    summary = _build_summary(protocol, artifacts, (e1, e2, e3, e4, e5), common_manifest)
+    summary_path = output_directory / ARTIFACT_NAMES["summary"]
     baseline._validate_portable_payload(summary, (snapshot_root, work_directory))
     baseline._write_json(summary_path, summary)
     return {"artifacts": {**{key: str(value) for key, value in artifacts.items()}, "summary": str(summary_path)}, "decision": summary["decision"]}
@@ -420,6 +435,12 @@ def _build_e4(
         "complete": True,
         "manifest": {
             **manifest,
+            "source_experiment_id": "E4",
+            "baseline_comparison_population": "16 frozen Persian semantic disagreement cases and their paired English query substitutions",
+            "result_record_count": len(records),
+            "registered_experiment": next(
+                item for item in manifest["experiment_matrix"] if item["experiment_id"] == "E4"
+            ),
             "e4_selection_rule": "cause_label == cross_language_identifier_gap AND review_case_id ends with :semantic",
             "e4_selected_annotation_ids": [item["annotation_id"] for item in selected],
             "e4_selected_review_case_ids": [item["review_case_ids"][0] for item in selected],
@@ -448,12 +469,19 @@ def _experiment_payload(
     if len(records) != expected_records:
         raise ImprovementExperimentError(f"{experiment_id} expected {expected_records} records, found {len(records)}")
     comparisons = [_comparison(item, baseline_runs[(item["question_id"], item["method"])]) for item in records]
+    registered_experiment = next(item for item in manifest["experiment_matrix"] if item["experiment_id"] == experiment_id)
     return {
         "schema_version": 1,
         "experiment_id": experiment_id,
         "name": name,
         "complete": True,
-        "manifest": manifest,
+        "manifest": {
+            **manifest,
+            "source_experiment_id": experiment_id,
+            "baseline_comparison_population": f"{len(records)} records matched by question_id and method",
+            "result_record_count": len(records),
+            "registered_experiment": registered_experiment,
+        },
         "raw_records": records,
         "comparisons_to_official_baseline": comparisons,
         "aggregates": _aggregates_by_configuration(records),
@@ -575,8 +603,14 @@ def _bilingual_records(
                 labels.append("resolved_disagreement")
             if before not in {"english_only", "persian_only"} and after in {"english_only", "persian_only"}:
                 labels.append("new_disagreement")
-            if "regression" in {en_transition, fa_transition}:
-                labels.append("regression_in_either_language")
+            if en_transition == fa_transition == "regression":
+                labels.append("both_regression")
+            elif en_transition == "regression":
+                labels.append("en_regression")
+            elif fa_transition == "regression":
+                labels.append("fa_regression")
+            if before == after and en_transition.startswith("unchanged") and fa_transition.startswith("unchanged"):
+                labels.append("unchanged_agreement")
             thresholds[f"top_{threshold}"] = {
                 "english_transition": en_transition,
                 "persian_transition": fa_transition,
@@ -595,6 +629,42 @@ def _bilingual_records(
             }
         )
     return output
+
+
+def _build_e5(
+    experiments: Sequence[dict[str, Any]],
+    e4: dict[str, Any],
+    manifest: dict[str, Any],
+) -> dict[str, Any]:
+    pair_records = [
+        {"source_experiment_id": experiment["experiment_id"], **item}
+        for experiment in experiments
+        for item in experiment["bilingual_pair_records"]
+    ]
+    labels = Counter(
+        label
+        for item in pair_records
+        for threshold in item["thresholds"].values()
+        for label in threshold["diagnostic_labels"]
+    )
+    registered_experiment = next(item for item in manifest["experiment_matrix"] if item["experiment_id"] == "E5")
+    return {
+        "schema_version": 1,
+        "experiment_id": "E5",
+        "name": "bilingual_stability_analysis",
+        "complete": True,
+        "manifest": {
+            **manifest,
+            "source_experiment_id": "E1-E4",
+            "baseline_comparison_population": "applicable bilingual pair-method records from E1-E3; E4 retained as a separate paired-query probe",
+            "result_record_count": len(pair_records),
+            "registered_experiment": registered_experiment,
+        },
+        "pair_records": pair_records,
+        "e4_probe_pair_records": e4["pair_records"],
+        "diagnostic_counts_overlapping": dict(sorted(labels.items())),
+        "classification_note": "Labels are threshold-specific and may overlap across thresholds; pair-level records are authoritative.",
+    }
 
 
 def _aggregates_by_configuration(records: Sequence[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
@@ -690,12 +760,19 @@ def _build_summary(
         "complete": True,
         "manifest": {
             **manifest,
+            "source_experiment_id": "E1-E5",
+            "baseline_comparison_population": "five pre-registered candidate assessments plus the diagnostic E4 and pair-level E5 analyses",
+            "result_record_count": len(candidates),
             "experiment_artifact_sha256": {
                 key: portable_sha256(path) for key, path in sorted(artifact_paths.items())
             },
         },
         "candidate_assessments": candidates,
         "diagnostic_e4": experiments[3]["aggregates"],
+        "bilingual_e5": {
+            "pair_records": len(experiments[4]["pair_records"]),
+            "diagnostic_counts_overlapping": experiments[4]["diagnostic_counts_overlapping"],
+        },
         "decision": decision,
     }
 
@@ -708,8 +785,14 @@ def _selection_result(
     candidate_global = _global_metrics(experiment["aggregates"][configuration_id])
     control_global = _global_metrics(experiment["aggregates"][control_id])
     metric_names = ("top_1", "top_3", "mrr_at_10", "evidence_recall_at_3", "evidence_recall_at_10")
-    quality = all(candidate_global[name] >= control_global[name] for name in metric_names) and any(
-        candidate_global[name] > control_global[name] for name in metric_names
+    quality = all(
+        candidate_global[method][name] >= control_global[method][name]
+        for method in control_global
+        for name in metric_names
+    ) and any(
+        candidate_global[method][name] > control_global[method][name]
+        for method in control_global
+        for name in metric_names
     )
     transitions = experiment["transition_aggregates"][configuration_id]
     transition_gate = all(values.get("repair", 0) >= values.get("regression", 0) for values in transitions.values())
@@ -762,13 +845,17 @@ def _selection_result(
     }
 
 
-def _global_metrics(aggregates: Sequence[dict[str, Any]]) -> dict[str, Any]:
-    return next(item for item in aggregates if item["slice"] == {"kind": "global_micro", "value": "all"})
-
-
-def _language_top3(aggregates: Sequence[dict[str, Any]]) -> dict[str, float]:
+def _global_metrics(aggregates: Sequence[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     return {
-        item["slice"]["value"]: item["top_3"]
+        item["method"]: item
+        for item in aggregates
+        if item["slice"] == {"kind": "global_micro", "value": "all"}
+    }
+
+
+def _language_top3(aggregates: Sequence[dict[str, Any]]) -> dict[tuple[str, str], float]:
+    return {
+        (item["method"], item["slice"]["value"]): item["top_3"]
         for item in aggregates
         if item["slice"]["kind"] == "language"
     }
@@ -803,7 +890,12 @@ def _common_manifest(
     commits: dict[str, str],
     ollama_metadata: dict[str, Any],
     repositories: Sequence[dict[str, Any]],
+    *,
+    snapshot_manifest: dict[str, Any] | None = None,
+    execution_id: str = "test-execution",
+    execution_copy_sha256: str = "test-copy",
 ) -> dict[str, Any]:
+    snapshot_manifest = snapshot_manifest or {}
     return {
         "protocol_version": PROTOCOL_VERSION,
         "protocol_sha256": PROTOCOL_SHA256,
@@ -816,7 +908,11 @@ def _common_manifest(
         "baseline_index_snapshot": {
             "snapshot_id": repositories[0]["snapshot_id"],
             "snapshot_sha256": repositories[0]["snapshot_sha256"],
+            "canonical_snapshot_identity": snapshot_manifest.get("aggregate_snapshot_sha256", repositories[0]["snapshot_sha256"]),
         },
+        "execution_id": execution_id,
+        "disposable_execution_copy_identity": execution_copy_sha256,
+        "chromadb_version": snapshot_manifest.get("chromadb_version"),
         "execution_index_provenance": {
             item["repository_name"]: {
                 "stage": "after_indexing_before_queries",
@@ -856,6 +952,12 @@ def _prepare_output_directory(
             "final artifacts require all protocol, frozen-input, provenance, snapshot, and exact-reproduction gates"
         )
     output_directory.mkdir(parents=True, exist_ok=True)
+
+
+def _assert_no_stale_artifacts(output_directory: Path) -> None:
+    stale = [name for name in ARTIFACT_NAMES.values() if (output_directory / name).exists()]
+    if stale:
+        raise ImprovementExperimentError(f"stale experiment artifacts exist: {', '.join(sorted(stale))}")
 
 
 def _candidate_pool_hash(

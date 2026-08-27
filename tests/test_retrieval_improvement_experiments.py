@@ -15,6 +15,7 @@ PROTOCOL = ROOT / "data/evaluation/retrieval_improvement_protocol_v1.json"
 BENCHMARK = ROOT / "data/evaluation/bilingual_benchmark_v1.json"
 BASELINE = ROOT / "data/evaluation/results/official_baseline_v1.json"
 ANNOTATIONS = ROOT / "data/evaluation/retrieval_error_annotations_v1.json"
+RESULTS = ROOT / "data/evaluation/results"
 
 
 def chunk(chunk_id: str, score: float, line: int) -> RetrievedChunk:
@@ -151,6 +152,7 @@ def test_future_manifest_contains_direct_configuration_and_index_provenance() ->
     assert manifest["baseline_index_snapshot"] == {
         "snapshot_id": "snapshot-v1",
         "snapshot_sha256": "snapshot-hash",
+        "canonical_snapshot_identity": "snapshot-hash",
     }
     assert manifest["execution_index_provenance"] == {
         "pallets/flask": {
@@ -179,6 +181,18 @@ def test_final_artifact_directory_requires_all_five_integrity_gates(tmp_path: Pa
     assert output.is_dir()
 
 
+def test_selection_helpers_preserve_method_and_language_dimensions() -> None:
+    aggregates = [
+        {"slice": {"kind": "global_micro", "value": "all"}, "method": "lexical", "top_3": 0.8},
+        {"slice": {"kind": "global_micro", "value": "all"}, "method": "semantic", "top_3": 0.7},
+        {"slice": {"kind": "language", "value": "en"}, "method": "lexical", "top_3": 0.9},
+        {"slice": {"kind": "language", "value": "en"}, "method": "semantic", "top_3": 0.6},
+    ]
+
+    assert set(experiments._global_metrics(aggregates)) == {"lexical", "semantic"}
+    assert experiments._language_top3(aggregates) == {("lexical", "en"): 0.9, ("semantic", "en"): 0.6}
+
+
 def test_e4_selection_is_exactly_the_16_frozen_annotation_cases() -> None:
     questions = load_questions(BENCHMARK)
     official = json.loads(BASELINE.read_text(encoding="utf-8"))
@@ -197,7 +211,13 @@ def test_e4_selection_is_exactly_the_16_frozen_annotation_cases() -> None:
         if item["method"] == "semantic"
     ]
 
-    artifact = experiments._build_e4(questions, controls, annotations, {"protocol_sha256": experiments.PROTOCOL_SHA256})
+    protocol = json.loads(PROTOCOL.read_text(encoding="utf-8"))
+    artifact = experiments._build_e4(
+        questions,
+        controls,
+        annotations,
+        {"protocol_sha256": experiments.PROTOCOL_SHA256, "experiment_matrix": protocol["experiment_matrix"]},
+    )
     expected_review_ids = sorted(
         item["review_case_ids"][0]
         for item in annotations["annotations"]
@@ -209,3 +229,58 @@ def test_e4_selection_is_exactly_the_16_frozen_annotation_cases() -> None:
     assert artifact["manifest"]["e4_selected_review_case_ids"] == expected_review_ids
     assert sorted(item["review_case_id"] for item in artifact["pair_records"]) == expected_review_ids
     assert artifact["causal_claim"].startswith("query-text substitution probe only")
+
+
+def test_final_experiment_artifacts_reconstruct_from_raw_records() -> None:
+    expected_counts = {"E1": 540, "E2": 180, "E3": 24}
+    artifacts = {
+        experiment_id: json.loads(
+            (RESULTS / experiments.ARTIFACT_NAMES[experiment_id]).read_text(encoding="utf-8")
+        )
+        for experiment_id in ("E1", "E2", "E3")
+    }
+    for experiment_id, artifact in artifacts.items():
+        assert len(artifact["raw_records"]) == expected_counts[experiment_id]
+        assert artifact["manifest"]["result_record_count"] == expected_counts[experiment_id]
+        assert artifact["aggregates"] == experiments._aggregates_by_configuration(artifact["raw_records"])
+        assert artifact["transition_aggregates"] == experiments._transition_aggregates(
+            artifact["comparisons_to_official_baseline"]
+        )
+        assert artifact["multi_symbol_aggregates"] == experiments._multi_symbol_aggregates(
+            artifact["raw_records"]
+        )
+
+
+def test_final_depth_10_control_exactly_reproduces_official_baseline() -> None:
+    artifact = json.loads((RESULTS / experiments.ARTIFACT_NAMES["E1"]).read_text(encoding="utf-8"))
+    official = json.loads(BASELINE.read_text(encoding="utf-8"))
+    baseline_runs = {(item["question_id"], item["method"]): item for item in official["query_runs"]}
+
+    experiments._assert_depth_10_control(artifact["raw_records"], baseline_runs)
+
+
+def test_final_e5_preserves_pair_records_and_reconstructs_labels() -> None:
+    artifact = json.loads((RESULTS / experiments.ARTIFACT_NAMES["E5"]).read_text(encoding="utf-8"))
+    labels = {}
+    for item in artifact["pair_records"]:
+        for threshold in item["thresholds"].values():
+            for label in threshold["diagnostic_labels"]:
+                labels[label] = labels.get(label, 0) + 1
+
+    assert len(artifact["pair_records"]) == artifact["manifest"]["result_record_count"] == 372
+    assert dict(sorted(labels.items())) == artifact["diagnostic_counts_overlapping"]
+    assert len(artifact["e4_probe_pair_records"]) == 16
+
+
+def test_final_summary_hashes_all_experiment_artifacts() -> None:
+    summary = json.loads((RESULTS / experiments.ARTIFACT_NAMES["summary"]).read_text(encoding="utf-8"))
+    expected = {
+        experiment_id: experiments.portable_sha256(RESULTS / experiments.ARTIFACT_NAMES[experiment_id])
+        for experiment_id in ("E1", "E2", "E3", "E4", "E5")
+    }
+
+    assert summary["manifest"]["experiment_artifact_sha256"] == expected
+    assert summary["manifest"]["source_experiment_id"] == "E1-E5"
+    assert summary["manifest"]["result_record_count"] == len(summary["candidate_assessments"]) == 5
+    assert summary["decision"]["outcome"] == "no_change"
+    assert summary["decision"]["production_configuration_changed"] is False
