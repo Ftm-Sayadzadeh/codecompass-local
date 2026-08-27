@@ -1,0 +1,1920 @@
+{
+  "schema_version": 1,
+  "analysis_version": "retrieval_error_analysis_v1",
+  "manifest": {
+    "retrieval_error_analysis_sha256": "cf6e374722d66763897c148a13f162eb7f145435cf61fa449eccedc1fb438b7f",
+    "manual_review_scope": "all mandatory review cases",
+    "retrieval_executed": false
+  },
+  "annotations": [
+    {
+      "annotation_id": "annotation-001",
+      "question_id": "flask_after_request_processing_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair flask_after_request_processing/hybrid ranks: en=1, fa=None",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\", \"top_10\": \"english_only\", \"top_3\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=0.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_after_request_processing:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-002",
+      "question_id": "flask_after_request_processing_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair flask_after_request_processing/lexical ranks: en=10, fa=None",
+        "Paired threshold outcomes: {\"top_10\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=0.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_after_request_processing:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-003",
+      "question_id": "flask_after_request_processing_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair flask_after_request_processing/semantic ranks: en=10, fa=None",
+        "Paired threshold outcomes: {\"top_10\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=0.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_after_request_processing:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-004",
+      "question_id": "flask_class_based_view_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair flask_class_based_view/lexical ranks: en=1, fa=2",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_class_based_view:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-005",
+      "question_id": "flask_ensure_sync_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair flask_ensure_sync/hybrid ranks: en=1, fa=None",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\", \"top_10\": \"english_only\", \"top_3\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=0.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_ensure_sync:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-006",
+      "question_id": "flask_ensure_sync_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair flask_ensure_sync/lexical ranks: en=3, fa=None",
+        "Paired threshold outcomes: {\"top_10\": \"english_only\", \"top_3\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=0.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_ensure_sync:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-007",
+      "question_id": "flask_ensure_sync_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair flask_ensure_sync/semantic ranks: en=1, fa=None",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\", \"top_10\": \"english_only\", \"top_3\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=0.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_ensure_sync:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-008",
+      "question_id": "flask_flash_store_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair flask_flash_store/semantic ranks: en=1, fa=8",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\", \"top_3\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_flash_store:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-009",
+      "question_id": "flask_jsonify_response_en",
+      "scope": "bilingual_pair",
+      "cause_label": "unknown",
+      "status": "uncertain",
+      "evidence": [
+        "Pair flask_jsonify_response/lexical ranks: en=2, fa=1",
+        "Paired threshold outcomes: {\"top_1\": \"persian_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The Persian query succeeds at the listed threshold(s) while its equivalent English query does not; the frozen run does not establish why.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_jsonify_response:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-010",
+      "question_id": "flask_jsonify_response_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair flask_jsonify_response/semantic ranks: en=1, fa=None",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\", \"top_10\": \"english_only\", \"top_3\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=0.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_jsonify_response:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-011",
+      "question_id": "flask_method_view_dispatch_en",
+      "scope": "bilingual_pair",
+      "cause_label": "unknown",
+      "status": "uncertain",
+      "evidence": [
+        "Pair flask_method_view_dispatch/hybrid ranks: en=5, fa=1",
+        "Paired threshold outcomes: {\"top_1\": \"persian_only\", \"top_3\": \"persian_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The Persian query succeeds at the listed threshold(s) while its equivalent English query does not; the frozen run does not establish why.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_method_view_dispatch:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-012",
+      "question_id": "flask_method_view_dispatch_en",
+      "scope": "bilingual_pair",
+      "cause_label": "unknown",
+      "status": "uncertain",
+      "evidence": [
+        "Pair flask_method_view_dispatch/lexical ranks: en=3, fa=1",
+        "Paired threshold outcomes: {\"top_1\": \"persian_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The Persian query succeeds at the listed threshold(s) while its equivalent English query does not; the frozen run does not establish why.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_method_view_dispatch:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-013",
+      "question_id": "flask_prefixed_env_config_en",
+      "scope": "bilingual_pair",
+      "cause_label": "unknown",
+      "status": "uncertain",
+      "evidence": [
+        "Pair flask_prefixed_env_config/lexical ranks: en=8, fa=1",
+        "Paired threshold outcomes: {\"top_1\": \"persian_only\", \"top_3\": \"persian_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The Persian query succeeds at the listed threshold(s) while its equivalent English query does not; the frozen run does not establish why.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_prefixed_env_config:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-014",
+      "question_id": "flask_prefixed_env_config_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair flask_prefixed_env_config/semantic ranks: en=6, fa=None",
+        "Paired threshold outcomes: {\"top_10\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=0.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_prefixed_env_config:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-015",
+      "question_id": "flask_render_template_en",
+      "scope": "bilingual_pair",
+      "cause_label": "unknown",
+      "status": "uncertain",
+      "evidence": [
+        "Pair flask_render_template/hybrid ranks: en=4, fa=3",
+        "Paired threshold outcomes: {\"top_3\": \"persian_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The Persian query succeeds at the listed threshold(s) while its equivalent English query does not; the frozen run does not establish why.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_render_template:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-016",
+      "question_id": "flask_render_template_en",
+      "scope": "bilingual_pair",
+      "cause_label": "unknown",
+      "status": "uncertain",
+      "evidence": [
+        "Pair flask_render_template/lexical ranks: en=None, fa=2",
+        "Paired threshold outcomes: {\"top_10\": \"persian_only\", \"top_3\": \"persian_only\"}",
+        "Evidence Recall@10: en=0.0, fa=1.0"
+      ],
+      "note": "The Persian query succeeds at the listed threshold(s) while its equivalent English query does not; the frozen run does not establish why.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_render_template:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-017",
+      "question_id": "flask_render_template_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair flask_render_template/semantic ranks: en=1, fa=2",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_render_template:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-018",
+      "question_id": "flask_request_lifecycle_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair flask_request_lifecycle/lexical ranks: en=2, fa=8",
+        "Paired threshold outcomes: {\"top_3\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_request_lifecycle:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-019",
+      "question_id": "flask_request_lifecycle_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair flask_request_lifecycle/semantic ranks: en=3, fa=5",
+        "Paired threshold outcomes: {\"top_3\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_request_lifecycle:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-020",
+      "question_id": "flask_safe_directory_send_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair flask_safe_directory_send/lexical ranks: en=1, fa=2",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_safe_directory_send:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-021",
+      "question_id": "flask_session_cookie_round_trip_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair flask_session_cookie_round_trip/hybrid ranks: en=2, fa=4",
+        "Paired threshold outcomes: {\"top_3\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=0.5"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_session_cookie_round_trip:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-022",
+      "question_id": "flask_session_cookie_round_trip_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair flask_session_cookie_round_trip/semantic ranks: en=1, fa=2",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=0.5"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_session_cookie_round_trip:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-023",
+      "question_id": "flask_stream_context_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair flask_stream_context/hybrid ranks: en=1, fa=4",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\", \"top_3\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_stream_context:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-024",
+      "question_id": "flask_stream_context_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair flask_stream_context/lexical ranks: en=1, fa=2",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_stream_context:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-025",
+      "question_id": "flask_stream_context_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair flask_stream_context/semantic ranks: en=2, fa=7",
+        "Paired threshold outcomes: {\"top_3\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:flask_stream_context:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-026",
+      "question_id": "itsdangerous_fallback_unsigners_en",
+      "scope": "bilingual_pair",
+      "cause_label": "unknown",
+      "status": "uncertain",
+      "evidence": [
+        "Pair itsdangerous_fallback_unsigners/hybrid ranks: en=5, fa=1",
+        "Paired threshold outcomes: {\"top_1\": \"persian_only\", \"top_3\": \"persian_only\"}",
+        "Evidence Recall@10: en=0.5, fa=0.5"
+      ],
+      "note": "The Persian query succeeds at the listed threshold(s) while its equivalent English query does not; the frozen run does not establish why.",
+      "review_case_ids": [
+        "bilingual_disagreement:itsdangerous_fallback_unsigners:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-027",
+      "question_id": "itsdangerous_fallback_unsigners_en",
+      "scope": "bilingual_pair",
+      "cause_label": "unknown",
+      "status": "uncertain",
+      "evidence": [
+        "Pair itsdangerous_fallback_unsigners/semantic ranks: en=None, fa=2",
+        "Paired threshold outcomes: {\"top_10\": \"persian_only\", \"top_3\": \"persian_only\"}",
+        "Evidence Recall@10: en=0.0, fa=0.5"
+      ],
+      "note": "The Persian query succeeds at the listed threshold(s) while its equivalent English query does not; the frozen run does not establish why.",
+      "review_case_ids": [
+        "bilingual_disagreement:itsdangerous_fallback_unsigners:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-028",
+      "question_id": "itsdangerous_make_signer_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair itsdangerous_make_signer/hybrid ranks: en=1, fa=2",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:itsdangerous_make_signer:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-029",
+      "question_id": "itsdangerous_make_signer_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair itsdangerous_make_signer/lexical ranks: en=3, fa=8",
+        "Paired threshold outcomes: {\"top_3\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:itsdangerous_make_signer:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-030",
+      "question_id": "itsdangerous_make_signer_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair itsdangerous_make_signer/semantic ranks: en=1, fa=2",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:itsdangerous_make_signer:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-031",
+      "question_id": "itsdangerous_serialize_and_sign_en",
+      "scope": "bilingual_pair",
+      "cause_label": "unknown",
+      "status": "uncertain",
+      "evidence": [
+        "Pair itsdangerous_serialize_and_sign/lexical ranks: en=2, fa=1",
+        "Paired threshold outcomes: {\"top_1\": \"persian_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The Persian query succeeds at the listed threshold(s) while its equivalent English query does not; the frozen run does not establish why.",
+      "review_case_ids": [
+        "bilingual_disagreement:itsdangerous_serialize_and_sign:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-032",
+      "question_id": "itsdangerous_serializer_payload_load_en",
+      "scope": "bilingual_pair",
+      "cause_label": "unknown",
+      "status": "uncertain",
+      "evidence": [
+        "Pair itsdangerous_serializer_payload_load/lexical ranks: en=4, fa=1",
+        "Paired threshold outcomes: {\"top_1\": \"persian_only\", \"top_3\": \"persian_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The Persian query succeeds at the listed threshold(s) while its equivalent English query does not; the frozen run does not establish why.",
+      "review_case_ids": [
+        "bilingual_disagreement:itsdangerous_serializer_payload_load:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-033",
+      "question_id": "itsdangerous_sign_value_en",
+      "scope": "bilingual_pair",
+      "cause_label": "unknown",
+      "status": "uncertain",
+      "evidence": [
+        "Pair itsdangerous_sign_value/lexical ranks: en=None, fa=9",
+        "Paired threshold outcomes: {\"top_10\": \"persian_only\"}",
+        "Evidence Recall@10: en=0.0, fa=1.0"
+      ],
+      "note": "The Persian query succeeds at the listed threshold(s) while its equivalent English query does not; the frozen run does not establish why.",
+      "review_case_ids": [
+        "bilingual_disagreement:itsdangerous_sign_value:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-034",
+      "question_id": "itsdangerous_sign_value_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair itsdangerous_sign_value/semantic ranks: en=10, fa=None",
+        "Paired threshold outcomes: {\"top_10\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=0.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:itsdangerous_sign_value:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-035",
+      "question_id": "itsdangerous_timed_signing_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair itsdangerous_timed_signing/hybrid ranks: en=1, fa=2",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\"}",
+        "Evidence Recall@10: en=0.5, fa=1.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:itsdangerous_timed_signing:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-036",
+      "question_id": "itsdangerous_timed_signing_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair itsdangerous_timed_signing/lexical ranks: en=1, fa=4",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\", \"top_3\": \"english_only\"}",
+        "Evidence Recall@10: en=0.5, fa=1.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:itsdangerous_timed_signing:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-037",
+      "question_id": "itsdangerous_unsign_value_en",
+      "scope": "bilingual_pair",
+      "cause_label": "unknown",
+      "status": "uncertain",
+      "evidence": [
+        "Pair itsdangerous_unsign_value/lexical ranks: en=2, fa=1",
+        "Paired threshold outcomes: {\"top_1\": \"persian_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The Persian query succeeds at the listed threshold(s) while its equivalent English query does not; the frozen run does not establish why.",
+      "review_case_ids": [
+        "bilingual_disagreement:itsdangerous_unsign_value:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-038",
+      "question_id": "itsdangerous_unsign_value_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair itsdangerous_unsign_value/semantic ranks: en=1, fa=2",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:itsdangerous_unsign_value:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-039",
+      "question_id": "itsdangerous_urlsafe_payload_decode_en",
+      "scope": "bilingual_pair",
+      "cause_label": "unknown",
+      "status": "uncertain",
+      "evidence": [
+        "Pair itsdangerous_urlsafe_payload_decode/hybrid ranks: en=5, fa=1",
+        "Paired threshold outcomes: {\"top_1\": \"persian_only\", \"top_3\": \"persian_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The Persian query succeeds at the listed threshold(s) while its equivalent English query does not; the frozen run does not establish why.",
+      "review_case_ids": [
+        "bilingual_disagreement:itsdangerous_urlsafe_payload_decode:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-040",
+      "question_id": "itsdangerous_urlsafe_payload_decode_en",
+      "scope": "bilingual_pair",
+      "cause_label": "unknown",
+      "status": "uncertain",
+      "evidence": [
+        "Pair itsdangerous_urlsafe_payload_decode/lexical ranks: en=None, fa=1",
+        "Paired threshold outcomes: {\"top_1\": \"persian_only\", \"top_10\": \"persian_only\", \"top_3\": \"persian_only\"}",
+        "Evidence Recall@10: en=0.0, fa=1.0"
+      ],
+      "note": "The Persian query succeeds at the listed threshold(s) while its equivalent English query does not; the frozen run does not establish why.",
+      "review_case_ids": [
+        "bilingual_disagreement:itsdangerous_urlsafe_payload_decode:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-041",
+      "question_id": "itsdangerous_verify_signature_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair itsdangerous_verify_signature/hybrid ranks: en=1, fa=None",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\", \"top_10\": \"english_only\", \"top_3\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=0.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:itsdangerous_verify_signature:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-042",
+      "question_id": "itsdangerous_verify_signature_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair itsdangerous_verify_signature/lexical ranks: en=6, fa=None",
+        "Paired threshold outcomes: {\"top_10\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=0.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:itsdangerous_verify_signature:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-043",
+      "question_id": "itsdangerous_verify_signature_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair itsdangerous_verify_signature/semantic ranks: en=1, fa=None",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\", \"top_10\": \"english_only\", \"top_3\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=0.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:itsdangerous_verify_signature:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-044",
+      "question_id": "markupsafe_escape_html_en",
+      "scope": "bilingual_pair",
+      "cause_label": "unknown",
+      "status": "uncertain",
+      "evidence": [
+        "Pair markupsafe_escape_html/lexical ranks: en=2, fa=1",
+        "Paired threshold outcomes: {\"top_1\": \"persian_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The Persian query succeeds at the listed threshold(s) while its equivalent English query does not; the frozen run does not establish why.",
+      "review_case_ids": [
+        "bilingual_disagreement:markupsafe_escape_html:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-045",
+      "question_id": "markupsafe_escape_html_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair markupsafe_escape_html/semantic ranks: en=3, fa=None",
+        "Paired threshold outcomes: {\"top_10\": \"english_only\", \"top_3\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=0.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:markupsafe_escape_html:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-046",
+      "question_id": "markupsafe_escape_workflow_en",
+      "scope": "bilingual_pair",
+      "cause_label": "unknown",
+      "status": "uncertain",
+      "evidence": [
+        "Pair markupsafe_escape_workflow/hybrid ranks: en=4, fa=1",
+        "Paired threshold outcomes: {\"top_1\": \"persian_only\", \"top_3\": \"persian_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The Persian query succeeds at the listed threshold(s) while its equivalent English query does not; the frozen run does not establish why.",
+      "review_case_ids": [
+        "bilingual_disagreement:markupsafe_escape_workflow:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-047",
+      "question_id": "markupsafe_escape_workflow_en",
+      "scope": "bilingual_pair",
+      "cause_label": "unknown",
+      "status": "uncertain",
+      "evidence": [
+        "Pair markupsafe_escape_workflow/lexical ranks: en=10, fa=1",
+        "Paired threshold outcomes: {\"top_1\": \"persian_only\", \"top_3\": \"persian_only\"}",
+        "Evidence Recall@10: en=0.5, fa=1.0"
+      ],
+      "note": "The Persian query succeeds at the listed threshold(s) while its equivalent English query does not; the frozen run does not establish why.",
+      "review_case_ids": [
+        "bilingual_disagreement:markupsafe_escape_workflow:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-048",
+      "question_id": "markupsafe_safe_markup_class_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair markupsafe_safe_markup_class/hybrid ranks: en=1, fa=3",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:markupsafe_safe_markup_class:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-049",
+      "question_id": "markupsafe_safe_markup_class_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair markupsafe_safe_markup_class/lexical ranks: en=1, fa=2",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:markupsafe_safe_markup_class:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-050",
+      "question_id": "markupsafe_safe_markup_class_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair markupsafe_safe_markup_class/semantic ranks: en=1, fa=None",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\", \"top_10\": \"english_only\", \"top_3\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=0.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:markupsafe_safe_markup_class:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-051",
+      "question_id": "markupsafe_unescape_entities_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair markupsafe_unescape_entities/hybrid ranks: en=1, fa=6",
+        "Paired threshold outcomes: {\"top_1\": \"english_only\", \"top_3\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=1.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:markupsafe_unescape_entities:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-052",
+      "question_id": "markupsafe_unescape_entities_fa",
+      "scope": "bilingual_pair",
+      "cause_label": "cross_language_identifier_gap",
+      "status": "supported_hypothesis",
+      "evidence": [
+        "Pair markupsafe_unescape_entities/semantic ranks: en=5, fa=None",
+        "Paired threshold outcomes: {\"top_10\": \"english_only\"}",
+        "Evidence Recall@10: en=1.0, fa=0.0"
+      ],
+      "note": "The English query succeeds at the listed threshold(s) while its equivalent Persian query does not; identifier-language distance is plausible but not causally established.",
+      "review_case_ids": [
+        "bilingual_disagreement:markupsafe_unescape_entities:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-053",
+      "question_id": "flask_method_view_dispatch_en",
+      "scope": "hybrid",
+      "cause_label": "hybrid_fusion_rank_displacement",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline ranks: {\"best_base\": 3, \"hybrid\": 5, \"lexical\": 3, \"semantic\": null}",
+        "Regression transitions: {\"top_3\": [\"hybrid_vs_lexical\", \"hybrid_vs_best_base\"]}"
+      ],
+      "note": "Hybrid crosses from success in a base method to failure at one or more stated thresholds; this does not identify a causal defect in RRF.",
+      "review_case_ids": [
+        "hybrid_regression:flask_method_view_dispatch_en:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-054",
+      "question_id": "flask_prefixed_env_config_fa",
+      "scope": "hybrid",
+      "cause_label": "hybrid_fusion_rank_displacement",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline ranks: {\"best_base\": 1, \"hybrid\": 2, \"lexical\": 1, \"semantic\": null}",
+        "Regression transitions: {\"top_1\": [\"hybrid_vs_lexical\", \"hybrid_vs_best_base\"]}"
+      ],
+      "note": "Hybrid crosses from success in a base method to failure at one or more stated thresholds; this does not identify a causal defect in RRF.",
+      "review_case_ids": [
+        "hybrid_regression:flask_prefixed_env_config_fa:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-055",
+      "question_id": "flask_render_template_en",
+      "scope": "hybrid",
+      "cause_label": "hybrid_fusion_rank_displacement",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline ranks: {\"best_base\": 1, \"hybrid\": 4, \"lexical\": null, \"semantic\": 1}",
+        "Regression transitions: {\"top_1\": [\"hybrid_vs_semantic\", \"hybrid_vs_best_base\"], \"top_3\": [\"hybrid_vs_semantic\", \"hybrid_vs_best_base\"]}"
+      ],
+      "note": "Hybrid crosses from success in a base method to failure at one or more stated thresholds; this does not identify a causal defect in RRF.",
+      "review_case_ids": [
+        "hybrid_regression:flask_render_template_en:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-056",
+      "question_id": "flask_session_cookie_round_trip_en",
+      "scope": "hybrid",
+      "cause_label": "hybrid_fusion_rank_displacement",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline ranks: {\"best_base\": 1, \"hybrid\": 2, \"lexical\": null, \"semantic\": 1}",
+        "Regression transitions: {\"top_1\": [\"hybrid_vs_semantic\", \"hybrid_vs_best_base\"]}"
+      ],
+      "note": "Hybrid crosses from success in a base method to failure at one or more stated thresholds; this does not identify a causal defect in RRF.",
+      "review_case_ids": [
+        "hybrid_regression:flask_session_cookie_round_trip_en:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-057",
+      "question_id": "flask_session_cookie_round_trip_fa",
+      "scope": "hybrid",
+      "cause_label": "hybrid_fusion_rank_displacement",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline ranks: {\"best_base\": 2, \"hybrid\": 4, \"lexical\": null, \"semantic\": 2}",
+        "Regression transitions: {\"top_3\": [\"hybrid_vs_semantic\", \"hybrid_vs_best_base\"]}"
+      ],
+      "note": "Hybrid crosses from success in a base method to failure at one or more stated thresholds; this does not identify a causal defect in RRF.",
+      "review_case_ids": [
+        "hybrid_regression:flask_session_cookie_round_trip_fa:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-058",
+      "question_id": "flask_stream_context_fa",
+      "scope": "hybrid",
+      "cause_label": "hybrid_fusion_rank_displacement",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline ranks: {\"best_base\": 2, \"hybrid\": 4, \"lexical\": 2, \"semantic\": 7}",
+        "Regression transitions: {\"top_3\": [\"hybrid_vs_lexical\", \"hybrid_vs_best_base\"]}"
+      ],
+      "note": "Hybrid crosses from success in a base method to failure at one or more stated thresholds; this does not identify a causal defect in RRF.",
+      "review_case_ids": [
+        "hybrid_regression:flask_stream_context_fa:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-059",
+      "question_id": "itsdangerous_fallback_unsigners_en",
+      "scope": "hybrid",
+      "cause_label": "hybrid_fusion_rank_displacement",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline ranks: {\"best_base\": 3, \"hybrid\": 5, \"lexical\": 3, \"semantic\": null}",
+        "Regression transitions: {\"top_3\": [\"hybrid_vs_lexical\", \"hybrid_vs_best_base\"]}"
+      ],
+      "note": "Hybrid crosses from success in a base method to failure at one or more stated thresholds; this does not identify a causal defect in RRF.",
+      "review_case_ids": [
+        "hybrid_regression:itsdangerous_fallback_unsigners_en:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-060",
+      "question_id": "itsdangerous_sign_value_en",
+      "scope": "hybrid",
+      "cause_label": "hybrid_fusion_rank_displacement",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline ranks: {\"best_base\": 10, \"hybrid\": null, \"lexical\": null, \"semantic\": 10}",
+        "Regression transitions: {\"top_10\": [\"hybrid_vs_semantic\", \"hybrid_vs_best_base\"]}"
+      ],
+      "note": "Hybrid crosses from success in a base method to failure at one or more stated thresholds; this does not identify a causal defect in RRF.",
+      "review_case_ids": [
+        "hybrid_regression:itsdangerous_sign_value_en:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-061",
+      "question_id": "itsdangerous_sign_value_fa",
+      "scope": "hybrid",
+      "cause_label": "hybrid_fusion_rank_displacement",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline ranks: {\"best_base\": 9, \"hybrid\": null, \"lexical\": 9, \"semantic\": null}",
+        "Regression transitions: {\"top_10\": [\"hybrid_vs_lexical\", \"hybrid_vs_best_base\"]}"
+      ],
+      "note": "Hybrid crosses from success in a base method to failure at one or more stated thresholds; this does not identify a causal defect in RRF.",
+      "review_case_ids": [
+        "hybrid_regression:itsdangerous_sign_value_fa:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-062",
+      "question_id": "itsdangerous_urlsafe_payload_decode_en",
+      "scope": "hybrid",
+      "cause_label": "hybrid_fusion_rank_displacement",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline ranks: {\"best_base\": 1, \"hybrid\": 5, \"lexical\": null, \"semantic\": 1}",
+        "Regression transitions: {\"top_1\": [\"hybrid_vs_semantic\", \"hybrid_vs_best_base\"], \"top_3\": [\"hybrid_vs_semantic\", \"hybrid_vs_best_base\"]}"
+      ],
+      "note": "Hybrid crosses from success in a base method to failure at one or more stated thresholds; this does not identify a causal defect in RRF.",
+      "review_case_ids": [
+        "hybrid_regression:itsdangerous_urlsafe_payload_decode_en:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-063",
+      "question_id": "markupsafe_escape_html_fa",
+      "scope": "hybrid",
+      "cause_label": "hybrid_fusion_rank_displacement",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline ranks: {\"best_base\": 1, \"hybrid\": 2, \"lexical\": 1, \"semantic\": null}",
+        "Regression transitions: {\"top_1\": [\"hybrid_vs_lexical\", \"hybrid_vs_best_base\"]}"
+      ],
+      "note": "Hybrid crosses from success in a base method to failure at one or more stated thresholds; this does not identify a causal defect in RRF.",
+      "review_case_ids": [
+        "hybrid_regression:markupsafe_escape_html_fa:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-064",
+      "question_id": "markupsafe_escape_workflow_en",
+      "scope": "hybrid",
+      "cause_label": "hybrid_fusion_rank_displacement",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline ranks: {\"best_base\": 1, \"hybrid\": 4, \"lexical\": 10, \"semantic\": 1}",
+        "Regression transitions: {\"top_1\": [\"hybrid_vs_semantic\", \"hybrid_vs_best_base\"], \"top_3\": [\"hybrid_vs_semantic\", \"hybrid_vs_best_base\"]}"
+      ],
+      "note": "Hybrid crosses from success in a base method to failure at one or more stated thresholds; this does not identify a causal defect in RRF.",
+      "review_case_ids": [
+        "hybrid_regression:markupsafe_escape_workflow_en:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-065",
+      "question_id": "markupsafe_unescape_entities_fa",
+      "scope": "hybrid",
+      "cause_label": "hybrid_fusion_rank_displacement",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline ranks: {\"best_base\": 3, \"hybrid\": 6, \"lexical\": 3, \"semantic\": null}",
+        "Regression transitions: {\"top_3\": [\"hybrid_vs_lexical\", \"hybrid_vs_best_base\"]}"
+      ],
+      "note": "Hybrid crosses from success in a base method to failure at one or more stated thresholds; this does not identify a causal defect in RRF.",
+      "review_case_ids": [
+        "hybrid_regression:markupsafe_unescape_entities_fa:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-066",
+      "question_id": "flask_route_registration_en",
+      "scope": "hybrid",
+      "cause_label": "partial_required_evidence",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline Evidence Recall@10=0.5",
+        "Missing expected citations: src/flask/sansio/app.py::App.add_url_rule:605-661"
+      ],
+      "note": "The saved top-10 results do not cover every required citation; rank metrics retain their first-relevant-evidence semantics.",
+      "review_case_ids": [
+        "incomplete_multi_symbol:flask_route_registration_en:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-067",
+      "question_id": "flask_route_registration_en",
+      "scope": "lexical",
+      "cause_label": "partial_required_evidence",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline Evidence Recall@10=0.5",
+        "Missing expected citations: src/flask/sansio/app.py::App.add_url_rule:605-661"
+      ],
+      "note": "The saved top-10 results do not cover every required citation; rank metrics retain their first-relevant-evidence semantics.",
+      "review_case_ids": [
+        "incomplete_multi_symbol:flask_route_registration_en:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-068",
+      "question_id": "flask_route_registration_en",
+      "scope": "semantic",
+      "cause_label": "partial_required_evidence",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline Evidence Recall@10=0.5",
+        "Missing expected citations: src/flask/sansio/app.py::App.add_url_rule:605-661"
+      ],
+      "note": "The saved top-10 results do not cover every required citation; rank metrics retain their first-relevant-evidence semantics.",
+      "review_case_ids": [
+        "incomplete_multi_symbol:flask_route_registration_en:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-069",
+      "question_id": "flask_route_registration_fa",
+      "scope": "hybrid",
+      "cause_label": "partial_required_evidence",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline Evidence Recall@10=0.5",
+        "Missing expected citations: src/flask/sansio/app.py::App.add_url_rule:605-661"
+      ],
+      "note": "The saved top-10 results do not cover every required citation; rank metrics retain their first-relevant-evidence semantics.",
+      "review_case_ids": [
+        "incomplete_multi_symbol:flask_route_registration_fa:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-070",
+      "question_id": "flask_route_registration_fa",
+      "scope": "lexical",
+      "cause_label": "partial_required_evidence",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline Evidence Recall@10=0.5",
+        "Missing expected citations: src/flask/sansio/app.py::App.add_url_rule:605-661"
+      ],
+      "note": "The saved top-10 results do not cover every required citation; rank metrics retain their first-relevant-evidence semantics.",
+      "review_case_ids": [
+        "incomplete_multi_symbol:flask_route_registration_fa:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-071",
+      "question_id": "flask_route_registration_fa",
+      "scope": "semantic",
+      "cause_label": "partial_required_evidence",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline Evidence Recall@10=0.5",
+        "Missing expected citations: src/flask/sansio/app.py::App.add_url_rule:605-661"
+      ],
+      "note": "The saved top-10 results do not cover every required citation; rank metrics retain their first-relevant-evidence semantics.",
+      "review_case_ids": [
+        "incomplete_multi_symbol:flask_route_registration_fa:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-072",
+      "question_id": "flask_session_cookie_round_trip_en",
+      "scope": "lexical",
+      "cause_label": "complete_required_evidence_miss",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline Evidence Recall@10=0.0",
+        "Missing expected citations: src/flask/sessions.py::SecureCookieSessionInterface.open_session:323-335, src/flask/sessions.py::SecureCookieSessionInterface.save_session:337-385"
+      ],
+      "note": "The saved top-10 results do not cover every required citation; rank metrics retain their first-relevant-evidence semantics.",
+      "review_case_ids": [
+        "incomplete_multi_symbol:flask_session_cookie_round_trip_en:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-073",
+      "question_id": "flask_session_cookie_round_trip_fa",
+      "scope": "hybrid",
+      "cause_label": "partial_required_evidence",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline Evidence Recall@10=0.5",
+        "Missing expected citations: src/flask/sessions.py::SecureCookieSessionInterface.open_session:323-335"
+      ],
+      "note": "The saved top-10 results do not cover every required citation; rank metrics retain their first-relevant-evidence semantics.",
+      "review_case_ids": [
+        "incomplete_multi_symbol:flask_session_cookie_round_trip_fa:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-074",
+      "question_id": "flask_session_cookie_round_trip_fa",
+      "scope": "lexical",
+      "cause_label": "complete_required_evidence_miss",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline Evidence Recall@10=0.0",
+        "Missing expected citations: src/flask/sessions.py::SecureCookieSessionInterface.open_session:323-335, src/flask/sessions.py::SecureCookieSessionInterface.save_session:337-385"
+      ],
+      "note": "The saved top-10 results do not cover every required citation; rank metrics retain their first-relevant-evidence semantics.",
+      "review_case_ids": [
+        "incomplete_multi_symbol:flask_session_cookie_round_trip_fa:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-075",
+      "question_id": "flask_session_cookie_round_trip_fa",
+      "scope": "semantic",
+      "cause_label": "partial_required_evidence",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline Evidence Recall@10=0.5",
+        "Missing expected citations: src/flask/sessions.py::SecureCookieSessionInterface.open_session:323-335"
+      ],
+      "note": "The saved top-10 results do not cover every required citation; rank metrics retain their first-relevant-evidence semantics.",
+      "review_case_ids": [
+        "incomplete_multi_symbol:flask_session_cookie_round_trip_fa:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-076",
+      "question_id": "itsdangerous_fallback_unsigners_en",
+      "scope": "hybrid",
+      "cause_label": "partial_required_evidence",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline Evidence Recall@10=0.5",
+        "Missing expected citations: src/itsdangerous/serializer.py::Serializer.loads:328-343"
+      ],
+      "note": "The saved top-10 results do not cover every required citation; rank metrics retain their first-relevant-evidence semantics.",
+      "review_case_ids": [
+        "incomplete_multi_symbol:itsdangerous_fallback_unsigners_en:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-077",
+      "question_id": "itsdangerous_fallback_unsigners_en",
+      "scope": "lexical",
+      "cause_label": "partial_required_evidence",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline Evidence Recall@10=0.5",
+        "Missing expected citations: src/itsdangerous/serializer.py::Serializer.loads:328-343"
+      ],
+      "note": "The saved top-10 results do not cover every required citation; rank metrics retain their first-relevant-evidence semantics.",
+      "review_case_ids": [
+        "incomplete_multi_symbol:itsdangerous_fallback_unsigners_en:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-078",
+      "question_id": "itsdangerous_fallback_unsigners_en",
+      "scope": "semantic",
+      "cause_label": "complete_required_evidence_miss",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline Evidence Recall@10=0.0",
+        "Missing expected citations: src/itsdangerous/serializer.py::Serializer.iter_unsigners:287-307, src/itsdangerous/serializer.py::Serializer.loads:328-343"
+      ],
+      "note": "The saved top-10 results do not cover every required citation; rank metrics retain their first-relevant-evidence semantics.",
+      "review_case_ids": [
+        "incomplete_multi_symbol:itsdangerous_fallback_unsigners_en:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-079",
+      "question_id": "itsdangerous_fallback_unsigners_fa",
+      "scope": "hybrid",
+      "cause_label": "partial_required_evidence",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline Evidence Recall@10=0.5",
+        "Missing expected citations: src/itsdangerous/serializer.py::Serializer.loads:328-343"
+      ],
+      "note": "The saved top-10 results do not cover every required citation; rank metrics retain their first-relevant-evidence semantics.",
+      "review_case_ids": [
+        "incomplete_multi_symbol:itsdangerous_fallback_unsigners_fa:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-080",
+      "question_id": "itsdangerous_fallback_unsigners_fa",
+      "scope": "lexical",
+      "cause_label": "partial_required_evidence",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline Evidence Recall@10=0.5",
+        "Missing expected citations: src/itsdangerous/serializer.py::Serializer.loads:328-343"
+      ],
+      "note": "The saved top-10 results do not cover every required citation; rank metrics retain their first-relevant-evidence semantics.",
+      "review_case_ids": [
+        "incomplete_multi_symbol:itsdangerous_fallback_unsigners_fa:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-081",
+      "question_id": "itsdangerous_fallback_unsigners_fa",
+      "scope": "semantic",
+      "cause_label": "partial_required_evidence",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline Evidence Recall@10=0.5",
+        "Missing expected citations: src/itsdangerous/serializer.py::Serializer.loads:328-343"
+      ],
+      "note": "The saved top-10 results do not cover every required citation; rank metrics retain their first-relevant-evidence semantics.",
+      "review_case_ids": [
+        "incomplete_multi_symbol:itsdangerous_fallback_unsigners_fa:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-082",
+      "question_id": "itsdangerous_timed_signing_en",
+      "scope": "hybrid",
+      "cause_label": "partial_required_evidence",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline Evidence Recall@10=0.5",
+        "Missing expected citations: src/itsdangerous/timed.py::TimestampSigner.sign:45-51"
+      ],
+      "note": "The saved top-10 results do not cover every required citation; rank metrics retain their first-relevant-evidence semantics.",
+      "review_case_ids": [
+        "incomplete_multi_symbol:itsdangerous_timed_signing_en:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-083",
+      "question_id": "itsdangerous_timed_signing_en",
+      "scope": "lexical",
+      "cause_label": "partial_required_evidence",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline Evidence Recall@10=0.5",
+        "Missing expected citations: src/itsdangerous/timed.py::TimestampSigner.sign:45-51"
+      ],
+      "note": "The saved top-10 results do not cover every required citation; rank metrics retain their first-relevant-evidence semantics.",
+      "review_case_ids": [
+        "incomplete_multi_symbol:itsdangerous_timed_signing_en:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-084",
+      "question_id": "itsdangerous_timed_signing_fa",
+      "scope": "semantic",
+      "cause_label": "partial_required_evidence",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline Evidence Recall@10=0.5",
+        "Missing expected citations: src/itsdangerous/timed.py::TimestampSigner.sign:45-51"
+      ],
+      "note": "The saved top-10 results do not cover every required citation; rank metrics retain their first-relevant-evidence semantics.",
+      "review_case_ids": [
+        "incomplete_multi_symbol:itsdangerous_timed_signing_fa:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-085",
+      "question_id": "markupsafe_escape_workflow_en",
+      "scope": "lexical",
+      "cause_label": "partial_required_evidence",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline Evidence Recall@10=0.5",
+        "Missing expected citations: src/markupsafe/__init__.py::Markup.join:170-171"
+      ],
+      "note": "The saved top-10 results do not cover every required citation; rank metrics retain their first-relevant-evidence semantics.",
+      "review_case_ids": [
+        "incomplete_multi_symbol:markupsafe_escape_workflow_en:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-086",
+      "question_id": "markupsafe_escape_workflow_fa",
+      "scope": "semantic",
+      "cause_label": "partial_required_evidence",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline Evidence Recall@10=0.5",
+        "Missing expected citations: src/markupsafe/__init__.py::Markup.__add__:136-140"
+      ],
+      "note": "The saved top-10 results do not cover every required citation; rank metrics retain their first-relevant-evidence semantics.",
+      "review_case_ids": [
+        "incomplete_multi_symbol:markupsafe_escape_workflow_fa:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-087",
+      "question_id": "flask_after_request_processing_fa",
+      "scope": "hybrid",
+      "cause_label": "multiple_related_symbols",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline flask_after_request_processing_fa/hybrid: first_relevant_rank=null",
+        "Expected: src/flask/app.py::Flask.process_response:1397-1421",
+        "Top predictions: rank 1 src/flask/ctx.py::AppContext.session:396-403, rank 2 src/flask/sansio/scaffold.py::Scaffold.after_request:495-513, rank 3 src/flask/wrappers.py::Request:18-219"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:flask_after_request_processing_fa:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-088",
+      "question_id": "flask_after_request_processing_fa",
+      "scope": "lexical",
+      "cause_label": "multiple_related_symbols",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline flask_after_request_processing_fa/lexical: first_relevant_rank=null",
+        "Expected: src/flask/app.py::Flask.process_response:1397-1421",
+        "Top predictions: rank 1 src/flask/ctx.py::AppContext.session:396-403, rank 2 src/flask/wrappers.py::Request:18-219, rank 3 src/flask/app.py::Flask.create_jinja_environment:470-508"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:flask_after_request_processing_fa:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-089",
+      "question_id": "flask_after_request_processing_fa",
+      "scope": "semantic",
+      "cause_label": "test_or_example_preferred",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline flask_after_request_processing_fa/semantic: first_relevant_rank=null",
+        "Expected: src/flask/app.py::Flask.process_response:1397-1421",
+        "Top predictions: rank 1 src/flask/sansio/scaffold.py::Scaffold.after_request:495-513, rank 2 tests/test_basic.py::test_request_processing.after_request:718-721, rank 3 tests/test_signals.py::test_request_signals.after_request_handler:66-69"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:flask_after_request_processing_fa:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-090",
+      "question_id": "flask_ensure_sync_fa",
+      "scope": "hybrid",
+      "cause_label": "broad_container_preferred",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline flask_ensure_sync_fa/hybrid: first_relevant_rank=null",
+        "Expected: src/flask/app.py::Flask.ensure_sync:1068-1080",
+        "Top predictions: rank 1 src/flask/app.py::Flask:110-1628, rank 2 tests/test_testing.py::test_nosubdomain.view:327-328, rank 3 src/flask/app.py::Flask.make_response:1227-1367"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:flask_ensure_sync_fa:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-091",
+      "question_id": "flask_ensure_sync_fa",
+      "scope": "lexical",
+      "cause_label": "broad_container_preferred",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline flask_ensure_sync_fa/lexical: first_relevant_rank=null",
+        "Expected: src/flask/app.py::Flask.ensure_sync:1068-1080",
+        "Top predictions: rank 1 src/flask/app.py::Flask:110-1628, rank 2 src/flask/app.py::Flask.make_response:1227-1367, rank 3 src/flask/app.py::Flask.__init__:311-364"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:flask_ensure_sync_fa:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-092",
+      "question_id": "flask_ensure_sync_fa",
+      "scope": "semantic",
+      "cause_label": "test_or_example_preferred",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline flask_ensure_sync_fa/semantic: first_relevant_rank=null",
+        "Expected: src/flask/app.py::Flask.ensure_sync:1068-1080",
+        "Top predictions: rank 1 tests/test_testing.py::test_nosubdomain.view:327-328, rank 2 tests/test_views.py::test_view_inheritance.Index:63-68, rank 3 tests/test_views.py::test_view_inheritance.BetterIndex:70-72"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:flask_ensure_sync_fa:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-093",
+      "question_id": "flask_jsonify_response_fa",
+      "scope": "semantic",
+      "cause_label": "test_or_example_preferred",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline flask_jsonify_response_fa/semantic: first_relevant_rank=null",
+        "Expected: src/flask/json/__init__.py::jsonify:138-170",
+        "Top predictions: rank 1 tests/test_json.py::test_json_custom_mimetypes:39-45, rank 2 tests/test_json.py::test_json_bad_requests:30-36, rank 3 tests/test_testing.py::test_environbuilder_json_dumps:109-113"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:flask_jsonify_response_fa:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-094",
+      "question_id": "flask_method_view_dispatch_en",
+      "scope": "semantic",
+      "cause_label": "expected_not_retrieved",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline flask_method_view_dispatch_en/semantic: first_relevant_rank=null",
+        "Expected: src/flask/views.py::MethodView.dispatch_request:182-191",
+        "Top predictions: rank 1 src/flask/sansio/app.py::App.create_global_jinja_loader:520-531, rank 2 src/flask/sansio/app.py::App.debug:563-567, rank 3 tests/type_check/typing_app_decorators.py::after_sync:10-11"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:flask_method_view_dispatch_en:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-095",
+      "question_id": "flask_method_view_dispatch_fa",
+      "scope": "semantic",
+      "cause_label": "test_or_example_preferred",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline flask_method_view_dispatch_fa/semantic: first_relevant_rank=null",
+        "Expected: src/flask/views.py::MethodView.dispatch_request:182-191",
+        "Top predictions: rank 1 tests/test_user_error_handler.py::TestGenericHandlers.test_handle_class_or_code.handle_500:260-262, rank 2 src/flask/sansio/app.py::App.create_global_jinja_loader:520-531, rank 3 src/flask/app.py::Flask.handle_exception:900-951"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:flask_method_view_dispatch_fa:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-096",
+      "question_id": "flask_prefixed_env_config_fa",
+      "scope": "semantic",
+      "cause_label": "expected_not_retrieved",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline flask_prefixed_env_config_fa/semantic: first_relevant_rank=null",
+        "Expected: src/flask/config.py::Config.from_prefixed_env:126-185",
+        "Top predictions: rank 1 src/flask/json/tag.py::PassDict:119-130, rank 2 src/flask/json/tag.py::PassList:147-156, rank 3 src/flask/json/tag.py::TagDateTime:205-216"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:flask_prefixed_env_config_fa:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-097",
+      "question_id": "flask_render_template_en",
+      "scope": "lexical",
+      "cause_label": "neighboring_symbol_preferred",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline flask_render_template_en/lexical: first_relevant_rank=null",
+        "Expected: src/flask/templating.py::render_template:136-148",
+        "Top predictions: rank 1 src/flask/templating.py::stream_template:181-197, rank 2 src/flask/templating.py::stream_template_string:200-212, rank 3 src/flask/app.py::Flask.url_for:1105-1225"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:flask_render_template_en:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-098",
+      "question_id": "flask_session_cookie_round_trip_en",
+      "scope": "lexical",
+      "cause_label": "broad_container_preferred",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline flask_session_cookie_round_trip_en/lexical: first_relevant_rank=null",
+        "Expected: src/flask/sessions.py::SecureCookieSessionInterface.open_session:323-335, src/flask/sessions.py::SecureCookieSessionInterface.save_session:337-385",
+        "Top predictions: rank 1 src/flask/sansio/app.py::App:59-1013, rank 2 src/flask/ctx.py::copy_current_request_context:154-206, rank 3 src/flask/helpers.py::stream_with_context:63-148"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:flask_session_cookie_round_trip_en:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-099",
+      "question_id": "flask_session_cookie_round_trip_fa",
+      "scope": "lexical",
+      "cause_label": "multiple_related_symbols",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline flask_session_cookie_round_trip_fa/lexical: first_relevant_rank=null",
+        "Expected: src/flask/sessions.py::SecureCookieSessionInterface.open_session:323-335, src/flask/sessions.py::SecureCookieSessionInterface.save_session:337-385",
+        "Top predictions: rank 1 src/flask/ctx.py::copy_current_request_context:154-206, rank 2 src/flask/helpers.py::stream_with_context:63-148, rank 3 src/flask/sansio/app.py::App:59-1013"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:flask_session_cookie_round_trip_fa:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-100",
+      "question_id": "flask_view_return_conversion_en",
+      "scope": "semantic",
+      "cause_label": "test_or_example_preferred",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline flask_view_return_conversion_en/semantic: first_relevant_rank=null",
+        "Expected: src/flask/app.py::Flask.make_response:1227-1367",
+        "Top predictions: rank 1 tests/test_views.py::test_view_inheritance.Index.post:67-68, rank 2 tests/test_views.py::test_view_inheritance.Index.get:64-65, rank 3 tests/test_views.py::test_method_based_view.Index.post:33-34"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:flask_view_return_conversion_en:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-101",
+      "question_id": "flask_view_return_conversion_fa",
+      "scope": "semantic",
+      "cause_label": "test_or_example_preferred",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline flask_view_return_conversion_fa/semantic: first_relevant_rank=null",
+        "Expected: src/flask/app.py::Flask.make_response:1227-1367",
+        "Top predictions: rank 1 tests/type_check/typing_route.py::tuple_status:71-72, rank 2 tests/type_check/typing_route.py::hello_generator:51-56, rank 3 tests/type_check/typing_route.py::hello_generator.show:52-54"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:flask_view_return_conversion_fa:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-102",
+      "question_id": "itsdangerous_fallback_unsigners_en",
+      "scope": "semantic",
+      "cause_label": "test_or_example_preferred",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline itsdangerous_fallback_unsigners_en/semantic: first_relevant_rank=null",
+        "Expected: src/itsdangerous/serializer.py::Serializer.iter_unsigners:287-307, src/itsdangerous/serializer.py::Serializer.loads:328-343",
+        "Top predictions: rank 1 src/itsdangerous/signer.py::Signer.validate:258-266, rank 2 tests/test_itsdangerous/test_signer.py::TestSigner.test_broken_signature:42-51, rank 3 tests/test_itsdangerous/test_signer.py::TestSigner.signer:24-25"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:itsdangerous_fallback_unsigners_en:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-103",
+      "question_id": "itsdangerous_sign_value_en",
+      "scope": "hybrid",
+      "cause_label": "neighboring_symbol_preferred",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline itsdangerous_sign_value_en/hybrid: first_relevant_rank=null",
+        "Expected: src/itsdangerous/signer.py::Signer.sign:222-225",
+        "Top predictions: rank 1 src/itsdangerous/signer.py::HMACAlgorithm:48-64, rank 2 src/itsdangerous/signer.py::Signer.get_signature:215-220, rank 3 src/itsdangerous/signer.py::Signer:76-266"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:itsdangerous_sign_value_en:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-104",
+      "question_id": "itsdangerous_sign_value_en",
+      "scope": "lexical",
+      "cause_label": "broad_container_preferred",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline itsdangerous_sign_value_en/lexical: first_relevant_rank=null",
+        "Expected: src/itsdangerous/signer.py::Signer.sign:222-225",
+        "Top predictions: rank 1 src/itsdangerous/signer.py::Signer:76-266, rank 2 src/itsdangerous/timed.py::TimestampSigner.unsign:72-158, rank 3 src/itsdangerous/signer.py::Signer.__init__:129-173"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:itsdangerous_sign_value_en:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-105",
+      "question_id": "itsdangerous_sign_value_fa",
+      "scope": "hybrid",
+      "cause_label": "neighboring_symbol_preferred",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline itsdangerous_sign_value_fa/hybrid: first_relevant_rank=null",
+        "Expected: src/itsdangerous/signer.py::Signer.sign:222-225",
+        "Top predictions: rank 1 src/itsdangerous/signer.py::Signer:76-266, rank 2 src/itsdangerous/signer.py::Signer.verify_signature:227-242, rank 3 src/itsdangerous/signer.py::Signer.get_signature:215-220"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:itsdangerous_sign_value_fa:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-106",
+      "question_id": "itsdangerous_sign_value_fa",
+      "scope": "semantic",
+      "cause_label": "neighboring_symbol_preferred",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline itsdangerous_sign_value_fa/semantic: first_relevant_rank=null",
+        "Expected: src/itsdangerous/signer.py::Signer.sign:222-225",
+        "Top predictions: rank 1 src/itsdangerous/signer.py::Signer.verify_signature:227-242, rank 2 src/itsdangerous/signer.py::SigningAlgorithm.verify_signature:24-28, rank 3 src/itsdangerous/signer.py::Signer.get_signature:215-220"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:itsdangerous_sign_value_fa:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-107",
+      "question_id": "itsdangerous_urlsafe_payload_decode_en",
+      "scope": "lexical",
+      "cause_label": "neighboring_symbol_preferred",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline itsdangerous_urlsafe_payload_decode_en/lexical: first_relevant_rank=null",
+        "Expected: src/itsdangerous/url_safe.py::URLSafeSerializerMixin.load_payload:23-53",
+        "Top predictions: rank 1 src/itsdangerous/encoding.py::base64_decode:28-38, rank 2 src/itsdangerous/exc.py::BadPayload:92-106, rank 3 src/itsdangerous/serializer.py::Serializer.loads_unsafe:349-365"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:itsdangerous_urlsafe_payload_decode_en:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-108",
+      "question_id": "itsdangerous_verify_signature_fa",
+      "scope": "hybrid",
+      "cause_label": "neighboring_symbol_preferred",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline itsdangerous_verify_signature_fa/hybrid: first_relevant_rank=null",
+        "Expected: src/itsdangerous/signer.py::Signer.verify_signature:227-242",
+        "Top predictions: rank 1 src/itsdangerous/exc.py::BadTimeSignature.__init__:41-57, rank 2 tests/test_itsdangerous/test_serializer.py::test_digests:186-196, rank 3 src/itsdangerous/timed.py::TimestampSigner.validate:160-167"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:itsdangerous_verify_signature_fa:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-109",
+      "question_id": "itsdangerous_verify_signature_fa",
+      "scope": "lexical",
+      "cause_label": "lexical_identifier_mismatch",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline itsdangerous_verify_signature_fa/lexical: first_relevant_rank=null",
+        "Expected: src/itsdangerous/signer.py::Signer.verify_signature:227-242",
+        "Top predictions: no predictions returned"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:itsdangerous_verify_signature_fa:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-110",
+      "question_id": "itsdangerous_verify_signature_fa",
+      "scope": "semantic",
+      "cause_label": "neighboring_symbol_preferred",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline itsdangerous_verify_signature_fa/semantic: first_relevant_rank=null",
+        "Expected: src/itsdangerous/signer.py::Signer.verify_signature:227-242",
+        "Top predictions: rank 1 src/itsdangerous/exc.py::BadTimeSignature.__init__:41-57, rank 2 tests/test_itsdangerous/test_serializer.py::test_digests:186-196, rank 3 src/itsdangerous/timed.py::TimestampSigner.validate:160-167"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:itsdangerous_verify_signature_fa:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-111",
+      "question_id": "markupsafe_escape_html_fa",
+      "scope": "semantic",
+      "cause_label": "test_or_example_preferred",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline markupsafe_escape_html_fa/semantic: first_relevant_rank=null",
+        "Expected: src/markupsafe/__init__.py::escape:24-45",
+        "Top predictions: rank 1 tests/test_markupsafe.py::test_formatting_with_objects:169-174, rank 2 tests/test_markupsafe.py::test_formatting_with_objects.Stringable.__str__:171-172, rank 3 tests/test_exception_custom_html.py::CustomHtmlThatRaises.__html__:9-10"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:markupsafe_escape_html_fa:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-112",
+      "question_id": "markupsafe_safe_markup_class_fa",
+      "scope": "semantic",
+      "cause_label": "neighboring_symbol_preferred",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline markupsafe_safe_markup_class_fa/semantic: first_relevant_rank=null",
+        "Expected: src/markupsafe/__init__.py::Markup:84-329",
+        "Top predictions: rank 1 src/markupsafe/__init__.py::Markup.capitalize:245-246, rank 2 tests/test_markupsafe.py::test_formatting_with_objects:169-174, rank 3 tests/test_markupsafe.py::test_mul:190-191"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:markupsafe_safe_markup_class_fa:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-113",
+      "question_id": "markupsafe_unescape_entities_fa",
+      "scope": "semantic",
+      "cause_label": "test_or_example_preferred",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline markupsafe_unescape_entities_fa/semantic: first_relevant_rank=null",
+        "Expected: src/markupsafe/__init__.py::Markup.unescape:188-197",
+        "Top predictions: rank 1 tests/test_markupsafe.py::test_mul:190-191, rank 2 tests/test_markupsafe.py::test_formatting_with_objects:169-174, rank 3 src/markupsafe/__init__.py::Markup.__html__:133-134"
+      ],
+      "note": "The expected citation is absent from the saved top-10 predictions; the cause label describes the observed result pattern.",
+      "review_case_ids": [
+        "miss_at_10:markupsafe_unescape_entities_fa:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-114",
+      "question_id": "flask_after_request_processing_en",
+      "scope": "lexical",
+      "cause_label": "relevant_evidence_ranked_late",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline flask_after_request_processing_en/lexical: first_relevant_rank=10",
+        "First relevant citation: src/flask/app.py::Flask.process_response:1397-1421"
+      ],
+      "note": "Relevant evidence is present in the saved top-10 results but appears after rank 3.",
+      "review_case_ids": [
+        "representative_late_relevant:flask_after_request_processing_en:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-115",
+      "question_id": "flask_after_request_processing_en",
+      "scope": "semantic",
+      "cause_label": "relevant_evidence_ranked_late",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline flask_after_request_processing_en/semantic: first_relevant_rank=10",
+        "First relevant citation: src/flask/app.py::Flask.process_response:1397-1421"
+      ],
+      "note": "Relevant evidence is present in the saved top-10 results but appears after rank 3.",
+      "review_case_ids": [
+        "representative_late_relevant:flask_after_request_processing_en:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-116",
+      "question_id": "flask_method_view_dispatch_en",
+      "scope": "hybrid",
+      "cause_label": "relevant_evidence_ranked_late",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline flask_method_view_dispatch_en/hybrid: first_relevant_rank=5",
+        "First relevant citation: src/flask/views.py::MethodView.dispatch_request:182-191"
+      ],
+      "note": "Relevant evidence is present in the saved top-10 results but appears after rank 3.",
+      "review_case_ids": [
+        "representative_late_relevant:flask_method_view_dispatch_en:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-117",
+      "question_id": "itsdangerous_fallback_unsigners_en",
+      "scope": "hybrid",
+      "cause_label": "relevant_evidence_ranked_late",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline itsdangerous_fallback_unsigners_en/hybrid: first_relevant_rank=5",
+        "First relevant citation: src/itsdangerous/serializer.py::Serializer.iter_unsigners:287-307"
+      ],
+      "note": "Relevant evidence is present in the saved top-10 results but appears after rank 3.",
+      "review_case_ids": [
+        "representative_late_relevant:itsdangerous_fallback_unsigners_en:hybrid"
+      ]
+    },
+    {
+      "annotation_id": "annotation-118",
+      "question_id": "itsdangerous_sign_value_en",
+      "scope": "semantic",
+      "cause_label": "relevant_evidence_ranked_late",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline itsdangerous_sign_value_en/semantic: first_relevant_rank=10",
+        "First relevant citation: src/itsdangerous/signer.py::Signer.sign:222-225"
+      ],
+      "note": "Relevant evidence is present in the saved top-10 results but appears after rank 3.",
+      "review_case_ids": [
+        "representative_late_relevant:itsdangerous_sign_value_en:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-119",
+      "question_id": "itsdangerous_sign_value_fa",
+      "scope": "lexical",
+      "cause_label": "relevant_evidence_ranked_late",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline itsdangerous_sign_value_fa/lexical: first_relevant_rank=9",
+        "First relevant citation: src/itsdangerous/signer.py::Signer.sign:222-225"
+      ],
+      "note": "Relevant evidence is present in the saved top-10 results but appears after rank 3.",
+      "review_case_ids": [
+        "representative_late_relevant:itsdangerous_sign_value_fa:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-120",
+      "question_id": "markupsafe_escape_workflow_en",
+      "scope": "lexical",
+      "cause_label": "relevant_evidence_ranked_late",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline markupsafe_escape_workflow_en/lexical: first_relevant_rank=10",
+        "First relevant citation: src/markupsafe/__init__.py::Markup.__add__:136-140"
+      ],
+      "note": "Relevant evidence is present in the saved top-10 results but appears after rank 3.",
+      "review_case_ids": [
+        "representative_late_relevant:markupsafe_escape_workflow_en:lexical"
+      ]
+    },
+    {
+      "annotation_id": "annotation-121",
+      "question_id": "markupsafe_unescape_entities_en",
+      "scope": "semantic",
+      "cause_label": "relevant_evidence_ranked_late",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline markupsafe_unescape_entities_en/semantic: first_relevant_rank=5",
+        "First relevant citation: src/markupsafe/__init__.py::Markup.unescape:188-197"
+      ],
+      "note": "Relevant evidence is present in the saved top-10 results but appears after rank 3.",
+      "review_case_ids": [
+        "representative_late_relevant:markupsafe_unescape_entities_en:semantic"
+      ]
+    },
+    {
+      "annotation_id": "annotation-122",
+      "question_id": "markupsafe_unescape_entities_fa",
+      "scope": "hybrid",
+      "cause_label": "relevant_evidence_ranked_late",
+      "status": "verified_observation",
+      "evidence": [
+        "Official Baseline markupsafe_unescape_entities_fa/hybrid: first_relevant_rank=6",
+        "First relevant citation: src/markupsafe/__init__.py::Markup.unescape:188-197"
+      ],
+      "note": "Relevant evidence is present in the saved top-10 results but appears after rank 3.",
+      "review_case_ids": [
+        "representative_late_relevant:markupsafe_unescape_entities_fa:hybrid"
+      ]
+    }
+  ]
+}
