@@ -7,6 +7,7 @@ import hashlib
 import json
 import math
 import platform
+import shutil
 import sys
 import time
 from collections import Counter, defaultdict
@@ -18,10 +19,8 @@ from typing import Any, Callable, Sequence
 
 from codecompass.embeddings import OllamaEmbeddingProvider
 from codecompass.evaluation import EvaluationQuestion, load_questions
-from codecompass.evaluation import baseline
+from codecompass.evaluation import baseline, baseline_snapshot
 from codecompass.evaluation.error_analysis import multi_symbol_coverage_outcome, portable_sha256
-from codecompass.indexing import IndexingService, VectorIndexingService
-from codecompass.indexing.repository import validate_pinned_repository
 from codecompass.retrieval import RetrievalQuery, RetrievalService
 from codecompass.retrieval.models import RetrievedChunk
 from codecompass.storage import SQLiteMetadataStore
@@ -44,14 +43,14 @@ class ImprovementExperimentError(ValueError):
 
 def run_experiments(
     protocol_path: Path,
-    repositories: dict[str, Path],
+    snapshot_root: Path,
     work_directory: Path,
     output_directory: Path,
     *,
     ollama_url: str = "http://127.0.0.1:11434",
     clock: Callable[[], float] = time.perf_counter,
 ) -> dict[str, Any]:
-    """Index once, execute the frozen matrix, and write independent artifacts."""
+    """Copy the frozen baseline index, execute the matrix, and write artifacts."""
     protocol = _load_and_validate_protocol(protocol_path)
     inputs = {
         name: protocol_path.parent.parent.parent / value["path"]
@@ -63,11 +62,26 @@ def run_experiments(
     annotations = _read_json(inputs["error_annotations"])
     questions = load_questions(benchmark_path)
     commits = baseline._benchmark_commits(questions)
-    baseline._validate_repository_mapping(repositories, commits)
     if commits != protocol["pinned_repository_commits"]:
         raise ImprovementExperimentError("pinned repository commits differ from the frozen protocol")
     if work_directory.exists() and any(work_directory.iterdir()):
         raise ImprovementExperimentError("work directory must be empty for a fresh experiment run")
+
+    snapshot_manifest = baseline_snapshot.verify_manifest(snapshot_root)
+    verification = _read_json(
+        protocol_path.parent.parent.parent / "data/evaluation/results/frozen_baseline_snapshot_verification_v1.json"
+    )
+    if (
+        not verification.get("complete")
+        or verification.get("snapshot_sha256") != snapshot_manifest["aggregate_snapshot_sha256"]
+        or not all(value is True or value == "verified" for value in verification.get("gates", {}).values())
+    ):
+        raise ImprovementExperimentError("frozen baseline snapshot has not passed all provenance gates")
+    snapshot_commits = {
+        item["repository_name"]: item["repository_commit"] for item in snapshot_manifest["repositories"]
+    }
+    if snapshot_commits != commits:
+        raise ImprovementExperimentError("snapshot repository commits differ from the frozen protocol")
 
     model = protocol["frozen_retrieval_configuration"]["embedding_model"]
     ollama_metadata = baseline._ollama_metadata(ollama_url, model)
@@ -75,42 +89,48 @@ def run_experiments(
         raise ImprovementExperimentError("embedding model digest differs from the frozen protocol")
 
     provider = OllamaEmbeddingProvider(model=model, base_url=ollama_url, timeout_seconds=180.0, truncate=False)
-    work_directory.mkdir(parents=True, exist_ok=True)
+    canonical_snapshot_before = baseline_snapshot.directory_hash(snapshot_root)
+    shutil.copytree(snapshot_root, work_directory, dirs_exist_ok=True)
+    baseline_snapshot.verify_manifest(work_directory)
     repository_records: list[dict[str, Any]] = []
     raw_candidates: dict[tuple[str, int, str], tuple[tuple[RetrievedChunk, ...], float]] = {}
 
-    for repository_name in sorted(commits):
-        repository_path = repositories[repository_name]
-        validate_pinned_repository(repository_path, commits[repository_name])
-        slug = repository_name.rsplit("/", 1)[-1]
+    snapshot_repositories = {item["repository_name"]: item for item in snapshot_manifest["repositories"]}
+    official_repositories = {item["repository_name"]: item for item in official["repositories"]}
+    for repository_name in sorted(snapshot_repositories):
+        snapshot_repository = snapshot_repositories[repository_name]
+        official_repository = official_repositories[repository_name]
+        slug = snapshot_repository["slug"]
         repository_work = work_directory / slug
         store = SQLiteMetadataStore(repository_work / "metadata.sqlite3")
-        vector_index = ChromaVectorIndex(repository_work / "chroma", f"experiments_{slug}")
-        structural = IndexingService(store).index_repository(repository_path, project_name=repository_name)
-        if not structural.succeeded or structural.project_id is None:
-            raise ImprovementExperimentError(f"structural indexing failed for {repository_name}: {structural.errors}")
-        vectors = VectorIndexingService(store, provider, vector_index, batch_size=32).index_project(structural.project_id)
-        if not vectors.succeeded or set(vectors.sqlite_chunk_ids) != set(vectors.vector_chunk_ids):
-            raise ImprovementExperimentError(f"vector indexing incomplete for {repository_name}: {vectors.errors}")
+        vector_index = ChromaVectorIndex(repository_work / "chroma", snapshot_repository["collection_name"])
+        vector_index.initialize()
+        chunks = store.list_chunks(1)
+        vector_ids = vector_index.list_ids(1)
+        chunk_ids = {item.chunk_id for item in chunks}
+        if chunk_ids != set(vector_ids) or len(chunks) != snapshot_repository["chunk_count"]:
+            raise ImprovementExperimentError(f"snapshot SQLite/Chroma identities differ for {repository_name}")
         repository_records.append(
             {
                 "repository_name": repository_name,
                 "repository_commit": commits[repository_name],
-                "canonical_chunks": vectors.stats.chunks_expected,
-                "vectors": vectors.stats.vectors_stored,
-                "compacted_embeddings": vectors.stats.truncated_embeddings,
-                "embedding_failures": vectors.stats.embedding_failures,
-                "vector_failures": vectors.stats.vector_failures,
-                "sqlite_chroma_ids_equal": set(vectors.sqlite_chunk_ids) == set(vectors.vector_chunk_ids),
+                "canonical_chunks": len(chunks),
+                "vectors": len(vector_ids),
+                "compacted_embeddings": official_repository["compacted_embeddings"],
+                "embedding_failures": 0,
+                "vector_failures": 0,
+                "sqlite_chroma_ids_equal": True,
                 "pre_query_index_directory_sha256": _directory_snapshot_sha256(repository_work / "chroma"),
-                "provenance_verified": False,
-                "complete": vectors.succeeded,
+                "snapshot_id": snapshot_manifest["snapshot_id"],
+                "snapshot_sha256": snapshot_manifest["aggregate_snapshot_sha256"],
+                "provenance_verified": snapshot_repository["provenance_status"] == "verified",
+                "complete": True,
             }
         )
         service = RetrievalService(store, provider, vector_index)
         for question in sorted((item for item in questions if item.repository_name == repository_name), key=lambda item: item.id):
             for depth in DEPTHS:
-                query = RetrievalQuery(question.question, structural.project_id, depth)
+                query = RetrievalQuery(question.question, 1, depth)
                 for method in ("lexical", "semantic"):
                     started = clock()
                     result = getattr(service, f"search_{method}")(query).results
@@ -125,12 +145,17 @@ def run_experiments(
     e2 = _build_e2(questions, raw_candidates, baseline_runs, common_manifest, clock)
     e3 = _build_e3(questions, raw_candidates, baseline_runs, error_analysis, common_manifest, clock)
     e4 = _build_e4(questions, e1["raw_records"], annotations, common_manifest)
+    canonical_snapshot_unchanged = (
+        baseline_snapshot.directory_hash(snapshot_root) == canonical_snapshot_before
+    )
 
     _prepare_output_directory(
         output_directory,
         protocol_integrity_passed=True,
-        baseline_reproduction_passed=baseline_reproduction_passed,
-        provenance_gate_passed=all(item["provenance_verified"] for item in repository_records),
+        frozen_input_integrity_passed=True,
+        baseline_index_provenance_verified=all(item["provenance_verified"] for item in repository_records),
+        snapshot_integrity_passed=canonical_snapshot_unchanged,
+        exact_180_record_reproduction_passed=baseline_reproduction_passed,
     )
     artifacts = {
         "E1": output_directory / "retrieval_experiment_e1_candidate_depth_v1.json",
@@ -139,12 +164,12 @@ def run_experiments(
         "E4": output_directory / "retrieval_experiment_e4_semantic_v1.json",
     }
     for experiment_id, payload in (("E1", e1), ("E2", e2), ("E3", e3), ("E4", e4)):
-        baseline._validate_portable_payload(payload, (*repositories.values(), work_directory))
+        baseline._validate_portable_payload(payload, (snapshot_root, work_directory))
         baseline._write_json(artifacts[experiment_id], payload)
 
     summary = _build_summary(protocol, artifacts, (e1, e2, e3, e4), common_manifest)
     summary_path = output_directory / "retrieval_improvement_experiments_summary_v1.json"
-    baseline._validate_portable_payload(summary, (*repositories.values(), work_directory))
+    baseline._validate_portable_payload(summary, (snapshot_root, work_directory))
     baseline._write_json(summary_path, summary)
     return {"artifacts": {**{key: str(value) for key, value in artifacts.items()}, "summary": str(summary_path)}, "decision": summary["decision"]}
 
@@ -788,6 +813,10 @@ def _common_manifest(
         "embedding_model_digest": ollama_metadata["model_digest"],
         "retrieval_configuration": protocol["frozen_retrieval_configuration"],
         "experiment_matrix": protocol["experiment_matrix"],
+        "baseline_index_snapshot": {
+            "snapshot_id": repositories[0]["snapshot_id"],
+            "snapshot_sha256": repositories[0]["snapshot_sha256"],
+        },
         "execution_index_provenance": {
             item["repository_name"]: {
                 "stage": "after_indexing_before_queries",
@@ -810,12 +839,21 @@ def _prepare_output_directory(
     output_directory: Path,
     *,
     protocol_integrity_passed: bool,
-    baseline_reproduction_passed: bool,
-    provenance_gate_passed: bool,
+    frozen_input_integrity_passed: bool,
+    baseline_index_provenance_verified: bool,
+    snapshot_integrity_passed: bool,
+    exact_180_record_reproduction_passed: bool,
 ) -> None:
-    if not protocol_integrity_passed or not baseline_reproduction_passed or not provenance_gate_passed:
+    gates = (
+        protocol_integrity_passed,
+        frozen_input_integrity_passed,
+        baseline_index_provenance_verified,
+        snapshot_integrity_passed,
+        exact_180_record_reproduction_passed,
+    )
+    if not all(gates):
         raise ImprovementExperimentError(
-            "final artifacts require protocol integrity, exact baseline reproduction, and verified index provenance"
+            "final artifacts require all protocol, frozen-input, provenance, snapshot, and exact-reproduction gates"
         )
     output_directory.mkdir(parents=True, exist_ok=True)
 
@@ -910,16 +948,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     """Run the frozen experiment matrix from the command line."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--protocol", required=True, type=Path)
-    parser.add_argument("--repository", action="append", required=True)
+    parser.add_argument("--snapshot-root", required=True, type=Path)
     parser.add_argument("--work-directory", required=True, type=Path)
     parser.add_argument("--output-directory", required=True, type=Path)
     parser.add_argument("--ollama-url", default="http://127.0.0.1:11434")
     args = parser.parse_args(argv)
     try:
-        repositories = baseline.parse_repository_mappings(args.repository)
         result = run_experiments(
             args.protocol,
-            repositories,
+            args.snapshot_root,
             args.work_directory,
             args.output_directory,
             ollama_url=args.ollama_url,

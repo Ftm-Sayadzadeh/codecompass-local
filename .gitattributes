@@ -1,0 +1,2 @@
+data/evaluation/index_snapshots/** -text
+data/evaluation/index_snapshots/**/manifest.json text eol=lf

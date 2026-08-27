@@ -129,6 +129,8 @@ def test_future_manifest_contains_direct_configuration_and_index_provenance() ->
             "repository_name": "pallets/flask",
             "repository_commit": "commit",
             "pre_query_index_directory_sha256": "index-hash",
+            "snapshot_id": "snapshot-v1",
+            "snapshot_sha256": "snapshot-hash",
             "provenance_verified": False,
         }
     ]
@@ -146,6 +148,10 @@ def test_future_manifest_contains_direct_configuration_and_index_provenance() ->
     assert manifest["embedding_model_digest"]
     assert manifest["retrieval_configuration"] == protocol["frozen_retrieval_configuration"]
     assert manifest["experiment_matrix"] == protocol["experiment_matrix"]
+    assert manifest["baseline_index_snapshot"] == {
+        "snapshot_id": "snapshot-v1",
+        "snapshot_sha256": "snapshot-hash",
+    }
     assert manifest["execution_index_provenance"] == {
         "pallets/flask": {
             "stage": "after_indexing_before_queries",
@@ -154,35 +160,22 @@ def test_future_manifest_contains_direct_configuration_and_index_provenance() ->
     }
 
 
-def test_final_artifact_directory_requires_all_integrity_gates(tmp_path: Path) -> None:
+def test_final_artifact_directory_requires_all_five_integrity_gates(tmp_path: Path) -> None:
     output = tmp_path / "results"
+    passing = {
+        "protocol_integrity_passed": True,
+        "frozen_input_integrity_passed": True,
+        "baseline_index_provenance_verified": True,
+        "snapshot_integrity_passed": True,
+        "exact_180_record_reproduction_passed": True,
+    }
+    for gate in passing:
+        failed = {**passing, gate: False}
+        with pytest.raises(experiments.ImprovementExperimentError, match="all protocol"):
+            experiments._prepare_output_directory(output, **failed)
+        assert not output.exists()
 
-    with pytest.raises(experiments.ImprovementExperimentError, match="exact baseline reproduction"):
-        experiments._prepare_output_directory(
-            output,
-            protocol_integrity_passed=True,
-            baseline_reproduction_passed=False,
-            provenance_gate_passed=True,
-        )
-
-    assert not output.exists()
-
-    with pytest.raises(experiments.ImprovementExperimentError, match="verified index provenance"):
-        experiments._prepare_output_directory(
-            output,
-            protocol_integrity_passed=True,
-            baseline_reproduction_passed=True,
-            provenance_gate_passed=False,
-        )
-
-    assert not output.exists()
-
-    experiments._prepare_output_directory(
-        output,
-        protocol_integrity_passed=True,
-        baseline_reproduction_passed=True,
-        provenance_gate_passed=True,
-    )
+    experiments._prepare_output_directory(output, **passing)
     assert output.is_dir()
 
 

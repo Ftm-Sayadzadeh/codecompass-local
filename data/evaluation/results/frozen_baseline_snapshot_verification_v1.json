@@ -1,0 +1,255 @@
+{
+  "schema_version": 1,
+  "verification_id": "official_baseline_index_snapshot_verification_v1",
+  "complete": true,
+  "snapshot_id": "official_baseline_index_v1",
+  "snapshot_sha256": "3f48f259ff94670c0b62726b94983d0c1709c02fcfd41e48a86cd07748bda599",
+  "identity_layers": {
+    "original_source_tree_sha256": "1dabf5fe9d240c62a5a53abb0ac16ca76e836c91a5d8626b7038d65d1db826e9",
+    "canonical_snapshot_state_sha256": "3f48f259ff94670c0b62726b94983d0c1709c02fcfd41e48a86cd07748bda599",
+    "manifest_sha256": "31ddf2c8c9de4649662ed9a4ada04c06d8473b733d23aa2ce29419301e3090b0",
+    "canonical_full_directory_sha256_before": "2fbfb2b37036e42d48afb1b9e6a2bf9e147d73ded4d8cca7f4907a6cfefdaf9b",
+    "canonical_full_directory_sha256_after": "2fbfb2b37036e42d48afb1b9e6a2bf9e147d73ded4d8cca7f4907a6cfefdaf9b"
+  },
+  "official_ordered_records_sha256": "09178585584d1a57685f295718bbe5d5cdac8759064db17cae5f4b7cb483c419",
+  "gates": {
+    "protocol_integrity": true,
+    "frozen_input_integrity": true,
+    "baseline_index_provenance": "verified",
+    "snapshot_integrity": true,
+    "source_snapshot_logical_equivalence": true,
+    "ann_state_byte_identity": true,
+    "root_path_non_ranking_state": true,
+    "exact_180_record_reproduction": true
+  },
+  "source_to_snapshot_comparison": {
+    "description": "provenance-verified, privacy-sanitized derivative of the Official Baseline retrieval state",
+    "original_source_tree_sha256": "1dabf5fe9d240c62a5a53abb0ac16ca76e836c91a5d8626b7038d65d1db826e9",
+    "repositories": [
+      {
+        "repository_name": "pallets/flask",
+        "provenance_status": "verified",
+        "chunk_count_equal": true,
+        "chunk_ids_exact": true,
+        "chunk_content_and_text_hashes_exact": true,
+        "embedding_text_exact": true,
+        "insertion_order_exact": true,
+        "retrieval_relevant_metadata_exact": true,
+        "stored_vectors_exact": true,
+        "collection_identity_preserved": true,
+        "collection_configuration_preserved": true,
+        "source_root_path_sha256": "daa4816b1045afa068038e5851aa696c778e7517efce83411856c047e9c8f23a",
+        "source_root_path_machine_local": true,
+        "snapshot_root_path": "repositories/pallets/flask",
+        "root_path_is_only_intentional_logical_difference": true,
+        "all_retrieval_state_equal": true
+      },
+      {
+        "repository_name": "pallets/itsdangerous",
+        "provenance_status": "verified",
+        "chunk_count_equal": true,
+        "chunk_ids_exact": true,
+        "chunk_content_and_text_hashes_exact": true,
+        "embedding_text_exact": true,
+        "insertion_order_exact": true,
+        "retrieval_relevant_metadata_exact": true,
+        "stored_vectors_exact": true,
+        "collection_identity_preserved": true,
+        "collection_configuration_preserved": true,
+        "source_root_path_sha256": "e8b266f732a2a05b81ccb99be4111fc212594741000730a747cf8b943ff8a1b1",
+        "source_root_path_machine_local": true,
+        "snapshot_root_path": "repositories/pallets/itsdangerous",
+        "root_path_is_only_intentional_logical_difference": true,
+        "all_retrieval_state_equal": true
+      },
+      {
+        "repository_name": "pallets/markupsafe",
+        "provenance_status": "verified",
+        "chunk_count_equal": true,
+        "chunk_ids_exact": true,
+        "chunk_content_and_text_hashes_exact": true,
+        "embedding_text_exact": true,
+        "insertion_order_exact": true,
+        "retrieval_relevant_metadata_exact": true,
+        "stored_vectors_exact": true,
+        "collection_identity_preserved": true,
+        "collection_configuration_preserved": true,
+        "source_root_path_sha256": "043e6bc509908fea72eeb766fab148c470ef74c054f9b7a91523d811b274102e",
+        "source_root_path_machine_local": true,
+        "snapshot_root_path": "repositories/pallets/markupsafe",
+        "root_path_is_only_intentional_logical_difference": true,
+        "all_retrieval_state_equal": true
+      }
+    ],
+    "ann_index_files": [
+      {
+        "repository_name": "pallets/flask",
+        "path": "flask/chroma/84b212b6-0498-4bc3-a1ac-e0b12fcfc03f/data_level0.bin",
+        "source_sha256": "9fd5bbeca22fc0b70437cdac400466bf8095c0017d31e8e194d63bca22e7d140",
+        "snapshot_sha256": "9fd5bbeca22fc0b70437cdac400466bf8095c0017d31e8e194d63bca22e7d140",
+        "byte_identical": true
+      },
+      {
+        "repository_name": "pallets/flask",
+        "path": "flask/chroma/84b212b6-0498-4bc3-a1ac-e0b12fcfc03f/header.bin",
+        "source_sha256": "6358bc704c8fdabf71397ebe00962f0d3966417ba87dfccbf840c3ca1eb0bc1b",
+        "snapshot_sha256": "6358bc704c8fdabf71397ebe00962f0d3966417ba87dfccbf840c3ca1eb0bc1b",
+        "byte_identical": true
+      },
+      {
+        "repository_name": "pallets/flask",
+        "path": "flask/chroma/84b212b6-0498-4bc3-a1ac-e0b12fcfc03f/index_metadata.pickle",
+        "source_sha256": "63ac25dae5b12e92eb910fb406c306e7f1eba92f7b396f7ff82d4c2d39524040",
+        "snapshot_sha256": "63ac25dae5b12e92eb910fb406c306e7f1eba92f7b396f7ff82d4c2d39524040",
+        "byte_identical": true
+      },
+      {
+        "repository_name": "pallets/flask",
+        "path": "flask/chroma/84b212b6-0498-4bc3-a1ac-e0b12fcfc03f/length.bin",
+        "source_sha256": "7e5611470d5a5cd9d3280bc6763bed8c25a6a7e15d78e9367e1ef0d681fc38d3",
+        "snapshot_sha256": "7e5611470d5a5cd9d3280bc6763bed8c25a6a7e15d78e9367e1ef0d681fc38d3",
+        "byte_identical": true
+      },
+      {
+        "repository_name": "pallets/flask",
+        "path": "flask/chroma/84b212b6-0498-4bc3-a1ac-e0b12fcfc03f/link_lists.bin",
+        "source_sha256": "aedea10c90585459d70121d3a9a3955c228788b401d640c1f0f7696b4d7d7706",
+        "snapshot_sha256": "aedea10c90585459d70121d3a9a3955c228788b401d640c1f0f7696b4d7d7706",
+        "byte_identical": true
+      },
+      {
+        "repository_name": "pallets/flask",
+        "path": "flask/chroma/chroma.sqlite3",
+        "source_sha256": "2c38ce2d8bf441d51b748622948558abe973935d4de8306b7ab89242854ea1cc",
+        "snapshot_sha256": "2c38ce2d8bf441d51b748622948558abe973935d4de8306b7ab89242854ea1cc",
+        "byte_identical": true
+      },
+      {
+        "repository_name": "pallets/itsdangerous",
+        "path": "itsdangerous/chroma/a6b9d5c4-784c-4b56-8a08-f90a8bdbe1a4/data_level0.bin",
+        "source_sha256": "46fd57abdffb0162c0288bdfcc6b25489a6bba72429e83d0377398017cfe7075",
+        "snapshot_sha256": "46fd57abdffb0162c0288bdfcc6b25489a6bba72429e83d0377398017cfe7075",
+        "byte_identical": true
+      },
+      {
+        "repository_name": "pallets/itsdangerous",
+        "path": "itsdangerous/chroma/a6b9d5c4-784c-4b56-8a08-f90a8bdbe1a4/header.bin",
+        "source_sha256": "03cb3ac86f3e5bcb15e88b9bf99f760ec6b33e31d64a699e129b49868db6d733",
+        "snapshot_sha256": "03cb3ac86f3e5bcb15e88b9bf99f760ec6b33e31d64a699e129b49868db6d733",
+        "byte_identical": true
+      },
+      {
+        "repository_name": "pallets/itsdangerous",
+        "path": "itsdangerous/chroma/a6b9d5c4-784c-4b56-8a08-f90a8bdbe1a4/length.bin",
+        "source_sha256": "f31d6ac55358150a34fc9304fb8b48986eb87e102a9d4e1b632959a3dd03a4d1",
+        "snapshot_sha256": "f31d6ac55358150a34fc9304fb8b48986eb87e102a9d4e1b632959a3dd03a4d1",
+        "byte_identical": true
+      },
+      {
+        "repository_name": "pallets/itsdangerous",
+        "path": "itsdangerous/chroma/a6b9d5c4-784c-4b56-8a08-f90a8bdbe1a4/link_lists.bin",
+        "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "snapshot_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      },
+      {
+        "repository_name": "pallets/itsdangerous",
+        "path": "itsdangerous/chroma/chroma.sqlite3",
+        "source_sha256": "11902feddd64595e58371be5594e655bce0f18d4c1d5ea75edf032a668c337ce",
+        "snapshot_sha256": "11902feddd64595e58371be5594e655bce0f18d4c1d5ea75edf032a668c337ce",
+        "byte_identical": true
+      },
+      {
+        "repository_name": "pallets/markupsafe",
+        "path": "markupsafe/chroma/chroma.sqlite3",
+        "source_sha256": "d42206d6b16246da7e75e8a29bf97fb587d12b5b5c453a48f91e2e93df4d4b99",
+        "snapshot_sha256": "d42206d6b16246da7e75e8a29bf97fb587d12b5b5c453a48f91e2e93df4d4b99",
+        "byte_identical": true
+      },
+      {
+        "repository_name": "pallets/markupsafe",
+        "path": "markupsafe/chroma/faa603d0-1dcf-4b4c-a954-be9ca0a6b053/data_level0.bin",
+        "source_sha256": "46fd57abdffb0162c0288bdfcc6b25489a6bba72429e83d0377398017cfe7075",
+        "snapshot_sha256": "46fd57abdffb0162c0288bdfcc6b25489a6bba72429e83d0377398017cfe7075",
+        "byte_identical": true
+      },
+      {
+        "repository_name": "pallets/markupsafe",
+        "path": "markupsafe/chroma/faa603d0-1dcf-4b4c-a954-be9ca0a6b053/header.bin",
+        "source_sha256": "03cb3ac86f3e5bcb15e88b9bf99f760ec6b33e31d64a699e129b49868db6d733",
+        "snapshot_sha256": "03cb3ac86f3e5bcb15e88b9bf99f760ec6b33e31d64a699e129b49868db6d733",
+        "byte_identical": true
+      },
+      {
+        "repository_name": "pallets/markupsafe",
+        "path": "markupsafe/chroma/faa603d0-1dcf-4b4c-a954-be9ca0a6b053/length.bin",
+        "source_sha256": "0f983137a68215c1c681e7ccc7e3197d7d30447a72098d1101656cca3cc2ab8f",
+        "snapshot_sha256": "0f983137a68215c1c681e7ccc7e3197d7d30447a72098d1101656cca3cc2ab8f",
+        "byte_identical": true
+      },
+      {
+        "repository_name": "pallets/markupsafe",
+        "path": "markupsafe/chroma/faa603d0-1dcf-4b4c-a954-be9ca0a6b053/link_lists.bin",
+        "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "snapshot_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "byte_identical": true
+      }
+    ],
+    "all_logical_retrieval_state_equal": true,
+    "all_chroma_files_byte_identical": true,
+    "intentional_differences": [
+      "projects.root_path changed from a machine-local source value to a portable snapshot identifier",
+      "metadata.sqlite3 physical bytes changed because UPDATE and VACUUM rewrote SQLite pages"
+    ]
+  },
+  "root_path_ranking_usage": {
+    "proven_non_ranking_state": true,
+    "project_existence_check_note": "lexical and semantic retrieval use get_project(project_id) only as an existence check; no ProjectRecord field enters candidate generation or ranking",
+    "lexical_candidate_generation": false,
+    "lexical_scoring": false,
+    "semantic_candidate_generation": false,
+    "semantic_scoring": false,
+    "fusion": false,
+    "ranking": false,
+    "official_baseline_retrieval_filtering": false,
+    "retrieval_filters": "SQLite chunks and Chroma metadata are filtered by project_id, not root_path",
+    "inspected_code": [
+      "src/codecompass/retrieval/lexical.py",
+      "src/codecompass/retrieval/semantic.py",
+      "src/codecompass/retrieval/hybrid.py"
+    ]
+  },
+  "copy_comparisons": [
+    {
+      "copy_id": 1,
+      "records": 180,
+      "exact_matches": 180,
+      "missing_or_mismatched": [],
+      "ordered_records_sha256": "09178585584d1a57685f295718bbe5d5cdac8759064db17cae5f4b7cb483c419"
+    },
+    {
+      "copy_id": 2,
+      "records": 180,
+      "exact_matches": 180,
+      "missing_or_mismatched": [],
+      "ordered_records_sha256": "09178585584d1a57685f295718bbe5d5cdac8759064db17cae5f4b7cb483c419"
+    }
+  ],
+  "independent_copies_identical": true,
+  "canonical_snapshot_before_sha256": "3f48f259ff94670c0b62726b94983d0c1709c02fcfd41e48a86cd07748bda599",
+  "canonical_snapshot_after_sha256": "3f48f259ff94670c0b62726b94983d0c1709c02fcfd41e48a86cd07748bda599",
+  "canonical_directory_before_sha256": "2fbfb2b37036e42d48afb1b9e6a2bf9e147d73ded4d8cca7f4907a6cfefdaf9b",
+  "canonical_directory_after_sha256": "2fbfb2b37036e42d48afb1b9e6a2bf9e147d73ded4d8cca7f4907a6cfefdaf9b",
+  "canonical_snapshot_mutated": false,
+  "disposable_copy_mutation": [
+    {
+      "copy_id": 1,
+      "mutated_during_query": true
+    },
+    {
+      "copy_id": 2,
+      "mutated_during_query": true
+    }
+  ],
+  "experiment_matrix_executed": false
+}
