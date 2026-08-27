@@ -1,0 +1,252 @@
+{
+  "schema_version": 1,
+  "protocol_version": "retrieval_improvement_protocol_v1",
+  "status": "frozen_before_execution",
+  "objective": "Test predeclared retrieval-improvement hypotheses against frozen Benchmark v1 without blind tuning.",
+  "frozen_inputs": {
+    "benchmark": {
+      "path": "data/evaluation/bilingual_benchmark_v1.json",
+      "sha256": "2a04a4f1b707481126c31673840670b4b72d3877c34b1990f12b2245688d69aa"
+    },
+    "official_baseline": {
+      "path": "data/evaluation/results/official_baseline_v1.json",
+      "sha256": "45c0b3fb1adb91224e24cf8a9f42611e632afcfb5cf4d492518492ffbe700edc"
+    },
+    "performance": {
+      "path": "data/evaluation/results/scalability_performance_v1.json",
+      "sha256": "1e7ca71415f2490a4ca05986733735bf3fbb73451701fadfb0ac9411a0b62b23"
+    },
+    "error_analysis": {
+      "path": "data/evaluation/results/retrieval_error_analysis_v1.json",
+      "sha256": "cf6e374722d66763897c148a13f162eb7f145435cf61fa449eccedc1fb438b7f"
+    },
+    "error_annotations": {
+      "path": "data/evaluation/retrieval_error_annotations_v1.json",
+      "sha256": "7f606f51b6a8815edc7a81084c0f7c330dddaf9abe85f885ca983def23a26089"
+    }
+  },
+  "pinned_repository_commits": {
+    "pallets/flask": "d318b683471101618febed18996405ad26462110",
+    "pallets/itsdangerous": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "pallets/markupsafe": "b2e4d9c7687be25695fffbe93a37622302b24fb1"
+  },
+  "frozen_retrieval_configuration": {
+    "embedding_model": "nomic-embed-text-local:latest",
+    "embedding_model_digest": "8514df7f98ca618f7b4d4dcf3735492449d29a4020dc5da574d4056d6136047a",
+    "embedding_dimensions": 768,
+    "lexical_field_weights": {
+      "code": 1,
+      "embedding_text": 1,
+      "qualified_name": 3,
+      "source_file": 2
+    },
+    "baseline_retrieval_limit": 10,
+    "baseline_rrf_k": 60,
+    "vector_index": {
+      "backend": "chromadb",
+      "distance_metric": "cosine",
+      "collection_per_repository": true
+    }
+  },
+  "execution_contract": {
+    "index_each_repository_once": true,
+    "reuse_index_across_all_experiments": true,
+    "require_clean_pinned_checkouts": true,
+    "abort_on_any_index_or_retrieval_failure": true,
+    "abort_if_depth_10_control_differs_from_frozen_baseline": true,
+    "selective_reruns": false,
+    "production_configuration_changes": false,
+    "new_retrieval_algorithms_in_production": false,
+    "raw_method_native_scores_compared_across_methods": false,
+    "latency_observations": "single-run local descriptive screening; not statistically stable performance",
+    "hybrid_latency": "derived sequential lexical plus semantic plus deterministic fusion time"
+  },
+  "evaluation_contract": {
+    "quality_source_for_comparison": "official_baseline_v1",
+    "primary_thresholds": [
+      1,
+      3,
+      10
+    ],
+    "ranking_metrics": [
+      "top_1",
+      "top_3",
+      "mrr_at_10",
+      "evidence_recall_at_3",
+      "evidence_recall_at_10"
+    ],
+    "required_transition_comparisons": [
+      "repairs",
+      "regressions",
+      "both_success",
+      "both_fail"
+    ],
+    "bilingual_population": "30 pair_ids per applicable method/configuration",
+    "bilingual_transition_labels_are_overlapping": true,
+    "required_bilingual_transitions": [
+      "both_repaired",
+      "fa_repaired_en_unchanged",
+      "en_repaired_fa_unchanged",
+      "resolved_disagreement",
+      "new_disagreement",
+      "regression_in_either_language"
+    ],
+    "multi_symbol_population": "12 bilingual questions x 3 frozen baseline methods = 36 comparison records",
+    "multi_symbol_outcomes": [
+      "complete_evidence_coverage",
+      "partial_multi_symbol_evidence",
+      "complete_evidence_miss"
+    ]
+  },
+  "experiment_matrix": [
+    {
+      "experiment_id": "E1",
+      "name": "candidate_depth_ablation",
+      "primary_variable": "candidate_depth",
+      "population": "60 questions x 3 methods",
+      "configurations": [
+        {
+          "configuration_id": "e1_depth_10_control",
+          "candidate_depth": 10
+        },
+        {
+          "configuration_id": "e1_depth_20",
+          "candidate_depth": 20
+        },
+        {
+          "configuration_id": "e1_depth_50",
+          "candidate_depth": 50
+        }
+      ],
+      "fixed": {
+        "evaluation_cutoff": 10,
+        "rrf_k": 60,
+        "lexical_weight": 1.0,
+        "semantic_weight": 1.0
+      },
+      "purpose": "Distinguish evidence absent at depth 10 from evidence retrieved only at ranks 11-50; official Top-1/3/10 remain the decision thresholds.",
+      "expected_records": 540
+    },
+    {
+      "experiment_id": "E2",
+      "name": "hybrid_fusion_weight_ablation",
+      "primary_variable": "lexical_to_semantic_rrf_weight_ratio",
+      "population": "60 questions, hybrid only",
+      "configurations": [
+        {
+          "configuration_id": "e2_equal_1_1_control",
+          "lexical_weight": 1.0,
+          "semantic_weight": 1.0
+        },
+        {
+          "configuration_id": "e2_lexical_2_semantic_1",
+          "lexical_weight": 2.0,
+          "semantic_weight": 1.0
+        },
+        {
+          "configuration_id": "e2_lexical_1_semantic_2",
+          "lexical_weight": 1.0,
+          "semantic_weight": 2.0
+        }
+      ],
+      "fixed": {
+        "candidate_depth": 10,
+        "output_limit": 10,
+        "rrf_k": 60
+      },
+      "purpose": "Test whether a predeclared lexical/semantic balance changes repairs, regressions, bilingual stability, or evidence coverage.",
+      "expected_records": 180
+    },
+    {
+      "experiment_id": "E3",
+      "name": "multi_symbol_candidate_aggregation",
+      "primary_variable": "candidate_aggregation_strategy",
+      "population": "12 multi-symbol bilingual questions",
+      "configurations": [
+        {
+          "configuration_id": "e3_rrf_control",
+          "strategy": "equal_weight_rrf"
+        },
+        {
+          "configuration_id": "e3_balanced_interleave",
+          "strategy": "lexical_semantic_round_robin_deduplicated"
+        }
+      ],
+      "fixed": {
+        "candidate_depth": 10,
+        "output_limit": 10,
+        "round_robin_start": "lexical"
+      },
+      "purpose": "Test a ground-truth-agnostic aggregation intervention on complete, partial, and missing required evidence.",
+      "expected_candidate_records": 24,
+      "expected_baseline_comparison_records": 36
+    },
+    {
+      "experiment_id": "E4",
+      "name": "semantic_supported_hypothesis_ablation",
+      "primary_variable": "query_language_text",
+      "population": "16 semantic pair-method disagreements annotated as supported cross-language identifier-gap hypotheses",
+      "configurations": [
+        {
+          "configuration_id": "e4_persian_original_control",
+          "query": "original Persian benchmark question"
+        },
+        {
+          "configuration_id": "e4_english_pair_substitution",
+          "query": "semantically equivalent English paired question"
+        }
+      ],
+      "fixed": {
+        "method": "semantic",
+        "candidate_depth": 10,
+        "ground_truth": "shared bilingual pair ground truth"
+      },
+      "causal_boundary": "This ablates complete paired query text, not language in isolation; wording and language cannot be causally separated.",
+      "compaction_ablation": {
+        "status": "not_executable_from_frozen_inputs",
+        "reason": "Frozen artifacts record three compacted Flask embeddings but not their exact chunk IDs."
+      },
+      "expected_pair_records": 16
+    },
+    {
+      "experiment_id": "E5",
+      "name": "bilingual_stability_analysis",
+      "primary_variable": "none_analysis_only",
+      "population": "the applicable bilingual pair-method population of every E1-E4 candidate",
+      "purpose": "Record language-specific repairs, regressions, resolved disagreements, and new disagreements without collapsing pair structure."
+    }
+  ],
+  "selection_policy": {
+    "no_change_is_valid": true,
+    "diagnostic_only_configurations": [
+      "e4_english_pair_substitution"
+    ],
+    "production_candidate_requirements": {
+      "quality": "No decrease in global Top-1, Top-3, MRR@10, Evidence Recall@3, or Evidence Recall@10, with at least one strict increase.",
+      "threshold_transitions": "Repairs must be at least regressions at Top-1, Top-3, and Top-10.",
+      "bilingual_stability": "No language loses Top-3 accuracy; new disagreements must not exceed resolved disagreements.",
+      "multi_symbol": "Complete coverage must not decrease, complete misses must not increase, and mean Evidence Recall@10 must not decrease.",
+      "performance_screen": "Within-run mean latency must be at most 1.25x control and p95 at most 1.50x control; this is descriptive screening only."
+    },
+    "decision_rule": "A configuration is an improvement only if every applicable gate passes. Otherwise retain the frozen production configuration."
+  },
+  "artifact_contract": {
+    "new_files_only": true,
+    "experiment_artifacts": [
+      "data/evaluation/results/retrieval_experiment_e1_candidate_depth_v1.json",
+      "data/evaluation/results/retrieval_experiment_e2_hybrid_fusion_v1.json",
+      "data/evaluation/results/retrieval_experiment_e3_multi_symbol_v1.json",
+      "data/evaluation/results/retrieval_experiment_e4_semantic_v1.json"
+    ],
+    "summary_artifact": "data/evaluation/results/retrieval_improvement_experiments_summary_v1.json",
+    "report": "docs/validation/retrieval-improvement-experiments-report.md",
+    "portable_output_required": true,
+    "forbidden_output": [
+      "absolute paths",
+      "username",
+      "hostname",
+      "API keys",
+      "secrets"
+    ]
+  }
+}
