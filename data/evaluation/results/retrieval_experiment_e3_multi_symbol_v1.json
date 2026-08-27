@@ -1,0 +1,5176 @@
+{
+  "schema_version": 1,
+  "experiment_id": "E3",
+  "name": "multi_symbol_candidate_aggregation",
+  "complete": true,
+  "manifest": {
+    "protocol_version": "retrieval_improvement_protocol_v1",
+    "protocol_sha256": "02612c26334190fb435c103713e1eaba4508d2a49cd696715610744aa4cd9ec8",
+    "frozen_input_sha256": {
+      "benchmark": "2a04a4f1b707481126c31673840670b4b72d3877c34b1990f12b2245688d69aa",
+      "official_baseline": "45c0b3fb1adb91224e24cf8a9f42611e632afcfb5cf4d492518492ffbe700edc",
+      "performance": "1e7ca71415f2490a4ca05986733735bf3fbb73451701fadfb0ac9411a0b62b23",
+      "error_analysis": "cf6e374722d66763897c148a13f162eb7f145435cf61fa449eccedc1fb438b7f",
+      "error_annotations": "7f606f51b6a8815edc7a81084c0f7c330dddaf9abe85f885ca983def23a26089"
+    },
+    "pinned_repository_commits": {
+      "pallets/flask": "d318b683471101618febed18996405ad26462110",
+      "pallets/itsdangerous": "672971d66a2ef9f85151e53283113f33d642dabd",
+      "pallets/markupsafe": "b2e4d9c7687be25695fffbe93a37622302b24fb1"
+    },
+    "embedding_model": "nomic-embed-text-local:latest",
+    "embedding_model_digest": "8514df7f98ca618f7b4d4dcf3735492449d29a4020dc5da574d4056d6136047a",
+    "retrieval_configuration": {
+      "embedding_model": "nomic-embed-text-local:latest",
+      "embedding_model_digest": "8514df7f98ca618f7b4d4dcf3735492449d29a4020dc5da574d4056d6136047a",
+      "embedding_dimensions": 768,
+      "lexical_field_weights": {
+        "code": 1,
+        "embedding_text": 1,
+        "qualified_name": 3,
+        "source_file": 2
+      },
+      "baseline_retrieval_limit": 10,
+      "baseline_rrf_k": 60,
+      "vector_index": {
+        "backend": "chromadb",
+        "distance_metric": "cosine",
+        "collection_per_repository": true
+      }
+    },
+    "experiment_matrix": [
+      {
+        "experiment_id": "E1",
+        "name": "candidate_depth_ablation",
+        "primary_variable": "candidate_depth",
+        "population": "60 questions x 3 methods",
+        "configurations": [
+          {
+            "configuration_id": "e1_depth_10_control",
+            "candidate_depth": 10
+          },
+          {
+            "configuration_id": "e1_depth_20",
+            "candidate_depth": 20
+          },
+          {
+            "configuration_id": "e1_depth_50",
+            "candidate_depth": 50
+          }
+        ],
+        "fixed": {
+          "evaluation_cutoff": 10,
+          "rrf_k": 60,
+          "lexical_weight": 1.0,
+          "semantic_weight": 1.0
+        },
+        "purpose": "Distinguish evidence absent at depth 10 from evidence retrieved only at ranks 11-50; official Top-1/3/10 remain the decision thresholds.",
+        "expected_records": 540
+      },
+      {
+        "experiment_id": "E2",
+        "name": "hybrid_fusion_weight_ablation",
+        "primary_variable": "lexical_to_semantic_rrf_weight_ratio",
+        "population": "60 questions, hybrid only",
+        "configurations": [
+          {
+            "configuration_id": "e2_equal_1_1_control",
+            "lexical_weight": 1.0,
+            "semantic_weight": 1.0
+          },
+          {
+            "configuration_id": "e2_lexical_2_semantic_1",
+            "lexical_weight": 2.0,
+            "semantic_weight": 1.0
+          },
+          {
+            "configuration_id": "e2_lexical_1_semantic_2",
+            "lexical_weight": 1.0,
+            "semantic_weight": 2.0
+          }
+        ],
+        "fixed": {
+          "candidate_depth": 10,
+          "output_limit": 10,
+          "rrf_k": 60
+        },
+        "purpose": "Test whether a predeclared lexical/semantic balance changes repairs, regressions, bilingual stability, or evidence coverage.",
+        "expected_records": 180
+      },
+      {
+        "experiment_id": "E3",
+        "name": "multi_symbol_candidate_aggregation",
+        "primary_variable": "candidate_aggregation_strategy",
+        "population": "12 multi-symbol bilingual questions",
+        "configurations": [
+          {
+            "configuration_id": "e3_rrf_control",
+            "strategy": "equal_weight_rrf"
+          },
+          {
+            "configuration_id": "e3_balanced_interleave",
+            "strategy": "lexical_semantic_round_robin_deduplicated"
+          }
+        ],
+        "fixed": {
+          "candidate_depth": 10,
+          "output_limit": 10,
+          "round_robin_start": "lexical"
+        },
+        "purpose": "Test a ground-truth-agnostic aggregation intervention on complete, partial, and missing required evidence.",
+        "expected_candidate_records": 24,
+        "expected_baseline_comparison_records": 36
+      },
+      {
+        "experiment_id": "E4",
+        "name": "semantic_supported_hypothesis_ablation",
+        "primary_variable": "query_language_text",
+        "population": "16 semantic pair-method disagreements annotated as supported cross-language identifier-gap hypotheses",
+        "configurations": [
+          {
+            "configuration_id": "e4_persian_original_control",
+            "query": "original Persian benchmark question"
+          },
+          {
+            "configuration_id": "e4_english_pair_substitution",
+            "query": "semantically equivalent English paired question"
+          }
+        ],
+        "fixed": {
+          "method": "semantic",
+          "candidate_depth": 10,
+          "ground_truth": "shared bilingual pair ground truth"
+        },
+        "causal_boundary": "This ablates complete paired query text, not language in isolation; wording and language cannot be causally separated.",
+        "compaction_ablation": {
+          "status": "not_executable_from_frozen_inputs",
+          "reason": "Frozen artifacts record three compacted Flask embeddings but not their exact chunk IDs."
+        },
+        "expected_pair_records": 16
+      },
+      {
+        "experiment_id": "E5",
+        "name": "bilingual_stability_analysis",
+        "primary_variable": "none_analysis_only",
+        "population": "the applicable bilingual pair-method population of every E1-E4 candidate",
+        "purpose": "Record language-specific repairs, regressions, resolved disagreements, and new disagreements without collapsing pair structure."
+      }
+    ],
+    "baseline_index_snapshot": {
+      "snapshot_id": "official_baseline_index_v1",
+      "snapshot_sha256": "3f48f259ff94670c0b62726b94983d0c1709c02fcfd41e48a86cd07748bda599",
+      "canonical_snapshot_identity": "3f48f259ff94670c0b62726b94983d0c1709c02fcfd41e48a86cd07748bda599"
+    },
+    "execution_id": "retrieval-improvements-20260827T192442Z",
+    "disposable_execution_copy_identity": "2fbfb2b37036e42d48afb1b9e6a2bf9e147d73ded4d8cca7f4907a6cfefdaf9b",
+    "chromadb_version": "1.5.9",
+    "execution_index_provenance": {
+      "pallets/flask": {
+        "stage": "after_indexing_before_queries",
+        "directory_sha256": "2a7ed4bdd80b6e6f8a846b276342bc985bc34ef21a06af2c0029b653108d7c63"
+      },
+      "pallets/itsdangerous": {
+        "stage": "after_indexing_before_queries",
+        "directory_sha256": "78740780be39b3ad0a138e744095bf0e4655a62d19e3135fac87581e72810d14"
+      },
+      "pallets/markupsafe": {
+        "stage": "after_indexing_before_queries",
+        "directory_sha256": "01841ff52ffe46d3b0e79180e2e2097416758ed46b00b21f6cbc37be4d4501bf"
+      }
+    },
+    "production_configuration_changed": false,
+    "repositories": [
+      {
+        "repository_name": "pallets/flask",
+        "repository_commit": "d318b683471101618febed18996405ad26462110",
+        "canonical_chunks": 1611,
+        "vectors": 1611,
+        "compacted_embeddings": 3,
+        "embedding_failures": 0,
+        "vector_failures": 0,
+        "sqlite_chroma_ids_equal": true,
+        "pre_query_index_directory_sha256": "2a7ed4bdd80b6e6f8a846b276342bc985bc34ef21a06af2c0029b653108d7c63",
+        "snapshot_id": "official_baseline_index_v1",
+        "snapshot_sha256": "3f48f259ff94670c0b62726b94983d0c1709c02fcfd41e48a86cd07748bda599",
+        "provenance_verified": true,
+        "complete": true
+      },
+      {
+        "repository_name": "pallets/itsdangerous",
+        "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+        "canonical_chunks": 144,
+        "vectors": 144,
+        "compacted_embeddings": 0,
+        "embedding_failures": 0,
+        "vector_failures": 0,
+        "sqlite_chroma_ids_equal": true,
+        "pre_query_index_directory_sha256": "78740780be39b3ad0a138e744095bf0e4655a62d19e3135fac87581e72810d14",
+        "snapshot_id": "official_baseline_index_v1",
+        "snapshot_sha256": "3f48f259ff94670c0b62726b94983d0c1709c02fcfd41e48a86cd07748bda599",
+        "provenance_verified": true,
+        "complete": true
+      },
+      {
+        "repository_name": "pallets/markupsafe",
+        "repository_commit": "b2e4d9c7687be25695fffbe93a37622302b24fb1",
+        "canonical_chunks": 116,
+        "vectors": 116,
+        "compacted_embeddings": 0,
+        "embedding_failures": 0,
+        "vector_failures": 0,
+        "sqlite_chroma_ids_equal": true,
+        "pre_query_index_directory_sha256": "01841ff52ffe46d3b0e79180e2e2097416758ed46b00b21f6cbc37be4d4501bf",
+        "snapshot_id": "official_baseline_index_v1",
+        "snapshot_sha256": "3f48f259ff94670c0b62726b94983d0c1709c02fcfd41e48a86cd07748bda599",
+        "provenance_verified": true,
+        "complete": true
+      }
+    ],
+    "environment": {
+      "python": "3.11.15",
+      "system": "Windows",
+      "machine": "AMD64",
+      "ollama_version": "0.22.0"
+    },
+    "source_experiment_id": "E3",
+    "baseline_comparison_population": "24 records matched by question_id and method",
+    "result_record_count": 24,
+    "registered_experiment": {
+      "experiment_id": "E3",
+      "name": "multi_symbol_candidate_aggregation",
+      "primary_variable": "candidate_aggregation_strategy",
+      "population": "12 multi-symbol bilingual questions",
+      "configurations": [
+        {
+          "configuration_id": "e3_rrf_control",
+          "strategy": "equal_weight_rrf"
+        },
+        {
+          "configuration_id": "e3_balanced_interleave",
+          "strategy": "lexical_semantic_round_robin_deduplicated"
+        }
+      ],
+      "fixed": {
+        "candidate_depth": 10,
+        "output_limit": 10,
+        "round_robin_start": "lexical"
+      },
+      "purpose": "Test a ground-truth-agnostic aggregation intervention on complete, partial, and missing required evidence.",
+      "expected_candidate_records": 24,
+      "expected_baseline_comparison_records": 36
+    }
+  },
+  "raw_records": [
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_rrf_control",
+      "question_id": "flask_request_lifecycle_en",
+      "pair_id": "flask_request_lifecycle",
+      "language": "en",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "rrf_fusion_score",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "40d5d38de80f1450acdfed7936e91905b071574f175fe3111b4f2766accb479a",
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.finalize_request",
+          "start_line": 1024,
+          "end_line": 1054,
+          "score": 0.03200204813108039,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "b9e283a18951478a4bde96a5b1bcc0c718d5d1688843ed8750aba203148544d1",
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.full_dispatch_request",
+          "start_line": 995,
+          "end_line": 1022,
+          "score": 0.029411764705882353,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "a3fa84f1f63cc6327bb896019192acad55756b55c5c47b9eaca7944d9a037dd6",
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.process_response",
+          "start_line": 1397,
+          "end_line": 1421,
+          "score": 0.01639344262295082,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "afb635c56139c407998c0cee970fc52ffddbc1729ce711f34aeae9e22f00e884",
+          "relative_path": "src/flask/wrappers.py",
+          "qualified_name": "Request",
+          "start_line": 18,
+          "end_line": 219,
+          "score": 0.01639344262295082,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "a7f69fe84c6cac79dfba751820fd5a2dfbba9a8bebe1750ce6befc94923ac7e0",
+          "relative_path": "examples/celery/src/task_app/views.py",
+          "qualified_name": "process",
+          "start_line": 36,
+          "end_line": 38,
+          "score": 0.016129032258064516,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "edd37accc581d0ca98321f28b9a8a22a794227ffc95b60677e2d4bd3550534bb",
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.wsgi_app",
+          "start_line": 1569,
+          "end_line": 1619,
+          "score": 0.015873015873015872,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "382f4b222a9275bbef9e55d41764abca128e84a9c3cf3f0a17b228b13ed8c9d8",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.after_request",
+          "start_line": 495,
+          "end_line": 513,
+          "score": 0.015625,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "11a5663a777ca2d1df776465e9af3de3c0a13221b8409daeb6716f2105658aad",
+          "relative_path": "src/flask/wrappers.py",
+          "qualified_name": "Request.max_content_length",
+          "start_line": 60,
+          "end_line": 86,
+          "score": 0.015625,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "03c70bd1aeb43d8c5b9d3095c77dfa8804aa3da0cfb58de7122144fa735f913c",
+          "relative_path": "src/flask/wrappers.py",
+          "qualified_name": "Response",
+          "start_line": 222,
+          "end_line": 257,
+          "score": 0.015384615384615385,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "db74efebdf17b415579b3676f0f4b469550f26f1a9e6977f561e5d9986ce6e65",
+          "relative_path": "tests/test_basic.py",
+          "qualified_name": "test_request_processing.after_request",
+          "start_line": 718,
+          "end_line": 721,
+          "score": 0.015384615384615385,
+          "score_semantics": "rrf_fusion_score"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.full_dispatch_request",
+          "start_line": 995,
+          "end_line": 1022
+        },
+        {
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.finalize_request",
+          "start_line": 1024,
+          "end_line": 1054
+        }
+      ],
+      "first_relevant_rank": 1,
+      "first_relevant_rank_at_depth": 1,
+      "evidence_recall_at_3": 1.0,
+      "evidence_recall_at_10": 1.0,
+      "evidence_recall_at_depth": 1.0,
+      "latency_ms": 204.345,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "flask_request_lifecycle_en",
+      "pair_id": "flask_request_lifecycle",
+      "language": "en",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "not_applicable_order_only",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "afb635c56139c407998c0cee970fc52ffddbc1729ce711f34aeae9e22f00e884",
+          "relative_path": "src/flask/wrappers.py",
+          "qualified_name": "Request",
+          "start_line": 18,
+          "end_line": 219,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "a3fa84f1f63cc6327bb896019192acad55756b55c5c47b9eaca7944d9a037dd6",
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.process_response",
+          "start_line": 1397,
+          "end_line": 1421,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "40d5d38de80f1450acdfed7936e91905b071574f175fe3111b4f2766accb479a",
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.finalize_request",
+          "start_line": 1024,
+          "end_line": 1054,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "a7f69fe84c6cac79dfba751820fd5a2dfbba9a8bebe1750ce6befc94923ac7e0",
+          "relative_path": "examples/celery/src/task_app/views.py",
+          "qualified_name": "process",
+          "start_line": 36,
+          "end_line": 38,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "edd37accc581d0ca98321f28b9a8a22a794227ffc95b60677e2d4bd3550534bb",
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.wsgi_app",
+          "start_line": 1569,
+          "end_line": 1619,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "11a5663a777ca2d1df776465e9af3de3c0a13221b8409daeb6716f2105658aad",
+          "relative_path": "src/flask/wrappers.py",
+          "qualified_name": "Request.max_content_length",
+          "start_line": 60,
+          "end_line": 86,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "382f4b222a9275bbef9e55d41764abca128e84a9c3cf3f0a17b228b13ed8c9d8",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.after_request",
+          "start_line": 495,
+          "end_line": 513,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "03c70bd1aeb43d8c5b9d3095c77dfa8804aa3da0cfb58de7122144fa735f913c",
+          "relative_path": "src/flask/wrappers.py",
+          "qualified_name": "Response",
+          "start_line": 222,
+          "end_line": 257,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "db74efebdf17b415579b3676f0f4b469550f26f1a9e6977f561e5d9986ce6e65",
+          "relative_path": "tests/test_basic.py",
+          "qualified_name": "test_request_processing.after_request",
+          "start_line": 718,
+          "end_line": 721,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "ac8f7d4d30297dceef6d066c286db263de995c9317b95dd20f033887b3f12103",
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.handle_user_exception",
+          "start_line": 868,
+          "end_line": 898,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.full_dispatch_request",
+          "start_line": 995,
+          "end_line": 1022
+        },
+        {
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.finalize_request",
+          "start_line": 1024,
+          "end_line": 1054
+        }
+      ],
+      "first_relevant_rank": 3,
+      "first_relevant_rank_at_depth": 3,
+      "evidence_recall_at_3": 0.5,
+      "evidence_recall_at_10": 0.5,
+      "evidence_recall_at_depth": 0.5,
+      "latency_ms": 204.309,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_rrf_control",
+      "question_id": "flask_request_lifecycle_fa",
+      "pair_id": "flask_request_lifecycle",
+      "language": "fa",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "rrf_fusion_score",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "b9e283a18951478a4bde96a5b1bcc0c718d5d1688843ed8750aba203148544d1",
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.full_dispatch_request",
+          "start_line": 995,
+          "end_line": 1022,
+          "score": 0.030090497737556562,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "40d5d38de80f1450acdfed7936e91905b071574f175fe3111b4f2766accb479a",
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.finalize_request",
+          "start_line": 1024,
+          "end_line": 1054,
+          "score": 0.02877846790890269,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "0d12509ed1d4970de77d2da7009058913e5db031d32ab2478675697597fc0f78",
+          "relative_path": "src/flask/ctx.py",
+          "qualified_name": "AppContext.request",
+          "start_line": 371,
+          "end_line": 379,
+          "score": 0.01639344262295082,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "382f4b222a9275bbef9e55d41764abca128e84a9c3cf3f0a17b228b13ed8c9d8",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.after_request",
+          "start_line": 495,
+          "end_line": 513,
+          "score": 0.01639344262295082,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "afb635c56139c407998c0cee970fc52ffddbc1729ce711f34aeae9e22f00e884",
+          "relative_path": "src/flask/wrappers.py",
+          "qualified_name": "Request",
+          "start_line": 18,
+          "end_line": 219,
+          "score": 0.016129032258064516,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "db74efebdf17b415579b3676f0f4b469550f26f1a9e6977f561e5d9986ce6e65",
+          "relative_path": "tests/test_basic.py",
+          "qualified_name": "test_request_processing.after_request",
+          "start_line": 718,
+          "end_line": 721,
+          "score": 0.016129032258064516,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "4d501330de04b2e5abda278aca259d9688af3007c3f5f155ca5e9490dfc91231",
+          "relative_path": "src/flask/ctx.py",
+          "qualified_name": "after_this_request",
+          "start_line": 118,
+          "end_line": 148,
+          "score": 0.015873015873015872,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "11a5663a777ca2d1df776465e9af3de3c0a13221b8409daeb6716f2105658aad",
+          "relative_path": "src/flask/wrappers.py",
+          "qualified_name": "Request.max_content_length",
+          "start_line": 60,
+          "end_line": 86,
+          "score": 0.015873015873015872,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "b60c75e71e0433dc6103b61b059533bf320d02489099cf69547992578c6ea42a",
+          "relative_path": "src/flask/wrappers.py",
+          "qualified_name": "Request.max_form_memory_size",
+          "start_line": 93,
+          "end_line": 113,
+          "score": 0.015625,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "1b8df5a8470a61896d4771e00dd23ccb81431b4fd0035e095e5054b824361c61",
+          "relative_path": "tests/test_signals.py",
+          "qualified_name": "test_request_signals.after_request_handler",
+          "start_line": 66,
+          "end_line": 69,
+          "score": 0.015625,
+          "score_semantics": "rrf_fusion_score"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.full_dispatch_request",
+          "start_line": 995,
+          "end_line": 1022
+        },
+        {
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.finalize_request",
+          "start_line": 1024,
+          "end_line": 1054
+        }
+      ],
+      "first_relevant_rank": 1,
+      "first_relevant_rank_at_depth": 1,
+      "evidence_recall_at_3": 1.0,
+      "evidence_recall_at_10": 1.0,
+      "evidence_recall_at_depth": 1.0,
+      "latency_ms": 226.196,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "flask_request_lifecycle_fa",
+      "pair_id": "flask_request_lifecycle",
+      "language": "fa",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "not_applicable_order_only",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "0d12509ed1d4970de77d2da7009058913e5db031d32ab2478675697597fc0f78",
+          "relative_path": "src/flask/ctx.py",
+          "qualified_name": "AppContext.request",
+          "start_line": 371,
+          "end_line": 379,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "382f4b222a9275bbef9e55d41764abca128e84a9c3cf3f0a17b228b13ed8c9d8",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.after_request",
+          "start_line": 495,
+          "end_line": 513,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "afb635c56139c407998c0cee970fc52ffddbc1729ce711f34aeae9e22f00e884",
+          "relative_path": "src/flask/wrappers.py",
+          "qualified_name": "Request",
+          "start_line": 18,
+          "end_line": 219,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "db74efebdf17b415579b3676f0f4b469550f26f1a9e6977f561e5d9986ce6e65",
+          "relative_path": "tests/test_basic.py",
+          "qualified_name": "test_request_processing.after_request",
+          "start_line": 718,
+          "end_line": 721,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "11a5663a777ca2d1df776465e9af3de3c0a13221b8409daeb6716f2105658aad",
+          "relative_path": "src/flask/wrappers.py",
+          "qualified_name": "Request.max_content_length",
+          "start_line": 60,
+          "end_line": 86,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "4d501330de04b2e5abda278aca259d9688af3007c3f5f155ca5e9490dfc91231",
+          "relative_path": "src/flask/ctx.py",
+          "qualified_name": "after_this_request",
+          "start_line": 118,
+          "end_line": 148,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "b60c75e71e0433dc6103b61b059533bf320d02489099cf69547992578c6ea42a",
+          "relative_path": "src/flask/wrappers.py",
+          "qualified_name": "Request.max_form_memory_size",
+          "start_line": 93,
+          "end_line": 113,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "1b8df5a8470a61896d4771e00dd23ccb81431b4fd0035e095e5054b824361c61",
+          "relative_path": "tests/test_signals.py",
+          "qualified_name": "test_request_signals.after_request_handler",
+          "start_line": 66,
+          "end_line": 69,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "f142214ff28e5d0da5921165bbad2c18d6d3c868e8ba5f30ae88b6e309b536ea",
+          "relative_path": "src/flask/wrappers.py",
+          "qualified_name": "Request.max_form_parts",
+          "start_line": 120,
+          "end_line": 140,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "b9e283a18951478a4bde96a5b1bcc0c718d5d1688843ed8750aba203148544d1",
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.full_dispatch_request",
+          "start_line": 995,
+          "end_line": 1022,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.full_dispatch_request",
+          "start_line": 995,
+          "end_line": 1022
+        },
+        {
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.finalize_request",
+          "start_line": 1024,
+          "end_line": 1054
+        }
+      ],
+      "first_relevant_rank": 10,
+      "first_relevant_rank_at_depth": 10,
+      "evidence_recall_at_3": 0.0,
+      "evidence_recall_at_10": 0.5,
+      "evidence_recall_at_depth": 0.5,
+      "latency_ms": 226.165,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_rrf_control",
+      "question_id": "flask_route_registration_en",
+      "pair_id": "flask_route_registration",
+      "language": "en",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "rrf_fusion_score",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "ceab6713d02459dae1b5198568a38f8bfe5102eebec7437633bcf5638be27406",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.route",
+          "start_line": 344,
+          "end_line": 373,
+          "score": 0.03252247488101534,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "1fdbbe5197210f00c78bc3ea0b3d43e5f255ac36781c05a53c5f75acedf8307b",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.route.decorator",
+          "start_line": 368,
+          "end_line": 371,
+          "score": 0.01639344262295082,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "7653558ff00120a07947703f32ba9ce988c04fd6802d9e9fba4482d6ff65eb1c",
+          "relative_path": "src/flask/sansio/app.py",
+          "qualified_name": "App",
+          "start_line": 59,
+          "end_line": 1013,
+          "score": 0.016129032258064516,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "cbff3c5e99bd10ff275fd8de43a26a04df4ab26d40512b5632ef65f6e0c892b8",
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask",
+          "start_line": 110,
+          "end_line": 1628,
+          "score": 0.015873015873015872,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "ad216e0ba1c3000dbb62408069e24a408e9e41f6268f7a07160d63df4cac946e",
+          "relative_path": "tests/test_user_error_handler.py",
+          "qualified_name": "test_error_handler_subclass.registered_test",
+          "start_line": 90,
+          "end_line": 91,
+          "score": 0.015873015873015872,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "30a155576e7ac48233b59c6ec0c75df594c0f2c8dc77723288c788be7edaf8a4",
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.url_for",
+          "start_line": 1105,
+          "end_line": 1225,
+          "score": 0.015625,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "6faacaa17920e01423dfd380106412713054fe8fe35ca43451a49728c6169890",
+          "relative_path": "tests/test_basic.py",
+          "qualified_name": "test_multi_route_rules",
+          "start_line": 1853,
+          "end_line": 1862,
+          "score": 0.015625,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "b4cacf314176829385452af63ef6b5ae98194fde8e7f75083e4691e4bdae33f6",
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.test_request_context",
+          "start_line": 1520,
+          "end_line": 1567,
+          "score": 0.015384615384615385,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "5e63ac71ac52c18f3448eb1bdbbc53c6f16b976fbfd2e58678d11c046844b4a2",
+          "relative_path": "tests/type_check/typing_route.py",
+          "qualified_name": "hello_generator_expression",
+          "start_line": 60,
+          "end_line": 61,
+          "score": 0.015384615384615385,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "5237dbe846306af030a25a75951052401119ce73bd91138ab251e44475b4a4a0",
+          "relative_path": "src/flask/sansio/blueprints.py",
+          "qualified_name": "Blueprint",
+          "start_line": 119,
+          "end_line": 692,
+          "score": 0.015151515151515152,
+          "score_semantics": "rrf_fusion_score"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.route",
+          "start_line": 344,
+          "end_line": 373
+        },
+        {
+          "relative_path": "src/flask/sansio/app.py",
+          "qualified_name": "App.add_url_rule",
+          "start_line": 605,
+          "end_line": 661
+        }
+      ],
+      "first_relevant_rank": 1,
+      "first_relevant_rank_at_depth": 1,
+      "evidence_recall_at_3": 0.5,
+      "evidence_recall_at_10": 0.5,
+      "evidence_recall_at_depth": 0.5,
+      "latency_ms": 225.228,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "flask_route_registration_en",
+      "pair_id": "flask_route_registration",
+      "language": "en",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "not_applicable_order_only",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "ceab6713d02459dae1b5198568a38f8bfe5102eebec7437633bcf5638be27406",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.route",
+          "start_line": 344,
+          "end_line": 373,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "1fdbbe5197210f00c78bc3ea0b3d43e5f255ac36781c05a53c5f75acedf8307b",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.route.decorator",
+          "start_line": 368,
+          "end_line": 371,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "7653558ff00120a07947703f32ba9ce988c04fd6802d9e9fba4482d6ff65eb1c",
+          "relative_path": "src/flask/sansio/app.py",
+          "qualified_name": "App",
+          "start_line": 59,
+          "end_line": 1013,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "cbff3c5e99bd10ff275fd8de43a26a04df4ab26d40512b5632ef65f6e0c892b8",
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask",
+          "start_line": 110,
+          "end_line": 1628,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "ad216e0ba1c3000dbb62408069e24a408e9e41f6268f7a07160d63df4cac946e",
+          "relative_path": "tests/test_user_error_handler.py",
+          "qualified_name": "test_error_handler_subclass.registered_test",
+          "start_line": 90,
+          "end_line": 91,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "30a155576e7ac48233b59c6ec0c75df594c0f2c8dc77723288c788be7edaf8a4",
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.url_for",
+          "start_line": 1105,
+          "end_line": 1225,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "6faacaa17920e01423dfd380106412713054fe8fe35ca43451a49728c6169890",
+          "relative_path": "tests/test_basic.py",
+          "qualified_name": "test_multi_route_rules",
+          "start_line": 1853,
+          "end_line": 1862,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "b4cacf314176829385452af63ef6b5ae98194fde8e7f75083e4691e4bdae33f6",
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.test_request_context",
+          "start_line": 1520,
+          "end_line": 1567,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "5e63ac71ac52c18f3448eb1bdbbc53c6f16b976fbfd2e58678d11c046844b4a2",
+          "relative_path": "tests/type_check/typing_route.py",
+          "qualified_name": "hello_generator_expression",
+          "start_line": 60,
+          "end_line": 61,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "5237dbe846306af030a25a75951052401119ce73bd91138ab251e44475b4a4a0",
+          "relative_path": "src/flask/sansio/blueprints.py",
+          "qualified_name": "Blueprint",
+          "start_line": 119,
+          "end_line": 692,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.route",
+          "start_line": 344,
+          "end_line": 373
+        },
+        {
+          "relative_path": "src/flask/sansio/app.py",
+          "qualified_name": "App.add_url_rule",
+          "start_line": 605,
+          "end_line": 661
+        }
+      ],
+      "first_relevant_rank": 1,
+      "first_relevant_rank_at_depth": 1,
+      "evidence_recall_at_3": 0.5,
+      "evidence_recall_at_10": 0.5,
+      "evidence_recall_at_depth": 0.5,
+      "latency_ms": 225.195,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_rrf_control",
+      "question_id": "flask_route_registration_fa",
+      "pair_id": "flask_route_registration",
+      "language": "fa",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "rrf_fusion_score",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "ceab6713d02459dae1b5198568a38f8bfe5102eebec7437633bcf5638be27406",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.route",
+          "start_line": 344,
+          "end_line": 373,
+          "score": 0.03252247488101534,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "1fdbbe5197210f00c78bc3ea0b3d43e5f255ac36781c05a53c5f75acedf8307b",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.route.decorator",
+          "start_line": 368,
+          "end_line": 371,
+          "score": 0.03252247488101534,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "3a4a74ca66b48208edcb5501f2e05945e1ee3cf18509638aa526c1edcc52a30e",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.add_url_rule",
+          "start_line": 376,
+          "end_line": 441,
+          "score": 0.03057889822595705,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "bb19fec59d0137dee29a4639649bc8512c0a0228455cc601926504962e74b7da",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold._method_route",
+          "start_line": 284,
+          "end_line": 293,
+          "score": 0.029437229437229435,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "467c1ef478e299de6f01ab89f37fc63fde44a913515edce5966d2422661c6565",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.patch",
+          "start_line": 336,
+          "end_line": 341,
+          "score": 0.015873015873015872,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "30a155576e7ac48233b59c6ec0c75df594c0f2c8dc77723288c788be7edaf8a4",
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.url_for",
+          "start_line": 1105,
+          "end_line": 1225,
+          "score": 0.015625,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "89cce48845be010ca2120d2b8ac0b621bf6d598b4cab01084614910721e9c6b2",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.post",
+          "start_line": 312,
+          "end_line": 317,
+          "score": 0.015625,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "7653558ff00120a07947703f32ba9ce988c04fd6802d9e9fba4482d6ff65eb1c",
+          "relative_path": "src/flask/sansio/app.py",
+          "qualified_name": "App",
+          "start_line": 59,
+          "end_line": 1013,
+          "score": 0.015384615384615385,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "dfaafbc2590b432ff0108d4c9423b2d1e9ee101d4d177f11f622c29771e64493",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.query",
+          "start_line": 304,
+          "end_line": 309,
+          "score": 0.015384615384615385,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "122c721b85f642264054fd781060c495b550be5f943e37e05f028d410da7e4b5",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.put",
+          "start_line": 320,
+          "end_line": 325,
+          "score": 0.015151515151515152,
+          "score_semantics": "rrf_fusion_score"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.route",
+          "start_line": 344,
+          "end_line": 373
+        },
+        {
+          "relative_path": "src/flask/sansio/app.py",
+          "qualified_name": "App.add_url_rule",
+          "start_line": 605,
+          "end_line": 661
+        }
+      ],
+      "first_relevant_rank": 1,
+      "first_relevant_rank_at_depth": 1,
+      "evidence_recall_at_3": 0.5,
+      "evidence_recall_at_10": 0.5,
+      "evidence_recall_at_depth": 0.5,
+      "latency_ms": 232.904,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "flask_route_registration_fa",
+      "pair_id": "flask_route_registration",
+      "language": "fa",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "not_applicable_order_only",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "ceab6713d02459dae1b5198568a38f8bfe5102eebec7437633bcf5638be27406",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.route",
+          "start_line": 344,
+          "end_line": 373,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "1fdbbe5197210f00c78bc3ea0b3d43e5f255ac36781c05a53c5f75acedf8307b",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.route.decorator",
+          "start_line": 368,
+          "end_line": 371,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "3a4a74ca66b48208edcb5501f2e05945e1ee3cf18509638aa526c1edcc52a30e",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.add_url_rule",
+          "start_line": 376,
+          "end_line": 441,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "467c1ef478e299de6f01ab89f37fc63fde44a913515edce5966d2422661c6565",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.patch",
+          "start_line": 336,
+          "end_line": 341,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "30a155576e7ac48233b59c6ec0c75df594c0f2c8dc77723288c788be7edaf8a4",
+          "relative_path": "src/flask/app.py",
+          "qualified_name": "Flask.url_for",
+          "start_line": 1105,
+          "end_line": 1225,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "89cce48845be010ca2120d2b8ac0b621bf6d598b4cab01084614910721e9c6b2",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.post",
+          "start_line": 312,
+          "end_line": 317,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "7653558ff00120a07947703f32ba9ce988c04fd6802d9e9fba4482d6ff65eb1c",
+          "relative_path": "src/flask/sansio/app.py",
+          "qualified_name": "App",
+          "start_line": 59,
+          "end_line": 1013,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "dfaafbc2590b432ff0108d4c9423b2d1e9ee101d4d177f11f622c29771e64493",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.query",
+          "start_line": 304,
+          "end_line": 309,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "bb19fec59d0137dee29a4639649bc8512c0a0228455cc601926504962e74b7da",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold._method_route",
+          "start_line": 284,
+          "end_line": 293,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "122c721b85f642264054fd781060c495b550be5f943e37e05f028d410da7e4b5",
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.put",
+          "start_line": 320,
+          "end_line": 325,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/flask/sansio/scaffold.py",
+          "qualified_name": "Scaffold.route",
+          "start_line": 344,
+          "end_line": 373
+        },
+        {
+          "relative_path": "src/flask/sansio/app.py",
+          "qualified_name": "App.add_url_rule",
+          "start_line": 605,
+          "end_line": 661
+        }
+      ],
+      "first_relevant_rank": 1,
+      "first_relevant_rank_at_depth": 1,
+      "evidence_recall_at_3": 0.5,
+      "evidence_recall_at_10": 0.5,
+      "evidence_recall_at_depth": 0.5,
+      "latency_ms": 232.882,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_rrf_control",
+      "question_id": "flask_session_cookie_round_trip_en",
+      "pair_id": "flask_session_cookie_round_trip",
+      "language": "en",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "rrf_fusion_score",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "7653558ff00120a07947703f32ba9ce988c04fd6802d9e9fba4482d6ff65eb1c",
+          "relative_path": "src/flask/sansio/app.py",
+          "qualified_name": "App",
+          "start_line": 59,
+          "end_line": 1013,
+          "score": 0.01639344262295082,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "e6d76683a241a0bb5a404a318e70e8a5478efbc299d08db91ba0dba635ee733e",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SecureCookieSessionInterface.save_session",
+          "start_line": 337,
+          "end_line": 385,
+          "score": 0.01639344262295082,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "829910c18c8eecc736fc28200e87fc62f1158065e0b24301f4d2a7e253dcfaff",
+          "relative_path": "src/flask/ctx.py",
+          "qualified_name": "copy_current_request_context",
+          "start_line": 154,
+          "end_line": 206,
+          "score": 0.016129032258064516,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "e95a7739b5f9c023cb6bae70d709f12083a5322801d839478420f141bc0e276a",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SecureCookieSessionInterface",
+          "start_line": 284,
+          "end_line": 385,
+          "score": 0.016129032258064516,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "1d0e8eb3ca456cc0305451fee85fda8621b615a546a9e52e177cf76cd7fed539",
+          "relative_path": "src/flask/helpers.py",
+          "qualified_name": "stream_with_context",
+          "start_line": 63,
+          "end_line": 148,
+          "score": 0.015873015873015872,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "d9d8d530fb9ab2e232f57149fd1c1492a18f5f145352a55404d918231684bb40",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SessionInterface.should_set_cookie",
+          "start_line": 233,
+          "end_line": 247,
+          "score": 0.015873015873015872,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "f910014c6083927349990962d6fbdb75ce5bed838bd41d970f893e830153ed79",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SecureCookieSession",
+          "start_line": 57,
+          "end_line": 80,
+          "score": 0.015625,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "711c1ab68248c424d39893d95de7bc501ce771b91c0061599167d38733c429ee",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SessionInterface.get_cookie_domain",
+          "start_line": 175,
+          "end_line": 185,
+          "score": 0.015625,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "67fb03142b7f66c6b60cbf7e1ed5ba9b0864e09f7cf8054e469c9fd1c984a737",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SessionInterface",
+          "start_line": 100,
+          "end_line": 270,
+          "score": 0.015384615384615385,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "58d93c71be1efd3d45c182ff95323ee95361cc3ef0f66e8f2fae2ea721de2915",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SecureCookieSessionInterface.open_session",
+          "start_line": 323,
+          "end_line": 335,
+          "score": 0.015384615384615385,
+          "score_semantics": "rrf_fusion_score"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SecureCookieSessionInterface.open_session",
+          "start_line": 323,
+          "end_line": 335
+        },
+        {
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SecureCookieSessionInterface.save_session",
+          "start_line": 337,
+          "end_line": 385
+        }
+      ],
+      "first_relevant_rank": 2,
+      "first_relevant_rank_at_depth": 2,
+      "evidence_recall_at_3": 0.5,
+      "evidence_recall_at_10": 1.0,
+      "evidence_recall_at_depth": 1.0,
+      "latency_ms": 239.173,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "flask_session_cookie_round_trip_en",
+      "pair_id": "flask_session_cookie_round_trip",
+      "language": "en",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "not_applicable_order_only",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "7653558ff00120a07947703f32ba9ce988c04fd6802d9e9fba4482d6ff65eb1c",
+          "relative_path": "src/flask/sansio/app.py",
+          "qualified_name": "App",
+          "start_line": 59,
+          "end_line": 1013,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "e6d76683a241a0bb5a404a318e70e8a5478efbc299d08db91ba0dba635ee733e",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SecureCookieSessionInterface.save_session",
+          "start_line": 337,
+          "end_line": 385,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "829910c18c8eecc736fc28200e87fc62f1158065e0b24301f4d2a7e253dcfaff",
+          "relative_path": "src/flask/ctx.py",
+          "qualified_name": "copy_current_request_context",
+          "start_line": 154,
+          "end_line": 206,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "e95a7739b5f9c023cb6bae70d709f12083a5322801d839478420f141bc0e276a",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SecureCookieSessionInterface",
+          "start_line": 284,
+          "end_line": 385,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "1d0e8eb3ca456cc0305451fee85fda8621b615a546a9e52e177cf76cd7fed539",
+          "relative_path": "src/flask/helpers.py",
+          "qualified_name": "stream_with_context",
+          "start_line": 63,
+          "end_line": 148,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "d9d8d530fb9ab2e232f57149fd1c1492a18f5f145352a55404d918231684bb40",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SessionInterface.should_set_cookie",
+          "start_line": 233,
+          "end_line": 247,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "f910014c6083927349990962d6fbdb75ce5bed838bd41d970f893e830153ed79",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SecureCookieSession",
+          "start_line": 57,
+          "end_line": 80,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "711c1ab68248c424d39893d95de7bc501ce771b91c0061599167d38733c429ee",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SessionInterface.get_cookie_domain",
+          "start_line": 175,
+          "end_line": 185,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "67fb03142b7f66c6b60cbf7e1ed5ba9b0864e09f7cf8054e469c9fd1c984a737",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SessionInterface",
+          "start_line": 100,
+          "end_line": 270,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "58d93c71be1efd3d45c182ff95323ee95361cc3ef0f66e8f2fae2ea721de2915",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SecureCookieSessionInterface.open_session",
+          "start_line": 323,
+          "end_line": 335,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SecureCookieSessionInterface.open_session",
+          "start_line": 323,
+          "end_line": 335
+        },
+        {
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SecureCookieSessionInterface.save_session",
+          "start_line": 337,
+          "end_line": 385
+        }
+      ],
+      "first_relevant_rank": 2,
+      "first_relevant_rank_at_depth": 2,
+      "evidence_recall_at_3": 0.5,
+      "evidence_recall_at_10": 1.0,
+      "evidence_recall_at_depth": 1.0,
+      "latency_ms": 239.137,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_rrf_control",
+      "question_id": "flask_session_cookie_round_trip_fa",
+      "pair_id": "flask_session_cookie_round_trip",
+      "language": "fa",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "rrf_fusion_score",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "829910c18c8eecc736fc28200e87fc62f1158065e0b24301f4d2a7e253dcfaff",
+          "relative_path": "src/flask/ctx.py",
+          "qualified_name": "copy_current_request_context",
+          "start_line": 154,
+          "end_line": 206,
+          "score": 0.01639344262295082,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "e95a7739b5f9c023cb6bae70d709f12083a5322801d839478420f141bc0e276a",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SecureCookieSessionInterface",
+          "start_line": 284,
+          "end_line": 385,
+          "score": 0.01639344262295082,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "1d0e8eb3ca456cc0305451fee85fda8621b615a546a9e52e177cf76cd7fed539",
+          "relative_path": "src/flask/helpers.py",
+          "qualified_name": "stream_with_context",
+          "start_line": 63,
+          "end_line": 148,
+          "score": 0.016129032258064516,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "e6d76683a241a0bb5a404a318e70e8a5478efbc299d08db91ba0dba635ee733e",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SecureCookieSessionInterface.save_session",
+          "start_line": 337,
+          "end_line": 385,
+          "score": 0.016129032258064516,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "7653558ff00120a07947703f32ba9ce988c04fd6802d9e9fba4482d6ff65eb1c",
+          "relative_path": "src/flask/sansio/app.py",
+          "qualified_name": "App",
+          "start_line": 59,
+          "end_line": 1013,
+          "score": 0.015873015873015872,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "e5c62b9500a7c7287d25910f711a8af7f1c6fb1ab2d32d2b21ab57fe1c5a7571",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SessionInterface.get_cookie_samesite",
+          "start_line": 208,
+          "end_line": 213,
+          "score": 0.015873015873015872,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "13c4eb7bfd26a467dfa8a55125259dc2af73f4808902e442c4d1a2bada8967eb",
+          "relative_path": "src/flask/ctx.py",
+          "qualified_name": "AppContext.session",
+          "start_line": 396,
+          "end_line": 403,
+          "score": 0.015625,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "a962b78956ce4c22eb45e7619af29afada7b6682bb576b8342d0b0a59e195101",
+          "relative_path": "src/flask/testing.py",
+          "qualified_name": "FlaskClient.session_transaction",
+          "start_line": 136,
+          "end_line": 183,
+          "score": 0.015625,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "fc3757f98b0a84c1411c37b637a86d0a8ac965e41137e09a97bfe450a61ce54d",
+          "relative_path": "src/flask/json/provider.py",
+          "qualified_name": "JSONProvider.response",
+          "start_line": 89,
+          "end_line": 105,
+          "score": 0.015384615384615385,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "711c1ab68248c424d39893d95de7bc501ce771b91c0061599167d38733c429ee",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SessionInterface.get_cookie_domain",
+          "start_line": 175,
+          "end_line": 185,
+          "score": 0.015384615384615385,
+          "score_semantics": "rrf_fusion_score"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SecureCookieSessionInterface.open_session",
+          "start_line": 323,
+          "end_line": 335
+        },
+        {
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SecureCookieSessionInterface.save_session",
+          "start_line": 337,
+          "end_line": 385
+        }
+      ],
+      "first_relevant_rank": 4,
+      "first_relevant_rank_at_depth": 4,
+      "evidence_recall_at_3": 0.0,
+      "evidence_recall_at_10": 0.5,
+      "evidence_recall_at_depth": 0.5,
+      "latency_ms": 264.466,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "flask_session_cookie_round_trip_fa",
+      "pair_id": "flask_session_cookie_round_trip",
+      "language": "fa",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "not_applicable_order_only",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "829910c18c8eecc736fc28200e87fc62f1158065e0b24301f4d2a7e253dcfaff",
+          "relative_path": "src/flask/ctx.py",
+          "qualified_name": "copy_current_request_context",
+          "start_line": 154,
+          "end_line": 206,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "e95a7739b5f9c023cb6bae70d709f12083a5322801d839478420f141bc0e276a",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SecureCookieSessionInterface",
+          "start_line": 284,
+          "end_line": 385,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "1d0e8eb3ca456cc0305451fee85fda8621b615a546a9e52e177cf76cd7fed539",
+          "relative_path": "src/flask/helpers.py",
+          "qualified_name": "stream_with_context",
+          "start_line": 63,
+          "end_line": 148,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "e6d76683a241a0bb5a404a318e70e8a5478efbc299d08db91ba0dba635ee733e",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SecureCookieSessionInterface.save_session",
+          "start_line": 337,
+          "end_line": 385,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "7653558ff00120a07947703f32ba9ce988c04fd6802d9e9fba4482d6ff65eb1c",
+          "relative_path": "src/flask/sansio/app.py",
+          "qualified_name": "App",
+          "start_line": 59,
+          "end_line": 1013,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "e5c62b9500a7c7287d25910f711a8af7f1c6fb1ab2d32d2b21ab57fe1c5a7571",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SessionInterface.get_cookie_samesite",
+          "start_line": 208,
+          "end_line": 213,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "13c4eb7bfd26a467dfa8a55125259dc2af73f4808902e442c4d1a2bada8967eb",
+          "relative_path": "src/flask/ctx.py",
+          "qualified_name": "AppContext.session",
+          "start_line": 396,
+          "end_line": 403,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "a962b78956ce4c22eb45e7619af29afada7b6682bb576b8342d0b0a59e195101",
+          "relative_path": "src/flask/testing.py",
+          "qualified_name": "FlaskClient.session_transaction",
+          "start_line": 136,
+          "end_line": 183,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "fc3757f98b0a84c1411c37b637a86d0a8ac965e41137e09a97bfe450a61ce54d",
+          "relative_path": "src/flask/json/provider.py",
+          "qualified_name": "JSONProvider.response",
+          "start_line": 89,
+          "end_line": 105,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "711c1ab68248c424d39893d95de7bc501ce771b91c0061599167d38733c429ee",
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SessionInterface.get_cookie_domain",
+          "start_line": 175,
+          "end_line": 185,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SecureCookieSessionInterface.open_session",
+          "start_line": 323,
+          "end_line": 335
+        },
+        {
+          "relative_path": "src/flask/sessions.py",
+          "qualified_name": "SecureCookieSessionInterface.save_session",
+          "start_line": 337,
+          "end_line": 385
+        }
+      ],
+      "first_relevant_rank": 4,
+      "first_relevant_rank_at_depth": 4,
+      "evidence_recall_at_3": 0.0,
+      "evidence_recall_at_10": 0.5,
+      "evidence_recall_at_depth": 0.5,
+      "latency_ms": 264.418,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_rrf_control",
+      "question_id": "itsdangerous_fallback_unsigners_en",
+      "pair_id": "itsdangerous_fallback_unsigners",
+      "language": "en",
+      "repository_name": "pallets/itsdangerous",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "rrf_fusion_score",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "a532951cc2281d66e27db579107b761843e7d50a5ca1f64452f8dedec976817b",
+          "relative_path": "src/itsdangerous/signer.py",
+          "qualified_name": "Signer.validate",
+          "start_line": 258,
+          "end_line": 266,
+          "score": 0.031099324975891997,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "3f7680571ad10dc8b380f2b7a6d133585845652bd902cbae398be0e7e5cd2772",
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer",
+          "start_line": 40,
+          "end_line": 404,
+          "score": 0.01639344262295082,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "e1948ffe22b06809f3490abc891ec9ad5c584b2dd512c9192096d5e743e2f7a9",
+          "relative_path": "src/itsdangerous/signer.py",
+          "qualified_name": "Signer",
+          "start_line": 76,
+          "end_line": 266,
+          "score": 0.016129032258064516,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "55d7cf57411c9d230597f5fc18d6dda829b10182e2d69b8101d0ee17c4094bcd",
+          "relative_path": "tests/test_itsdangerous/test_signer.py",
+          "qualified_name": "TestSigner.test_broken_signature",
+          "start_line": 42,
+          "end_line": 51,
+          "score": 0.016129032258064516,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "6f0afc8d46fe1f920e3af574531758c2e6027d10ef89d154b8a2352e54675d8c",
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer.iter_unsigners",
+          "start_line": 287,
+          "end_line": 307,
+          "score": 0.015873015873015872,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "e0eaf74916d37220c6c901430587e9d4f9cf2339a219e04d07e58cb87425b4c2",
+          "relative_path": "tests/test_itsdangerous/test_signer.py",
+          "qualified_name": "TestSigner.signer",
+          "start_line": 24,
+          "end_line": 25,
+          "score": 0.015873015873015872,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "f0fd8c0052e315bfe81567f8e38b1d50435e5282021ea44e8e61bb99e7f76ed9",
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.unsign",
+          "start_line": 72,
+          "end_line": 158,
+          "score": 0.015625,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "df6bee8c75964ba7ac675ae43431b7449fc719ad847189ea7a0bd13a918a8e0d",
+          "relative_path": "tests/test_itsdangerous/test_signer.py",
+          "qualified_name": "TestSigner.test_changed_value",
+          "start_line": 53,
+          "end_line": 59,
+          "score": 0.015625,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "6c650f7f5289a2de9c5b8c2167de46abd6007dc1b9c4a77e32930ec4e22d567d",
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer.__init__",
+          "start_line": 190,
+          "end_line": 234,
+          "score": 0.015384615384615385,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "4429c331b41044f64e33b62e86bef1e594acf39aa3585797f32fb9f0ed63d793",
+          "relative_path": "tests/test_itsdangerous/test_serializer.py",
+          "qualified_name": "TestSerializer.test_fallback_signers",
+          "start_line": 155,
+          "end_line": 164,
+          "score": 0.015384615384615385,
+          "score_semantics": "rrf_fusion_score"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer.iter_unsigners",
+          "start_line": 287,
+          "end_line": 307
+        },
+        {
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer.loads",
+          "start_line": 328,
+          "end_line": 343
+        }
+      ],
+      "first_relevant_rank": 5,
+      "first_relevant_rank_at_depth": 5,
+      "evidence_recall_at_3": 0.0,
+      "evidence_recall_at_10": 0.5,
+      "evidence_recall_at_depth": 0.5,
+      "latency_ms": 98.733,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "itsdangerous_fallback_unsigners_en",
+      "pair_id": "itsdangerous_fallback_unsigners",
+      "language": "en",
+      "repository_name": "pallets/itsdangerous",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "not_applicable_order_only",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "3f7680571ad10dc8b380f2b7a6d133585845652bd902cbae398be0e7e5cd2772",
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer",
+          "start_line": 40,
+          "end_line": 404,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "a532951cc2281d66e27db579107b761843e7d50a5ca1f64452f8dedec976817b",
+          "relative_path": "src/itsdangerous/signer.py",
+          "qualified_name": "Signer.validate",
+          "start_line": 258,
+          "end_line": 266,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "e1948ffe22b06809f3490abc891ec9ad5c584b2dd512c9192096d5e743e2f7a9",
+          "relative_path": "src/itsdangerous/signer.py",
+          "qualified_name": "Signer",
+          "start_line": 76,
+          "end_line": 266,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "55d7cf57411c9d230597f5fc18d6dda829b10182e2d69b8101d0ee17c4094bcd",
+          "relative_path": "tests/test_itsdangerous/test_signer.py",
+          "qualified_name": "TestSigner.test_broken_signature",
+          "start_line": 42,
+          "end_line": 51,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "6f0afc8d46fe1f920e3af574531758c2e6027d10ef89d154b8a2352e54675d8c",
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer.iter_unsigners",
+          "start_line": 287,
+          "end_line": 307,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "e0eaf74916d37220c6c901430587e9d4f9cf2339a219e04d07e58cb87425b4c2",
+          "relative_path": "tests/test_itsdangerous/test_signer.py",
+          "qualified_name": "TestSigner.signer",
+          "start_line": 24,
+          "end_line": 25,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "f0fd8c0052e315bfe81567f8e38b1d50435e5282021ea44e8e61bb99e7f76ed9",
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.unsign",
+          "start_line": 72,
+          "end_line": 158,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "df6bee8c75964ba7ac675ae43431b7449fc719ad847189ea7a0bd13a918a8e0d",
+          "relative_path": "tests/test_itsdangerous/test_signer.py",
+          "qualified_name": "TestSigner.test_changed_value",
+          "start_line": 53,
+          "end_line": 59,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "6c650f7f5289a2de9c5b8c2167de46abd6007dc1b9c4a77e32930ec4e22d567d",
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer.__init__",
+          "start_line": 190,
+          "end_line": 234,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "4429c331b41044f64e33b62e86bef1e594acf39aa3585797f32fb9f0ed63d793",
+          "relative_path": "tests/test_itsdangerous/test_serializer.py",
+          "qualified_name": "TestSerializer.test_fallback_signers",
+          "start_line": 155,
+          "end_line": 164,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer.iter_unsigners",
+          "start_line": 287,
+          "end_line": 307
+        },
+        {
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer.loads",
+          "start_line": 328,
+          "end_line": 343
+        }
+      ],
+      "first_relevant_rank": 5,
+      "first_relevant_rank_at_depth": 5,
+      "evidence_recall_at_3": 0.0,
+      "evidence_recall_at_10": 0.5,
+      "evidence_recall_at_depth": 0.5,
+      "latency_ms": 98.697,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_rrf_control",
+      "question_id": "itsdangerous_fallback_unsigners_fa",
+      "pair_id": "itsdangerous_fallback_unsigners",
+      "language": "fa",
+      "repository_name": "pallets/itsdangerous",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "rrf_fusion_score",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "6f0afc8d46fe1f920e3af574531758c2e6027d10ef89d154b8a2352e54675d8c",
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer.iter_unsigners",
+          "start_line": 287,
+          "end_line": 307,
+          "score": 0.03225806451612903,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "3f7680571ad10dc8b380f2b7a6d133585845652bd902cbae398be0e7e5cd2772",
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer",
+          "start_line": 40,
+          "end_line": 404,
+          "score": 0.032018442622950824,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "4429c331b41044f64e33b62e86bef1e594acf39aa3585797f32fb9f0ed63d793",
+          "relative_path": "tests/test_itsdangerous/test_serializer.py",
+          "qualified_name": "TestSerializer.test_fallback_signers",
+          "start_line": 155,
+          "end_line": 164,
+          "score": 0.01639344262295082,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "e1948ffe22b06809f3490abc891ec9ad5c584b2dd512c9192096d5e743e2f7a9",
+          "relative_path": "src/itsdangerous/signer.py",
+          "qualified_name": "Signer",
+          "start_line": 76,
+          "end_line": 266,
+          "score": 0.015873015873015872,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "e0eaf74916d37220c6c901430587e9d4f9cf2339a219e04d07e58cb87425b4c2",
+          "relative_path": "tests/test_itsdangerous/test_signer.py",
+          "qualified_name": "TestSigner.signer",
+          "start_line": 24,
+          "end_line": 25,
+          "score": 0.015384615384615385,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "0076327626f5757604b042bc41e0ce8bb86527cbc72e7fbadadc6573b3953679",
+          "relative_path": "tests/test_itsdangerous/test_timed.py",
+          "qualified_name": "TestTimestampSigner.test_future_age",
+          "start_line": 78,
+          "end_line": 85,
+          "score": 0.015151515151515152,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "da63d1c0fa6d30bac53ee9df14d7cadf81d6c013eb886dd6514c1d31e67586a7",
+          "relative_path": "tests/test_itsdangerous/test_timed.py",
+          "qualified_name": "TestTimestampSigner.test_malformed_future_timestamp",
+          "start_line": 69,
+          "end_line": 76,
+          "score": 0.014925373134328358,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "df6bee8c75964ba7ac675ae43431b7449fc719ad847189ea7a0bd13a918a8e0d",
+          "relative_path": "tests/test_itsdangerous/test_signer.py",
+          "qualified_name": "TestSigner.test_changed_value",
+          "start_line": 53,
+          "end_line": 59,
+          "score": 0.014705882352941176,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "beac3f2fde4fa86e81846b7a05384dbbb12aac1adc1eded9a5757c78f53c01ce",
+          "relative_path": "tests/test_itsdangerous/test_timed.py",
+          "qualified_name": "TestTimestampSigner.test_sig_error_date_signed",
+          "start_line": 87,
+          "end_line": 93,
+          "score": 0.014492753623188406,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "55d7cf57411c9d230597f5fc18d6dda829b10182e2d69b8101d0ee17c4094bcd",
+          "relative_path": "tests/test_itsdangerous/test_signer.py",
+          "qualified_name": "TestSigner.test_broken_signature",
+          "start_line": 42,
+          "end_line": 51,
+          "score": 0.014285714285714285,
+          "score_semantics": "rrf_fusion_score"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer.iter_unsigners",
+          "start_line": 287,
+          "end_line": 307
+        },
+        {
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer.loads",
+          "start_line": 328,
+          "end_line": 343
+        }
+      ],
+      "first_relevant_rank": 1,
+      "first_relevant_rank_at_depth": 1,
+      "evidence_recall_at_3": 0.5,
+      "evidence_recall_at_10": 0.5,
+      "evidence_recall_at_depth": 0.5,
+      "latency_ms": 182.565,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "itsdangerous_fallback_unsigners_fa",
+      "pair_id": "itsdangerous_fallback_unsigners",
+      "language": "fa",
+      "repository_name": "pallets/itsdangerous",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "not_applicable_order_only",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "3f7680571ad10dc8b380f2b7a6d133585845652bd902cbae398be0e7e5cd2772",
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer",
+          "start_line": 40,
+          "end_line": 404,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "4429c331b41044f64e33b62e86bef1e594acf39aa3585797f32fb9f0ed63d793",
+          "relative_path": "tests/test_itsdangerous/test_serializer.py",
+          "qualified_name": "TestSerializer.test_fallback_signers",
+          "start_line": 155,
+          "end_line": 164,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "6f0afc8d46fe1f920e3af574531758c2e6027d10ef89d154b8a2352e54675d8c",
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer.iter_unsigners",
+          "start_line": 287,
+          "end_line": 307,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "e1948ffe22b06809f3490abc891ec9ad5c584b2dd512c9192096d5e743e2f7a9",
+          "relative_path": "src/itsdangerous/signer.py",
+          "qualified_name": "Signer",
+          "start_line": 76,
+          "end_line": 266,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "e0eaf74916d37220c6c901430587e9d4f9cf2339a219e04d07e58cb87425b4c2",
+          "relative_path": "tests/test_itsdangerous/test_signer.py",
+          "qualified_name": "TestSigner.signer",
+          "start_line": 24,
+          "end_line": 25,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "0076327626f5757604b042bc41e0ce8bb86527cbc72e7fbadadc6573b3953679",
+          "relative_path": "tests/test_itsdangerous/test_timed.py",
+          "qualified_name": "TestTimestampSigner.test_future_age",
+          "start_line": 78,
+          "end_line": 85,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "da63d1c0fa6d30bac53ee9df14d7cadf81d6c013eb886dd6514c1d31e67586a7",
+          "relative_path": "tests/test_itsdangerous/test_timed.py",
+          "qualified_name": "TestTimestampSigner.test_malformed_future_timestamp",
+          "start_line": 69,
+          "end_line": 76,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "df6bee8c75964ba7ac675ae43431b7449fc719ad847189ea7a0bd13a918a8e0d",
+          "relative_path": "tests/test_itsdangerous/test_signer.py",
+          "qualified_name": "TestSigner.test_changed_value",
+          "start_line": 53,
+          "end_line": 59,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "beac3f2fde4fa86e81846b7a05384dbbb12aac1adc1eded9a5757c78f53c01ce",
+          "relative_path": "tests/test_itsdangerous/test_timed.py",
+          "qualified_name": "TestTimestampSigner.test_sig_error_date_signed",
+          "start_line": 87,
+          "end_line": 93,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "55d7cf57411c9d230597f5fc18d6dda829b10182e2d69b8101d0ee17c4094bcd",
+          "relative_path": "tests/test_itsdangerous/test_signer.py",
+          "qualified_name": "TestSigner.test_broken_signature",
+          "start_line": 42,
+          "end_line": 51,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer.iter_unsigners",
+          "start_line": 287,
+          "end_line": 307
+        },
+        {
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer.loads",
+          "start_line": 328,
+          "end_line": 343
+        }
+      ],
+      "first_relevant_rank": 3,
+      "first_relevant_rank_at_depth": 3,
+      "evidence_recall_at_3": 0.5,
+      "evidence_recall_at_10": 0.5,
+      "evidence_recall_at_depth": 0.5,
+      "latency_ms": 182.56,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_rrf_control",
+      "question_id": "itsdangerous_timed_signing_en",
+      "pair_id": "itsdangerous_timed_signing",
+      "language": "en",
+      "repository_name": "pallets/itsdangerous",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "rrf_fusion_score",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "f0fd8c0052e315bfe81567f8e38b1d50435e5282021ea44e8e61bb99e7f76ed9",
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.unsign",
+          "start_line": 72,
+          "end_line": 158,
+          "score": 0.032266458495966696,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "0c615bad0d53c7003a3f4ec464f127e2fe6c8a74b7e0c4b8b2d60a6b631a4585",
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.validate",
+          "start_line": 160,
+          "end_line": 167,
+          "score": 0.032266458495966696,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "a532951cc2281d66e27db579107b761843e7d50a5ca1f64452f8dedec976817b",
+          "relative_path": "src/itsdangerous/signer.py",
+          "qualified_name": "Signer.validate",
+          "start_line": 258,
+          "end_line": 266,
+          "score": 0.030621785881252923,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "39f77ccc42f45dd92afe1ce216cfdff4e411280c0187759dc858a12af20fdad7",
+          "relative_path": "src/itsdangerous/exc.py",
+          "qualified_name": "BadTimeSignature.__init__",
+          "start_line": 41,
+          "end_line": 57,
+          "score": 0.029631255487269532,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "71f67f01a9dc44c0dcb8335113ae16692b35f8e19f2aa4f381072135c62cff26",
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimedSerializer.loads",
+          "start_line": 185,
+          "end_line": 220,
+          "score": 0.016129032258064516,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "3f7680571ad10dc8b380f2b7a6d133585845652bd902cbae398be0e7e5cd2772",
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer",
+          "start_line": 40,
+          "end_line": 404,
+          "score": 0.015625,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "0076327626f5757604b042bc41e0ce8bb86527cbc72e7fbadadc6573b3953679",
+          "relative_path": "tests/test_itsdangerous/test_timed.py",
+          "qualified_name": "TestTimestampSigner.test_future_age",
+          "start_line": 78,
+          "end_line": 85,
+          "score": 0.015625,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "e1948ffe22b06809f3490abc891ec9ad5c584b2dd512c9192096d5e743e2f7a9",
+          "relative_path": "src/itsdangerous/signer.py",
+          "qualified_name": "Signer",
+          "start_line": 76,
+          "end_line": 266,
+          "score": 0.015384615384615385,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "db918f117a8f25530c6b67e6f03b2075723252988d6ed20bb2088555738a291d",
+          "relative_path": "tests/test_itsdangerous/test_timed.py",
+          "qualified_name": "TestTimestampSigner.test_max_age",
+          "start_line": 34,
+          "end_line": 43,
+          "score": 0.015384615384615385,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "5d6196f7b93f63fa2d7e50048263893095d43240ed93d29241cb0dba78cb7e60",
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer.loads_unsafe",
+          "start_line": 349,
+          "end_line": 365,
+          "score": 0.015151515151515152,
+          "score_semantics": "rrf_fusion_score"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.sign",
+          "start_line": 45,
+          "end_line": 51
+        },
+        {
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.unsign",
+          "start_line": 72,
+          "end_line": 158
+        }
+      ],
+      "first_relevant_rank": 1,
+      "first_relevant_rank_at_depth": 1,
+      "evidence_recall_at_3": 0.5,
+      "evidence_recall_at_10": 0.5,
+      "evidence_recall_at_depth": 0.5,
+      "latency_ms": 122.215,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "itsdangerous_timed_signing_en",
+      "pair_id": "itsdangerous_timed_signing",
+      "language": "en",
+      "repository_name": "pallets/itsdangerous",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "not_applicable_order_only",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "f0fd8c0052e315bfe81567f8e38b1d50435e5282021ea44e8e61bb99e7f76ed9",
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.unsign",
+          "start_line": 72,
+          "end_line": 158,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "0c615bad0d53c7003a3f4ec464f127e2fe6c8a74b7e0c4b8b2d60a6b631a4585",
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.validate",
+          "start_line": 160,
+          "end_line": 167,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "a532951cc2281d66e27db579107b761843e7d50a5ca1f64452f8dedec976817b",
+          "relative_path": "src/itsdangerous/signer.py",
+          "qualified_name": "Signer.validate",
+          "start_line": 258,
+          "end_line": 266,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "71f67f01a9dc44c0dcb8335113ae16692b35f8e19f2aa4f381072135c62cff26",
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimedSerializer.loads",
+          "start_line": 185,
+          "end_line": 220,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "3f7680571ad10dc8b380f2b7a6d133585845652bd902cbae398be0e7e5cd2772",
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer",
+          "start_line": 40,
+          "end_line": 404,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "0076327626f5757604b042bc41e0ce8bb86527cbc72e7fbadadc6573b3953679",
+          "relative_path": "tests/test_itsdangerous/test_timed.py",
+          "qualified_name": "TestTimestampSigner.test_future_age",
+          "start_line": 78,
+          "end_line": 85,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "e1948ffe22b06809f3490abc891ec9ad5c584b2dd512c9192096d5e743e2f7a9",
+          "relative_path": "src/itsdangerous/signer.py",
+          "qualified_name": "Signer",
+          "start_line": 76,
+          "end_line": 266,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "db918f117a8f25530c6b67e6f03b2075723252988d6ed20bb2088555738a291d",
+          "relative_path": "tests/test_itsdangerous/test_timed.py",
+          "qualified_name": "TestTimestampSigner.test_max_age",
+          "start_line": 34,
+          "end_line": 43,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "5d6196f7b93f63fa2d7e50048263893095d43240ed93d29241cb0dba78cb7e60",
+          "relative_path": "src/itsdangerous/serializer.py",
+          "qualified_name": "Serializer.loads_unsafe",
+          "start_line": 349,
+          "end_line": 365,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "22c6cad2b1fb723cff55a600491d929ea91d57ba5d3760cfc20c4a07a29c1eb1",
+          "relative_path": "tests/test_itsdangerous/test_timed.py",
+          "qualified_name": "TestTimedSerializer.test_max_age",
+          "start_line": 101,
+          "end_line": 111,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.sign",
+          "start_line": 45,
+          "end_line": 51
+        },
+        {
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.unsign",
+          "start_line": 72,
+          "end_line": 158
+        }
+      ],
+      "first_relevant_rank": 1,
+      "first_relevant_rank_at_depth": 1,
+      "evidence_recall_at_3": 0.5,
+      "evidence_recall_at_10": 0.5,
+      "evidence_recall_at_depth": 0.5,
+      "latency_ms": 122.192,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_rrf_control",
+      "question_id": "itsdangerous_timed_signing_fa",
+      "pair_id": "itsdangerous_timed_signing",
+      "language": "fa",
+      "repository_name": "pallets/itsdangerous",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "rrf_fusion_score",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "e4fcade7fc56de18f97f4a7b2806b31d1a7c9dd48e0ae854ee0adc2a34600fcc",
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.timestamp_to_datetime",
+          "start_line": 35,
+          "end_line": 43,
+          "score": 0.032266458495966696,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "f0fd8c0052e315bfe81567f8e38b1d50435e5282021ea44e8e61bb99e7f76ed9",
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.unsign",
+          "start_line": 72,
+          "end_line": 158,
+          "score": 0.0315136476426799,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "bc675b6b6ed4750ae4fe5fcd10f9b83cf39845d32dc419583a001770723e5a07",
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.get_timestamp",
+          "start_line": 29,
+          "end_line": 33,
+          "score": 0.031054405392392875,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "a6e6c91ad63e2f616ee6dfbfb8ba6b94d624c0f7d4a8e954c8262db82d034f55",
+          "relative_path": "src/itsdangerous/exc.py",
+          "qualified_name": "SignatureExpired",
+          "start_line": 60,
+          "end_line": 63,
+          "score": 0.01639344262295082,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "06fada44824083fd3ca4bc37037f416691c848371371d1eddc496b3671e23f82",
+          "relative_path": "tests/test_itsdangerous/test_timed.py",
+          "qualified_name": "FreezeMixin.ts",
+          "start_line": 20,
+          "end_line": 21,
+          "score": 0.015873015873015872,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "39f77ccc42f45dd92afe1ce216cfdff4e411280c0187759dc858a12af20fdad7",
+          "relative_path": "src/itsdangerous/exc.py",
+          "qualified_name": "BadTimeSignature.__init__",
+          "start_line": 41,
+          "end_line": 57,
+          "score": 0.015625,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "bf58dfcee15072f56c317ffcd6721e94b89d3c0ea95cbad6d26af5c7ae9d9ea5",
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.sign",
+          "start_line": 45,
+          "end_line": 51,
+          "score": 0.015625,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "da63d1c0fa6d30bac53ee9df14d7cadf81d6c013eb886dd6514c1d31e67586a7",
+          "relative_path": "tests/test_itsdangerous/test_timed.py",
+          "qualified_name": "TestTimestampSigner.test_malformed_future_timestamp",
+          "start_line": 69,
+          "end_line": 76,
+          "score": 0.015384615384615385,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "e8327b866f37137fdbc66deaf39417c2495699a20cfc243f3b0d2b8de5582fc8",
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.unsign",
+          "start_line": 65,
+          "end_line": 70,
+          "score": 0.015151515151515152,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "71f67f01a9dc44c0dcb8335113ae16692b35f8e19f2aa4f381072135c62cff26",
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimedSerializer.loads",
+          "start_line": 185,
+          "end_line": 220,
+          "score": 0.015151515151515152,
+          "score_semantics": "rrf_fusion_score"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.sign",
+          "start_line": 45,
+          "end_line": 51
+        },
+        {
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.unsign",
+          "start_line": 72,
+          "end_line": 158
+        }
+      ],
+      "first_relevant_rank": 2,
+      "first_relevant_rank_at_depth": 2,
+      "evidence_recall_at_3": 0.5,
+      "evidence_recall_at_10": 1.0,
+      "evidence_recall_at_depth": 1.0,
+      "latency_ms": 186.19,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "itsdangerous_timed_signing_fa",
+      "pair_id": "itsdangerous_timed_signing",
+      "language": "fa",
+      "repository_name": "pallets/itsdangerous",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "not_applicable_order_only",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "a6e6c91ad63e2f616ee6dfbfb8ba6b94d624c0f7d4a8e954c8262db82d034f55",
+          "relative_path": "src/itsdangerous/exc.py",
+          "qualified_name": "SignatureExpired",
+          "start_line": 60,
+          "end_line": 63,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "e4fcade7fc56de18f97f4a7b2806b31d1a7c9dd48e0ae854ee0adc2a34600fcc",
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.timestamp_to_datetime",
+          "start_line": 35,
+          "end_line": 43,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "bc675b6b6ed4750ae4fe5fcd10f9b83cf39845d32dc419583a001770723e5a07",
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.get_timestamp",
+          "start_line": 29,
+          "end_line": 33,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "f0fd8c0052e315bfe81567f8e38b1d50435e5282021ea44e8e61bb99e7f76ed9",
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.unsign",
+          "start_line": 72,
+          "end_line": 158,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "06fada44824083fd3ca4bc37037f416691c848371371d1eddc496b3671e23f82",
+          "relative_path": "tests/test_itsdangerous/test_timed.py",
+          "qualified_name": "FreezeMixin.ts",
+          "start_line": 20,
+          "end_line": 21,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "bf58dfcee15072f56c317ffcd6721e94b89d3c0ea95cbad6d26af5c7ae9d9ea5",
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.sign",
+          "start_line": 45,
+          "end_line": 51,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "39f77ccc42f45dd92afe1ce216cfdff4e411280c0187759dc858a12af20fdad7",
+          "relative_path": "src/itsdangerous/exc.py",
+          "qualified_name": "BadTimeSignature.__init__",
+          "start_line": 41,
+          "end_line": 57,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "da63d1c0fa6d30bac53ee9df14d7cadf81d6c013eb886dd6514c1d31e67586a7",
+          "relative_path": "tests/test_itsdangerous/test_timed.py",
+          "qualified_name": "TestTimestampSigner.test_malformed_future_timestamp",
+          "start_line": 69,
+          "end_line": 76,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "71f67f01a9dc44c0dcb8335113ae16692b35f8e19f2aa4f381072135c62cff26",
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimedSerializer.loads",
+          "start_line": 185,
+          "end_line": 220,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "e8327b866f37137fdbc66deaf39417c2495699a20cfc243f3b0d2b8de5582fc8",
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.unsign",
+          "start_line": 65,
+          "end_line": 70,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.sign",
+          "start_line": 45,
+          "end_line": 51
+        },
+        {
+          "relative_path": "src/itsdangerous/timed.py",
+          "qualified_name": "TimestampSigner.unsign",
+          "start_line": 72,
+          "end_line": 158
+        }
+      ],
+      "first_relevant_rank": 4,
+      "first_relevant_rank_at_depth": 4,
+      "evidence_recall_at_3": 0.0,
+      "evidence_recall_at_10": 1.0,
+      "evidence_recall_at_depth": 1.0,
+      "latency_ms": 186.176,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_rrf_control",
+      "question_id": "markupsafe_escape_workflow_en",
+      "pair_id": "markupsafe_escape_workflow",
+      "language": "en",
+      "repository_name": "pallets/markupsafe",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "rrf_fusion_score",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "d5a5fe8f67253b1a780455d5f8800a878c455e3780c098d4c06c50fb3081ceeb",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.escape",
+          "start_line": 231,
+          "end_line": 240,
+          "score": 0.03125763125763126,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "8ed9dd99036fd2135c3083ef8316706ae42ec4bc003731f7d8664e013a520cd5",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "escape",
+          "start_line": 24,
+          "end_line": 45,
+          "score": 0.030886196246139225,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "174e43c398b28f69b412f2d8e4abf2ebd96e753e7979083dc965401a12b16c7c",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "escape_silent",
+          "start_line": 48,
+          "end_line": 61,
+          "score": 0.030330882352941176,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "f95983d9e7672764a7e030db071e3d5ad7ced4203e080e9c4bb0b095aa9cb070",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.__add__",
+          "start_line": 136,
+          "end_line": 140,
+          "score": 0.029437229437229435,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "c48cad985c05e1ff70d306a77d1141f3dd90c0da19eb58c12464b5227eba5bd7",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.unescape",
+          "start_line": 188,
+          "end_line": 197,
+          "score": 0.029211087420042643,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "2acd8078f0f7e1b5a78e9d26d2d360120f492a7f2fd17ed3c5ea37fdefc79c14",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.join",
+          "start_line": 170,
+          "end_line": 171,
+          "score": 0.01639344262295082,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "84541c0ca523417046b7d516d40991519dec3d3af8f8832452626c5d5cdf41c5",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup",
+          "start_line": 84,
+          "end_line": 329,
+          "score": 0.016129032258064516,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "1809178346e7d34a6c00c220479744182c49fb99cb031feb4c46eaf0841e6297",
+          "relative_path": "tests/test_escape.py",
+          "qualified_name": "Proxy.__init__",
+          "start_line": 38,
+          "end_line": 39,
+          "score": 0.016129032258064516,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "6110c9d2102727e23723744b0c784d16ae7589319405899d6529f2429272d814",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "EscapeFormatter.__init__",
+          "start_line": 335,
+          "end_line": 337,
+          "score": 0.015873015873015872,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "ecde458a378d8ff90c044ba998afaecf0cfc05d9316514b68450e5ca6754c1eb",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.__mod__",
+          "start_line": 154,
+          "end_line": 165,
+          "score": 0.015625,
+          "score_semantics": "rrf_fusion_score"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.__add__",
+          "start_line": 136,
+          "end_line": 140
+        },
+        {
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.join",
+          "start_line": 170,
+          "end_line": 171
+        }
+      ],
+      "first_relevant_rank": 4,
+      "first_relevant_rank_at_depth": 4,
+      "evidence_recall_at_3": 0.0,
+      "evidence_recall_at_10": 1.0,
+      "evidence_recall_at_depth": 1.0,
+      "latency_ms": 95.092,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "markupsafe_escape_workflow_en",
+      "pair_id": "markupsafe_escape_workflow",
+      "language": "en",
+      "repository_name": "pallets/markupsafe",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "not_applicable_order_only",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "8ed9dd99036fd2135c3083ef8316706ae42ec4bc003731f7d8664e013a520cd5",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "escape",
+          "start_line": 24,
+          "end_line": 45,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "2acd8078f0f7e1b5a78e9d26d2d360120f492a7f2fd17ed3c5ea37fdefc79c14",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.join",
+          "start_line": 170,
+          "end_line": 171,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "84541c0ca523417046b7d516d40991519dec3d3af8f8832452626c5d5cdf41c5",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup",
+          "start_line": 84,
+          "end_line": 329,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "1809178346e7d34a6c00c220479744182c49fb99cb031feb4c46eaf0841e6297",
+          "relative_path": "tests/test_escape.py",
+          "qualified_name": "Proxy.__init__",
+          "start_line": 38,
+          "end_line": 39,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "d5a5fe8f67253b1a780455d5f8800a878c455e3780c098d4c06c50fb3081ceeb",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.escape",
+          "start_line": 231,
+          "end_line": 240,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "6110c9d2102727e23723744b0c784d16ae7589319405899d6529f2429272d814",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "EscapeFormatter.__init__",
+          "start_line": 335,
+          "end_line": 337,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "ecde458a378d8ff90c044ba998afaecf0cfc05d9316514b68450e5ca6754c1eb",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.__mod__",
+          "start_line": 154,
+          "end_line": 165,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "174e43c398b28f69b412f2d8e4abf2ebd96e753e7979083dc965401a12b16c7c",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "escape_silent",
+          "start_line": 48,
+          "end_line": 61,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "e438fd6df4d59e2334abacbfe6021a245699765cad73791e0a23a5bf044ab8e6",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.striptags",
+          "start_line": 199,
+          "end_line": 228,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "25f6ca65f2f9bb964fdafc23f5b280f723668b029266b4c2ab5dfde60e518495",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "soft_str",
+          "start_line": 64,
+          "end_line": 81,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.__add__",
+          "start_line": 136,
+          "end_line": 140
+        },
+        {
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.join",
+          "start_line": 170,
+          "end_line": 171
+        }
+      ],
+      "first_relevant_rank": 2,
+      "first_relevant_rank_at_depth": 2,
+      "evidence_recall_at_3": 0.5,
+      "evidence_recall_at_10": 0.5,
+      "evidence_recall_at_depth": 0.5,
+      "latency_ms": 95.069,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_rrf_control",
+      "question_id": "markupsafe_escape_workflow_fa",
+      "pair_id": "markupsafe_escape_workflow",
+      "language": "fa",
+      "repository_name": "pallets/markupsafe",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "rrf_fusion_score",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "2acd8078f0f7e1b5a78e9d26d2d360120f492a7f2fd17ed3c5ea37fdefc79c14",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.join",
+          "start_line": 170,
+          "end_line": 171,
+          "score": 0.03278688524590164,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "8ed9dd99036fd2135c3083ef8316706ae42ec4bc003731f7d8664e013a520cd5",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "escape",
+          "start_line": 24,
+          "end_line": 45,
+          "score": 0.03200204813108039,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "84541c0ca523417046b7d516d40991519dec3d3af8f8832452626c5d5cdf41c5",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup",
+          "start_line": 84,
+          "end_line": 329,
+          "score": 0.030117753623188408,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "d5a5fe8f67253b1a780455d5f8800a878c455e3780c098d4c06c50fb3081ceeb",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.escape",
+          "start_line": 231,
+          "end_line": 240,
+          "score": 0.016129032258064516,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "174e43c398b28f69b412f2d8e4abf2ebd96e753e7979083dc965401a12b16c7c",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "escape_silent",
+          "start_line": 48,
+          "end_line": 61,
+          "score": 0.015873015873015872,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "6110c9d2102727e23723744b0c784d16ae7589319405899d6529f2429272d814",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "EscapeFormatter.__init__",
+          "start_line": 335,
+          "end_line": 337,
+          "score": 0.015625,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "e438fd6df4d59e2334abacbfe6021a245699765cad73791e0a23a5bf044ab8e6",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.striptags",
+          "start_line": 199,
+          "end_line": 228,
+          "score": 0.015384615384615385,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "d30ce3e562cf96c9e3002b440fce8aa74deaabb6c5ac77e5fd03a525b59bdbf9",
+          "relative_path": "tests/test_markupsafe.py",
+          "qualified_name": "test_escape_silent",
+          "start_line": 177,
+          "end_line": 180,
+          "score": 0.015384615384615385,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "f95983d9e7672764a7e030db071e3d5ad7ced4203e080e9c4bb0b095aa9cb070",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.__add__",
+          "start_line": 136,
+          "end_line": 140,
+          "score": 0.015151515151515152,
+          "score_semantics": "rrf_fusion_score"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "5446518e55e80761c0b2e70a00eee19ce879c407cc9eaf372d6a1d342ee8b3c1",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "_MarkupEscapeHelper.__init__",
+          "start_line": 362,
+          "end_line": 364,
+          "score": 0.015151515151515152,
+          "score_semantics": "rrf_fusion_score"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.__add__",
+          "start_line": 136,
+          "end_line": 140
+        },
+        {
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.join",
+          "start_line": 170,
+          "end_line": 171
+        }
+      ],
+      "first_relevant_rank": 1,
+      "first_relevant_rank_at_depth": 1,
+      "evidence_recall_at_3": 0.5,
+      "evidence_recall_at_10": 1.0,
+      "evidence_recall_at_depth": 1.0,
+      "latency_ms": 170.852,
+      "error": null
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "markupsafe_escape_workflow_fa",
+      "pair_id": "markupsafe_escape_workflow",
+      "language": "fa",
+      "repository_name": "pallets/markupsafe",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "candidate_depth": 10,
+      "evaluation_cutoff": 10,
+      "score_semantics": "not_applicable_order_only",
+      "predictions": [
+        {
+          "rank": 1,
+          "chunk_id": "2acd8078f0f7e1b5a78e9d26d2d360120f492a7f2fd17ed3c5ea37fdefc79c14",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.join",
+          "start_line": 170,
+          "end_line": 171,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "d5a5fe8f67253b1a780455d5f8800a878c455e3780c098d4c06c50fb3081ceeb",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.escape",
+          "start_line": 231,
+          "end_line": 240,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "8ed9dd99036fd2135c3083ef8316706ae42ec4bc003731f7d8664e013a520cd5",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "escape",
+          "start_line": 24,
+          "end_line": 45,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "174e43c398b28f69b412f2d8e4abf2ebd96e753e7979083dc965401a12b16c7c",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "escape_silent",
+          "start_line": 48,
+          "end_line": 61,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "84541c0ca523417046b7d516d40991519dec3d3af8f8832452626c5d5cdf41c5",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup",
+          "start_line": 84,
+          "end_line": 329,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 6,
+          "chunk_id": "6110c9d2102727e23723744b0c784d16ae7589319405899d6529f2429272d814",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "EscapeFormatter.__init__",
+          "start_line": 335,
+          "end_line": 337,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 7,
+          "chunk_id": "e438fd6df4d59e2334abacbfe6021a245699765cad73791e0a23a5bf044ab8e6",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.striptags",
+          "start_line": 199,
+          "end_line": 228,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 8,
+          "chunk_id": "d30ce3e562cf96c9e3002b440fce8aa74deaabb6c5ac77e5fd03a525b59bdbf9",
+          "relative_path": "tests/test_markupsafe.py",
+          "qualified_name": "test_escape_silent",
+          "start_line": 177,
+          "end_line": 180,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 9,
+          "chunk_id": "f95983d9e7672764a7e030db071e3d5ad7ced4203e080e9c4bb0b095aa9cb070",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.__add__",
+          "start_line": 136,
+          "end_line": 140,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        },
+        {
+          "rank": 10,
+          "chunk_id": "5446518e55e80761c0b2e70a00eee19ce879c407cc9eaf372d6a1d342ee8b3c1",
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "_MarkupEscapeHelper.__init__",
+          "start_line": 362,
+          "end_line": 364,
+          "score": null,
+          "score_semantics": "not_applicable_order_only"
+        }
+      ],
+      "expected": [
+        {
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.__add__",
+          "start_line": 136,
+          "end_line": 140
+        },
+        {
+          "relative_path": "src/markupsafe/__init__.py",
+          "qualified_name": "Markup.join",
+          "start_line": 170,
+          "end_line": 171
+        }
+      ],
+      "first_relevant_rank": 1,
+      "first_relevant_rank_at_depth": 1,
+      "evidence_recall_at_3": 0.5,
+      "evidence_recall_at_10": 1.0,
+      "evidence_recall_at_depth": 1.0,
+      "latency_ms": 170.827,
+      "error": null
+    }
+  ],
+  "comparisons_to_official_baseline": [
+    {
+      "configuration_id": "e3_rrf_control",
+      "question_id": "flask_request_lifecycle_en",
+      "pair_id": "flask_request_lifecycle",
+      "language": "en",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 1,
+      "candidate_first_relevant_rank": 1,
+      "threshold_transitions": {
+        "top_1": "unchanged_success",
+        "top_3": "unchanged_success",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 1.0,
+      "candidate_evidence_recall_at_10": 1.0,
+      "evidence_recall_at_10_delta": 0.0
+    },
+    {
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "flask_request_lifecycle_en",
+      "pair_id": "flask_request_lifecycle",
+      "language": "en",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 1,
+      "candidate_first_relevant_rank": 3,
+      "threshold_transitions": {
+        "top_1": "regression",
+        "top_3": "unchanged_success",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 1.0,
+      "candidate_evidence_recall_at_10": 0.5,
+      "evidence_recall_at_10_delta": -0.5
+    },
+    {
+      "configuration_id": "e3_rrf_control",
+      "question_id": "flask_request_lifecycle_fa",
+      "pair_id": "flask_request_lifecycle",
+      "language": "fa",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 1,
+      "candidate_first_relevant_rank": 1,
+      "threshold_transitions": {
+        "top_1": "unchanged_success",
+        "top_3": "unchanged_success",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 1.0,
+      "candidate_evidence_recall_at_10": 1.0,
+      "evidence_recall_at_10_delta": 0.0
+    },
+    {
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "flask_request_lifecycle_fa",
+      "pair_id": "flask_request_lifecycle",
+      "language": "fa",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 1,
+      "candidate_first_relevant_rank": 10,
+      "threshold_transitions": {
+        "top_1": "regression",
+        "top_3": "regression",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 1.0,
+      "candidate_evidence_recall_at_10": 0.5,
+      "evidence_recall_at_10_delta": -0.5
+    },
+    {
+      "configuration_id": "e3_rrf_control",
+      "question_id": "flask_route_registration_en",
+      "pair_id": "flask_route_registration",
+      "language": "en",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 1,
+      "candidate_first_relevant_rank": 1,
+      "threshold_transitions": {
+        "top_1": "unchanged_success",
+        "top_3": "unchanged_success",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 0.5,
+      "candidate_evidence_recall_at_10": 0.5,
+      "evidence_recall_at_10_delta": 0.0
+    },
+    {
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "flask_route_registration_en",
+      "pair_id": "flask_route_registration",
+      "language": "en",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 1,
+      "candidate_first_relevant_rank": 1,
+      "threshold_transitions": {
+        "top_1": "unchanged_success",
+        "top_3": "unchanged_success",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 0.5,
+      "candidate_evidence_recall_at_10": 0.5,
+      "evidence_recall_at_10_delta": 0.0
+    },
+    {
+      "configuration_id": "e3_rrf_control",
+      "question_id": "flask_route_registration_fa",
+      "pair_id": "flask_route_registration",
+      "language": "fa",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 1,
+      "candidate_first_relevant_rank": 1,
+      "threshold_transitions": {
+        "top_1": "unchanged_success",
+        "top_3": "unchanged_success",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 0.5,
+      "candidate_evidence_recall_at_10": 0.5,
+      "evidence_recall_at_10_delta": 0.0
+    },
+    {
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "flask_route_registration_fa",
+      "pair_id": "flask_route_registration",
+      "language": "fa",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 1,
+      "candidate_first_relevant_rank": 1,
+      "threshold_transitions": {
+        "top_1": "unchanged_success",
+        "top_3": "unchanged_success",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 0.5,
+      "candidate_evidence_recall_at_10": 0.5,
+      "evidence_recall_at_10_delta": 0.0
+    },
+    {
+      "configuration_id": "e3_rrf_control",
+      "question_id": "flask_session_cookie_round_trip_en",
+      "pair_id": "flask_session_cookie_round_trip",
+      "language": "en",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 2,
+      "candidate_first_relevant_rank": 2,
+      "threshold_transitions": {
+        "top_1": "unchanged_fail",
+        "top_3": "unchanged_success",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 1.0,
+      "candidate_evidence_recall_at_10": 1.0,
+      "evidence_recall_at_10_delta": 0.0
+    },
+    {
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "flask_session_cookie_round_trip_en",
+      "pair_id": "flask_session_cookie_round_trip",
+      "language": "en",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 2,
+      "candidate_first_relevant_rank": 2,
+      "threshold_transitions": {
+        "top_1": "unchanged_fail",
+        "top_3": "unchanged_success",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 1.0,
+      "candidate_evidence_recall_at_10": 1.0,
+      "evidence_recall_at_10_delta": 0.0
+    },
+    {
+      "configuration_id": "e3_rrf_control",
+      "question_id": "flask_session_cookie_round_trip_fa",
+      "pair_id": "flask_session_cookie_round_trip",
+      "language": "fa",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 4,
+      "candidate_first_relevant_rank": 4,
+      "threshold_transitions": {
+        "top_1": "unchanged_fail",
+        "top_3": "unchanged_fail",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 0.5,
+      "candidate_evidence_recall_at_10": 0.5,
+      "evidence_recall_at_10_delta": 0.0
+    },
+    {
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "flask_session_cookie_round_trip_fa",
+      "pair_id": "flask_session_cookie_round_trip",
+      "language": "fa",
+      "repository_name": "pallets/flask",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 4,
+      "candidate_first_relevant_rank": 4,
+      "threshold_transitions": {
+        "top_1": "unchanged_fail",
+        "top_3": "unchanged_fail",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 0.5,
+      "candidate_evidence_recall_at_10": 0.5,
+      "evidence_recall_at_10_delta": 0.0
+    },
+    {
+      "configuration_id": "e3_rrf_control",
+      "question_id": "itsdangerous_fallback_unsigners_en",
+      "pair_id": "itsdangerous_fallback_unsigners",
+      "language": "en",
+      "repository_name": "pallets/itsdangerous",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 5,
+      "candidate_first_relevant_rank": 5,
+      "threshold_transitions": {
+        "top_1": "unchanged_fail",
+        "top_3": "unchanged_fail",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 0.5,
+      "candidate_evidence_recall_at_10": 0.5,
+      "evidence_recall_at_10_delta": 0.0
+    },
+    {
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "itsdangerous_fallback_unsigners_en",
+      "pair_id": "itsdangerous_fallback_unsigners",
+      "language": "en",
+      "repository_name": "pallets/itsdangerous",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 5,
+      "candidate_first_relevant_rank": 5,
+      "threshold_transitions": {
+        "top_1": "unchanged_fail",
+        "top_3": "unchanged_fail",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 0.5,
+      "candidate_evidence_recall_at_10": 0.5,
+      "evidence_recall_at_10_delta": 0.0
+    },
+    {
+      "configuration_id": "e3_rrf_control",
+      "question_id": "itsdangerous_fallback_unsigners_fa",
+      "pair_id": "itsdangerous_fallback_unsigners",
+      "language": "fa",
+      "repository_name": "pallets/itsdangerous",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 1,
+      "candidate_first_relevant_rank": 1,
+      "threshold_transitions": {
+        "top_1": "unchanged_success",
+        "top_3": "unchanged_success",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 0.5,
+      "candidate_evidence_recall_at_10": 0.5,
+      "evidence_recall_at_10_delta": 0.0
+    },
+    {
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "itsdangerous_fallback_unsigners_fa",
+      "pair_id": "itsdangerous_fallback_unsigners",
+      "language": "fa",
+      "repository_name": "pallets/itsdangerous",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 1,
+      "candidate_first_relevant_rank": 3,
+      "threshold_transitions": {
+        "top_1": "regression",
+        "top_3": "unchanged_success",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 0.5,
+      "candidate_evidence_recall_at_10": 0.5,
+      "evidence_recall_at_10_delta": 0.0
+    },
+    {
+      "configuration_id": "e3_rrf_control",
+      "question_id": "itsdangerous_timed_signing_en",
+      "pair_id": "itsdangerous_timed_signing",
+      "language": "en",
+      "repository_name": "pallets/itsdangerous",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 1,
+      "candidate_first_relevant_rank": 1,
+      "threshold_transitions": {
+        "top_1": "unchanged_success",
+        "top_3": "unchanged_success",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 0.5,
+      "candidate_evidence_recall_at_10": 0.5,
+      "evidence_recall_at_10_delta": 0.0
+    },
+    {
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "itsdangerous_timed_signing_en",
+      "pair_id": "itsdangerous_timed_signing",
+      "language": "en",
+      "repository_name": "pallets/itsdangerous",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 1,
+      "candidate_first_relevant_rank": 1,
+      "threshold_transitions": {
+        "top_1": "unchanged_success",
+        "top_3": "unchanged_success",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 0.5,
+      "candidate_evidence_recall_at_10": 0.5,
+      "evidence_recall_at_10_delta": 0.0
+    },
+    {
+      "configuration_id": "e3_rrf_control",
+      "question_id": "itsdangerous_timed_signing_fa",
+      "pair_id": "itsdangerous_timed_signing",
+      "language": "fa",
+      "repository_name": "pallets/itsdangerous",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 2,
+      "candidate_first_relevant_rank": 2,
+      "threshold_transitions": {
+        "top_1": "unchanged_fail",
+        "top_3": "unchanged_success",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 1.0,
+      "candidate_evidence_recall_at_10": 1.0,
+      "evidence_recall_at_10_delta": 0.0
+    },
+    {
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "itsdangerous_timed_signing_fa",
+      "pair_id": "itsdangerous_timed_signing",
+      "language": "fa",
+      "repository_name": "pallets/itsdangerous",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 2,
+      "candidate_first_relevant_rank": 4,
+      "threshold_transitions": {
+        "top_1": "unchanged_fail",
+        "top_3": "regression",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 1.0,
+      "candidate_evidence_recall_at_10": 1.0,
+      "evidence_recall_at_10_delta": 0.0
+    },
+    {
+      "configuration_id": "e3_rrf_control",
+      "question_id": "markupsafe_escape_workflow_en",
+      "pair_id": "markupsafe_escape_workflow",
+      "language": "en",
+      "repository_name": "pallets/markupsafe",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 4,
+      "candidate_first_relevant_rank": 4,
+      "threshold_transitions": {
+        "top_1": "unchanged_fail",
+        "top_3": "unchanged_fail",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 1.0,
+      "candidate_evidence_recall_at_10": 1.0,
+      "evidence_recall_at_10_delta": 0.0
+    },
+    {
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "markupsafe_escape_workflow_en",
+      "pair_id": "markupsafe_escape_workflow",
+      "language": "en",
+      "repository_name": "pallets/markupsafe",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 4,
+      "candidate_first_relevant_rank": 2,
+      "threshold_transitions": {
+        "top_1": "unchanged_fail",
+        "top_3": "repair",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 1.0,
+      "candidate_evidence_recall_at_10": 0.5,
+      "evidence_recall_at_10_delta": -0.5
+    },
+    {
+      "configuration_id": "e3_rrf_control",
+      "question_id": "markupsafe_escape_workflow_fa",
+      "pair_id": "markupsafe_escape_workflow",
+      "language": "fa",
+      "repository_name": "pallets/markupsafe",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 1,
+      "candidate_first_relevant_rank": 1,
+      "threshold_transitions": {
+        "top_1": "unchanged_success",
+        "top_3": "unchanged_success",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 1.0,
+      "candidate_evidence_recall_at_10": 1.0,
+      "evidence_recall_at_10_delta": 0.0
+    },
+    {
+      "configuration_id": "e3_balanced_interleave",
+      "question_id": "markupsafe_escape_workflow_fa",
+      "pair_id": "markupsafe_escape_workflow",
+      "language": "fa",
+      "repository_name": "pallets/markupsafe",
+      "category": "multi_symbol",
+      "method": "hybrid",
+      "baseline_first_relevant_rank": 1,
+      "candidate_first_relevant_rank": 1,
+      "threshold_transitions": {
+        "top_1": "unchanged_success",
+        "top_3": "unchanged_success",
+        "top_10": "unchanged_success"
+      },
+      "baseline_evidence_recall_at_10": 1.0,
+      "candidate_evidence_recall_at_10": 1.0,
+      "evidence_recall_at_10_delta": 0.0
+    }
+  ],
+  "aggregates": {
+    "e3_balanced_interleave": [
+      {
+        "slice": {
+          "kind": "global_micro",
+          "value": "all"
+        },
+        "method": "hybrid",
+        "questions": 12,
+        "failures": 0,
+        "top_1": 0.3333333333333333,
+        "top_3": 0.6666666666666666,
+        "mrr_at_10": 0.5388888888888889,
+        "evidence_recall_at_3": 0.3333333333333333,
+        "evidence_recall_at_10": 0.625,
+        "latency_ms": {
+          "samples": 12,
+          "min": 95.069,
+          "mean": 187.302,
+          "median": 195.243,
+          "p50": 195.243,
+          "p95": 264.418,
+          "max": 264.418
+        }
+      },
+      {
+        "slice": {
+          "kind": "language",
+          "value": "en"
+        },
+        "method": "hybrid",
+        "questions": 6,
+        "failures": 0,
+        "top_1": 0.3333333333333333,
+        "top_3": 0.8333333333333334,
+        "mrr_at_10": 0.5888888888888889,
+        "evidence_recall_at_3": 0.4166666666666667,
+        "evidence_recall_at_10": 0.5833333333333334,
+        "latency_ms": {
+          "samples": 6,
+          "min": 95.069,
+          "mean": 164.1,
+          "median": 163.25,
+          "p50": 163.25,
+          "p95": 239.137,
+          "max": 239.137
+        }
+      },
+      {
+        "slice": {
+          "kind": "language",
+          "value": "fa"
+        },
+        "method": "hybrid",
+        "questions": 6,
+        "failures": 0,
+        "top_1": 0.3333333333333333,
+        "top_3": 0.5,
+        "mrr_at_10": 0.48888888888888893,
+        "evidence_recall_at_3": 0.25,
+        "evidence_recall_at_10": 0.6666666666666666,
+        "latency_ms": {
+          "samples": 6,
+          "min": 170.827,
+          "mean": 210.505,
+          "median": 206.171,
+          "p50": 206.171,
+          "p95": 264.418,
+          "max": 264.418
+        }
+      },
+      {
+        "slice": {
+          "kind": "repository_name",
+          "value": "pallets/flask"
+        },
+        "method": "hybrid",
+        "questions": 6,
+        "failures": 0,
+        "top_1": 0.3333333333333333,
+        "top_3": 0.6666666666666666,
+        "mrr_at_10": 0.5305555555555556,
+        "evidence_recall_at_3": 0.3333333333333333,
+        "evidence_recall_at_10": 0.5833333333333334,
+        "latency_ms": {
+          "samples": 6,
+          "min": 204.309,
+          "mean": 232.018,
+          "median": 229.524,
+          "p50": 229.524,
+          "p95": 264.418,
+          "max": 264.418
+        }
+      },
+      {
+        "slice": {
+          "kind": "repository_name",
+          "value": "pallets/itsdangerous"
+        },
+        "method": "hybrid",
+        "questions": 4,
+        "failures": 0,
+        "top_1": 0.25,
+        "top_3": 0.5,
+        "mrr_at_10": 0.4458333333333333,
+        "evidence_recall_at_3": 0.25,
+        "evidence_recall_at_10": 0.625,
+        "latency_ms": {
+          "samples": 4,
+          "min": 98.697,
+          "mean": 147.406,
+          "median": 152.376,
+          "p50": 152.376,
+          "p95": 186.176,
+          "max": 186.176
+        }
+      },
+      {
+        "slice": {
+          "kind": "repository_name",
+          "value": "pallets/markupsafe"
+        },
+        "method": "hybrid",
+        "questions": 2,
+        "failures": 0,
+        "top_1": 0.5,
+        "top_3": 1.0,
+        "mrr_at_10": 0.75,
+        "evidence_recall_at_3": 0.5,
+        "evidence_recall_at_10": 0.75,
+        "latency_ms": {
+          "samples": 2,
+          "min": 95.069,
+          "mean": 132.948,
+          "median": 132.948,
+          "p50": 132.948,
+          "p95": 170.827,
+          "max": 170.827
+        }
+      },
+      {
+        "slice": {
+          "kind": "category",
+          "value": "multi_symbol"
+        },
+        "method": "hybrid",
+        "questions": 12,
+        "failures": 0,
+        "top_1": 0.3333333333333333,
+        "top_3": 0.6666666666666666,
+        "mrr_at_10": 0.5388888888888889,
+        "evidence_recall_at_3": 0.3333333333333333,
+        "evidence_recall_at_10": 0.625,
+        "latency_ms": {
+          "samples": 12,
+          "min": 95.069,
+          "mean": 187.302,
+          "median": 195.243,
+          "p50": 195.243,
+          "p95": 264.418,
+          "max": 264.418
+        }
+      }
+    ],
+    "e3_rrf_control": [
+      {
+        "slice": {
+          "kind": "global_micro",
+          "value": "all"
+        },
+        "method": "hybrid",
+        "questions": 12,
+        "failures": 0,
+        "top_1": 0.5833333333333334,
+        "top_3": 0.75,
+        "mrr_at_10": 0.725,
+        "evidence_recall_at_3": 0.4583333333333333,
+        "evidence_recall_at_10": 0.75,
+        "latency_ms": {
+          "samples": 12,
+          "min": 95.092,
+          "mean": 187.33,
+          "median": 195.267,
+          "p50": 195.267,
+          "p95": 264.466,
+          "max": 264.466
+        }
+      },
+      {
+        "slice": {
+          "kind": "language",
+          "value": "en"
+        },
+        "method": "hybrid",
+        "questions": 6,
+        "failures": 0,
+        "top_1": 0.5,
+        "top_3": 0.6666666666666666,
+        "mrr_at_10": 0.6583333333333333,
+        "evidence_recall_at_3": 0.4166666666666667,
+        "evidence_recall_at_10": 0.75,
+        "latency_ms": {
+          "samples": 6,
+          "min": 95.092,
+          "mean": 164.131,
+          "median": 163.28,
+          "p50": 163.28,
+          "p95": 239.173,
+          "max": 239.173
+        }
+      },
+      {
+        "slice": {
+          "kind": "language",
+          "value": "fa"
+        },
+        "method": "hybrid",
+        "questions": 6,
+        "failures": 0,
+        "top_1": 0.6666666666666666,
+        "top_3": 0.8333333333333334,
+        "mrr_at_10": 0.7916666666666666,
+        "evidence_recall_at_3": 0.5,
+        "evidence_recall_at_10": 0.75,
+        "latency_ms": {
+          "samples": 6,
+          "min": 170.852,
+          "mean": 210.529,
+          "median": 206.193,
+          "p50": 206.193,
+          "p95": 264.466,
+          "max": 264.466
+        }
+      },
+      {
+        "slice": {
+          "kind": "repository_name",
+          "value": "pallets/flask"
+        },
+        "method": "hybrid",
+        "questions": 6,
+        "failures": 0,
+        "top_1": 0.6666666666666666,
+        "top_3": 0.8333333333333334,
+        "mrr_at_10": 0.7916666666666666,
+        "evidence_recall_at_3": 0.5833333333333334,
+        "evidence_recall_at_10": 0.75,
+        "latency_ms": {
+          "samples": 6,
+          "min": 204.345,
+          "mean": 232.052,
+          "median": 229.55,
+          "p50": 229.55,
+          "p95": 264.466,
+          "max": 264.466
+        }
+      },
+      {
+        "slice": {
+          "kind": "repository_name",
+          "value": "pallets/itsdangerous"
+        },
+        "method": "hybrid",
+        "questions": 4,
+        "failures": 0,
+        "top_1": 0.5,
+        "top_3": 0.75,
+        "mrr_at_10": 0.675,
+        "evidence_recall_at_3": 0.375,
+        "evidence_recall_at_10": 0.625,
+        "latency_ms": {
+          "samples": 4,
+          "min": 98.733,
+          "mean": 147.426,
+          "median": 152.39,
+          "p50": 152.39,
+          "p95": 186.19,
+          "max": 186.19
+        }
+      },
+      {
+        "slice": {
+          "kind": "repository_name",
+          "value": "pallets/markupsafe"
+        },
+        "method": "hybrid",
+        "questions": 2,
+        "failures": 0,
+        "top_1": 0.5,
+        "top_3": 0.5,
+        "mrr_at_10": 0.625,
+        "evidence_recall_at_3": 0.25,
+        "evidence_recall_at_10": 1.0,
+        "latency_ms": {
+          "samples": 2,
+          "min": 95.092,
+          "mean": 132.972,
+          "median": 132.972,
+          "p50": 132.972,
+          "p95": 170.852,
+          "max": 170.852
+        }
+      },
+      {
+        "slice": {
+          "kind": "category",
+          "value": "multi_symbol"
+        },
+        "method": "hybrid",
+        "questions": 12,
+        "failures": 0,
+        "top_1": 0.5833333333333334,
+        "top_3": 0.75,
+        "mrr_at_10": 0.725,
+        "evidence_recall_at_3": 0.4583333333333333,
+        "evidence_recall_at_10": 0.75,
+        "latency_ms": {
+          "samples": 12,
+          "min": 95.092,
+          "mean": 187.33,
+          "median": 195.267,
+          "p50": 195.267,
+          "p95": 264.466,
+          "max": 264.466
+        }
+      }
+    ]
+  },
+  "transition_aggregates": {
+    "e3_balanced_interleave": {
+      "top_1": {
+        "regression": 3,
+        "unchanged_fail": 5,
+        "unchanged_success": 4
+      },
+      "top_3": {
+        "regression": 2,
+        "repair": 1,
+        "unchanged_fail": 2,
+        "unchanged_success": 7
+      },
+      "top_10": {
+        "unchanged_success": 12
+      }
+    },
+    "e3_rrf_control": {
+      "top_1": {
+        "unchanged_fail": 5,
+        "unchanged_success": 7
+      },
+      "top_3": {
+        "unchanged_fail": 3,
+        "unchanged_success": 9
+      },
+      "top_10": {
+        "unchanged_success": 12
+      }
+    }
+  },
+  "bilingual_pair_records": [
+    {
+      "configuration_id": "e3_balanced_interleave",
+      "method": "hybrid",
+      "pair_id": "flask_request_lifecycle",
+      "english_question_id": "flask_request_lifecycle_en",
+      "persian_question_id": "flask_request_lifecycle_fa",
+      "thresholds": {
+        "top_1": {
+          "english_transition": "regression",
+          "persian_transition": "regression",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "both_fail",
+          "diagnostic_labels": [
+            "both_regression"
+          ]
+        },
+        "top_3": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "regression",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "english_only",
+          "diagnostic_labels": [
+            "new_disagreement",
+            "fa_regression"
+          ]
+        },
+        "top_10": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "both_success",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        }
+      }
+    },
+    {
+      "configuration_id": "e3_balanced_interleave",
+      "method": "hybrid",
+      "pair_id": "flask_route_registration",
+      "english_question_id": "flask_route_registration_en",
+      "persian_question_id": "flask_route_registration_fa",
+      "thresholds": {
+        "top_1": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "both_success",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        },
+        "top_3": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "both_success",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        },
+        "top_10": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "both_success",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        }
+      }
+    },
+    {
+      "configuration_id": "e3_balanced_interleave",
+      "method": "hybrid",
+      "pair_id": "flask_session_cookie_round_trip",
+      "english_question_id": "flask_session_cookie_round_trip_en",
+      "persian_question_id": "flask_session_cookie_round_trip_fa",
+      "thresholds": {
+        "top_1": {
+          "english_transition": "unchanged_fail",
+          "persian_transition": "unchanged_fail",
+          "paired_outcome_before": "both_fail",
+          "paired_outcome_after": "both_fail",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        },
+        "top_3": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_fail",
+          "paired_outcome_before": "english_only",
+          "paired_outcome_after": "english_only",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        },
+        "top_10": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "both_success",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        }
+      }
+    },
+    {
+      "configuration_id": "e3_balanced_interleave",
+      "method": "hybrid",
+      "pair_id": "itsdangerous_fallback_unsigners",
+      "english_question_id": "itsdangerous_fallback_unsigners_en",
+      "persian_question_id": "itsdangerous_fallback_unsigners_fa",
+      "thresholds": {
+        "top_1": {
+          "english_transition": "unchanged_fail",
+          "persian_transition": "regression",
+          "paired_outcome_before": "persian_only",
+          "paired_outcome_after": "both_fail",
+          "diagnostic_labels": [
+            "resolved_disagreement",
+            "fa_regression"
+          ]
+        },
+        "top_3": {
+          "english_transition": "unchanged_fail",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "persian_only",
+          "paired_outcome_after": "persian_only",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        },
+        "top_10": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "both_success",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        }
+      }
+    },
+    {
+      "configuration_id": "e3_balanced_interleave",
+      "method": "hybrid",
+      "pair_id": "itsdangerous_timed_signing",
+      "english_question_id": "itsdangerous_timed_signing_en",
+      "persian_question_id": "itsdangerous_timed_signing_fa",
+      "thresholds": {
+        "top_1": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_fail",
+          "paired_outcome_before": "english_only",
+          "paired_outcome_after": "english_only",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        },
+        "top_3": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "regression",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "english_only",
+          "diagnostic_labels": [
+            "new_disagreement",
+            "fa_regression"
+          ]
+        },
+        "top_10": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "both_success",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        }
+      }
+    },
+    {
+      "configuration_id": "e3_balanced_interleave",
+      "method": "hybrid",
+      "pair_id": "markupsafe_escape_workflow",
+      "english_question_id": "markupsafe_escape_workflow_en",
+      "persian_question_id": "markupsafe_escape_workflow_fa",
+      "thresholds": {
+        "top_1": {
+          "english_transition": "unchanged_fail",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "persian_only",
+          "paired_outcome_after": "persian_only",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        },
+        "top_3": {
+          "english_transition": "repair",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "persian_only",
+          "paired_outcome_after": "both_success",
+          "diagnostic_labels": [
+            "en_repaired_fa_unchanged",
+            "resolved_disagreement"
+          ]
+        },
+        "top_10": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "both_success",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        }
+      }
+    },
+    {
+      "configuration_id": "e3_rrf_control",
+      "method": "hybrid",
+      "pair_id": "flask_request_lifecycle",
+      "english_question_id": "flask_request_lifecycle_en",
+      "persian_question_id": "flask_request_lifecycle_fa",
+      "thresholds": {
+        "top_1": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "both_success",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        },
+        "top_3": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "both_success",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        },
+        "top_10": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "both_success",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        }
+      }
+    },
+    {
+      "configuration_id": "e3_rrf_control",
+      "method": "hybrid",
+      "pair_id": "flask_route_registration",
+      "english_question_id": "flask_route_registration_en",
+      "persian_question_id": "flask_route_registration_fa",
+      "thresholds": {
+        "top_1": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "both_success",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        },
+        "top_3": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "both_success",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        },
+        "top_10": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "both_success",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        }
+      }
+    },
+    {
+      "configuration_id": "e3_rrf_control",
+      "method": "hybrid",
+      "pair_id": "flask_session_cookie_round_trip",
+      "english_question_id": "flask_session_cookie_round_trip_en",
+      "persian_question_id": "flask_session_cookie_round_trip_fa",
+      "thresholds": {
+        "top_1": {
+          "english_transition": "unchanged_fail",
+          "persian_transition": "unchanged_fail",
+          "paired_outcome_before": "both_fail",
+          "paired_outcome_after": "both_fail",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        },
+        "top_3": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_fail",
+          "paired_outcome_before": "english_only",
+          "paired_outcome_after": "english_only",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        },
+        "top_10": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "both_success",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        }
+      }
+    },
+    {
+      "configuration_id": "e3_rrf_control",
+      "method": "hybrid",
+      "pair_id": "itsdangerous_fallback_unsigners",
+      "english_question_id": "itsdangerous_fallback_unsigners_en",
+      "persian_question_id": "itsdangerous_fallback_unsigners_fa",
+      "thresholds": {
+        "top_1": {
+          "english_transition": "unchanged_fail",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "persian_only",
+          "paired_outcome_after": "persian_only",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        },
+        "top_3": {
+          "english_transition": "unchanged_fail",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "persian_only",
+          "paired_outcome_after": "persian_only",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        },
+        "top_10": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "both_success",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        }
+      }
+    },
+    {
+      "configuration_id": "e3_rrf_control",
+      "method": "hybrid",
+      "pair_id": "itsdangerous_timed_signing",
+      "english_question_id": "itsdangerous_timed_signing_en",
+      "persian_question_id": "itsdangerous_timed_signing_fa",
+      "thresholds": {
+        "top_1": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_fail",
+          "paired_outcome_before": "english_only",
+          "paired_outcome_after": "english_only",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        },
+        "top_3": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "both_success",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        },
+        "top_10": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "both_success",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        }
+      }
+    },
+    {
+      "configuration_id": "e3_rrf_control",
+      "method": "hybrid",
+      "pair_id": "markupsafe_escape_workflow",
+      "english_question_id": "markupsafe_escape_workflow_en",
+      "persian_question_id": "markupsafe_escape_workflow_fa",
+      "thresholds": {
+        "top_1": {
+          "english_transition": "unchanged_fail",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "persian_only",
+          "paired_outcome_after": "persian_only",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        },
+        "top_3": {
+          "english_transition": "unchanged_fail",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "persian_only",
+          "paired_outcome_after": "persian_only",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        },
+        "top_10": {
+          "english_transition": "unchanged_success",
+          "persian_transition": "unchanged_success",
+          "paired_outcome_before": "both_success",
+          "paired_outcome_after": "both_success",
+          "diagnostic_labels": [
+            "unchanged_agreement"
+          ]
+        }
+      }
+    }
+  ],
+  "multi_symbol_aggregates": {
+    "e3_balanced_interleave": {
+      "records": 12,
+      "outcomes": {
+        "complete_evidence_coverage": 3,
+        "partial_multi_symbol_evidence": 9
+      },
+      "mean_evidence_recall_at_10": 0.625
+    },
+    "e3_rrf_control": {
+      "records": 12,
+      "outcomes": {
+        "complete_evidence_coverage": 6,
+        "partial_multi_symbol_evidence": 6
+      },
+      "mean_evidence_recall_at_10": 0.75
+    }
+  },
+  "frozen_multi_symbol_baseline_records": [
+    {
+      "question_id": "flask_request_lifecycle_en",
+      "pair_id": "flask_request_lifecycle",
+      "language": "en",
+      "repository_name": "pallets/flask",
+      "method": "lexical",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 1.0,
+      "coverage_outcome": "complete_evidence_coverage"
+    },
+    {
+      "question_id": "flask_request_lifecycle_en",
+      "pair_id": "flask_request_lifecycle",
+      "language": "en",
+      "repository_name": "pallets/flask",
+      "method": "semantic",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 1.0,
+      "coverage_outcome": "complete_evidence_coverage"
+    },
+    {
+      "question_id": "flask_request_lifecycle_en",
+      "pair_id": "flask_request_lifecycle",
+      "language": "en",
+      "repository_name": "pallets/flask",
+      "method": "hybrid",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 1.0,
+      "coverage_outcome": "complete_evidence_coverage"
+    },
+    {
+      "question_id": "flask_request_lifecycle_fa",
+      "pair_id": "flask_request_lifecycle",
+      "language": "fa",
+      "repository_name": "pallets/flask",
+      "method": "lexical",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 1.0,
+      "coverage_outcome": "complete_evidence_coverage"
+    },
+    {
+      "question_id": "flask_request_lifecycle_fa",
+      "pair_id": "flask_request_lifecycle",
+      "language": "fa",
+      "repository_name": "pallets/flask",
+      "method": "semantic",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 1.0,
+      "coverage_outcome": "complete_evidence_coverage"
+    },
+    {
+      "question_id": "flask_request_lifecycle_fa",
+      "pair_id": "flask_request_lifecycle",
+      "language": "fa",
+      "repository_name": "pallets/flask",
+      "method": "hybrid",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 1.0,
+      "coverage_outcome": "complete_evidence_coverage"
+    },
+    {
+      "question_id": "flask_route_registration_en",
+      "pair_id": "flask_route_registration",
+      "language": "en",
+      "repository_name": "pallets/flask",
+      "method": "lexical",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 0.5,
+      "coverage_outcome": "partial_multi_symbol_evidence"
+    },
+    {
+      "question_id": "flask_route_registration_en",
+      "pair_id": "flask_route_registration",
+      "language": "en",
+      "repository_name": "pallets/flask",
+      "method": "semantic",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 0.5,
+      "coverage_outcome": "partial_multi_symbol_evidence"
+    },
+    {
+      "question_id": "flask_route_registration_en",
+      "pair_id": "flask_route_registration",
+      "language": "en",
+      "repository_name": "pallets/flask",
+      "method": "hybrid",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 0.5,
+      "coverage_outcome": "partial_multi_symbol_evidence"
+    },
+    {
+      "question_id": "flask_route_registration_fa",
+      "pair_id": "flask_route_registration",
+      "language": "fa",
+      "repository_name": "pallets/flask",
+      "method": "lexical",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 0.5,
+      "coverage_outcome": "partial_multi_symbol_evidence"
+    },
+    {
+      "question_id": "flask_route_registration_fa",
+      "pair_id": "flask_route_registration",
+      "language": "fa",
+      "repository_name": "pallets/flask",
+      "method": "semantic",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 0.5,
+      "coverage_outcome": "partial_multi_symbol_evidence"
+    },
+    {
+      "question_id": "flask_route_registration_fa",
+      "pair_id": "flask_route_registration",
+      "language": "fa",
+      "repository_name": "pallets/flask",
+      "method": "hybrid",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 0.5,
+      "coverage_outcome": "partial_multi_symbol_evidence"
+    },
+    {
+      "question_id": "flask_session_cookie_round_trip_en",
+      "pair_id": "flask_session_cookie_round_trip",
+      "language": "en",
+      "repository_name": "pallets/flask",
+      "method": "lexical",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 0.0,
+      "coverage_outcome": "complete_evidence_miss"
+    },
+    {
+      "question_id": "flask_session_cookie_round_trip_en",
+      "pair_id": "flask_session_cookie_round_trip",
+      "language": "en",
+      "repository_name": "pallets/flask",
+      "method": "semantic",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 1.0,
+      "coverage_outcome": "complete_evidence_coverage"
+    },
+    {
+      "question_id": "flask_session_cookie_round_trip_en",
+      "pair_id": "flask_session_cookie_round_trip",
+      "language": "en",
+      "repository_name": "pallets/flask",
+      "method": "hybrid",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 1.0,
+      "coverage_outcome": "complete_evidence_coverage"
+    },
+    {
+      "question_id": "flask_session_cookie_round_trip_fa",
+      "pair_id": "flask_session_cookie_round_trip",
+      "language": "fa",
+      "repository_name": "pallets/flask",
+      "method": "lexical",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 0.0,
+      "coverage_outcome": "complete_evidence_miss"
+    },
+    {
+      "question_id": "flask_session_cookie_round_trip_fa",
+      "pair_id": "flask_session_cookie_round_trip",
+      "language": "fa",
+      "repository_name": "pallets/flask",
+      "method": "semantic",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 0.5,
+      "coverage_outcome": "partial_multi_symbol_evidence"
+    },
+    {
+      "question_id": "flask_session_cookie_round_trip_fa",
+      "pair_id": "flask_session_cookie_round_trip",
+      "language": "fa",
+      "repository_name": "pallets/flask",
+      "method": "hybrid",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 0.5,
+      "coverage_outcome": "partial_multi_symbol_evidence"
+    },
+    {
+      "question_id": "itsdangerous_fallback_unsigners_en",
+      "pair_id": "itsdangerous_fallback_unsigners",
+      "language": "en",
+      "repository_name": "pallets/itsdangerous",
+      "method": "lexical",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 0.5,
+      "coverage_outcome": "partial_multi_symbol_evidence"
+    },
+    {
+      "question_id": "itsdangerous_fallback_unsigners_en",
+      "pair_id": "itsdangerous_fallback_unsigners",
+      "language": "en",
+      "repository_name": "pallets/itsdangerous",
+      "method": "semantic",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 0.0,
+      "coverage_outcome": "complete_evidence_miss"
+    },
+    {
+      "question_id": "itsdangerous_fallback_unsigners_en",
+      "pair_id": "itsdangerous_fallback_unsigners",
+      "language": "en",
+      "repository_name": "pallets/itsdangerous",
+      "method": "hybrid",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 0.5,
+      "coverage_outcome": "partial_multi_symbol_evidence"
+    },
+    {
+      "question_id": "itsdangerous_fallback_unsigners_fa",
+      "pair_id": "itsdangerous_fallback_unsigners",
+      "language": "fa",
+      "repository_name": "pallets/itsdangerous",
+      "method": "lexical",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 0.5,
+      "coverage_outcome": "partial_multi_symbol_evidence"
+    },
+    {
+      "question_id": "itsdangerous_fallback_unsigners_fa",
+      "pair_id": "itsdangerous_fallback_unsigners",
+      "language": "fa",
+      "repository_name": "pallets/itsdangerous",
+      "method": "semantic",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 0.5,
+      "coverage_outcome": "partial_multi_symbol_evidence"
+    },
+    {
+      "question_id": "itsdangerous_fallback_unsigners_fa",
+      "pair_id": "itsdangerous_fallback_unsigners",
+      "language": "fa",
+      "repository_name": "pallets/itsdangerous",
+      "method": "hybrid",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 0.5,
+      "coverage_outcome": "partial_multi_symbol_evidence"
+    },
+    {
+      "question_id": "itsdangerous_timed_signing_en",
+      "pair_id": "itsdangerous_timed_signing",
+      "language": "en",
+      "repository_name": "pallets/itsdangerous",
+      "method": "lexical",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 0.5,
+      "coverage_outcome": "partial_multi_symbol_evidence"
+    },
+    {
+      "question_id": "itsdangerous_timed_signing_en",
+      "pair_id": "itsdangerous_timed_signing",
+      "language": "en",
+      "repository_name": "pallets/itsdangerous",
+      "method": "semantic",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 1.0,
+      "coverage_outcome": "complete_evidence_coverage"
+    },
+    {
+      "question_id": "itsdangerous_timed_signing_en",
+      "pair_id": "itsdangerous_timed_signing",
+      "language": "en",
+      "repository_name": "pallets/itsdangerous",
+      "method": "hybrid",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 0.5,
+      "coverage_outcome": "partial_multi_symbol_evidence"
+    },
+    {
+      "question_id": "itsdangerous_timed_signing_fa",
+      "pair_id": "itsdangerous_timed_signing",
+      "language": "fa",
+      "repository_name": "pallets/itsdangerous",
+      "method": "lexical",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 1.0,
+      "coverage_outcome": "complete_evidence_coverage"
+    },
+    {
+      "question_id": "itsdangerous_timed_signing_fa",
+      "pair_id": "itsdangerous_timed_signing",
+      "language": "fa",
+      "repository_name": "pallets/itsdangerous",
+      "method": "semantic",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 0.5,
+      "coverage_outcome": "partial_multi_symbol_evidence"
+    },
+    {
+      "question_id": "itsdangerous_timed_signing_fa",
+      "pair_id": "itsdangerous_timed_signing",
+      "language": "fa",
+      "repository_name": "pallets/itsdangerous",
+      "method": "hybrid",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 1.0,
+      "coverage_outcome": "complete_evidence_coverage"
+    },
+    {
+      "question_id": "markupsafe_escape_workflow_en",
+      "pair_id": "markupsafe_escape_workflow",
+      "language": "en",
+      "repository_name": "pallets/markupsafe",
+      "method": "lexical",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 0.5,
+      "coverage_outcome": "partial_multi_symbol_evidence"
+    },
+    {
+      "question_id": "markupsafe_escape_workflow_en",
+      "pair_id": "markupsafe_escape_workflow",
+      "language": "en",
+      "repository_name": "pallets/markupsafe",
+      "method": "semantic",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 1.0,
+      "coverage_outcome": "complete_evidence_coverage"
+    },
+    {
+      "question_id": "markupsafe_escape_workflow_en",
+      "pair_id": "markupsafe_escape_workflow",
+      "language": "en",
+      "repository_name": "pallets/markupsafe",
+      "method": "hybrid",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 1.0,
+      "coverage_outcome": "complete_evidence_coverage"
+    },
+    {
+      "question_id": "markupsafe_escape_workflow_fa",
+      "pair_id": "markupsafe_escape_workflow",
+      "language": "fa",
+      "repository_name": "pallets/markupsafe",
+      "method": "lexical",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 1.0,
+      "coverage_outcome": "complete_evidence_coverage"
+    },
+    {
+      "question_id": "markupsafe_escape_workflow_fa",
+      "pair_id": "markupsafe_escape_workflow",
+      "language": "fa",
+      "repository_name": "pallets/markupsafe",
+      "method": "semantic",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 0.5,
+      "coverage_outcome": "partial_multi_symbol_evidence"
+    },
+    {
+      "question_id": "markupsafe_escape_workflow_fa",
+      "pair_id": "markupsafe_escape_workflow",
+      "language": "fa",
+      "repository_name": "pallets/markupsafe",
+      "method": "hybrid",
+      "expected_citation_count": 2,
+      "evidence_recall_at_10": 1.0,
+      "coverage_outcome": "complete_evidence_coverage"
+    }
+  ],
+  "ablation_validity": {
+    "only_changed_variable": "candidate_aggregation_strategy",
+    "candidate_depth": 10,
+    "output_limit": 10,
+    "candidate_generation_changed": false,
+    "evaluation_semantics_changed": false,
+    "shared_candidate_pool_across_configurations": true,
+    "candidate_pool_sha256": "6fd97ef8f11c378446f6f61a873c9d4b793456287f7d432516611fd961bb22ad",
+    "control_strategy": "equal_weight_rrf",
+    "intervention_strategy": "lexical_semantic_round_robin_deduplicated",
+    "intervention_score_semantics": "not_applicable_order_only"
+  }
+}

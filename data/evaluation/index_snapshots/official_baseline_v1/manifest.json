@@ -1,0 +1,258 @@
+{
+  "snapshot_schema_version": 1,
+  "snapshot_id": "official_baseline_index_v1",
+  "description": "provenance-verified, privacy-sanitized derivative of the Official Baseline retrieval state",
+  "created_at": "2026-08-27T14:00:53.552801+00:00",
+  "protocol_sha256": "02612c26334190fb435c103713e1eaba4508d2a49cd696715610744aa4cd9ec8",
+  "official_baseline_sha256": "45c0b3fb1adb91224e24cf8a9f42611e632afcfb5cf4d492518492ffbe700edc",
+  "benchmark_sha256": "2a04a4f1b707481126c31673840670b4b72d3877c34b1990f12b2245688d69aa",
+  "frozen_input_sha256": {
+    "benchmark": "2a04a4f1b707481126c31673840670b4b72d3877c34b1990f12b2245688d69aa",
+    "official_baseline": "45c0b3fb1adb91224e24cf8a9f42611e632afcfb5cf4d492518492ffbe700edc",
+    "performance": "1e7ca71415f2490a4ca05986733735bf3fbb73451701fadfb0ac9411a0b62b23",
+    "error_analysis": "cf6e374722d66763897c148a13f162eb7f145435cf61fa449eccedc1fb438b7f",
+    "error_annotations": "7f606f51b6a8815edc7a81084c0f7c330dddaf9abe85f885ca983def23a26089"
+  },
+  "source_state_identifier": "codecompass-official-baseline-2e6e5e59215244ae8606e1e91ea2f6a9",
+  "source_state_initial_sha256": "1dabf5fe9d240c62a5a53abb0ac16ca76e836c91a5d8626b7038d65d1db826e9",
+  "creation_method": "byte-for-byte copy followed by portable projects.root_path redaction and SQLite VACUUM in copied stores",
+  "canonical_snapshot_queried": false,
+  "provenance": {
+    "status": "verified",
+    "official_artifact_generated_at": "2026-08-26T20:50:47.633770+00:00",
+    "evidence": [
+      "repository creation order matches the Official Baseline runner's sorted repository order",
+      "SQLite and Chroma creation intervals match the per-repository indexing durations recorded in Official Baseline v1",
+      "collection names match the baseline_<repository-slug> derivation in the Official Baseline runner",
+      "repository commits, chunk/vector counts, model identity, and collection configuration match Official Baseline v1",
+      "the final collection was created immediately before the Official Baseline artifact timestamp",
+      "complete exact 180-record reproduction is required separately before the snapshot gate passes"
+    ],
+    "limitation": "Official Baseline v1 did not record an original binary directory hash; verification uses the surviving state's direct timeline, identity, configuration, corpus/vector fingerprints, and exact rankings."
+  },
+  "embedding": {
+    "provider": "ollama",
+    "model": "nomic-embed-text-local:latest",
+    "digest": "8514df7f98ca618f7b4d4dcf3735492449d29a4020dc5da574d4056d6136047a",
+    "dimensions": 768
+  },
+  "chromadb_version": "1.5.9",
+  "retrieval_configuration": {
+    "methods": [
+      "lexical",
+      "semantic",
+      "hybrid"
+    ],
+    "retrieval_limit": 10,
+    "embedding_provider": "ollama",
+    "embedding_model": "nomic-embed-text-local:latest",
+    "embedding_dimensions": 768,
+    "batch_size": 32,
+    "rrf_k": 60,
+    "lexical_field_weights": {
+      "code": 1,
+      "embedding_text": 1,
+      "qualified_name": 3,
+      "source_file": 2
+    },
+    "vector_index": {
+      "backend": "chromadb",
+      "distance_metric": "cosine",
+      "collection_per_repository": true
+    },
+    "pinned_repository_commits": {
+      "pallets/flask": "d318b683471101618febed18996405ad26462110",
+      "pallets/itsdangerous": "672971d66a2ef9f85151e53283113f33d642dabd",
+      "pallets/markupsafe": "b2e4d9c7687be25695fffbe93a37622302b24fb1"
+    },
+    "scores": "method-native; do not compare scores across retrieval methods",
+    "run_policy": {
+      "index_each_repository_once": true,
+      "reuse_index_across_methods": true,
+      "abort_on_retrieval_error": true,
+      "selective_reruns": false
+    },
+    "frozen_for_official_run": [
+      "benchmark",
+      "retrieval_algorithms",
+      "retrieval_parameters",
+      "embedding_model",
+      "repository_commits"
+    ]
+  },
+  "repositories": [
+    {
+      "repository_name": "pallets/flask",
+      "slug": "flask",
+      "repository_commit": "d318b683471101618febed18996405ad26462110",
+      "portable_project_root": "repositories/pallets/flask",
+      "chunk_count": 1611,
+      "collection_metadata": {
+        "hnsw:space": "cosine"
+      },
+      "collection_name": "baseline_flask",
+      "corpus_fingerprint": "cf081dca0205814e102221a03881f7a93eadc62df6d76d5a4b4f0478560d4e18",
+      "insertion_order_fingerprint": "88fcccc1cf5cf9bf3275e06d924092a7c93e43adde9203e920f6b6695b8b7ca4",
+      "stored_vector_set_fingerprint": "0573524077fb27a303cfba235366c661d1c367611653ffcb5bc1f79d568f1a51",
+      "vector_count": 1611,
+      "provenance_status": "verified",
+      "provenance_evidence": {
+        "metadata_store_created_at_utc": "2026-08-26T20:31:44.6968855+00:00",
+        "vector_store_created_at_utc": "2026-08-26T20:48:38.6518315+00:00",
+        "observed_creation_interval_seconds": 1013.954946,
+        "recorded_indexing_seconds": 1014.857904,
+        "absolute_interval_difference_seconds": 0.9029580000000124,
+        "collection_name_matches_runner_derivation": true,
+        "chunk_and_vector_counts_match_official_artifact": true
+      }
+    },
+    {
+      "repository_name": "pallets/itsdangerous",
+      "slug": "itsdangerous",
+      "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+      "portable_project_root": "repositories/pallets/itsdangerous",
+      "chunk_count": 144,
+      "collection_metadata": {
+        "hnsw:space": "cosine"
+      },
+      "collection_name": "baseline_itsdangerous",
+      "corpus_fingerprint": "ed19b1632314765091b2fe67c8932f3634e2c7572afbb53a05b6642d461f04f9",
+      "insertion_order_fingerprint": "ed595a34d1d18439750098926213259b1da4d6808beed12d2d1a4f199cf13a7d",
+      "stored_vector_set_fingerprint": "a1151fbfcbfd1200ff71bd073bd2872be25f7558985bd3fe9a44d4f95129ca7d",
+      "vector_count": 144,
+      "provenance_status": "verified",
+      "provenance_evidence": {
+        "metadata_store_created_at_utc": "2026-08-26T20:48:54.4217513+00:00",
+        "vector_store_created_at_utc": "2026-08-26T20:49:59.9874363+00:00",
+        "observed_creation_interval_seconds": 65.565685,
+        "recorded_indexing_seconds": 65.723998,
+        "absolute_interval_difference_seconds": 0.1583129999999926,
+        "collection_name_matches_runner_derivation": true,
+        "chunk_and_vector_counts_match_official_artifact": true
+      }
+    },
+    {
+      "repository_name": "pallets/markupsafe",
+      "slug": "markupsafe",
+      "repository_commit": "b2e4d9c7687be25695fffbe93a37622302b24fb1",
+      "portable_project_root": "repositories/pallets/markupsafe",
+      "chunk_count": 116,
+      "collection_metadata": {
+        "hnsw:space": "cosine"
+      },
+      "collection_name": "baseline_markupsafe",
+      "corpus_fingerprint": "3499289e6751d608d46cd50e96d453d3b028a78017323fc5c506d345fd21b194",
+      "insertion_order_fingerprint": "4b6f4761f73a19b656bad5e9ce1256d5eeebb3ba0f140d16f8fca4a697e31e4b",
+      "stored_vector_set_fingerprint": "6a9f17af2b4b7e49705d9d38c9c8f7a7fde3a70ec382f35642aeff435f8373a4",
+      "vector_count": 116,
+      "provenance_status": "verified",
+      "provenance_evidence": {
+        "metadata_store_created_at_utc": "2026-08-26T20:50:05.6788464+00:00",
+        "vector_store_created_at_utc": "2026-08-26T20:50:45.0700389+00:00",
+        "observed_creation_interval_seconds": 39.3911925,
+        "recorded_indexing_seconds": 39.508352,
+        "absolute_interval_difference_seconds": 0.11715949999999964,
+        "collection_name_matches_runner_derivation": true,
+        "chunk_and_vector_counts_match_official_artifact": true
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "flask/chroma/84b212b6-0498-4bc3-a1ac-e0b12fcfc03f/data_level0.bin",
+      "bytes": 5174532,
+      "sha256": "9fd5bbeca22fc0b70437cdac400466bf8095c0017d31e8e194d63bca22e7d140"
+    },
+    {
+      "path": "flask/chroma/84b212b6-0498-4bc3-a1ac-e0b12fcfc03f/header.bin",
+      "bytes": 100,
+      "sha256": "6358bc704c8fdabf71397ebe00962f0d3966417ba87dfccbf840c3ca1eb0bc1b"
+    },
+    {
+      "path": "flask/chroma/84b212b6-0498-4bc3-a1ac-e0b12fcfc03f/index_metadata.pickle",
+      "bytes": 238560,
+      "sha256": "63ac25dae5b12e92eb910fb406c306e7f1eba92f7b396f7ff82d4c2d39524040"
+    },
+    {
+      "path": "flask/chroma/84b212b6-0498-4bc3-a1ac-e0b12fcfc03f/length.bin",
+      "bytes": 6444,
+      "sha256": "7e5611470d5a5cd9d3280bc6763bed8c25a6a7e15d78e9367e1ef0d681fc38d3"
+    },
+    {
+      "path": "flask/chroma/84b212b6-0498-4bc3-a1ac-e0b12fcfc03f/link_lists.bin",
+      "bytes": 14332,
+      "sha256": "aedea10c90585459d70121d3a9a3955c228788b401d640c1f0f7696b4d7d7706"
+    },
+    {
+      "path": "flask/chroma/chroma.sqlite3",
+      "bytes": 8368128,
+      "sha256": "2c38ce2d8bf441d51b748622948558abe973935d4de8306b7ab89242854ea1cc"
+    },
+    {
+      "path": "flask/metadata.sqlite3",
+      "bytes": 3039232,
+      "sha256": "dc4dcc28b01275a92454b0947bbbcff66d8e2d53ab6c04db68cf3fc5cde489c7"
+    },
+    {
+      "path": "itsdangerous/chroma/a6b9d5c4-784c-4b56-8a08-f90a8bdbe1a4/data_level0.bin",
+      "bytes": 321200,
+      "sha256": "46fd57abdffb0162c0288bdfcc6b25489a6bba72429e83d0377398017cfe7075"
+    },
+    {
+      "path": "itsdangerous/chroma/a6b9d5c4-784c-4b56-8a08-f90a8bdbe1a4/header.bin",
+      "bytes": 100,
+      "sha256": "03cb3ac86f3e5bcb15e88b9bf99f760ec6b33e31d64a699e129b49868db6d733"
+    },
+    {
+      "path": "itsdangerous/chroma/a6b9d5c4-784c-4b56-8a08-f90a8bdbe1a4/length.bin",
+      "bytes": 400,
+      "sha256": "f31d6ac55358150a34fc9304fb8b48986eb87e102a9d4e1b632959a3dd03a4d1"
+    },
+    {
+      "path": "itsdangerous/chroma/a6b9d5c4-784c-4b56-8a08-f90a8bdbe1a4/link_lists.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "itsdangerous/chroma/chroma.sqlite3",
+      "bytes": 917504,
+      "sha256": "11902feddd64595e58371be5594e655bce0f18d4c1d5ea75edf032a668c337ce"
+    },
+    {
+      "path": "itsdangerous/metadata.sqlite3",
+      "bytes": 315392,
+      "sha256": "46544517c1fa432c73d12b6be0f8048fc0e578b4103be80910a0f473da80c12b"
+    },
+    {
+      "path": "markupsafe/chroma/chroma.sqlite3",
+      "bytes": 778240,
+      "sha256": "d42206d6b16246da7e75e8a29bf97fb587d12b5b5c453a48f91e2e93df4d4b99"
+    },
+    {
+      "path": "markupsafe/chroma/faa603d0-1dcf-4b4c-a954-be9ca0a6b053/data_level0.bin",
+      "bytes": 321200,
+      "sha256": "46fd57abdffb0162c0288bdfcc6b25489a6bba72429e83d0377398017cfe7075"
+    },
+    {
+      "path": "markupsafe/chroma/faa603d0-1dcf-4b4c-a954-be9ca0a6b053/header.bin",
+      "bytes": 100,
+      "sha256": "03cb3ac86f3e5bcb15e88b9bf99f760ec6b33e31d64a699e129b49868db6d733"
+    },
+    {
+      "path": "markupsafe/chroma/faa603d0-1dcf-4b4c-a954-be9ca0a6b053/length.bin",
+      "bytes": 400,
+      "sha256": "0f983137a68215c1c681e7ccc7e3197d7d30447a72098d1101656cca3cc2ab8f"
+    },
+    {
+      "path": "markupsafe/chroma/faa603d0-1dcf-4b4c-a954-be9ca0a6b053/link_lists.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "markupsafe/metadata.sqlite3",
+      "bytes": 196608,
+      "sha256": "1cc81d10a5d5ce351fdea6102b5930daf1e2010919d3985a206b89d041dfcd4a"
+    }
+  ],
+  "aggregate_snapshot_sha256": "3f48f259ff94670c0b62726b94983d0c1709c02fcfd41e48a86cd07748bda599"
+}
