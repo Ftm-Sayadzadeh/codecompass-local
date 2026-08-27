@@ -1,0 +1,438 @@
+{
+  "schema_version": 1,
+  "decision_version": "final_retrieval_decision_v1",
+  "complete": true,
+  "decision": "no_change",
+  "decision_interpretation": "Experimental conclusion: tested interventions did not provide a broad, regression-safe improvement; this is not absence of experimental work.",
+  "accepted_configuration": {
+    "methods": [
+      "lexical",
+      "semantic",
+      "hybrid"
+    ],
+    "retrieval_limit": 10,
+    "embedding_provider": "ollama",
+    "embedding_model": "nomic-embed-text-local:latest",
+    "embedding_dimensions": 768,
+    "batch_size": 32,
+    "rrf_k": 60,
+    "lexical_field_weights": {
+      "code": 1,
+      "embedding_text": 1,
+      "qualified_name": 3,
+      "source_file": 2
+    },
+    "vector_index": {
+      "backend": "chromadb",
+      "distance_metric": "cosine",
+      "collection_per_repository": true
+    },
+    "pinned_repository_commits": {
+      "pallets/flask": "d318b683471101618febed18996405ad26462110",
+      "pallets/itsdangerous": "672971d66a2ef9f85151e53283113f33d642dabd",
+      "pallets/markupsafe": "b2e4d9c7687be25695fffbe93a37622302b24fb1"
+    },
+    "scores": "method-native; do not compare scores across retrieval methods",
+    "run_policy": {
+      "index_each_repository_once": true,
+      "reuse_index_across_methods": true,
+      "abort_on_retrieval_error": true,
+      "selective_reruns": false
+    },
+    "frozen_for_official_run": [
+      "benchmark",
+      "retrieval_algorithms",
+      "retrieval_parameters",
+      "embedding_model",
+      "repository_commits"
+    ]
+  },
+  "production_retrieval_parameters": {
+    "methods": [
+      "lexical",
+      "semantic",
+      "hybrid"
+    ],
+    "retrieval_limit": 10,
+    "embedding_provider": "ollama",
+    "embedding_model": "nomic-embed-text-local:latest",
+    "embedding_dimensions": 768,
+    "batch_size": 32,
+    "rrf_k": 60,
+    "lexical_field_weights": {
+      "code": 1,
+      "embedding_text": 1,
+      "qualified_name": 3,
+      "source_file": 2
+    },
+    "vector_index": {
+      "backend": "chromadb",
+      "distance_metric": "cosine",
+      "collection_per_repository": true
+    },
+    "pinned_repository_commits": {
+      "pallets/flask": "d318b683471101618febed18996405ad26462110",
+      "pallets/itsdangerous": "672971d66a2ef9f85151e53283113f33d642dabd",
+      "pallets/markupsafe": "b2e4d9c7687be25695fffbe93a37622302b24fb1"
+    },
+    "scores": "method-native; do not compare scores across retrieval methods",
+    "run_policy": {
+      "index_each_repository_once": true,
+      "reuse_index_across_methods": true,
+      "abort_on_retrieval_error": true,
+      "selective_reruns": false
+    },
+    "frozen_for_official_run": [
+      "benchmark",
+      "retrieval_algorithms",
+      "retrieval_parameters",
+      "embedding_model",
+      "repository_commits"
+    ]
+  },
+  "rejected_candidate_configurations": [
+    {
+      "experiment_id": "E1",
+      "configuration_id": "e1_depth_20",
+      "failed_gates": [
+        "quality",
+        "threshold_transitions"
+      ]
+    },
+    {
+      "experiment_id": "E1",
+      "configuration_id": "e1_depth_50",
+      "failed_gates": [
+        "bilingual_stability",
+        "multi_symbol",
+        "quality",
+        "threshold_transitions"
+      ]
+    },
+    {
+      "experiment_id": "E2",
+      "configuration_id": "e2_lexical_1_semantic_2",
+      "failed_gates": [
+        "bilingual_stability",
+        "multi_symbol",
+        "quality",
+        "threshold_transitions"
+      ]
+    },
+    {
+      "experiment_id": "E2",
+      "configuration_id": "e2_lexical_2_semantic_1",
+      "failed_gates": [
+        "multi_symbol",
+        "quality",
+        "threshold_transitions"
+      ]
+    },
+    {
+      "experiment_id": "E3",
+      "configuration_id": "e3_balanced_interleave",
+      "failed_gates": [
+        "bilingual_stability",
+        "multi_symbol",
+        "quality",
+        "threshold_transitions"
+      ]
+    }
+  ],
+  "rationale": "No candidate passed every applicable quality, threshold-transition, bilingual-stability, multi-symbol, and performance gate.",
+  "hash_chain": {
+    "benchmark": "2a04a4f1b707481126c31673840670b4b72d3877c34b1990f12b2245688d69aa",
+    "official_baseline": "45c0b3fb1adb91224e24cf8a9f42611e632afcfb5cf4d492518492ffbe700edc",
+    "performance": "1e7ca71415f2490a4ca05986733735bf3fbb73451701fadfb0ac9411a0b62b23",
+    "error_analysis": "cf6e374722d66763897c148a13f162eb7f145435cf61fa449eccedc1fb438b7f",
+    "error_annotations": "7f606f51b6a8815edc7a81084c0f7c330dddaf9abe85f885ca983def23a26089",
+    "retrieval_improvement_protocol": "02612c26334190fb435c103713e1eaba4508d2a49cd696715610744aa4cd9ec8",
+    "baseline_reproducibility_diagnosis": "f591ceda20bd031ee3ac1174c99ff80da8aead9c1b96f8d89e30ab33cd37e132",
+    "snapshot_manifest": "31ddf2c8c9de4649662ed9a4ada04c06d8473b733d23aa2ce29419301e3090b0",
+    "snapshot_verification": "25c9d2a87ae7c4f76caed072dc02b7bc9ed5dbb5cdf86cac3075f2d6e838c302",
+    "frozen_snapshot_state": "3f48f259ff94670c0b62726b94983d0c1709c02fcfd41e48a86cd07748bda599",
+    "experiment_artifacts": {
+      "E1": "7f9509233171b50a45f28be63a76715c8153847d1f59783964d07f2834a1a7a1",
+      "E2": "9f894b8ae1839d72db6858a14d1f2275d6e11c6fbc0bd74273c55cc83848777c",
+      "E3": "46211e3b806454187d2f9b53d6014da17d96d0befe7eda3561908757bf6e6b6c",
+      "E4": "be784b32906ebb217be727e24b9db2a8e112041167e5a4e47ba6a9d734a92811",
+      "E5": "fd17267bacf12e7dc9b93ab859ddfd51cd37cc575ce159dbd64671cba547b151"
+    },
+    "experiment_summary": "2f3f1661a3ef81953e2cbc9650dd64cf65172ec7a088425d9c806309858f4c0d"
+  },
+  "repository_commits": {
+    "pallets/flask": "d318b683471101618febed18996405ad26462110",
+    "pallets/itsdangerous": "672971d66a2ef9f85151e53283113f33d642dabd",
+    "pallets/markupsafe": "b2e4d9c7687be25695fffbe93a37622302b24fb1"
+  },
+  "final_experiment_commit": "44d918a70b86a6ad7c692ba1afbc034d57e1f9ed",
+  "populations": {
+    "benchmark_questions": 60,
+    "bilingual_pairs": 30,
+    "official_query_method_records": 180,
+    "performance_warmups": 9,
+    "performance_measured_runs": 900,
+    "error_analysis_rank_records": 180,
+    "error_analysis_pair_method_records": 90,
+    "multi_symbol_method_records": 36,
+    "e4_probe_cases": 16,
+    "experiment_result_records": {
+      "E1": 540,
+      "E2": 180,
+      "E3": 24,
+      "E4": 32,
+      "E5": 372
+    }
+  },
+  "baseline_quality_global_micro": {
+    "lexical": {
+      "top_1": 0.43333333333333335,
+      "top_3": 0.7166666666666667,
+      "mrr_at_10": 0.5808796296296297,
+      "evidence_recall_at_3": 0.6583333333333333,
+      "evidence_recall_at_10": 0.8166666666666667,
+      "top_10": 0.8666666666666667
+    },
+    "semantic": {
+      "top_1": 0.35,
+      "top_3": 0.65,
+      "mrr_at_10": 0.5061309523809523,
+      "evidence_recall_at_3": 0.5666666666666667,
+      "evidence_recall_at_10": 0.7166666666666667,
+      "top_10": 0.7666666666666667
+    },
+    "hybrid": {
+      "top_1": 0.6333333333333333,
+      "top_3": 0.7833333333333333,
+      "mrr_at_10": 0.7322222222222223,
+      "evidence_recall_at_3": 0.725,
+      "evidence_recall_at_10": 0.8666666666666667,
+      "top_10": 0.9166666666666666
+    }
+  },
+  "error_analysis_summary": {
+    "primary_rank_outcomes": {
+      "lexical": {
+        "miss_at_10": 8,
+        "rank_1": 26,
+        "rank_2_3": 17,
+        "rank_4_10": 9
+      },
+      "semantic": {
+        "miss_at_10": 14,
+        "rank_1": 21,
+        "rank_2_3": 18,
+        "rank_4_10": 7
+      },
+      "hybrid": {
+        "miss_at_10": 5,
+        "rank_1": 38,
+        "rank_2_3": 9,
+        "rank_4_10": 8
+      }
+    },
+    "diagnostic_label_counts_overlapping": {
+      "lexical": {
+        "bilingual_disagreement": 42,
+        "complete_evidence_coverage": 4,
+        "complete_evidence_miss": 2,
+        "late_relevant": 9,
+        "miss_at_10": 8,
+        "partial_multi_symbol_evidence": 6,
+        "top1_miss": 34,
+        "top3_miss": 17
+      },
+      "semantic": {
+        "bilingual_disagreement": 34,
+        "complete_evidence_coverage": 5,
+        "complete_evidence_miss": 1,
+        "late_relevant": 7,
+        "miss_at_10": 14,
+        "partial_multi_symbol_evidence": 6,
+        "top1_miss": 39,
+        "top3_miss": 21
+      },
+      "hybrid": {
+        "bilingual_disagreement": 28,
+        "complete_evidence_coverage": 6,
+        "hybrid_regression_top_1": 6,
+        "hybrid_regression_top_10": 2,
+        "hybrid_regression_top_3": 8,
+        "hybrid_repair_top_1": 28,
+        "hybrid_repair_top_10": 14,
+        "hybrid_repair_top_3": 17,
+        "late_relevant": 8,
+        "miss_at_10": 5,
+        "partial_multi_symbol_evidence": 6,
+        "top1_miss": 22,
+        "top3_miss": 13
+      }
+    },
+    "hybrid_threshold_transitions": {
+      "top_1": {
+        "lexical": {
+          "both_fail": 20,
+          "both_success": 24,
+          "regression": 2,
+          "repair": 14
+        },
+        "semantic": {
+          "both_fail": 18,
+          "both_success": 17,
+          "regression": 4,
+          "repair": 21
+        },
+        "best_base": {
+          "both_fail": 16,
+          "both_success": 31,
+          "regression": 6,
+          "repair": 7
+        }
+      },
+      "top_3": {
+        "lexical": {
+          "both_fail": 9,
+          "both_success": 39,
+          "regression": 4,
+          "repair": 8
+        },
+        "semantic": {
+          "both_fail": 9,
+          "both_success": 35,
+          "regression": 4,
+          "repair": 12
+        },
+        "best_base": {
+          "both_fail": 5,
+          "both_success": 44,
+          "regression": 8,
+          "repair": 3
+        }
+      },
+      "top_10": {
+        "lexical": {
+          "both_fail": 4,
+          "both_success": 51,
+          "regression": 1,
+          "repair": 4
+        },
+        "semantic": {
+          "both_fail": 4,
+          "both_success": 45,
+          "regression": 1,
+          "repair": 10
+        },
+        "best_base": {
+          "both_fail": 3,
+          "both_success": 55,
+          "regression": 2
+        }
+      }
+    },
+    "bilingual_paired_outcomes": {
+      "lexical": {
+        "top_1": {
+          "both_fail": 10,
+          "both_success": 6,
+          "english_only": 5,
+          "persian_only": 9
+        },
+        "top_3": {
+          "both_fail": 4,
+          "both_success": 17,
+          "english_only": 4,
+          "persian_only": 5
+        },
+        "top_10": {
+          "both_fail": 1,
+          "both_success": 23,
+          "english_only": 3,
+          "persian_only": 3
+        }
+      },
+      "semantic": {
+        "top_1": {
+          "both_fail": 15,
+          "both_success": 6,
+          "english_only": 9
+        },
+        "top_3": {
+          "both_fail": 6,
+          "both_success": 15,
+          "english_only": 8,
+          "persian_only": 1
+        },
+        "top_10": {
+          "both_fail": 2,
+          "both_success": 18,
+          "english_only": 9,
+          "persian_only": 1
+        }
+      },
+      "hybrid": {
+        "top_1": {
+          "both_fail": 5,
+          "both_success": 13,
+          "english_only": 8,
+          "persian_only": 4
+        },
+        "top_3": {
+          "both_fail": 1,
+          "both_success": 18,
+          "english_only": 6,
+          "persian_only": 5
+        },
+        "top_10": {
+          "both_fail": 1,
+          "both_success": 26,
+          "english_only": 3
+        }
+      }
+    },
+    "multi_symbol_coverage": {
+      "lexical": {
+        "complete_evidence_coverage": 4,
+        "complete_evidence_miss": 2,
+        "partial_multi_symbol_evidence": 6
+      },
+      "semantic": {
+        "complete_evidence_coverage": 5,
+        "complete_evidence_miss": 1,
+        "partial_multi_symbol_evidence": 6
+      },
+      "hybrid": {
+        "complete_evidence_coverage": 6,
+        "partial_multi_symbol_evidence": 6
+      }
+    },
+    "review_case_counts": {
+      "bilingual_disagreement": 52,
+      "hybrid_regression": 13,
+      "incomplete_multi_symbol": 21,
+      "miss_at_10": 27,
+      "representative_late_relevant": 9
+    }
+  },
+  "experiment_decision": {
+    "outcome": "no_change",
+    "selected_configurations": [],
+    "production_configuration_changed": false,
+    "reason": "Experimental results do not change production configuration without a separately approved implementation milestone."
+  },
+  "reproducibility": {
+    "fresh_rebuild_exactly_deterministic": false,
+    "corpus_deterministic": true,
+    "embeddings_deterministic": true,
+    "cross_rebuild_ann_index_state_variation_observed": true,
+    "frozen_snapshot_copy_reproduction": "180/180 on two independent disposable copies",
+    "canonical_snapshot_queried": false
+  },
+  "validation_gates": {
+    "full_hash_chain": "PASS",
+    "population_consistency": "PASS",
+    "snapshot_identity": "PASS",
+    "e4_case_identity": "PASS",
+    "accepted_equals_production": "PASS",
+    "no_candidate_promoted": "PASS"
+  }
+}
