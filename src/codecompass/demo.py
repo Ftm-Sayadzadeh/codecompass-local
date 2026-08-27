@@ -7,8 +7,13 @@ import re
 from pathlib import Path
 from typing import Sequence
 
-from codecompass.embeddings import OllamaEmbeddingProvider
-from codecompass.llm import OllamaLLMProvider
+from codecompass.providers import (
+    OPENAI_COMPATIBLE,
+    OLLAMA,
+    ProviderConfig,
+    create_embedding_provider,
+    create_llm_provider,
+)
 from codecompass.qa import GroundedQAService, QAAnswer, QACitation, QAError, QAPromptBuilder, QARequest
 from codecompass.rag import RAGContext, RAGContextBuilder
 from codecompass.retrieval import RetrievalService
@@ -94,6 +99,19 @@ def main(argv: Sequence[str] | None = None) -> int:
     """Run one grounded question against an already indexed project."""
     parser = _parser()
     args = parser.parse_args(argv)
+    try:
+        config = ProviderConfig.from_environment(
+            provider=args.provider,
+            base_url=args.base_url or (args.ollama_url if args.provider == OLLAMA else None),
+            embedding_model=args.embedding_model,
+            llm_model=args.llm_model,
+            timeout_seconds=args.timeout_seconds,
+            embedding_dimensions=args.embedding_dimensions,
+        )
+        embedding_provider = create_embedding_provider(config)
+        llm_provider = create_llm_provider(config)
+    except ValueError as error:
+        parser.error(str(error))
     store = SQLiteMetadataStore(args.database)
 
     try:
@@ -103,22 +121,14 @@ def main(argv: Sequence[str] | None = None) -> int:
 
         retrieval = RetrievalService(
             store,
-            OllamaEmbeddingProvider(
-                model=args.embedding_model,
-                base_url=args.ollama_url,
-                timeout_seconds=args.timeout_seconds,
-            ),
+            embedding_provider,
             ChromaVectorIndex(args.chroma, args.collection),
         )
         service = GroundedQAService(
             retrieval,
             RAGContextBuilder(),
             _DemoPromptBuilder(),
-            OllamaLLMProvider(
-                model=args.llm_model,
-                base_url=args.ollama_url,
-                timeout_seconds=args.timeout_seconds,
-            ),
+            llm_provider,
         )
         answer = service.answer(
             QARequest(
@@ -144,8 +154,11 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--chroma", required=True, type=Path, help="Chroma persistence directory")
     parser.add_argument("--collection", required=True, help="Existing Chroma collection name")
     parser.add_argument("--question", required=True, help="Question to answer")
-    parser.add_argument("--llm-model", required=True, help="Local Ollama generation model")
-    parser.add_argument("--embedding-model", default="nomic-embed-text-local:latest")
+    parser.add_argument("--provider", choices=(OLLAMA, OPENAI_COMPATIBLE), default=OLLAMA)
+    parser.add_argument("--base-url", help="Provider base URL; required for openai_compatible")
+    parser.add_argument("--llm-model", required=True, help="Generation model identifier")
+    parser.add_argument("--embedding-model")
+    parser.add_argument("--embedding-dimensions", type=int)
     parser.add_argument("--ollama-url", default="http://localhost:11434")
     parser.add_argument("--retrieval-method", choices=("lexical", "semantic", "hybrid"), default="hybrid")
     parser.add_argument("--limit", type=int, default=5)

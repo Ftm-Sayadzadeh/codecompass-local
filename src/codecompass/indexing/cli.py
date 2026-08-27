@@ -8,10 +8,10 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Sequence
 
-from codecompass.embeddings import OllamaEmbeddingProvider
 from codecompass.indexing.service import IndexingService
 from codecompass.indexing.repository import RepositoryValidationError, validate_pinned_repository
 from codecompass.indexing.vectors import VectorIndexingService
+from codecompass.providers import OPENAI_COMPATIBLE, OLLAMA, ProviderConfig, create_embedding_provider
 from codecompass.storage import SQLiteMetadataStore
 from codecompass.vector_index import ChromaVectorIndex
 
@@ -21,6 +21,17 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = _parser()
     args = parser.parse_args(argv)
     commit = _validate_repository(args.repository, args.expected_commit, parser)
+    try:
+        config = ProviderConfig.from_environment(
+            provider=args.provider,
+            base_url=args.base_url or (args.ollama_url if args.provider == OLLAMA else None),
+            embedding_model=args.embedding_model,
+            timeout_seconds=args.timeout_seconds,
+            embedding_dimensions=args.embedding_dimensions,
+        )
+        embedding_provider = create_embedding_provider(config)
+    except ValueError as error:
+        parser.error(str(error))
 
     store = SQLiteMetadataStore(args.database)
     structural = IndexingService(store).index_repository(args.repository, project_name=args.project_name)
@@ -41,12 +52,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     vector = VectorIndexingService(
         store,
-        OllamaEmbeddingProvider(
-            model=args.embedding_model,
-            base_url=args.ollama_url,
-            timeout_seconds=args.timeout_seconds,
-            truncate=False,
-        ),
+        embedding_provider,
         ChromaVectorIndex(args.chroma, args.collection),
         batch_size=args.batch_size,
     ).index_project(structural.project_id)
@@ -86,7 +92,10 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--chroma", required=True, type=Path)
     parser.add_argument("--collection", required=True)
     parser.add_argument("--project-name")
-    parser.add_argument("--embedding-model", default="nomic-embed-text-local:latest")
+    parser.add_argument("--provider", choices=(OLLAMA, OPENAI_COMPATIBLE), default=OLLAMA)
+    parser.add_argument("--base-url", help="Provider base URL; required for openai_compatible")
+    parser.add_argument("--embedding-model")
+    parser.add_argument("--embedding-dimensions", type=int)
     parser.add_argument("--ollama-url", default="http://127.0.0.1:11434")
     parser.add_argument("--timeout-seconds", type=float, default=180.0)
     parser.add_argument("--batch-size", type=int, default=32)

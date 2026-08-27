@@ -2,6 +2,7 @@
 
 from codecompass.llm.base import LLMProvider, LLMProviderError, LLMRequest, LLMResponse
 from codecompass.llm.ollama import OllamaLLMProvider
+from codecompass.llm.openai_compatible import OpenAICompatibleLLMProvider
 
 __all__ = [
     "LLMProvider",
@@ -9,4 +10,5 @@ __all__ = [
     "LLMRequest",
     "LLMResponse",
     "OllamaLLMProvider",
+    "OpenAICompatibleLLMProvider",
 ]
