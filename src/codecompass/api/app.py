@@ -34,7 +34,7 @@ from codecompass.documentation import DocumentationError, FunctionDocumentationS
 from codecompass.qa import GroundedQAService, QAError, QAPromptBuilder, QARequest
 from codecompass.rag import RAGContextBuilder
 from codecompass.retrieval import RetrievalError, RetrievalQuery
-from codecompass.storage import StorageError
+from codecompass.storage import StorageError, StoredChunk
 from codecompass.vector_index import VectorIndexStateError
 
 
@@ -158,20 +158,43 @@ def create_app(settings: APISettings | None = None) -> FastAPI:
         config = runtime.embedding_config(body.embedding)
         service = runtime.retrieval(project_id, config, compatible=body.method != "lexical")
         result = getattr(service, f"search_{body.method}")(RetrievalQuery(body.query, project_id, body.limit))
-        return SearchResponse(query=body.query, method=body.method, results=[RetrievedChunkResponse(**asdict(item)) for item in result.results])
+        chunks = runtime.citation_chunks(project_id, tuple(item.chunk_id for item in result.results))
+        return SearchResponse(
+            query=body.query,
+            method=body.method,
+            results=[
+                RetrievedChunkResponse(
+                    **_citation(chunks[item.chunk_id]).model_dump(),
+                    score=item.score,
+                    code=chunks[item.chunk_id].code,
+                    retrieval_method=item.retrieval_method,
+                )
+                for item in result.results
+            ],
+        )
 
     @app.post("/projects/{project_id}/ask", response_model=AskResponse)
     def ask(project_id: int, body: AskRequest, runtime: APIRuntime = Depends(get_runtime)) -> AskResponse:
         retrieval = runtime.retrieval(project_id, runtime.embedding_config(body.embedding), compatible=body.method != "lexical")
         service = GroundedQAService(retrieval, RAGContextBuilder(), QAPromptBuilder(), create_llm(runtime, body.llm))
         answer = service.answer(QARequest(question=body.question, project_id=project_id, retrieval_method=body.method))
-        return AskResponse(question=answer.question, answer=answer.answer, method=answer.retrieval_method, citations=[CitationResponse(**asdict(item)) for item in answer.citations], omitted_context_count=answer.omitted_context_count, llm_model=answer.llm_model, llm_provider=answer.llm_provider)
+        chunks = runtime.citation_chunks(project_id, tuple(item.chunk_id for item in answer.citations))
+        return AskResponse(question=answer.question, answer=answer.answer, method=answer.retrieval_method, citations=[_citation(chunks[item.chunk_id]) for item in answer.citations], omitted_context_count=answer.omitted_context_count, llm_model=answer.llm_model, llm_provider=answer.llm_provider)
 
     @app.post("/projects/{project_id}/documentation", response_model=DocumentationResponse)
     def documentation(project_id: int, body: DocumentationRequest, runtime: APIRuntime = Depends(get_runtime)) -> dict[str, Any]:
         runtime.require_project(project_id)
         result = FunctionDocumentationService(runtime.store, create_llm(runtime, body.llm)).document_symbol(project_id, body.identifier, language=body.language, max_tokens=body.max_tokens)
-        return asdict(result)
+        response = asdict(result)
+        chunks = runtime.citation_chunks(project_id, tuple(item.chunk_id for item in result.citations))
+        project_name = runtime.require_project(project_id).name
+        response["citations"] = [
+            _documentation_citation(chunks[item.chunk_id], project_name)
+            for item in result.citations
+        ]
+        target = chunks[result.extracted.citation.chunk_id]
+        response["extracted"]["citation"] = _documentation_citation(target, project_name)
+        return response
 
     @app.get("/evaluation/summary", response_model=EvaluationResponse)
     def evaluation_summary(runtime: APIRuntime = Depends(get_runtime)) -> EvaluationResponse:
@@ -194,6 +217,36 @@ def create_llm(runtime: APIRuntime, override: Any):
 
 def _project(item: Any) -> ProjectResponse:
     return ProjectResponse(id=item.id, name=item.name, created_at=item.created_at, updated_at=item.updated_at)
+
+
+def _citation(chunk: StoredChunk) -> CitationResponse:
+    return CitationResponse(
+        file_id=chunk.file_id,
+        symbol_id=chunk.symbol_id,
+        chunk_id=chunk.chunk_id,
+        source_file=chunk.relative_path,
+        symbol_name=chunk.qualified_name.rsplit(".", 1)[-1] if chunk.qualified_name else None,
+        qualified_name=chunk.qualified_name,
+        start_line=chunk.start_line,
+        end_line=chunk.end_line,
+    )
+
+
+def _documentation_citation(chunk: StoredChunk, project_name: str) -> dict[str, Any]:
+    if chunk.symbol_id is None or chunk.qualified_name is None:
+        raise APIError(500, "citation_metadata_missing", "Trusted citation metadata is unavailable")
+    return {
+        "project_id": chunk.project_id,
+        "project_name": project_name,
+        "file_id": chunk.file_id,
+        "symbol_id": chunk.symbol_id,
+        "chunk_id": chunk.chunk_id,
+        "qualified_name": chunk.qualified_name,
+        "relative_source_path": chunk.relative_path,
+        "start_line": chunk.start_line,
+        "end_line": chunk.end_line,
+        "content_hash": chunk.content_hash,
+    }
 
 
 def _error(status: int, code: str, message: str, details: dict[str, Any] | None = None) -> JSONResponse:
