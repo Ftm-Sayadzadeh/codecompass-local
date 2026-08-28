@@ -127,6 +127,15 @@ class SQLiteMetadataStore:
             raise StorageError(f"Failed to get project: {error}") from error
         return self._project(row) if row else None
 
+    def list_projects(self) -> tuple[ProjectRecord, ...]:
+        """Return projects in stable id order."""
+        try:
+            with self._connect() as connection:
+                rows = connection.execute("SELECT * FROM projects ORDER BY id").fetchall()
+        except sqlite3.Error as error:
+            raise StorageError(f"Failed to list projects: {error}") from error
+        return tuple(self._project(row) for row in rows)
+
     def get_project_by_root(self, root_path: Path) -> ProjectRecord | None:
         """Return a project by normalized root path."""
         try:
@@ -249,6 +258,18 @@ class SQLiteMetadataStore:
         except sqlite3.Error as error:
             raise StorageError(f"Failed to list source files: {error}") from error
         return tuple(self._source_file(row) for row in rows)
+
+    def get_source_file(self, project_id: int, file_id: int) -> SourceFileRecord | None:
+        """Return a source file only when it belongs to the requested project."""
+        try:
+            with self._connect() as connection:
+                row = connection.execute(
+                    "SELECT * FROM source_files WHERE project_id = ? AND id = ?",
+                    (project_id, file_id),
+                ).fetchone()
+        except sqlite3.Error as error:
+            raise StorageError(f"Failed to get source file: {error}") from error
+        return self._source_file(row) if row else None
 
     def list_symbols(self, file_id: int) -> tuple[SymbolRecord, ...]:
         """List stored symbols for a file."""

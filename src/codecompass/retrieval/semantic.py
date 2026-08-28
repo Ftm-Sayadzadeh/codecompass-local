@@ -4,23 +4,31 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from codecompass.embeddings import EmbeddingProvider, EmbeddingProviderError
+from codecompass.embeddings import EmbeddingIdentity, EmbeddingProvider, EmbeddingProviderError
 from codecompass.retrieval.models import RetrievedChunk, RetrievalError, RetrievalQuery
 from codecompass.storage import SQLiteMetadataStore, StorageError, StoredChunk
-from codecompass.vector_index import VectorIndex, VectorIndexError
+from codecompass.vector_index import VectorIndex, VectorIndexError, VectorIndexStateError
 
 
 class SemanticRetriever:
     """Search vectors, then hydrate citation metadata from SQLite."""
 
-    def __init__(self, store: SQLiteMetadataStore, embedding_provider: EmbeddingProvider, vector_index: VectorIndex) -> None:
+    def __init__(
+        self,
+        store: SQLiteMetadataStore,
+        embedding_provider: EmbeddingProvider,
+        vector_index: VectorIndex,
+        embedding_identity: EmbeddingIdentity | None = None,
+    ) -> None:
         self.store = store
         self.embedding_provider = embedding_provider
         self.vector_index = vector_index
+        self.embedding_identity = embedding_identity
 
     def search(self, query: RetrievalQuery) -> tuple[RetrievedChunk, ...]:
         """Return semantic matches for a query."""
         self._validate(query)
+        self._validate_embedding_identity()
         try:
             if self.store.get_project(query.project_id) is None:
                 raise RetrievalError("storage", f"Unknown project id: {query.project_id}")
@@ -49,6 +57,27 @@ class SemanticRetriever:
                 raise RetrievalError("storage", f"Missing SQLite metadata for chunk: {vector_result.chunk_id}")
             results.append(self._retrieved(chunk, vector_result.score))
         return tuple(sorted(results, key=self._sort_key)[: query.limit])
+
+    def _validate_embedding_identity(self) -> None:
+        if self.embedding_identity is None:
+            return
+        try:
+            metadata = self.vector_index.get_index_metadata()
+        except VectorIndexStateError as error:
+            raise RetrievalError("vector_index_state_invalid", "Vector index state is invalid") from error
+        except VectorIndexError as error:
+            raise RetrievalError("vector_index", str(error)) from error
+        expected = self.embedding_identity
+        actual = (
+            metadata.get("codecompass:embedding_provider"),
+            metadata.get("codecompass:embedding_endpoint_sha256"),
+            metadata.get("codecompass:embedding_model"),
+        )
+        if actual != (expected.provider, expected.endpoint_sha256, expected.model):
+            raise RetrievalError("embedding_configuration_mismatch", "Semantic index requires re-indexing")
+        stored_dimensions = metadata.get("codecompass:embedding_dimensions")
+        if expected.dimensions is not None and stored_dimensions != expected.dimensions:
+            raise RetrievalError("embedding_configuration_mismatch", "Semantic index requires re-indexing")
 
     def _validate(self, query: RetrievalQuery) -> None:
         if not query.text.strip():

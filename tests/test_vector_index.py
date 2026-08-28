@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
 
-from codecompass.vector_index import ChromaVectorIndex, VectorIndexError, VectorRecord
+from codecompass.vector_index import ChromaVectorIndex, VectorIndexError, VectorIndexStateError, VectorRecord
 
 
 def index(tmp_path: Path, name: str = "codecompass_test") -> ChromaVectorIndex:
@@ -23,6 +24,137 @@ def record(chunk_id: str, vector: list[float], content_hash: str = "hash") -> Ve
             "embedding_model": "fake-embed",
         },
     )
+
+
+def managed_index(tmp_path: Path, name: str = "codecompass-project-1", project_id: int = 1) -> ChromaVectorIndex:
+    vector_index = ChromaVectorIndex(tmp_path / "chroma", name, managed=True, project_id=project_id)
+    vector_index.initialize()
+    return vector_index
+
+
+def pointer(vector_index: ChromaVectorIndex) -> dict[str, object]:
+    return json.loads(vector_index.active_pointer.read_text(encoding="utf-8"))
+
+
+def write_pointer(vector_index: ChromaVectorIndex, value: dict[str, object]) -> None:
+    vector_index.active_pointer.write_text(json.dumps(value), encoding="utf-8")
+
+
+def test_managed_first_initialization_creates_bound_pointer(tmp_path: Path) -> None:
+    first = managed_index(tmp_path)
+    state = pointer(first)
+
+    assert state == {
+        "schema_version": 1,
+        "logical_collection": "codecompass-project-1",
+        "active_collection": first._active_name,
+        "generation": first.get_index_metadata()["codecompass:generation"],
+    }
+    assert first.get_index_metadata()["codecompass:project_id"] == 1
+    assert managed_index(tmp_path)._active_name == first._active_name
+
+
+def test_missing_managed_pointer_fails_closed(tmp_path: Path) -> None:
+    first = managed_index(tmp_path)
+    names = {collection.name for collection in first._client.list_collections()}
+    first.active_pointer.unlink()
+
+    reopened = ChromaVectorIndex(tmp_path / "chroma", first.collection_name, managed=True, project_id=1)
+    with pytest.raises(VectorIndexStateError, match="pointer is missing"):
+        reopened.initialize()
+
+    assert {collection.name for collection in reopened._client.list_collections()} == names
+    assert first.collection_name not in names
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        "not-json",
+        json.dumps({"schema_version": 1}),
+        json.dumps({
+            "schema_version": 2,
+            "logical_collection": "codecompass-project-1",
+            "active_collection": "unbound_collection",
+            "generation": "0" * 32,
+        }),
+        json.dumps({
+            "schema_version": 1,
+            "logical_collection": "codecompass-project-1",
+            "active_collection": "unbound_collection",
+            "generation": "0" * 32,
+            "extra": True,
+        }),
+    ],
+)
+def test_malformed_managed_pointer_fails_closed(tmp_path: Path, content: str) -> None:
+    first = managed_index(tmp_path)
+    names = {collection.name for collection in first._client.list_collections()}
+    first.active_pointer.write_text(content, encoding="utf-8")
+
+    with pytest.raises(VectorIndexStateError):
+        managed_index(tmp_path)
+
+    assert {collection.name for collection in first._client.list_collections()} == names
+
+
+def test_pointer_with_wrong_logical_collection_is_rejected(tmp_path: Path) -> None:
+    first = managed_index(tmp_path)
+    state = pointer(first)
+    state["logical_collection"] = "codecompass-project-2"
+    write_pointer(first, state)
+
+    with pytest.raises(VectorIndexStateError, match="binding is invalid"):
+        managed_index(tmp_path)
+
+
+def test_pointer_to_missing_collection_is_rejected_without_creation(tmp_path: Path) -> None:
+    first = managed_index(tmp_path)
+    state = pointer(first)
+    generation = "0" * 32
+    missing = first._physical_name("stage", generation)
+    state.update(active_collection=missing, generation=generation)
+    write_pointer(first, state)
+
+    with pytest.raises(VectorIndexStateError, match="collection is missing"):
+        managed_index(tmp_path)
+
+    assert missing not in {collection.name for collection in first._client.list_collections()}
+
+
+def test_pointer_cannot_activate_another_projects_collection(tmp_path: Path) -> None:
+    first = managed_index(tmp_path, "codecompass-project-1", 1)
+    second = managed_index(tmp_path, "codecompass-project-2", 2)
+    foreign = pointer(second)
+    local = pointer(first)
+    local.update(active_collection=foreign["active_collection"], generation=foreign["generation"])
+    write_pointer(first, local)
+
+    with pytest.raises(VectorIndexStateError, match="binding is invalid"):
+        managed_index(tmp_path, "codecompass-project-1", 1)
+
+
+def test_pointer_generation_must_match_collection_binding(tmp_path: Path) -> None:
+    first = managed_index(tmp_path)
+    state = pointer(first)
+    state["generation"] = "0" * 32
+    write_pointer(first, state)
+
+    with pytest.raises(VectorIndexStateError):
+        managed_index(tmp_path)
+
+
+def test_orphan_collection_does_not_override_valid_pointer(tmp_path: Path) -> None:
+    first = managed_index(tmp_path)
+    original = first._active_name
+    generation = "0" * 32
+    orphan_name = first._physical_name("stage", generation)
+    first._create_physical_index(orphan_name, generation)
+
+    reopened = managed_index(tmp_path)
+
+    assert reopened._active_name == original
+    assert orphan_name in {collection.name for collection in reopened._client.list_collections()}
 
 
 def test_create_upsert_get_and_search(tmp_path: Path) -> None:
@@ -66,6 +198,15 @@ def test_persistence_after_reopening(tmp_path: Path) -> None:
 
     assert reopened.get(("chunk-a",))[0].metadata["dimensions"] == 2
     assert reopened.search([1.0, 0.0], limit=1)[0].chunk_id == "chunk-a"
+
+
+def test_collection_metadata_is_merged_and_persisted(tmp_path: Path) -> None:
+    first = index(tmp_path)
+    first.set_index_metadata({"codecompass:embedding_provider": "fake"})
+
+    reopened = index(tmp_path)
+
+    assert reopened.get_index_metadata()["codecompass:embedding_provider"] == "fake"
 
 
 def test_duplicate_upsert_updates_without_duplicate_ids(tmp_path: Path) -> None:

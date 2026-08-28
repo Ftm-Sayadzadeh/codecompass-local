@@ -6,7 +6,7 @@ from typing import Sequence
 import pytest
 
 from codecompass.chunker import Chunk
-from codecompass.embeddings import EmbeddingProviderError, EmbeddingResult
+from codecompass.embeddings import EmbeddingProviderError, EmbeddingResult, embedding_identity
 from codecompass.parser import Symbol
 from codecompass.retrieval import RetrievalError, RetrievalQuery, RetrievalService
 from codecompass.scanner import SourceFile
@@ -18,8 +18,10 @@ class FakeEmbeddingProvider:
     def __init__(self, vector: list[float] | None = None, error: EmbeddingProviderError | None = None) -> None:
         self.vector = vector or [1.0, 0.0]
         self.error = error
+        self.calls: list[str] = []
 
     def embed_text(self, text: str) -> EmbeddingResult:
+        self.calls.append(text)
         if self.error:
             raise self.error
         return EmbeddingResult(vector=self.vector, model="fake", dimensions=len(self.vector))
@@ -49,6 +51,9 @@ class FakeVectorIndex:
         if self.error:
             raise self.error
         return self.results[:limit]
+
+    def get_index_metadata(self):
+        return {}
 
 
 class FailingStore:
@@ -212,6 +217,23 @@ def test_embedding_failure_raises_retrieval_error(tmp_path: Path) -> None:
         retriever.search_semantic(RetrievalQuery("token", project_id))
 
     assert raised.value.stage == "embedding"
+
+
+def test_semantic_rejects_legacy_embedding_identity_before_embedding(tmp_path: Path) -> None:
+    store, project_id, _ = store_with_chunks(tmp_path)
+    embedding = FakeEmbeddingProvider()
+    retriever = RetrievalService(
+        store,
+        embedding,
+        FakeVectorIndex(),
+        embedding_identity("ollama", "http://localhost:11434", "expected", 2),
+    )
+
+    with pytest.raises(RetrievalError) as raised:
+        retriever.search_semantic(RetrievalQuery("token", project_id))
+
+    assert raised.value.stage == "embedding_configuration_mismatch"
+    assert embedding.calls == []
 
 
 def test_vector_index_failure_raises_retrieval_error(tmp_path: Path) -> None:
