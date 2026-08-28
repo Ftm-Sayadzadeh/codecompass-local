@@ -326,6 +326,30 @@ class SQLiteMetadataStore:
             raise StorageError(f"Failed to get chunk: {error}") from error
         return self._chunk(row) if row else None
 
+    def get_chunks_by_chunk_ids(self, project_id: int, chunk_ids: tuple[str, ...]) -> tuple[StoredChunk, ...]:
+        """Return trusted chunks for a bounded set of chunk ids."""
+        unique_ids = tuple(dict.fromkeys(chunk_ids))
+        if not unique_ids:
+            return ()
+        placeholders = ", ".join("?" for _ in unique_ids)
+        try:
+            with self._connect() as connection:
+                rows = connection.execute(
+                    f"""
+                    SELECT
+                        chunks.*, source_files.relative_path, symbols.qualified_name
+                    FROM chunks
+                    JOIN source_files ON source_files.id = chunks.file_id
+                    LEFT JOIN symbols ON symbols.id = chunks.symbol_id
+                    WHERE chunks.project_id = ? AND chunks.chunk_id IN ({placeholders})
+                    ORDER BY chunks.chunk_id
+                    """,
+                    (project_id, *unique_ids),
+                ).fetchall()
+        except sqlite3.Error as error:
+            raise StorageError(f"Failed to get chunks: {error}") from error
+        return tuple(self._chunk(row) for row in rows)
+
     def _connect(self) -> sqlite3.Connection:
         connection = sqlite3.connect(self.db_path)
         connection.row_factory = sqlite3.Row

@@ -104,6 +104,8 @@ class SymbolResponse(StrictModel):
 
 
 class CitationResponse(StrictModel):
+    file_id: int
+    symbol_id: int | None
     chunk_id: str
     source_file: str
     symbol_name: str | None
@@ -143,10 +145,23 @@ class IndexProjectResponse(StrictModel):
     embedding: dict[str, Any]
 
 
+class DocumentationCitationResponse(StrictModel):
+    project_id: int
+    project_name: str
+    file_id: int
+    symbol_id: int
+    chunk_id: str
+    qualified_name: str
+    relative_source_path: str
+    start_line: int
+    end_line: int
+    content_hash: str
+
+
 class DocumentationResponse(StrictModel):
     extracted: dict[str, Any]
     generated: dict[str, Any]
-    citations: list[dict[str, Any]]
+    citations: list[DocumentationCitationResponse]
     generation: dict[str, Any]
 
 

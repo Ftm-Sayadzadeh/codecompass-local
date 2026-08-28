@@ -20,7 +20,7 @@ from codecompass.providers import OLLAMA, ProviderConfig, create_embedding_provi
 from codecompass.qa import GroundedQAService, QAPromptBuilder, QARequest
 from codecompass.rag import RAGContextBuilder
 from codecompass.retrieval import RetrievalQuery, RetrievalService
-from codecompass.storage import SQLiteMetadataStore
+from codecompass.storage import SQLiteMetadataStore, StoredChunk
 from codecompass.vector_index import ChromaVectorIndex
 
 
@@ -176,6 +176,22 @@ class APIRuntime:
         if hashlib.sha256(raw).hexdigest() != source.sha256:
             raise APIError(409, "source_changed", "Indexed source has changed; re-index is required")
         return {"id": source.id, "relative_path": source.relative_path, "sha256": source.sha256, "content": content}
+
+    def citation_chunks(self, project_id: int, chunk_ids: tuple[str, ...]) -> dict[str, StoredChunk]:
+        """Hydrate API navigation metadata from canonical SQLite rows."""
+        self.require_project(project_id)
+        requested = tuple(dict.fromkeys(chunk_ids))
+        chunks = {
+            chunk.chunk_id: chunk
+            for chunk in self.store.get_chunks_by_chunk_ids(project_id, requested)
+        }
+        files = {source.id: source for source in self.store.list_source_files(project_id)}
+        if set(chunks) != set(requested) or any(
+            chunk.file_id not in files or files[chunk.file_id].relative_path != chunk.relative_path
+            for chunk in chunks.values()
+        ):
+            raise APIError(500, "citation_metadata_missing", "Trusted citation metadata is unavailable")
+        return chunks
 
     def evaluation(self, *, performance: bool) -> tuple[str, dict[str, Any]]:
         path = self.settings.performance_artifact if performance else self.settings.baseline_artifact

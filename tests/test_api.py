@@ -151,6 +151,12 @@ def test_search_embedding_compatibility_and_legacy_behavior(api) -> None:
         response = client.post(f"/projects/{project_id}/search", json={"query": "shared value", "method": method})
         assert response.status_code == 200, response.text
         assert response.json()["results"]
+        result = response.json()["results"][0]
+        chunk = runtime.store.get_chunk_by_chunk_id(project_id, result["chunk_id"])
+        assert result["file_id"] == chunk.file_id
+        assert result["symbol_id"] == chunk.symbol_id
+        assert result["source_file"] == chunk.relative_path
+        assert runtime.store.get_source_file(project_id, result["file_id"]).relative_path == result["source_file"]
 
     mismatch = client.post(
         f"/projects/{project_id}/search",
@@ -192,7 +198,7 @@ def test_invalid_vector_pointer_fails_closed_with_safe_conflict(api) -> None:
 
 
 def test_ask_and_documentation_preserve_trusted_citations(api) -> None:
-    client, _, llm, repo = api
+    client, runtime, llm, repo = api
     project_id = index_project(client, repo)
 
     answer = client.post(f"/projects/{project_id}/ask", json={"question": "What does shared return?", "method": "lexical"})
@@ -201,7 +207,16 @@ def test_ask_and_documentation_preserve_trusted_citations(api) -> None:
     missing = client.post(f"/projects/{project_id}/documentation", json={"identifier": "missing"})
 
     assert answer.status_code == 200
-    assert answer.json()["citations"][0]["source_file"] == "first.py"
+    answer_citation = answer.json()["citations"][0]
+    answer_chunk = runtime.store.get_chunk_by_chunk_id(project_id, answer_citation["chunk_id"])
+    assert answer_citation["file_id"] == answer_chunk.file_id
+    assert answer_citation["symbol_id"] == answer_chunk.symbol_id
+    assert answer_citation["source_file"] == answer_chunk.relative_path == "first.py"
+    assert runtime.store.get_source_file(project_id, answer_citation["file_id"]).relative_path == "first.py"
+    source = client.get(f"/projects/{project_id}/files/{answer_citation['file_id']}/content")
+    assert source.status_code == 200
+    assert source.json()["relative_path"] == answer_citation["source_file"]
+    assert str(repo) not in answer.text
     assert documented.status_code == 404
     assert ambiguous.status_code == 409
     assert ambiguous.json()["error"]["details"]["candidates"]
@@ -211,7 +226,45 @@ def test_ask_and_documentation_preserve_trusted_citations(api) -> None:
     symbol_id = client.get(f"/projects/{project_id}/symbols").json()[0]["id"]
     success = client.post(f"/projects/{project_id}/documentation", json={"identifier": symbol_id})
     assert success.status_code == 200, success.text
-    assert success.json()["extracted"]["citation"]["relative_source_path"] == "first.py"
+    documentation_citation = success.json()["citations"][0]
+    documentation_chunk = runtime.store.get_chunk_by_chunk_id(project_id, documentation_citation["chunk_id"])
+    assert documentation_citation["file_id"] == documentation_chunk.file_id
+    assert documentation_citation["symbol_id"] == documentation_chunk.symbol_id
+    assert documentation_citation["relative_source_path"] == documentation_chunk.relative_path == "first.py"
+    assert success.json()["extracted"]["citation"] == documentation_citation
+    assert client.get(f"/projects/{project_id}/files/{documentation_citation['file_id']}/content").status_code == 200
+    assert str(repo) not in success.text
+
+
+def test_provider_cannot_author_documentation_file_id(api, monkeypatch) -> None:
+    client, _, _, repo = api
+    project_id = index_project(client, repo)
+
+    class ForgedFileIdProvider(FakeLLMProvider):
+        def generate(self, request):
+            response = super().generate(request)
+            value = json.loads(response.text)
+            value["file_id"] = 999999
+            return LLMResponse(json.dumps(value), response.model, response.provider)
+
+    monkeypatch.setattr(api_app, "create_llm", lambda runtime, override: ForgedFileIdProvider())
+    symbol_id = client.get(f"/projects/{project_id}/symbols").json()[0]["id"]
+    response = client.post(f"/projects/{project_id}/documentation", json={"identifier": symbol_id})
+
+    assert response.status_code == 502
+    assert response.json()["error"]["code"] == "documentation_invalid_output"
+    assert "999999" not in response.text
+
+
+def test_missing_trusted_citation_metadata_fails_explicitly(api) -> None:
+    client, runtime, _, repo = api
+    project_id = index_project(client, repo)
+
+    with pytest.raises(api_runtime.APIError) as raised:
+        runtime.citation_chunks(project_id, ("missing-chunk",))
+
+    assert raised.value.status == 500
+    assert raised.value.code == "citation_metadata_missing"
 
 
 def test_provider_failure_timeout_and_incomplete_index_are_safe(api, monkeypatch) -> None:
@@ -292,3 +345,8 @@ def test_swagger_has_only_intended_routes(api) -> None:
         "/evaluation/summary",
         "/evaluation/performance",
     }
+    schemas = client.get("/openapi.json").json()["components"]["schemas"]
+    assert "file_id" in schemas["CitationResponse"]["properties"]
+    assert "symbol_id" in schemas["CitationResponse"]["properties"]
+    assert "file_id" in schemas["RetrievedChunkResponse"]["properties"]
+    assert "file_id" in schemas["DocumentationCitationResponse"]["properties"]
