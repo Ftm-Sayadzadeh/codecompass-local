@@ -50,6 +50,23 @@ def test_ollama_generation_success() -> None:
     ]
 
 
+def test_structured_output_is_optional_and_maps_to_ollama_json_format() -> None:
+    provider = FakeOllamaLLMProvider({"response": "{}"})
+
+    assert LLMRequest("Question").response_format is None
+    provider.generate(LLMRequest("Question", response_format="json"))
+
+    assert provider.payloads == [
+        {
+            "model": "fake-model",
+            "prompt": "Question",
+            "stream": False,
+            "options": {"temperature": 0.0},
+            "format": "json",
+        }
+    ]
+
+
 def test_system_prompt_and_generation_options_are_sent() -> None:
     provider = FakeOllamaLLMProvider({"response": "answer"})
 
@@ -102,6 +119,15 @@ def test_invalid_max_tokens_raises(max_tokens) -> None:
 
     with pytest.raises(LLMProviderError) as raised:
         provider.generate(LLMRequest("Question", max_tokens=max_tokens))
+
+    assert raised.value.error_type == "InvalidInput"
+
+
+def test_invalid_response_format_raises() -> None:
+    provider = FakeOllamaLLMProvider({"response": "answer"})
+
+    with pytest.raises(LLMProviderError) as raised:
+        provider.generate(LLMRequest("Question", response_format="xml"))
 
     assert raised.value.error_type == "InvalidInput"
 
