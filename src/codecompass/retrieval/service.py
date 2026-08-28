@@ -1,6 +1,6 @@
 """Retrieval service facade."""
 
-from codecompass.embeddings import EmbeddingProvider
+from codecompass.embeddings import EmbeddingIdentity, EmbeddingProvider
 from codecompass.retrieval.hybrid import HybridRetriever
 from codecompass.retrieval.lexical import LexicalRetriever
 from codecompass.retrieval.models import RetrievalQuery, RetrievalResult
@@ -12,9 +12,15 @@ from codecompass.vector_index import VectorIndex
 class RetrievalService:
     """Search indexed code chunks with lexical, semantic, or hybrid retrieval."""
 
-    def __init__(self, store: SQLiteMetadataStore, embedding_provider: EmbeddingProvider, vector_index: VectorIndex) -> None:
+    def __init__(
+        self,
+        store: SQLiteMetadataStore,
+        embedding_provider: EmbeddingProvider,
+        vector_index: VectorIndex,
+        embedding_identity: EmbeddingIdentity | None = None,
+    ) -> None:
         self.lexical = LexicalRetriever(store)
-        self.semantic = SemanticRetriever(store, embedding_provider, vector_index)
+        self.semantic = SemanticRetriever(store, embedding_provider, vector_index, embedding_identity)
         self.hybrid = HybridRetriever(self.lexical, self.semantic)
 
     def search_lexical(self, query: RetrievalQuery) -> RetrievalResult:

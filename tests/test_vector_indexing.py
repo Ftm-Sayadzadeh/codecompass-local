@@ -1,14 +1,17 @@
 from __future__ import annotations
 
 import argparse
+import json
 import subprocess
 from pathlib import Path
 
 import pytest
 
-from codecompass.embeddings import EmbeddingProviderError, EmbeddingResult, OllamaEmbeddingProvider
+import codecompass.vector_index.chroma as chroma_module
+from codecompass.embeddings import EmbeddingProviderError, EmbeddingResult, OllamaEmbeddingProvider, embedding_identity
 from codecompass.indexing import IndexingService, VectorIndexingService
 from codecompass.indexing.cli import _validate_repository
+from codecompass.retrieval import RetrievalQuery, RetrievalService
 from codecompass.storage import SQLiteMetadataStore
 from codecompass.vector_index import ChromaVectorIndex, VectorIndexError, VectorRecord
 
@@ -39,6 +42,11 @@ class FakeEmbeddingProvider:
         if self.max_chars is not None and any(len(text) > self.max_chars for text in values):
             raise EmbeddingProviderError("fake", "fake", "InputTooLong", "context length exceeded")
         return tuple(EmbeddingResult([float(len(text)), 1.0], "fake", 2) for text in values)
+
+
+class ThreeDimensionEmbeddingProvider(FakeEmbeddingProvider):
+    def embed_texts(self, texts) -> tuple[EmbeddingResult, ...]:
+        return tuple(EmbeddingResult([float(len(text)), 1.0, 2.0], "second", 3) for text in texts)
 
 
 class FailingVectorIndex:
@@ -277,6 +285,161 @@ def test_transient_embedding_failure_is_retried_and_observable(tmp_path: Path) -
     assert result.succeeded
     assert result.stats.embedding_retries == 1
     assert result.stats.embedding_failures == 0
+
+
+def test_successful_indexing_persists_embedding_identity(tmp_path: Path) -> None:
+    store, project_id = indexed_store(tmp_path, "def current():\n    return 1\n")
+    vector_index = ChromaVectorIndex(tmp_path / "chroma", "identity_index")
+    identity = embedding_identity("fake", "https://example.test/v1", "fake")
+
+    result = VectorIndexingService(
+        store,
+        FakeEmbeddingProvider(),
+        vector_index,
+        embedding_identity=identity,
+    ).index_project(project_id)
+
+    metadata = vector_index.get_index_metadata()
+    assert result.succeeded
+    assert metadata["codecompass:embedding_provider"] == "fake"
+    assert metadata["codecompass:embedding_model"] == "fake"
+    assert metadata["codecompass:embedding_dimensions"] == 2
+    assert "example.test" not in str(metadata)
+
+
+def test_explicit_reindex_replaces_collection_for_new_embedding_identity(tmp_path: Path) -> None:
+    store, project_id = indexed_store(tmp_path, "def current():\n    return 1\n")
+    vector_index = ChromaVectorIndex(
+        tmp_path / "chroma",
+        "identity_reindex",
+        managed=True,
+        project_id=project_id,
+    )
+    first = embedding_identity("fake", "https://one.example/v1", "first")
+    assert VectorIndexingService(store, FakeEmbeddingProvider(), vector_index, embedding_identity=first).index_project(project_id).succeeded
+
+    second = embedding_identity("fake", "https://two.example/v1", "second")
+    old_name = vector_index._active_name
+    result = VectorIndexingService(store, ThreeDimensionEmbeddingProvider(), vector_index, embedding_identity=second).index_project(project_id)
+
+    assert result.succeeded
+    assert vector_index.get_index_metadata()["codecompass:embedding_dimensions"] == 3
+    assert vector_index.get_index_metadata()["codecompass:embedding_model"] == "second"
+    assert json.loads(vector_index.active_pointer.read_text(encoding="utf-8"))["active_collection"] == vector_index._active_name
+    assert old_name not in {collection.name for collection in vector_index._client.list_collections()}
+    semantic = RetrievalService(
+        store,
+        ThreeDimensionEmbeddingProvider(),
+        ChromaVectorIndex(tmp_path / "chroma", "identity_reindex", managed=True, project_id=project_id),
+        second.with_dimensions(3),
+    ).search_semantic(RetrievalQuery("current", project_id, 1))
+    assert len(semantic.results) == 1
+
+
+@pytest.mark.parametrize("failure", ["upsert", "metadata", "missing_ids", "extra_ids", "activation"])
+def test_failed_identity_replacement_preserves_old_active_collection(tmp_path: Path, monkeypatch, failure: str) -> None:
+    store, project_id = indexed_store(tmp_path, "def current():\n    return 1\n")
+    vector_index = ChromaVectorIndex(tmp_path / "chroma", "safe_reindex", managed=True, project_id=project_id)
+    first = embedding_identity("fake", "https://one.example/v1", "first")
+    assert VectorIndexingService(store, FakeEmbeddingProvider(), vector_index, embedding_identity=first).index_project(project_id).succeeded
+    old_ids = vector_index.list_ids(project_id)
+    old_metadata = vector_index.get_index_metadata()
+
+    if failure == "upsert":
+        original = ChromaVectorIndex.upsert
+
+        def fail_upsert(self, records):
+            if "-stage-" in self.collection_name:
+                raise VectorIndexError("staging upsert failed")
+            return original(self, records)
+
+        monkeypatch.setattr(ChromaVectorIndex, "upsert", fail_upsert)
+    elif failure == "metadata":
+        original = ChromaVectorIndex.set_index_metadata
+
+        def fail_metadata(self, metadata):
+            if "-stage-" in self.collection_name:
+                raise VectorIndexError("staging metadata failed")
+            return original(self, metadata)
+
+        monkeypatch.setattr(ChromaVectorIndex, "set_index_metadata", fail_metadata)
+    elif failure in {"missing_ids", "extra_ids"}:
+        original = ChromaVectorIndex.list_ids
+
+        def wrong_ids(self, project_id=None):
+            values = original(self, project_id)
+            if "-stage-" not in self.collection_name:
+                return values
+            return () if failure == "missing_ids" else (*values, "unexpected-id")
+
+        monkeypatch.setattr(ChromaVectorIndex, "list_ids", wrong_ids)
+    else:
+        monkeypatch.setattr(chroma_module.os, "replace", lambda source, target: (_ for _ in ()).throw(OSError("activation failed")))
+
+    second = embedding_identity("fake", "https://two.example/v1", "second")
+    result = VectorIndexingService(
+        store,
+        ThreeDimensionEmbeddingProvider(),
+        vector_index,
+        embedding_identity=second,
+    ).index_project(project_id)
+
+    reopened = ChromaVectorIndex(tmp_path / "chroma", "safe_reindex", managed=True, project_id=project_id)
+    assert not result.succeeded
+    assert result.stats.complete is False
+    assert reopened.list_ids(project_id) == old_ids
+    assert reopened.get_index_metadata() == old_metadata
+    assert all("-stage-" not in collection.name for collection in reopened._client.list_collections())
+
+
+def test_same_identity_reindex_does_not_use_replacement(tmp_path: Path, monkeypatch) -> None:
+    store, project_id = indexed_store(tmp_path, "def current():\n    return 1\n")
+    vector_index = ChromaVectorIndex(
+        tmp_path / "chroma",
+        "same_identity",
+        managed=True,
+        project_id=project_id,
+    )
+    identity = embedding_identity("fake", "https://one.example/v1", "same")
+    assert VectorIndexingService(store, FakeEmbeddingProvider(), vector_index, embedding_identity=identity).index_project(project_id).succeeded
+    monkeypatch.setattr(vector_index, "replace_collection", lambda *args: (_ for _ in ()).throw(AssertionError("replacement used")))
+
+    result = VectorIndexingService(store, FakeEmbeddingProvider(), vector_index, embedding_identity=identity).index_project(project_id)
+
+    assert result.succeeded
+
+
+def test_inactive_cleanup_failure_keeps_new_collection_active(tmp_path: Path, monkeypatch) -> None:
+    store, project_id = indexed_store(tmp_path, "def current():\n    return 1\n")
+    vector_index = ChromaVectorIndex(tmp_path / "chroma", "cleanup_reindex", managed=True, project_id=project_id)
+    first = embedding_identity("fake", "https://one.example/v1", "first")
+    assert VectorIndexingService(store, FakeEmbeddingProvider(), vector_index, embedding_identity=first).index_project(project_id).succeeded
+    old_name = vector_index._active_name
+
+    def fail_cleanup(_: str) -> None:
+        raise RuntimeError("cleanup failed")
+
+    monkeypatch.setattr(vector_index._client, "delete_collection", fail_cleanup)
+
+    second = embedding_identity("fake", "https://two.example/v1", "second")
+    result = VectorIndexingService(
+        store,
+        ThreeDimensionEmbeddingProvider(),
+        vector_index,
+        embedding_identity=second,
+    ).index_project(project_id)
+
+    reopened = ChromaVectorIndex(tmp_path / "chroma", "cleanup_reindex", managed=True, project_id=project_id)
+    assert result.succeeded
+    assert reopened.get_index_metadata()["codecompass:embedding_model"] == "second"
+    assert old_name in {collection.name for collection in reopened._client.list_collections()}
+    assert reopened._active_name != old_name
+
+
+@pytest.mark.parametrize("url", ["https://user:secret@example.test/v1", "https://example.test/v1?key=secret", "https://example.test/v1#secret"])
+def test_embedding_identity_rejects_url_secrets(url: str) -> None:
+    with pytest.raises(ValueError):
+        embedding_identity("fake", url, "model")
 
 
 def test_silent_provider_truncation_is_rejected(tmp_path: Path) -> None:

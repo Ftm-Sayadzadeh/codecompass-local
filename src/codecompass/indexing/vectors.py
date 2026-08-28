@@ -6,7 +6,7 @@ import time
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from codecompass.embeddings import EmbeddingProvider, EmbeddingProviderError, EmbeddingResult
+from codecompass.embeddings import EmbeddingIdentity, EmbeddingProvider, EmbeddingProviderError, EmbeddingResult
 from codecompass.indexing.models import (
     TruncatedEmbedding,
     VectorIndexingError,
@@ -34,6 +34,7 @@ class VectorIndexingService:
         batch_size: int = 32,
         max_retries: int = 2,
         retry_delay_seconds: float = 0.5,
+        embedding_identity: EmbeddingIdentity | None = None,
     ) -> None:
         if batch_size < 1:
             raise ValueError("Embedding batch size must be positive")
@@ -47,6 +48,7 @@ class VectorIndexingService:
         self.batch_size = batch_size
         self.max_retries = max_retries
         self.retry_delay_seconds = retry_delay_seconds
+        self.embedding_identity = embedding_identity
         self._embedding_retries = 0
 
     def index_project(self, project_id: int) -> VectorIndexingResult:
@@ -63,6 +65,14 @@ class VectorIndexingService:
             errors.extend(vector_errors)
             return self._result(project_id, sqlite_ids, vector_ids, embedded, truncated, errors)
 
+        target_identity = None
+        if self.embedding_identity is not None and embedded:
+            dimensions = {item.embedding.dimensions for item in embedded}
+            if len(dimensions) != 1:
+                errors.append(VectorIndexingError("vector", (), "DimensionMismatch", "Embedding dimensions differ"))
+                return self._result(project_id, sqlite_ids, (), embedded, truncated, errors)
+            target_identity = self.embedding_identity.with_dimensions(dimensions.pop())
+
         records = tuple(
             VectorRecord(
                 chunk_id=item.chunk.chunk_id,
@@ -78,10 +88,33 @@ class VectorIndexingService:
         )
         vector_ids: tuple[str, ...] = ()
         try:
-            existing = set(self.vector_index.list_ids(project_id))
-            self.vector_index.upsert(records)
-            stale = tuple(sorted(existing - set(sqlite_ids)))
-            self.vector_index.delete(stale)
+            replacement = False
+            if target_identity is not None and self.vector_index.list_ids(project_id):
+                metadata = self.vector_index.get_index_metadata()
+                current = (
+                    metadata.get("codecompass:embedding_provider"),
+                    metadata.get("codecompass:embedding_endpoint_sha256"),
+                    metadata.get("codecompass:embedding_model"),
+                    metadata.get("codecompass:embedding_dimensions"),
+                )
+                expected = (
+                    target_identity.provider,
+                    target_identity.endpoint_sha256,
+                    target_identity.model,
+                    target_identity.dimensions,
+                )
+                if current != expected:
+                    self.vector_index.replace_collection(
+                        records,
+                        self._identity_metadata(target_identity),
+                        sqlite_ids,
+                    )
+                    replacement = True
+            if not replacement:
+                existing = set(self.vector_index.list_ids(project_id))
+                self.vector_index.upsert(records)
+                stale = tuple(sorted(existing - set(sqlite_ids)))
+                self.vector_index.delete(stale)
             vector_ids = self.vector_index.list_ids(project_id)
         except VectorIndexError as error:
             errors.append(VectorIndexingError("vector", (), type(error).__name__, str(error)))
@@ -98,7 +131,21 @@ class VectorIndexingService:
                     "SQLite and vector-index chunk ids do not match",
                 )
             )
+        if not errors and target_identity is not None and not replacement:
+            try:
+                self.vector_index.set_index_metadata(self._identity_metadata(target_identity))
+            except VectorIndexError as error:
+                errors.append(VectorIndexingError("vector", (), type(error).__name__, str(error)))
         return self._result(project_id, sqlite_ids, vector_ids, embedded, truncated, errors)
+
+    def _identity_metadata(self, identity: EmbeddingIdentity) -> dict[str, str | int]:
+        return {
+            "codecompass:embedding_schema": 1,
+            "codecompass:embedding_provider": identity.provider,
+            "codecompass:embedding_endpoint_sha256": identity.endpoint_sha256,
+            "codecompass:embedding_model": identity.model,
+            "codecompass:embedding_dimensions": identity.dimensions or 0,
+        }
 
     def _embed_chunks(
         self,

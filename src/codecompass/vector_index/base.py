@@ -37,6 +37,10 @@ class VectorIndexError(Exception):
     """Raised when vector indexing fails."""
 
 
+class VectorIndexStateError(VectorIndexError):
+    """Raised when managed active-collection state cannot be trusted."""
+
+
 class VectorIndex(Protocol):
     """Protocol implemented by vector indexes."""
 
@@ -57,3 +61,17 @@ class VectorIndex(Protocol):
 
     def list_ids(self, project_id: int | None = None) -> tuple[str, ...]:
         """Return stored vector ids, optionally scoped to one project."""
+
+    def get_index_metadata(self) -> Mapping[str, VectorMetadataValue]:
+        """Return collection-level metadata."""
+
+    def set_index_metadata(self, metadata: Mapping[str, VectorMetadataValue]) -> None:
+        """Merge collection-level metadata."""
+
+    def replace_collection(
+        self,
+        records: Sequence[VectorRecord],
+        metadata: Mapping[str, VectorMetadataValue],
+        expected_ids: Sequence[str],
+    ) -> None:
+        """Build, verify, and safely activate a replacement collection."""
