@@ -52,6 +52,8 @@ class OpenAICompatibleLLMProvider:
         }
         if request.max_tokens is not None:
             payload["max_tokens"] = request.max_tokens
+        if request.response_format == "json":
+            payload["response_format"] = {"type": "json_object"}
         return payload
 
     def _post_json(self, payload: dict[str, Any]) -> dict[str, Any]:
@@ -88,6 +90,8 @@ class OpenAICompatibleLLMProvider:
         if request.max_tokens is not None:
             if isinstance(request.max_tokens, bool) or not isinstance(request.max_tokens, int) or request.max_tokens < 1:
                 raise self._error("InvalidInput", "max_tokens must be a positive integer or None")
+        if request.response_format not in (None, "json"):
+            raise self._error("InvalidInput", "Unsupported response_format")
 
     def _error(self, error_type: str, message: str) -> LLMProviderError:
         return LLMProviderError("openai_compatible", self.model, error_type, message)

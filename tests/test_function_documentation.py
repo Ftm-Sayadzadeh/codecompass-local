@@ -150,6 +150,7 @@ def test_generation_returns_trusted_facts_and_citation(indexed_store) -> None:
     assert result.generation.provider == "fake-provider"
     assert result.generation.model == "fake-model"
     assert llm.requests[0].temperature == 0.0
+    assert llm.requests[0].response_format == "json"
     assert "Citations" not in llm.requests[0].prompt
 
 
@@ -233,6 +234,60 @@ def test_accepts_one_valid_json_markdown_fence(indexed_store) -> None:
     result = FunctionDocumentationService(store, llm).document_symbol(project_id, "greet")
 
     assert result.generated.summary == "Builds a greeting."
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        f"```\n{valid_output()}\n```",
+        f"  \n{valid_output()}\n  ",
+    ],
+)
+def test_accepts_unlabeled_fence_and_surrounding_whitespace(indexed_store, text: str) -> None:
+    store, project_id, _ = indexed_store
+
+    result = FunctionDocumentationService(store, FakeLLMProvider(text)).document_symbol(
+        project_id, "greet"
+    )
+
+    assert result.generated.summary == "Builds a greeting."
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        f"Commentary first.\n{valid_output()}",
+        f"{valid_output()}\nCommentary after.",
+        f"```json\n{valid_output()}\n```\n```json\n{valid_output()}\n```",
+        f"```json\n{valid_output()}",
+        f"``` ```json\n{valid_output()}\n``` ```json\n{{\"summary\": \"truncated",
+    ],
+)
+def test_rejects_prose_multiple_fences_and_unclosed_fences(indexed_store, text: str) -> None:
+    store, project_id, _ = indexed_store
+
+    with pytest.raises(DocumentationError) as raised:
+        FunctionDocumentationService(store, FakeLLMProvider(text)).document_symbol(
+            project_id, "greet"
+        )
+
+    assert raised.value.code == "invalid_output"
+
+
+def test_prompt_forbids_markdown_commentary_and_repetition(indexed_store) -> None:
+    store, project_id, _ = indexed_store
+    llm = FakeLLMProvider()
+
+    FunctionDocumentationService(store, llm).document_symbol(project_id, "greet")
+
+    system_prompt = llm.requests[0].system_prompt
+    assert system_prompt is not None
+    assert "first response character must be {" in system_prompt
+    assert "last response character must be }" in system_prompt
+    assert "Do not use Markdown, code fences, commentary, or repeat" in system_prompt
+    assert "Reply with exactly one JSON object." in llm.requests[0].prompt
+    assert "Do not use Markdown, code fences, or commentary." in llm.requests[0].prompt
+    assert "Generate the object once and stop immediately after }." in llm.requests[0].prompt
 
 
 def test_rejects_wrong_types_and_oversized_fields(indexed_store) -> None:

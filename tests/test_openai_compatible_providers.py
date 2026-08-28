@@ -151,6 +151,39 @@ def test_openai_compatible_llm_success_and_request_options(monkeypatch) -> None:
     }
 
 
+def test_openai_compatible_llm_maps_json_response_format(monkeypatch) -> None:
+    captured = install_response(
+        monkeypatch,
+        {"choices": [{"message": {"content": "{}"}}]},
+    )
+
+    OpenAICompatibleLLMProvider("chat", "https://compatible.example/v1").generate(
+        LLMRequest("Question", response_format="json")
+    )
+
+    assert json.loads(captured[0][0].data) == {
+        "model": "chat",
+        "messages": [{"role": "user", "content": "Question"}],
+        "temperature": 0.0,
+        "response_format": {"type": "json_object"},
+    }
+
+
+def test_openai_compatible_llm_rejects_unknown_response_format(monkeypatch) -> None:
+    captured = install_response(
+        monkeypatch,
+        {"choices": [{"message": {"content": "answer"}}]},
+    )
+
+    with pytest.raises(LLMProviderError) as raised:
+        OpenAICompatibleLLMProvider("chat", "https://compatible.example/v1").generate(
+            LLMRequest("Question", response_format="xml")
+        )
+
+    assert raised.value.error_type == "InvalidInput"
+    assert captured == []
+
+
 def test_openai_compatible_llm_sends_authorization_only_when_configured(monkeypatch) -> None:
     captured = install_response(
         monkeypatch, {"choices": [{"message": {"content": "answer"}}]}

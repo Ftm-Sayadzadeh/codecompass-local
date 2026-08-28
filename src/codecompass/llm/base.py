@@ -1,7 +1,9 @@
 """Local LLM provider interfaces and models."""
 
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Literal, Protocol
+
+LLMResponseFormat = Literal["json"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -12,6 +14,7 @@ class LLMRequest:
     system_prompt: str | None = None
     temperature: float = 0.0
     max_tokens: int | None = None
+    response_format: LLMResponseFormat | None = None
 
 
 @dataclass(frozen=True, slots=True)
