@@ -32,7 +32,7 @@ class QARequest:
     retrieval_limit: int = 5
     max_context_chars: int = 6000
     temperature: float = 0.0
-    max_tokens: int | None = None
+    max_tokens: int | None = 180
 
 
 @dataclass(frozen=True, slots=True)

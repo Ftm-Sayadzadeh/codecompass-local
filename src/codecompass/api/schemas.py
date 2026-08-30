@@ -49,6 +49,7 @@ class SearchRequest(StrictModel):
 class AskRequest(StrictModel):
     question: str = Field(min_length=1)
     method: Literal["lexical", "semantic", "hybrid"] = "hybrid"
+    max_tokens: int = Field(default=180, ge=1, le=8000)
     embedding: EmbeddingProviderOverride | None = None
     llm: ProviderOverride | None = None
 
