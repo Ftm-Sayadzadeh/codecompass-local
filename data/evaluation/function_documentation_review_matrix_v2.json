@@ -1,0 +1,415 @@
+{
+  "schema_version": "1",
+  "matrix_id": "function_documentation_review_matrix_v2",
+  "canonical_hashing": "SHA-256 of UTF-8 JSON serialized with sorted object keys, separators ',' and ':', and ensure_ascii=false",
+  "rubric_id": "function_documentation_review_rubric_v2",
+  "rubric_sha256": "ad9664d35443b4d29c9890d3b118e2e3684b5f9c181fcdc759ba74b2762a5a13",
+  "generation_configuration": {
+    "application_path": "POST /projects/{project_id}/documentation using FunctionDocumentationService",
+    "provider": "openai_compatible",
+    "provider_endpoint": "https://api.avalai.ir/v1",
+    "model": "glm-5.3-flash",
+    "temperature": 0.0,
+    "max_tokens": 1200,
+    "provider_transport_retries": 0,
+    "manual_reruns": 0,
+    "application_validation_attempt_policy": {
+      "en": {
+        "maximum_total_provider_calls": 1,
+        "regeneration_trigger": null
+      },
+      "fa": {
+        "maximum_total_provider_calls": 2,
+        "regeneration_trigger": "The first generated output passes JSON, schema, parameter, type, fence, and size validation but fails FunctionDocumentationService._is_persian language validation."
+      },
+      "provider_or_transport_failure_behavior": "Stop immediately as INCONCLUSIVE without retry.",
+      "other_contract_validation_failure_behavior": "Stop immediately as FAIL without regeneration."
+    },
+    "retrieval": "none",
+    "structured_output": "json_object"
+  },
+  "result_record_schema": {
+    "total_provider_calls": "integer",
+    "attempts": [
+      {
+        "attempt_number": "integer",
+        "provider_completed": "boolean",
+        "json_schema_and_parameter_validation_passed": "boolean or null when no output was produced",
+        "language_validation_passed": "boolean or null when earlier validation failed",
+        "service_validation_passed": "boolean",
+        "failure_code": "string or null",
+        "finish_reason": "string when exposed by the provider, otherwise null",
+        "explicit_truncation": "boolean; true only for finish_reason=length",
+        "safe_provider_error_type": "sanitized string category or null"
+      }
+    ],
+    "first_generated_output_passed_service_validation": "boolean or null when no output was produced",
+    "application_level_regeneration_occurred": "boolean",
+    "regeneration_reason": "string or null",
+    "final_contract_validation_result": {
+      "json_schema_valid": "boolean",
+      "target_identity_valid": "boolean",
+      "parameters_valid": "boolean",
+      "citation_valid": "boolean",
+      "service_accepted": "boolean"
+    },
+    "final_semantic_review_result": "PASS, PARTIAL, FAIL, or INCONCLUSIVE",
+    "grading_target": "The final user-visible production result; attempt-level failures remain preserved separately.",
+    "final_truncation_classification": "boolean",
+    "final_safe_provider_error_type": "sanitized string category or null",
+    "latency_seconds": "number"
+  },
+  "cases": [
+    {
+      "id": "FD-01",
+      "repository": {
+        "project_id": 1,
+        "project_name": "MarkupSafe M17 Smoke",
+        "remote_url": "https://github.com/pallets/markupsafe.git",
+        "commit_sha": "b2e4d9c7687be25695fffbe93a37622302b24fb1"
+      },
+      "request": {
+        "identifier": "174e43c398b28f69b412f2d8e4abf2ebd96e753e7979083dc965401a12b16c7c",
+        "language": "en"
+      },
+      "target": {
+        "file_id": 4,
+        "symbol_id": 12,
+        "chunk_id": "174e43c398b28f69b412f2d8e4abf2ebd96e753e7979083dc965401a12b16c7c",
+        "symbol_kind": "function",
+        "qualified_name": "escape_silent",
+        "relative_path": "src/markupsafe/__init__.py",
+        "start_line": 48,
+        "end_line": 61,
+        "content_hash": "298008fe4439aff21113921fafefd1e3bf96850fcaad39354db8f66c6fdbc8e8",
+        "source_file_sha256": "9f20aafab60222866d0e475ea34a5bb7cda76ae174b55c89f067a12f60919191",
+        "extracted_signature": "def escape_silent(s) -> Markup",
+        "extracted_parameters": [
+          "s"
+        ],
+        "return_annotation": "Markup"
+      },
+      "review": {
+        "expected_facts": [
+          "When s is None, the function returns an empty Markup object by calling Markup().",
+          "When s is not None, the function returns escape(s).",
+          "The None branch avoids producing the escaped string representation 'None'."
+        ],
+        "forbidden_or_unsupported_claims": [
+          "The None branch returns a plain empty str rather than Markup.",
+          "All falsy values are treated as None.",
+          "The function mutates its input.",
+          "The function raises an exception for None."
+        ],
+        "expected_raises": [],
+        "expected_side_effects": [],
+        "expected_dependencies": [
+          "Markup",
+          "escape"
+        ],
+        "expected_output_language": "en"
+      }
+    },
+    {
+      "id": "FD-02",
+      "repository": {
+        "project_id": 1,
+        "project_name": "MarkupSafe M17 Smoke",
+        "remote_url": "https://github.com/pallets/markupsafe.git",
+        "commit_sha": "b2e4d9c7687be25695fffbe93a37622302b24fb1"
+      },
+      "request": {
+        "identifier": "07853da78d9e9f24028e38076c45c58c1049bda24b0f5952f3bfa54316d57796",
+        "language": "fa"
+      },
+      "target": {
+        "file_id": 8,
+        "symbol_id": 67,
+        "chunk_id": "07853da78d9e9f24028e38076c45c58c1049bda24b0f5952f3bfa54316d57796",
+        "symbol_kind": "function",
+        "qualified_name": "test_escape",
+        "relative_path": "tests/test_escape.py",
+        "start_line": 33,
+        "end_line": 34,
+        "content_hash": "21429afc09cd23955af89d874de705a72f3a0432610c9f00e75aa2c6c02d08c4",
+        "source_file_sha256": "4ac2de8fdd11b4279e71285da66f15386d790a86c3ea2fccb3501204d90d17d6",
+        "extracted_signature": "def test_escape(value, expect) -> None",
+        "extracted_parameters": [
+          "value",
+          "expect"
+        ],
+        "return_annotation": "None"
+      },
+      "review": {
+        "expected_facts": [
+          "The test verifies that escape(value) equals Markup(expect).",
+          "value is the test input passed to escape.",
+          "expect is the expected string used to construct the comparison Markup value."
+        ],
+        "forbidden_or_unsupported_claims": [
+          "The test function performs the escaping algorithm itself.",
+          "expect is passed to escape and value is used as the expected result.",
+          "The function returns a Markup value.",
+          "The function modifies application state."
+        ],
+        "expected_raises": [],
+        "expected_side_effects": [],
+        "expected_dependencies": [
+          "escape",
+          "Markup"
+        ],
+        "expected_output_language": "fa"
+      }
+    },
+    {
+      "id": "FD-03",
+      "repository": {
+        "project_id": 2,
+        "project_name": "Hospital-System",
+        "remote_url": "https://github.com/AvaGhiasian/Hospital-System.git",
+        "commit_sha": "da0b1f8cf04f36d6281a5fd44b797ad195147633"
+      },
+      "request": {
+        "identifier": "42a0c185f2075dcce043fd60f2d6469f3048b722ebc4329967e065691664c5e2",
+        "language": "en"
+      },
+      "target": {
+        "file_id": 36,
+        "symbol_id": 452,
+        "chunk_id": "42a0c185f2075dcce043fd60f2d6469f3048b722ebc4329967e065691664c5e2",
+        "symbol_kind": "method",
+        "qualified_name": "Patient.__init__",
+        "relative_path": "models/patient.py",
+        "start_line": 6,
+        "end_line": 16,
+        "content_hash": "bedd9e98c2b05f35c5c1f7af90990004d46553d0325729969df4e4bda4ba97c2",
+        "source_file_sha256": "94807dc22e12abf8a46733e4b7333973834aa74ec17d4080d1986d85f054b873",
+        "extracted_signature": "def __init__(self, first_name, last_name, national_id, phone_num, password, gender, city, insurance_num)",
+        "extracted_parameters": [
+          "self",
+          "first_name",
+          "last_name",
+          "national_id",
+          "phone_num",
+          "password",
+          "gender",
+          "city",
+          "insurance_num"
+        ],
+        "return_annotation": null
+      },
+      "review": {
+        "expected_facts": [
+          "It assigns first_name to self.first_name.",
+          "It assigns last_name to self.last_name.",
+          "It assigns national_id to self.national_id.",
+          "It assigns phone_num to self.phone_num.",
+          "It assigns password to self.password.",
+          "It assigns gender to self.gender.",
+          "It assigns city to self.city.",
+          "It builds self.full_name from self.first_name and self.last_name separated by a space.",
+          "It assigns insurance_num to self.insurance_num.",
+          "It initializes self.appointments with Appointments()."
+        ],
+        "forbidden_or_unsupported_claims": [
+          "The constructor validates or normalizes the supplied values.",
+          "The constructor hashes the password.",
+          "appointments is supplied as a constructor parameter.",
+          "Types are asserted for parameters that have no annotations."
+        ],
+        "expected_raises": [],
+        "expected_side_effects": [],
+        "expected_dependencies": [
+          "Appointments"
+        ],
+        "expected_output_language": "en"
+      }
+    },
+    {
+      "id": "FD-04",
+      "repository": {
+        "project_id": 2,
+        "project_name": "Hospital-System",
+        "remote_url": "https://github.com/AvaGhiasian/Hospital-System.git",
+        "commit_sha": "da0b1f8cf04f36d6281a5fd44b797ad195147633"
+      },
+      "request": {
+        "identifier": "1df22345e37e9c6c7038efb4a6acb81e56298fbe587c4a4be47acb872f21650b",
+        "language": "fa"
+      },
+      "target": {
+        "file_id": 24,
+        "symbol_id": 316,
+        "chunk_id": "1df22345e37e9c6c7038efb4a6acb81e56298fbe587c4a4be47acb872f21650b",
+        "symbol_kind": "method",
+        "qualified_name": "QueueArray.dequeue",
+        "relative_path": "data_structures/queue.py",
+        "start_line": 22,
+        "end_line": 33,
+        "content_hash": "944d8f85f6b084022d064b0ad5fca1ffa00eece79395e2b470e29b34ad0c8d3b",
+        "source_file_sha256": "cf716b2183d11a0e735d551b794b99eeb777fff08b8a08234f98f8d92739b6e1",
+        "extracted_signature": "def dequeue(self)",
+        "extracted_parameters": [
+          "self"
+        ],
+        "return_annotation": null
+      },
+      "review": {
+        "expected_facts": [
+          "If self.is_empty() is true, the method returns the string 'Queue is empty.'.",
+          "For a non-empty queue, it increments self.front by one.",
+          "After incrementing self.front, it returns self.queue[self.front - 1]."
+        ],
+        "forbidden_or_unsupported_claims": [
+          "The active implementation decrements self.front.",
+          "The method removes an element from self.queue.",
+          "An empty queue raises an exception.",
+          "The commented-out triple-quoted code is executed."
+        ],
+        "expected_raises": [],
+        "expected_side_effects": [
+          "For a non-empty queue, self.front is incremented by one."
+        ],
+        "expected_dependencies": [
+          "self.is_empty"
+        ],
+        "expected_output_language": "fa"
+      }
+    },
+    {
+      "id": "FD-05",
+      "repository": {
+        "project_id": 3,
+        "project_name": "CS-Bookstore",
+        "remote_url": "https://github.com/AvaGhiasian/CS-Bookstore.git",
+        "commit_sha": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a"
+      },
+      "request": {
+        "identifier": "862dff324241a2bb0ceccd033852bd5c6a0f0b969162a4dbee8f077968772b17",
+        "language": "en"
+      },
+      "target": {
+        "file_id": 85,
+        "symbol_id": 609,
+        "chunk_id": "862dff324241a2bb0ceccd033852bd5c6a0f0b969162a4dbee8f077968772b17",
+        "symbol_kind": "method",
+        "qualified_name": "Book.save",
+        "relative_path": "store/models.py",
+        "start_line": 67,
+        "end_line": 70,
+        "content_hash": "f82bb5ec6199de9881caf26641e7a869037bb7d4e4ad05c165f419aa99a16ee7",
+        "source_file_sha256": "eea8d5931e798bf5bc390e66dadb5a3cc05f1a8fc28eaa4b122de2fe2c4291a4",
+        "extracted_signature": "def save(self, *args, **kwargs)",
+        "extracted_parameters": [
+          "self",
+          "*args",
+          "**kwargs"
+        ],
+        "return_annotation": null
+      },
+      "review": {
+        "expected_facts": [
+          "When self.slug is falsy, it assigns slugify(self.title) to self.slug.",
+          "An existing truthy self.slug is preserved.",
+          "It calls super().save(*args, **kwargs) after the slug check."
+        ],
+        "forbidden_or_unsupported_claims": [
+          "The slug is regenerated on every save.",
+          "The method guarantees slug uniqueness.",
+          "The method returns an absolute URL.",
+          "The method saves before checking the slug."
+        ],
+        "expected_raises": [],
+        "expected_side_effects": [
+          "It may assign self.slug.",
+          "It delegates persistence to the superclass save method."
+        ],
+        "expected_dependencies": [
+          "slugify",
+          "super().save"
+        ],
+        "expected_output_language": "en"
+      }
+    },
+    {
+      "id": "FD-06",
+      "repository": {
+        "project_id": 3,
+        "project_name": "CS-Bookstore",
+        "remote_url": "https://github.com/AvaGhiasian/CS-Bookstore.git",
+        "commit_sha": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a"
+      },
+      "request": {
+        "identifier": "82ed47caefdd51b242f09859d1d8f4b25e6b7e2dfd40c032212672896f024738",
+        "language": "fa"
+      },
+      "target": {
+        "file_id": 49,
+        "symbol_id": 536,
+        "chunk_id": "82ed47caefdd51b242f09859d1d8f4b25e6b7e2dfd40c032212672896f024738",
+        "symbol_kind": "method",
+        "qualified_name": "CommentForm.clean_name",
+        "relative_path": "blog/forms.py",
+        "start_line": 45,
+        "end_line": 51,
+        "content_hash": "cc1926c4fd09c5115003272bbfac1fa7e9ae5094c1407a2e3d6849b063ff6784",
+        "source_file_sha256": "1cefdfa14aa09927d8fd068c8e98ee8bc96fe8b5a66cacb60ac15ad20323af37",
+        "extracted_signature": "def clean_name(self)",
+        "extracted_parameters": [
+          "self"
+        ],
+        "return_annotation": null
+      },
+      "review": {
+        "expected_facts": [
+          "The method reads name from self.cleaned_data['name'].",
+          "For a truthy name shorter than 2 characters or longer than 250 characters, it raises forms.ValidationError with the source-defined Persian message.",
+          "For a truthy name whose length is between 2 and 250 inclusive, it returns name.",
+          "For a falsy name, execution reaches an implicit None return."
+        ],
+        "forbidden_or_unsupported_claims": [
+          "The method trims whitespace.",
+          "The method checks name uniqueness.",
+          "The method changes letter case.",
+          "A falsy name explicitly raises forms.ValidationError."
+        ],
+        "expected_raises": [
+          "forms.ValidationError when a truthy name length is outside the inclusive range 2 to 250"
+        ],
+        "expected_side_effects": [],
+        "expected_dependencies": [
+          "forms.ValidationError"
+        ],
+        "expected_output_language": "fa"
+      }
+    }
+  ],
+  "lineage": {
+    "evaluation_role": "post_observability_hardening_evaluation",
+    "semantic_predecessor_matrix_id": "function_documentation_review_matrix_v1",
+    "semantic_predecessor_matrix_sha256": "c85fd5a3f5ffb5262d42936bda2f49fd53c26e6141befd341def7db1b375292a",
+    "semantic_predecessor_rubric_id": "function_documentation_review_rubric_v1",
+    "semantic_predecessor_rubric_sha256": "1e6542b748de383cb87d0d1df2d3478e32e79ffeb2df663b63fb07717bec6741",
+    "semantic_cases_and_expectations_unchanged": true,
+    "v1_artifacts_are_immutable_historical_evidence": true
+  },
+  "implementation_identity": {
+    "state": "post_observability_hardening_uncommitted_source_snapshot",
+    "branch": "feature/final-hardening",
+    "base_commit_sha": "3e817b23085859ee24b6262d1479eb937e6b3522",
+    "source_files_sha256": {
+      "src/codecompass/api/app.py": "c4b1f3b6c19d6eb3d97ccf502ce4edf47f0afd59f1d7ba563e22c63f24a82065",
+      "src/codecompass/documentation/models.py": "81f3b809c2e10725739267d5067b88fbd36dda13f4d6f6d07c1add9cb3c8fc10",
+      "src/codecompass/documentation/service.py": "7a15383d444fe099fd65a533395005be91dc679828986b52a6e04ab3613af85f",
+      "src/codecompass/llm/base.py": "69e020a1275a78075d79f1f6fae72fa5efd68f4df2a14abb72aa6b5ca65192fb",
+      "src/codecompass/llm/openai_compatible.py": "aa3d8c16b2f9df8bde19e33ece2734c4a667147f3fa6d14799bc1a405049220a"
+    },
+    "source_bundle_sha256": "71a6dc3df6a2448e079902ae3c2e257a6088b57406ab27a053871c6a4a5c3e5f",
+    "observability_capabilities": [
+      "Optional provider-neutral LLMResponse.finish_reason.",
+      "OpenAI-compatible finish_reason propagation when supplied by the provider.",
+      "Explicit output_truncated classification for finish_reason=length.",
+      "Sanitized provider_error_type categories in Documentation failures."
+    ]
+  }
+}

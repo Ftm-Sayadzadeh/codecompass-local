@@ -137,6 +137,7 @@ def test_openai_compatible_llm_success_and_request_options(monkeypatch) -> None:
     )
 
     assert result == LLMResponse("grounded answer", "chat-served", "openai_compatible")
+    assert result.finish_reason is None
     request, _ = captured[0]
     assert request.full_url == "https://compatible.example/v1/chat/completions"
     assert request.get_header("Authorization") is None
@@ -149,6 +150,24 @@ def test_openai_compatible_llm_success_and_request_options(monkeypatch) -> None:
         "temperature": 0.2,
         "max_tokens": 80,
     }
+
+
+def test_openai_compatible_llm_preserves_finish_reason(monkeypatch) -> None:
+    install_response(
+        monkeypatch,
+        {
+            "model": "chat-served",
+            "choices": [
+                {"finish_reason": "stop", "message": {"content": "grounded answer"}}
+            ],
+        },
+    )
+
+    result = OpenAICompatibleLLMProvider(
+        "chat-requested", "https://compatible.example/v1"
+    ).generate(LLMRequest("Question"))
+
+    assert result.finish_reason == "stop"
 
 
 def test_openai_compatible_llm_maps_json_response_format(monkeypatch) -> None:
@@ -197,16 +216,23 @@ def test_openai_compatible_llm_sends_authorization_only_when_configured(monkeypa
 
 
 @pytest.mark.parametrize(
-    "payload",
+    ("payload", "error_type"),
     [
-        {},
-        {"choices": []},
-        {"choices": [{}]},
-        {"choices": [{"message": {}}]},
-        {"choices": [{"message": {"content": "   "}}]},
+        (b"\xff", "invalid_response_encoding"),
+        (b"not-json", "invalid_response_json"),
+        ([], "invalid_response_top_level"),
+        ({}, "invalid_response_choices"),
+        ({"choices": [{}]}, "invalid_response_message"),
+        ({"choices": [{"message": {}}]}, "invalid_response_content"),
+        (
+            {"choices": [{"message": {"content": "   "}}]},
+            "invalid_response_empty_content",
+        ),
     ],
 )
-def test_openai_compatible_llm_rejects_malformed_response(monkeypatch, payload) -> None:
+def test_openai_compatible_llm_classifies_invalid_response(
+    monkeypatch, payload, error_type: str
+) -> None:
     install_response(monkeypatch, payload)
 
     with pytest.raises(LLMProviderError) as raised:
@@ -215,18 +241,7 @@ def test_openai_compatible_llm_rejects_malformed_response(monkeypatch, payload) 
         )
 
     assert raised.value.provider == "openai_compatible"
-    assert raised.value.error_type == "InvalidResponse"
-
-
-def test_openai_compatible_llm_rejects_invalid_json(monkeypatch) -> None:
-    install_response(monkeypatch, b"not-json")
-
-    with pytest.raises(LLMProviderError) as raised:
-        OpenAICompatibleLLMProvider("chat", "http://localhost:8000/v1").generate(
-            LLMRequest("Question")
-        )
-
-    assert raised.value.error_type == "InvalidResponse"
+    assert raised.value.error_type == error_type
 
 
 @pytest.mark.parametrize(

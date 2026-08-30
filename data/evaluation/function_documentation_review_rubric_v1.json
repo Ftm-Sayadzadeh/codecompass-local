@@ -1,0 +1,88 @@
+{
+  "schema_version": "1",
+  "rubric_id": "function_documentation_review_rubric_v1",
+  "canonical_hashing": "SHA-256 of UTF-8 JSON serialized with sorted object keys, separators ',' and ':', and ensure_ascii=false",
+  "principle": "PASS requires all pre-frozen required expected facts, not every possible fact visible in the source.",
+  "contract_validation": {
+    "json_schema_valid": "The response parses and passes the strict Function Documentation output schema with no extra fields.",
+    "target_identity_valid": "Project, file, symbol, chunk, qualified name, source path, line range, and content hash match the frozen SQLite metadata.",
+    "parameters_valid": "Generated parameter names and order exactly match the frozen extracted parameters.",
+    "citation_valid": "The trusted citation matches the frozen SQLite metadata and the file belongs to the frozen project.",
+    "service_accepted": "FunctionDocumentationService accepts the output without repair or trust-boundary weakening."
+  },
+  "semantic_review": {
+    "expected_fact_coverage": "Measure only coverage of the required facts frozen before generation.",
+    "unsupported_claims": "Record any material factual claim not supported by the target chunk.",
+    "language_adherence": "All natural-language generated fields use the expected language while Python identifiers remain unchanged.",
+    "field_fidelity": "Raises, side effects, dependencies, parameter descriptions, and return behavior must not be fabricated or contradicted."
+  },
+  "results": {
+    "PASS": [
+      "All pre-frozen required expected facts are present.",
+      "No unsupported factual claim is introduced.",
+      "No parameter, raise, dependency, or side effect is fabricated.",
+      "Target identity and trusted citation are valid.",
+      "Structured output is valid and accepted by the service.",
+      "Expected output language is used."
+    ],
+    "PARTIAL": [
+      "All stated facts are supported.",
+      "One or more pre-frozen required expected facts are missing.",
+      "No material unsupported claim is present."
+    ],
+    "FAIL": [
+      "A material factual claim is unsupported or fabricated.",
+      "A parameter, raise, dependency, or side effect is incorrect.",
+      "Target identity or trusted citation is invalid.",
+      "Output violates the Function Documentation contract.",
+      "Expected output language is not used."
+    ],
+    "INCONCLUSIVE": [
+      "Provider failure or timeout prevents semantic review.",
+      "Output is truncated or otherwise unusable for fair semantic review."
+    ]
+  },
+  "execution_policy": {
+    "semantic_failures_are_not_retried": true,
+    "provider_or_transport_failures_are_not_retried": true,
+    "provider_transport_retries": 0,
+    "manual_reruns": 0,
+    "matrix_and_expected_facts_are_not_changed_after_generation": true,
+    "contract_and_semantic_results_are_recorded_separately": true
+  },
+  "production_application_attempt_policy": {
+    "english": {
+      "maximum_total_provider_calls": 1,
+      "application_level_regeneration": false
+    },
+    "persian": {
+      "maximum_total_provider_calls": 2,
+      "application_level_regeneration": true,
+      "regeneration_trigger": "The first output parses as valid bounded documentation JSON with exact fields and parameters, but fails FunctionDocumentationService._is_persian language validation.",
+      "second_attempt_behavior": "The normal production retry prompt is used once. A second language-validation failure returns invalid_output."
+    },
+    "no_regeneration_for": [
+      "provider timeout",
+      "provider failure",
+      "empty output",
+      "malformed JSON",
+      "invalid Markdown fence",
+      "wrong or extra schema fields",
+      "wrong parameter names or order",
+      "invalid field types or output-size limits"
+    ]
+  },
+  "attempt_recording": {
+    "grade_final_user_visible_result": true,
+    "preserve_each_attempt_separately": true,
+    "successful_regeneration_does_not_erase_first_attempt_failure": true,
+    "required_per_case_fields": [
+      "total_provider_calls",
+      "first_generated_output_passed_service_validation",
+      "application_level_regeneration_occurred",
+      "regeneration_reason",
+      "final_contract_validation_result",
+      "final_semantic_review_result"
+    ]
+  }
+}

@@ -30,8 +30,13 @@ class FakeEmbeddingProvider:
 
 
 class FakeLLMProvider:
-    def __init__(self, error: LLMProviderError | None = None) -> None:
+    def __init__(
+        self,
+        error: LLMProviderError | None = None,
+        finish_reason: str | None = None,
+    ) -> None:
         self.error = error
+        self.finish_reason = finish_reason
         self.calls = 0
         self.requests = []
 
@@ -56,8 +61,14 @@ class FakeLLMProvider:
                 ),
                 "fake-llm",
                 "fake",
+                finish_reason=self.finish_reason,
             )
-        return LLMResponse("Grounded answer.", "fake-llm", "fake")
+        return LLMResponse(
+            "Grounded answer.",
+            "fake-llm",
+            "fake",
+            finish_reason=self.finish_reason,
+        )
 
 
 def repository(tmp_path: Path) -> Path:
@@ -299,7 +310,41 @@ def test_provider_failure_timeout_and_incomplete_index_are_safe(api, monkeypatch
     monkeypatch.setattr(api_app, "create_llm", lambda runtime, override: FakeLLMProvider(LLMProviderError("fake", "model", "TimeoutError", secret)))
     timeout = client.post(f"/projects/{project_id}/documentation", json={"identifier": 1, "llm": {"api_key": secret}})
     assert timeout.status_code == 504
+    assert timeout.json()["error"]["details"] == {"provider_error_type": "timeout"}
     assert secret not in timeout.text
+
+    monkeypatch.setattr(
+        api_app,
+        "create_llm",
+        lambda runtime, override: FakeLLMProvider(
+            LLMProviderError("fake", "model", "HTTPError", secret)
+        ),
+    )
+    provider_failure = client.post(
+        f"/projects/{project_id}/documentation", json={"identifier": 1}
+    )
+    assert provider_failure.status_code == 502
+    assert provider_failure.json()["error"] == {
+        "code": "documentation_provider_failure",
+        "message": "Documentation provider failed",
+        "details": {"provider_error_type": "http_error"},
+    }
+    assert secret not in provider_failure.text
+
+    monkeypatch.setattr(
+        api_app,
+        "create_llm",
+        lambda runtime, override: FakeLLMProvider(finish_reason="length"),
+    )
+    truncated = client.post(
+        f"/projects/{project_id}/documentation", json={"identifier": 1}
+    )
+    assert truncated.status_code == 502
+    assert truncated.json()["error"] == {
+        "code": "documentation_output_truncated",
+        "message": "Documentation output was truncated",
+        "details": {},
+    }
 
     runtime = client.app.state.runtime
     runtime.index_lock.acquire()
@@ -314,6 +359,45 @@ def test_provider_failure_timeout_and_incomplete_index_are_safe(api, monkeypatch
     failed = client.post("/projects/index", json={"repository_path": str(repo)})
     assert failed.status_code == 502
     assert secret not in failed.text
+
+
+@pytest.mark.parametrize(
+    "error_type",
+    [
+        "invalid_response_encoding",
+        "invalid_response_json",
+        "invalid_response_top_level",
+        "invalid_response_choices",
+        "invalid_response_message",
+        "invalid_response_content",
+        "invalid_response_empty_content",
+    ],
+)
+def test_documentation_api_exposes_safe_invalid_response_subtype(
+    api, monkeypatch, error_type: str
+) -> None:
+    client, _, _, repo = api
+    project_id = index_project(client, repo)
+    secret = "test-secret-value"
+    monkeypatch.setattr(
+        api_app,
+        "create_llm",
+        lambda runtime, override: FakeLLMProvider(
+            LLMProviderError("openai_compatible", "model", error_type, secret)
+        ),
+    )
+
+    response = client.post(
+        f"/projects/{project_id}/documentation", json={"identifier": 1}
+    )
+
+    assert response.status_code == 502
+    assert response.json()["error"] == {
+        "code": "documentation_provider_failure",
+        "message": "Documentation provider failed",
+        "details": {"provider_error_type": error_type},
+    }
+    assert secret not in response.text
 
 
 def test_validation_errors_redact_api_key_and_paths(api) -> None:

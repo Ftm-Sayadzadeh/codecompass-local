@@ -1,69 +1,120 @@
 # CodeCompass Local
 
-A bachelor's final project for structure-aware retrieval over Python codebases using Persian natural-language questions, followed by grounded explanation/documentation with deterministic source citations and quantitative retrieval evaluation.
+CodeCompass is a bachelor's final project for structure-aware retrieval over Python codebases. It supports Persian and English questions, grounded answers, function documentation, and deterministic citations to indexed files, symbols, and line ranges.
 
-## Current state
+## Current State
 
-This repository contains the completed local Code RAG core through M15:
+The complete MVP workflow is implemented through M19:
 
-- Repository scanner, Python AST parser, structure-aware chunker, and SQLite metadata store.
-- Ollama embedding provider and ChromaDB vector index behind small replaceable abstractions.
-- Lexical, semantic, and hybrid retrieval with retrieval evaluation metrics.
-- RAG context construction, local Ollama LLM adapter, grounded Q&A, and metadata-derived verified citations.
-- CLI supervisor demo runner in `src/codecompass/demo.py`.
-- Persian-question smoke validation in `docs/validation/m15-persian-demo-smoke-test-report.md`.
+- Python repository scanning, AST parsing, structure-aware chunking, and SQLite metadata.
+- Ollama and OpenAI-compatible embedding and LLM providers.
+- Chroma vector indexing with embedding-identity compatibility checks and safe staged replacement.
+- Lexical, semantic, and hybrid retrieval with frozen production ranking configuration.
+- Grounded Q&A and structured Function Documentation with metadata-derived citations.
+- FastAPI backend with sanitized errors and read-only evaluation endpoints.
+- React + Vite single-page frontend with project setup, provider configuration, search, Q&A, documentation, evaluation, and Monaco source navigation.
+- Frozen retrieval and bilingual QA evaluation artifacts under `data/evaluation/` and `reports/evaluation/`.
 
-Not started yet: function documentation, FastAPI backend, React/Vite frontend, Monaco citation navigation, and final MVP release polish.
+The complete user workflow and M20 final hardening are complete. M20 closed with documented provider limitations; M21 release packaging and the stable version tag remain.
 
-## Read first
+## Prerequisites
 
-1. `AGENTS.md` — rules Codex should follow.
-2. `PROJECT_BRIEF.md` — approved project scope and architecture direction.
-3. `ROADMAP.md` — 21-day delivery plan.
-4. `PLANS.md` — milestone dependency/status tracker.
-5. `docs/PROPOSAL_SUMMARY.md` — text-friendly summary of the university proposal.
-6. `docs/RESEARCH_NOTES_SUMMARY.md` — text-friendly summary of the longer design/research notes.
-7. `docs/proposal.pdf` — original official proposal.
-8. `docs/research-notes.docx` — original long-form research/design document.
-9. `CODEX_ONBOARDING_PROMPT.md` — first prompt to give Codex.
+- Python 3.11 or newer.
+- Node.js `^20.19.0` or `>=22.12.0`.
+- Ollama for local embedding and optional local answer generation.
+- An installed embedding model compatible with the selected index. The evaluated local embedding model is `nomic-embed-text-local:latest` with 768 dimensions.
 
-## Important
+## Install
 
-The official proposal is the primary source of truth. Research notes contain many optional ideas and must not be treated as mandatory scope.
-
-## High-level target
-
-```text
-Python Repository
-→ Scan
-→ Parse AST
-→ Build structure-aware chunks
-→ Store metadata
-→ Embed with bge-m3 behind a provider abstraction
-→ Index in ChromaDB behind a vector-index abstraction
-→ Keyword + semantic + hybrid retrieval
-→ Grounded RAG answer
-→ Verified file/symbol/line citations
-→ Function documentation
-→ Evaluation
-```
-
-Repository analysis should remain Python-only until the core MVP is complete.
-
-## Development
+From the repository root:
 
 ```powershell
 python -m pip install -e ".[dev]"
+cd frontend
+npm ci
+cd ..
+```
+
+## Run the Application
+
+Start the backend from the repository root:
+
+```powershell
+$env:CODECOMPASS_DATABASE = "data/codecompass.sqlite"
+$env:CODECOMPASS_CHROMA = "data/chroma"
+python -m uvicorn codecompass.api:create_app --factory --host 127.0.0.1 --port 8000
+```
+
+MVP indexing safety assumes one backend process with one worker.
+
+In another terminal, start the frontend:
+
+```powershell
+cd frontend
+npm run dev -- --host 127.0.0.1 --port 5173
+```
+
+Open `http://127.0.0.1:5173/`. Vite proxies `/api` to the backend, so no development CORS configuration is required.
+
+Use **Provider settings** in the UI to configure embedding and LLM providers independently. API keys remain in browser memory and are cleared on refresh. Repository paths and API keys are not persisted by the frontend.
+
+See [docs/final-demo-runbook.md](docs/final-demo-runbook.md) for the verified demo workflow and operational limitations.
+
+## Test
+
+Backend:
+
+```powershell
 python -m pytest
 ```
 
-The core metadata pipeline uses mostly the Python standard library. ChromaDB is used for vector indexing, and Ollama is used for local embedding and answer-generation smoke tests.
+Frontend:
 
-## Approved core decisions
+```powershell
+cd frontend
+npm test
+npm run typecheck
+npm run build
+```
 
-- Hybrid retrieval is core; query expansion is stretch.
-- SQLite is the canonical metadata store; ChromaDB is only the retrieval index.
-- The planned frontend is React + Vite with Monaco Editor for code viewing and clickable citations.
-- The primary initial embedding model is `bge-m3`, accessed through an `EmbeddingProvider`.
-- The planned demo is local-first with Ollama where practical, but the official proposal does not require strict fully local execution.
-- Citations must be attached from deterministic scanner/parser/chunker metadata, never from LLM-generated citation text.
+Normal automated tests require no Ollama, paid API, or external network.
+
+## Evaluation
+
+Frozen evaluation results are stored as Markdown, CSV, JSON, and PDF projections:
+
+- [Hospital-System bilingual QA](reports/evaluation/hospital_system_bilingual_qa_v1.md)
+- [CS-Bookstore local-vs-cloud bilingual QA](reports/evaluation/cs_bookstore_bilingual_qa_v1.md)
+- [Evaluation PDFs](reports/evaluation/pdf/)
+- [Retrieval validation reports](docs/validation/)
+
+Evaluation metrics describe frozen benchmark runs. They are not confidence scores for individual answers and do not establish universal model quality.
+
+## Reliability Boundaries
+
+- SQLite is the canonical source for project, file, symbol, chunk, and citation metadata.
+- Chroma is a retrieval index keyed by stable SQLite chunk IDs.
+- The LLM cannot author trusted file paths, identities, line ranges, or citation IDs.
+- Semantic and hybrid retrieval fail safely when the request embedding identity differs from the indexed identity. Lexical retrieval remains available.
+- Source navigation verifies repository containment and the current source hash.
+- API keys are request-scoped and must not be committed, logged, or stored in frontend persistence.
+
+## Known Limitations
+
+- Indexing is synchronous and guarded only within a single API process.
+- Local generation quality and latency depend strongly on the installed model and its chat template.
+- The frozen CS-Bookstore sample rated the evaluated local Qwen 3B configuration `NOT_READY` and GLM 5.3 Flash `READY_WITH_LIMITATIONS`; these findings apply only to that controlled sample.
+- In the recorded GLM 5.3 Flash diagnostic, an OpenAI-compatible Persian Function Documentation request returned no usable string content. CodeCompass failed closed and exposed only the safe `invalid_response_content` category; this observation is specific to that provider/model request.
+- The frontend production bundle includes Monaco and emits a non-blocking large-chunk warning during Vite build.
+- There is no authentication, multi-user support, GitHub cloning, upload, streaming, job queue, persistent chat history, or Ollama model discovery in the MVP.
+
+## Project Documents
+
+1. `AGENTS.md` - repository engineering rules.
+2. `PROJECT_BRIEF.md` - approved scope and architecture.
+3. `ROADMAP.md` - delivery sequence and final gate.
+4. `PLANS.md` - milestone status tracker.
+5. `docs/PROPOSAL_SUMMARY.md` and `docs/proposal.pdf` - university scope.
+6. `docs/RESEARCH_NOTES_SUMMARY.md` - supporting research notes.
+
+The university proposal remains the primary source of truth. Stretch ideas do not expand the MVP unless explicitly approved.

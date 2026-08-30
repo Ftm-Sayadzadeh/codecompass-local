@@ -40,6 +40,7 @@ def test_ollama_generation_success() -> None:
     result = provider.generate(LLMRequest("Say hello"))
 
     assert result == LLMResponse(text="hello", model="fake-model", provider="ollama")
+    assert result.finish_reason is None
     assert provider.payloads == [
         {
             "model": "fake-model",

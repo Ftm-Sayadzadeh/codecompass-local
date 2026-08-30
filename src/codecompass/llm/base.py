@@ -24,6 +24,7 @@ class LLMResponse:
     text: str
     model: str
     provider: str
+    finish_reason: str | None = None
 
 
 class LLMProviderError(Exception):

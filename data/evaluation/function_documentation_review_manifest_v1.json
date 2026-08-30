@@ -1,0 +1,17 @@
+{
+  "schema_version": "1",
+  "matrix_id": "function_documentation_review_matrix_v1",
+  "matrix_path": "data/evaluation/function_documentation_review_matrix_v1.json",
+  "matrix_sha256": "c85fd5a3f5ffb5262d42936bda2f49fd53c26e6141befd341def7db1b375292a",
+  "rubric_id": "function_documentation_review_rubric_v1",
+  "rubric_path": "data/evaluation/function_documentation_review_rubric_v1.json",
+  "rubric_sha256": "1e6542b748de383cb87d0d1df2d3478e32e79ffeb2df663b63fb07717bec6741",
+  "hashing": "SHA-256 of UTF-8 JSON serialized with sorted object keys, separators ',' and ':', and ensure_ascii=false",
+  "provider_transport_retries": 0,
+  "application_validation_attempt_policy": {
+    "en_maximum_total_provider_calls": 1,
+    "fa_maximum_total_provider_calls": 2,
+    "fa_regeneration_trigger": "First output is structurally valid but fails production Persian-language validation."
+  },
+  "generation_status": "completed"
+}

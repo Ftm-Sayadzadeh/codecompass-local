@@ -64,7 +64,12 @@ class OpenAICompatibleEmbeddingProvider:
                 timeout_seconds=self.timeout_seconds,
             )
         except OpenAICompatibleHTTPError as error:
-            raise self._error(error.error_type, error.message) from None
+            error_type = (
+                "InvalidResponse"
+                if error.error_type.startswith("invalid_response_")
+                else error.error_type
+            )
+            raise self._error(error_type, error.message) from None
 
     def _ordered_vectors(self, response: dict[str, Any], expected_count: int) -> list[list[float]]:
         data = response.get("data")

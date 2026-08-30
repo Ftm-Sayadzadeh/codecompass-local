@@ -16,6 +16,7 @@ DocumentationErrorCode = Literal[
     "insufficient_evidence",
     "provider_failure",
     "provider_timeout",
+    "output_truncated",
     "invalid_output",
 ]
 
@@ -136,8 +137,10 @@ class DocumentationError(Exception):
         message: str,
         *,
         candidates: tuple[ResolutionCandidate, ...] = (),
+        provider_error_type: str | None = None,
     ) -> None:
         self.code = code
         self.message = message
         self.candidates = candidates
+        self.provider_error_type = provider_error_type
         super().__init__(message)

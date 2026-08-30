@@ -1,0 +1,1108 @@
+{
+  "schema_version": "1",
+  "experiment": {
+    "matrix_id": "function_documentation_review_matrix_v2",
+    "matrix_sha256": "2408cc6fbc55158deeb97070d6df3278ff15a75a5645fae7575e10162bddc890",
+    "rubric_id": "function_documentation_review_rubric_v2",
+    "rubric_sha256": "ad9664d35443b4d29c9890d3b118e2e3684b5f9c181fcdc759ba74b2762a5a13",
+    "implementation_source_snapshot": "71a6dc3df6a2448e079902ae3c2e257a6088b57406ab27a053871c6a4a5c3e5f",
+    "generation_configuration": {
+      "application_path": "POST /projects/{project_id}/documentation using FunctionDocumentationService",
+      "provider": "openai_compatible",
+      "provider_endpoint": "https://api.avalai.ir/v1",
+      "model": "glm-5.3-flash",
+      "temperature": 0.0,
+      "max_tokens": 1200,
+      "provider_transport_retries": 0,
+      "manual_reruns": 0,
+      "application_validation_attempt_policy": {
+        "en": {
+          "maximum_total_provider_calls": 1,
+          "regeneration_trigger": null
+        },
+        "fa": {
+          "maximum_total_provider_calls": 2,
+          "regeneration_trigger": "The first generated output passes JSON, schema, parameter, type, fence, and size validation but fails FunctionDocumentationService._is_persian language validation."
+        },
+        "provider_or_transport_failure_behavior": "Stop immediately as INCONCLUSIVE without retry.",
+        "other_contract_validation_failure_behavior": "Stop immediately as FAIL without regeneration."
+      },
+      "retrieval": "none",
+      "structured_output": "json_object"
+    },
+    "evaluation_role": "post_observability_hardening_evaluation"
+  },
+  "cases": [
+    {
+      "case_id": "FD-01",
+      "repository": {
+        "project_id": 1,
+        "project_name": "MarkupSafe M17 Smoke",
+        "remote_url": "https://github.com/pallets/markupsafe.git",
+        "commit_sha": "b2e4d9c7687be25695fffbe93a37622302b24fb1"
+      },
+      "request": {
+        "identifier": "174e43c398b28f69b412f2d8e4abf2ebd96e753e7979083dc965401a12b16c7c",
+        "language": "en"
+      },
+      "target": {
+        "file_id": 4,
+        "symbol_id": 12,
+        "chunk_id": "174e43c398b28f69b412f2d8e4abf2ebd96e753e7979083dc965401a12b16c7c",
+        "symbol_kind": "function",
+        "qualified_name": "escape_silent",
+        "relative_path": "src/markupsafe/__init__.py",
+        "start_line": 48,
+        "end_line": 61,
+        "content_hash": "298008fe4439aff21113921fafefd1e3bf96850fcaad39354db8f66c6fdbc8e8",
+        "source_file_sha256": "9f20aafab60222866d0e475ea34a5bb7cda76ae174b55c89f067a12f60919191",
+        "extracted_signature": "def escape_silent(s) -> Markup",
+        "extracted_parameters": [
+          "s"
+        ],
+        "return_annotation": "Markup"
+      },
+      "frozen_review": {
+        "expected_facts": [
+          "When s is None, the function returns an empty Markup object by calling Markup().",
+          "When s is not None, the function returns escape(s).",
+          "The None branch avoids producing the escaped string representation 'None'."
+        ],
+        "forbidden_or_unsupported_claims": [
+          "The None branch returns a plain empty str rather than Markup.",
+          "All falsy values are treated as None.",
+          "The function mutates its input.",
+          "The function raises an exception for None."
+        ],
+        "expected_raises": [],
+        "expected_side_effects": [],
+        "expected_dependencies": [
+          "Markup",
+          "escape"
+        ],
+        "expected_output_language": "en"
+      },
+      "execution": {
+        "http_status": 200,
+        "latency_seconds": 8.749634,
+        "total_provider_calls": 1,
+        "first_generated_output_passed_service_validation": true,
+        "application_level_regeneration_occurred": false,
+        "regeneration_reason": null,
+        "finish_reason": "stop",
+        "explicit_truncation": false,
+        "safe_provider_error_type": null,
+        "attempts": [
+          {
+            "case_id": "FD-01",
+            "request": {
+              "system_prompt_sha256": "7515231a7844dff69ac52c0419f67f6b558ebdf4e5d63ff52bd23b872a4e12db",
+              "prompt_sha256": "450a8b81e0d7242879b1319ea0e30345034878dac4264d537ae70d3ae8f68c10",
+              "temperature": 0.0,
+              "max_tokens": 1200,
+              "response_format": "json"
+            },
+            "provider_completed": true,
+            "latency_seconds": 8.717287,
+            "provider": "openai_compatible",
+            "model": "glm-5.3-flash",
+            "finish_reason": "stop",
+            "explicit_truncation": false,
+            "safe_provider_error_type": null,
+            "raw_output": "{\n  \"summary\": \"Like escape but treats None as the empty string.\",\n  \"detailed_description\": \"Returns an empty Markup when s is None, and otherwise returns escape(s). This is useful with optional values, since escaping None directly would produce the string 'None'. For example, escape(None) yields Markup('None') while escape_silent(None) yields Markup('').\",\n  \"parameters\": [\n    {\n      \"name\": \"s\",\n      \"description\": \"The value to escape. If it is None, it is treated as the empty string.\"\n    }\n  ],\n  \"return_value\": \"The escaped value as a Markup, or an empty Markup if s is None.\",\n  \"raises\": [],\n  \"side_effects\": [],\n  \"dependencies\": [\n    \"escape\"\n  ],\n  \"notes\": [\n    \"The parameter s is positional-only.\",\n    \"Defined in src/markupsafe/__init__.py at lines 48-61.\"\n  ]\n}",
+            "provider_call_number": 1,
+            "json_schema_and_parameter_validation_passed": true,
+            "language_validation_passed": true,
+            "service_validation_passed": true,
+            "validation_result": "accepted",
+            "failure_code": null
+          }
+        ],
+        "exact_final_user_visible_response": "{\"extracted\":{\"citation\":{\"project_id\":1,\"project_name\":\"MarkupSafe M17 Smoke\",\"file_id\":4,\"symbol_id\":12,\"chunk_id\":\"174e43c398b28f69b412f2d8e4abf2ebd96e753e7979083dc965401a12b16c7c\",\"qualified_name\":\"escape_silent\",\"relative_source_path\":\"src/markupsafe/__init__.py\",\"start_line\":48,\"end_line\":61,\"content_hash\":\"298008fe4439aff21113921fafefd1e3bf96850fcaad39354db8f66c6fdbc8e8\"},\"symbol_type\":\"function\",\"signature\":\"def escape_silent(s) -> Markup\",\"parameters\":[\"s\"],\"return_annotation\":\"Markup\",\"is_async\":false,\"source_file_hash\":\"9f20aafab60222866d0e475ea34a5bb7cda76ae174b55c89f067a12f60919191\"},\"generated\":{\"summary\":\"Like escape but treats None as the empty string.\",\"detailed_description\":\"Returns an empty Markup when s is None, and otherwise returns escape(s). This is useful with optional values, since escaping None directly would produce the string 'None'. For example, escape(None) yields Markup('None') while escape_silent(None) yields Markup('').\",\"parameters\":[{\"name\":\"s\",\"description\":\"The value to escape. If it is None, it is treated as the empty string.\"}],\"return_value\":\"The escaped value as a Markup, or an empty Markup if s is None.\",\"raises\":[],\"side_effects\":[],\"dependencies\":[\"escape\"],\"notes\":[\"The parameter s is positional-only.\",\"Defined in src/markupsafe/__init__.py at lines 48-61.\"]},\"citations\":[{\"project_id\":1,\"project_name\":\"MarkupSafe M17 Smoke\",\"file_id\":4,\"symbol_id\":12,\"chunk_id\":\"174e43c398b28f69b412f2d8e4abf2ebd96e753e7979083dc965401a12b16c7c\",\"qualified_name\":\"escape_silent\",\"relative_source_path\":\"src/markupsafe/__init__.py\",\"start_line\":48,\"end_line\":61,\"content_hash\":\"298008fe4439aff21113921fafefd1e3bf96850fcaad39354db8f66c6fdbc8e8\"}],\"generation\":{\"schema_version\":\"1\",\"provider\":\"openai_compatible\",\"model\":\"glm-5.3-flash\",\"language\":\"en\"}}",
+        "final_response_json": {
+          "extracted": {
+            "citation": {
+              "project_id": 1,
+              "project_name": "MarkupSafe M17 Smoke",
+              "file_id": 4,
+              "symbol_id": 12,
+              "chunk_id": "174e43c398b28f69b412f2d8e4abf2ebd96e753e7979083dc965401a12b16c7c",
+              "qualified_name": "escape_silent",
+              "relative_source_path": "src/markupsafe/__init__.py",
+              "start_line": 48,
+              "end_line": 61,
+              "content_hash": "298008fe4439aff21113921fafefd1e3bf96850fcaad39354db8f66c6fdbc8e8"
+            },
+            "symbol_type": "function",
+            "signature": "def escape_silent(s) -> Markup",
+            "parameters": [
+              "s"
+            ],
+            "return_annotation": "Markup",
+            "is_async": false,
+            "source_file_hash": "9f20aafab60222866d0e475ea34a5bb7cda76ae174b55c89f067a12f60919191"
+          },
+          "generated": {
+            "summary": "Like escape but treats None as the empty string.",
+            "detailed_description": "Returns an empty Markup when s is None, and otherwise returns escape(s). This is useful with optional values, since escaping None directly would produce the string 'None'. For example, escape(None) yields Markup('None') while escape_silent(None) yields Markup('').",
+            "parameters": [
+              {
+                "name": "s",
+                "description": "The value to escape. If it is None, it is treated as the empty string."
+              }
+            ],
+            "return_value": "The escaped value as a Markup, or an empty Markup if s is None.",
+            "raises": [],
+            "side_effects": [],
+            "dependencies": [
+              "escape"
+            ],
+            "notes": [
+              "The parameter s is positional-only.",
+              "Defined in src/markupsafe/__init__.py at lines 48-61."
+            ]
+          },
+          "citations": [
+            {
+              "project_id": 1,
+              "project_name": "MarkupSafe M17 Smoke",
+              "file_id": 4,
+              "symbol_id": 12,
+              "chunk_id": "174e43c398b28f69b412f2d8e4abf2ebd96e753e7979083dc965401a12b16c7c",
+              "qualified_name": "escape_silent",
+              "relative_source_path": "src/markupsafe/__init__.py",
+              "start_line": 48,
+              "end_line": 61,
+              "content_hash": "298008fe4439aff21113921fafefd1e3bf96850fcaad39354db8f66c6fdbc8e8"
+            }
+          ],
+          "generation": {
+            "schema_version": "1",
+            "provider": "openai_compatible",
+            "model": "glm-5.3-flash",
+            "language": "en"
+          }
+        }
+      },
+      "contract_validation": {
+        "json_schema_valid": true,
+        "target_resolution_valid": true,
+        "target_identity_valid": true,
+        "parameters_valid": true,
+        "citation_valid": true,
+        "service_accepted": true,
+        "status": "PASS"
+      },
+      "semantic_review": {
+        "required_expected_facts": 3,
+        "expected_facts_covered": 3,
+        "missing_expected_facts": [],
+        "unsupported_or_fabricated_claims": [],
+        "parameter_validity": true,
+        "raises_validity": true,
+        "side_effect_validity": true,
+        "dependency_validity": false,
+        "missing_expected_dependencies": [
+          "Markup"
+        ],
+        "language_adherence": true,
+        "citation_validity": true,
+        "semantic_grade": "PARTIAL",
+        "failure_attribution": "GENERATION_SEMANTICS",
+        "note": "All frozen behavior facts are present, but the generated dependencies field omits the frozen expected dependency Markup."
+      },
+      "exact_captured_outputs": [
+        "{\n  \"summary\": \"Like escape but treats None as the empty string.\",\n  \"detailed_description\": \"Returns an empty Markup when s is None, and otherwise returns escape(s). This is useful with optional values, since escaping None directly would produce the string 'None'. For example, escape(None) yields Markup('None') while escape_silent(None) yields Markup('').\",\n  \"parameters\": [\n    {\n      \"name\": \"s\",\n      \"description\": \"The value to escape. If it is None, it is treated as the empty string.\"\n    }\n  ],\n  \"return_value\": \"The escaped value as a Markup, or an empty Markup if s is None.\",\n  \"raises\": [],\n  \"side_effects\": [],\n  \"dependencies\": [\n    \"escape\"\n  ],\n  \"notes\": [\n    \"The parameter s is positional-only.\",\n    \"Defined in src/markupsafe/__init__.py at lines 48-61.\"\n  ]\n}"
+      ],
+      "captured_output_sha256": [
+        "bc19f087e8dc48924b7c6b50fceb8ccec7e42cecded54e6c939402a45a817773"
+      ]
+    },
+    {
+      "case_id": "FD-02",
+      "repository": {
+        "project_id": 1,
+        "project_name": "MarkupSafe M17 Smoke",
+        "remote_url": "https://github.com/pallets/markupsafe.git",
+        "commit_sha": "b2e4d9c7687be25695fffbe93a37622302b24fb1"
+      },
+      "request": {
+        "identifier": "07853da78d9e9f24028e38076c45c58c1049bda24b0f5952f3bfa54316d57796",
+        "language": "fa"
+      },
+      "target": {
+        "file_id": 8,
+        "symbol_id": 67,
+        "chunk_id": "07853da78d9e9f24028e38076c45c58c1049bda24b0f5952f3bfa54316d57796",
+        "symbol_kind": "function",
+        "qualified_name": "test_escape",
+        "relative_path": "tests/test_escape.py",
+        "start_line": 33,
+        "end_line": 34,
+        "content_hash": "21429afc09cd23955af89d874de705a72f3a0432610c9f00e75aa2c6c02d08c4",
+        "source_file_sha256": "4ac2de8fdd11b4279e71285da66f15386d790a86c3ea2fccb3501204d90d17d6",
+        "extracted_signature": "def test_escape(value, expect) -> None",
+        "extracted_parameters": [
+          "value",
+          "expect"
+        ],
+        "return_annotation": "None"
+      },
+      "frozen_review": {
+        "expected_facts": [
+          "The test verifies that escape(value) equals Markup(expect).",
+          "value is the test input passed to escape.",
+          "expect is the expected string used to construct the comparison Markup value."
+        ],
+        "forbidden_or_unsupported_claims": [
+          "The test function performs the escaping algorithm itself.",
+          "expect is passed to escape and value is used as the expected result.",
+          "The function returns a Markup value.",
+          "The function modifies application state."
+        ],
+        "expected_raises": [],
+        "expected_side_effects": [],
+        "expected_dependencies": [
+          "escape",
+          "Markup"
+        ],
+        "expected_output_language": "fa"
+      },
+      "execution": {
+        "http_status": 502,
+        "latency_seconds": 16.900965,
+        "total_provider_calls": 1,
+        "first_generated_output_passed_service_validation": false,
+        "application_level_regeneration_occurred": false,
+        "regeneration_reason": null,
+        "finish_reason": null,
+        "explicit_truncation": false,
+        "safe_provider_error_type": "invalid_response",
+        "attempts": [
+          {
+            "case_id": "FD-02",
+            "request": {
+              "system_prompt_sha256": "6aae103231e65ffb0f58c93e93eafc8fa41e645176885661e7adcce43f1eadf3",
+              "prompt_sha256": "70d270d1af30c79f4f4f5c68b967ac75c399d3e35c4fc3703314283fc106b839",
+              "temperature": 0.0,
+              "max_tokens": 1200,
+              "response_format": "json"
+            },
+            "provider_completed": false,
+            "latency_seconds": 16.88458,
+            "safe_provider_error_type": "invalid_response",
+            "finish_reason": null,
+            "explicit_truncation": false,
+            "provider_call_number": 1,
+            "json_schema_and_parameter_validation_passed": null,
+            "language_validation_passed": null,
+            "service_validation_passed": false,
+            "validation_result": "provider_failure",
+            "failure_code": "provider_failure"
+          }
+        ],
+        "exact_final_user_visible_response": "{\"error\":{\"code\":\"documentation_provider_failure\",\"message\":\"Documentation provider failed\",\"details\":{\"provider_error_type\":\"invalid_response\"}}}",
+        "final_response_json": {
+          "error": {
+            "code": "documentation_provider_failure",
+            "message": "Documentation provider failed",
+            "details": {
+              "provider_error_type": "invalid_response"
+            }
+          }
+        }
+      },
+      "contract_validation": {
+        "json_schema_valid": null,
+        "target_resolution_valid": true,
+        "target_identity_valid": null,
+        "parameters_valid": null,
+        "citation_valid": null,
+        "service_accepted": false,
+        "status": "NOT_ASSESSABLE"
+      },
+      "semantic_review": {
+        "required_expected_facts": 3,
+        "expected_facts_covered": null,
+        "missing_expected_facts": [],
+        "unsupported_or_fabricated_claims": [],
+        "parameter_validity": null,
+        "raises_validity": null,
+        "side_effect_validity": null,
+        "dependency_validity": null,
+        "missing_expected_dependencies": [],
+        "language_adherence": null,
+        "citation_validity": null,
+        "semantic_grade": "INCONCLUSIVE",
+        "failure_attribution": "PROVIDER",
+        "note": "The adapter returned safe provider_error_type=invalid_response and no model content was available for semantic review."
+      },
+      "exact_captured_outputs": [],
+      "captured_output_sha256": []
+    },
+    {
+      "case_id": "FD-03",
+      "repository": {
+        "project_id": 2,
+        "project_name": "Hospital-System",
+        "remote_url": "https://github.com/AvaGhiasian/Hospital-System.git",
+        "commit_sha": "da0b1f8cf04f36d6281a5fd44b797ad195147633"
+      },
+      "request": {
+        "identifier": "42a0c185f2075dcce043fd60f2d6469f3048b722ebc4329967e065691664c5e2",
+        "language": "en"
+      },
+      "target": {
+        "file_id": 36,
+        "symbol_id": 452,
+        "chunk_id": "42a0c185f2075dcce043fd60f2d6469f3048b722ebc4329967e065691664c5e2",
+        "symbol_kind": "method",
+        "qualified_name": "Patient.__init__",
+        "relative_path": "models/patient.py",
+        "start_line": 6,
+        "end_line": 16,
+        "content_hash": "bedd9e98c2b05f35c5c1f7af90990004d46553d0325729969df4e4bda4ba97c2",
+        "source_file_sha256": "94807dc22e12abf8a46733e4b7333973834aa74ec17d4080d1986d85f054b873",
+        "extracted_signature": "def __init__(self, first_name, last_name, national_id, phone_num, password, gender, city, insurance_num)",
+        "extracted_parameters": [
+          "self",
+          "first_name",
+          "last_name",
+          "national_id",
+          "phone_num",
+          "password",
+          "gender",
+          "city",
+          "insurance_num"
+        ],
+        "return_annotation": null
+      },
+      "frozen_review": {
+        "expected_facts": [
+          "It assigns first_name to self.first_name.",
+          "It assigns last_name to self.last_name.",
+          "It assigns national_id to self.national_id.",
+          "It assigns phone_num to self.phone_num.",
+          "It assigns password to self.password.",
+          "It assigns gender to self.gender.",
+          "It assigns city to self.city.",
+          "It builds self.full_name from self.first_name and self.last_name separated by a space.",
+          "It assigns insurance_num to self.insurance_num.",
+          "It initializes self.appointments with Appointments()."
+        ],
+        "forbidden_or_unsupported_claims": [
+          "The constructor validates or normalizes the supplied values.",
+          "The constructor hashes the password.",
+          "appointments is supplied as a constructor parameter.",
+          "Types are asserted for parameters that have no annotations."
+        ],
+        "expected_raises": [],
+        "expected_side_effects": [],
+        "expected_dependencies": [
+          "Appointments"
+        ],
+        "expected_output_language": "en"
+      },
+      "execution": {
+        "http_status": 200,
+        "latency_seconds": 13.648146,
+        "total_provider_calls": 1,
+        "first_generated_output_passed_service_validation": true,
+        "application_level_regeneration_occurred": false,
+        "regeneration_reason": null,
+        "finish_reason": "stop",
+        "explicit_truncation": false,
+        "safe_provider_error_type": null,
+        "attempts": [
+          {
+            "case_id": "FD-03",
+            "request": {
+              "system_prompt_sha256": "7515231a7844dff69ac52c0419f67f6b558ebdf4e5d63ff52bd23b872a4e12db",
+              "prompt_sha256": "3694f703715c80374b16bb22ab7ffa92ad8fcece1fe0d1e20071f2934a81d093",
+              "temperature": 0.0,
+              "max_tokens": 1200,
+              "response_format": "json"
+            },
+            "provider_completed": true,
+            "latency_seconds": 13.615444,
+            "provider": "openai_compatible",
+            "model": "glm-5.3-flash",
+            "finish_reason": "stop",
+            "explicit_truncation": false,
+            "safe_provider_error_type": null,
+            "raw_output": "{\n  \"summary\": \"Initializes a Patient instance with personal, contact, and insurance details, a derived full name, and a new Appointments instance.\",\n  \"detailed_description\": \"Stores the provided first_name, last_name, national_id, phone_num, password, gender, city, and insurance_num as instance attributes. Builds the full_name attribute by joining first_name and last_name with a space. Assigns a newly created Appointments instance to the appointments attribute.\",\n  \"parameters\": [\n    {\"name\": \"self\", \"description\": null},\n    {\"name\": \"first_name\", \"description\": null},\n    {\"name\": \"last_name\", \"description\": null},\n    {\"name\": \"national_id\", \"description\": null},\n    {\"name\": \"phone_num\", \"description\": null},\n    {\"name\": \"password\", \"description\": null},\n    {\"name\": \"gender\", \"description\": null},\n    {\"name\": \"city\", \"description\": null},\n    {\"name\": \"insurance_num\", \"description\": null}\n  ],\n  \"return_value\": null,\n  \"raises\": [],\n  \"side_effects\": [\n    \"Sets instance attributes first_name, last_name, national_id, phone_num, password, gender, city, full_name, insurance_num, and appointments.\"\n  ],\n  \"dependencies\": [\n    \"Appointments\"\n  ],\n  \"notes\": [\n    \"full_name is formatted as the first name followed by the last name separated by a space.\",\n    \"appointments is initialized to a new Appointments instance.\"\n  ]\n}",
+            "provider_call_number": 1,
+            "json_schema_and_parameter_validation_passed": true,
+            "language_validation_passed": true,
+            "service_validation_passed": true,
+            "validation_result": "accepted",
+            "failure_code": null
+          }
+        ],
+        "exact_final_user_visible_response": "{\"extracted\":{\"citation\":{\"project_id\":2,\"project_name\":\"Hospital-System\",\"file_id\":36,\"symbol_id\":452,\"chunk_id\":\"42a0c185f2075dcce043fd60f2d6469f3048b722ebc4329967e065691664c5e2\",\"qualified_name\":\"Patient.__init__\",\"relative_source_path\":\"models/patient.py\",\"start_line\":6,\"end_line\":16,\"content_hash\":\"bedd9e98c2b05f35c5c1f7af90990004d46553d0325729969df4e4bda4ba97c2\"},\"symbol_type\":\"method\",\"signature\":\"def __init__(self, first_name, last_name, national_id, phone_num, password, gender, city, insurance_num)\",\"parameters\":[\"self\",\"first_name\",\"last_name\",\"national_id\",\"phone_num\",\"password\",\"gender\",\"city\",\"insurance_num\"],\"return_annotation\":null,\"is_async\":false,\"source_file_hash\":\"94807dc22e12abf8a46733e4b7333973834aa74ec17d4080d1986d85f054b873\"},\"generated\":{\"summary\":\"Initializes a Patient instance with personal, contact, and insurance details, a derived full name, and a new Appointments instance.\",\"detailed_description\":\"Stores the provided first_name, last_name, national_id, phone_num, password, gender, city, and insurance_num as instance attributes. Builds the full_name attribute by joining first_name and last_name with a space. Assigns a newly created Appointments instance to the appointments attribute.\",\"parameters\":[{\"name\":\"self\",\"description\":null},{\"name\":\"first_name\",\"description\":null},{\"name\":\"last_name\",\"description\":null},{\"name\":\"national_id\",\"description\":null},{\"name\":\"phone_num\",\"description\":null},{\"name\":\"password\",\"description\":null},{\"name\":\"gender\",\"description\":null},{\"name\":\"city\",\"description\":null},{\"name\":\"insurance_num\",\"description\":null}],\"return_value\":null,\"raises\":[],\"side_effects\":[\"Sets instance attributes first_name, last_name, national_id, phone_num, password, gender, city, full_name, insurance_num, and appointments.\"],\"dependencies\":[\"Appointments\"],\"notes\":[\"full_name is formatted as the first name followed by the last name separated by a space.\",\"appointments is initialized to a new Appointments instance.\"]},\"citations\":[{\"project_id\":2,\"project_name\":\"Hospital-System\",\"file_id\":36,\"symbol_id\":452,\"chunk_id\":\"42a0c185f2075dcce043fd60f2d6469f3048b722ebc4329967e065691664c5e2\",\"qualified_name\":\"Patient.__init__\",\"relative_source_path\":\"models/patient.py\",\"start_line\":6,\"end_line\":16,\"content_hash\":\"bedd9e98c2b05f35c5c1f7af90990004d46553d0325729969df4e4bda4ba97c2\"}],\"generation\":{\"schema_version\":\"1\",\"provider\":\"openai_compatible\",\"model\":\"glm-5.3-flash\",\"language\":\"en\"}}",
+        "final_response_json": {
+          "extracted": {
+            "citation": {
+              "project_id": 2,
+              "project_name": "Hospital-System",
+              "file_id": 36,
+              "symbol_id": 452,
+              "chunk_id": "42a0c185f2075dcce043fd60f2d6469f3048b722ebc4329967e065691664c5e2",
+              "qualified_name": "Patient.__init__",
+              "relative_source_path": "models/patient.py",
+              "start_line": 6,
+              "end_line": 16,
+              "content_hash": "bedd9e98c2b05f35c5c1f7af90990004d46553d0325729969df4e4bda4ba97c2"
+            },
+            "symbol_type": "method",
+            "signature": "def __init__(self, first_name, last_name, national_id, phone_num, password, gender, city, insurance_num)",
+            "parameters": [
+              "self",
+              "first_name",
+              "last_name",
+              "national_id",
+              "phone_num",
+              "password",
+              "gender",
+              "city",
+              "insurance_num"
+            ],
+            "return_annotation": null,
+            "is_async": false,
+            "source_file_hash": "94807dc22e12abf8a46733e4b7333973834aa74ec17d4080d1986d85f054b873"
+          },
+          "generated": {
+            "summary": "Initializes a Patient instance with personal, contact, and insurance details, a derived full name, and a new Appointments instance.",
+            "detailed_description": "Stores the provided first_name, last_name, national_id, phone_num, password, gender, city, and insurance_num as instance attributes. Builds the full_name attribute by joining first_name and last_name with a space. Assigns a newly created Appointments instance to the appointments attribute.",
+            "parameters": [
+              {
+                "name": "self",
+                "description": null
+              },
+              {
+                "name": "first_name",
+                "description": null
+              },
+              {
+                "name": "last_name",
+                "description": null
+              },
+              {
+                "name": "national_id",
+                "description": null
+              },
+              {
+                "name": "phone_num",
+                "description": null
+              },
+              {
+                "name": "password",
+                "description": null
+              },
+              {
+                "name": "gender",
+                "description": null
+              },
+              {
+                "name": "city",
+                "description": null
+              },
+              {
+                "name": "insurance_num",
+                "description": null
+              }
+            ],
+            "return_value": null,
+            "raises": [],
+            "side_effects": [
+              "Sets instance attributes first_name, last_name, national_id, phone_num, password, gender, city, full_name, insurance_num, and appointments."
+            ],
+            "dependencies": [
+              "Appointments"
+            ],
+            "notes": [
+              "full_name is formatted as the first name followed by the last name separated by a space.",
+              "appointments is initialized to a new Appointments instance."
+            ]
+          },
+          "citations": [
+            {
+              "project_id": 2,
+              "project_name": "Hospital-System",
+              "file_id": 36,
+              "symbol_id": 452,
+              "chunk_id": "42a0c185f2075dcce043fd60f2d6469f3048b722ebc4329967e065691664c5e2",
+              "qualified_name": "Patient.__init__",
+              "relative_source_path": "models/patient.py",
+              "start_line": 6,
+              "end_line": 16,
+              "content_hash": "bedd9e98c2b05f35c5c1f7af90990004d46553d0325729969df4e4bda4ba97c2"
+            }
+          ],
+          "generation": {
+            "schema_version": "1",
+            "provider": "openai_compatible",
+            "model": "glm-5.3-flash",
+            "language": "en"
+          }
+        }
+      },
+      "contract_validation": {
+        "json_schema_valid": true,
+        "target_resolution_valid": true,
+        "target_identity_valid": true,
+        "parameters_valid": true,
+        "citation_valid": true,
+        "service_accepted": true,
+        "status": "PASS"
+      },
+      "semantic_review": {
+        "required_expected_facts": 10,
+        "expected_facts_covered": 10,
+        "missing_expected_facts": [],
+        "unsupported_or_fabricated_claims": [],
+        "parameter_validity": true,
+        "raises_validity": true,
+        "side_effect_validity": true,
+        "dependency_validity": true,
+        "missing_expected_dependencies": [],
+        "language_adherence": true,
+        "citation_validity": true,
+        "semantic_grade": "PASS",
+        "failure_attribution": "NONE",
+        "note": "All ten frozen assignment facts, the Appointments dependency, and required identity/citation information are present without unsupported claims."
+      },
+      "exact_captured_outputs": [
+        "{\n  \"summary\": \"Initializes a Patient instance with personal, contact, and insurance details, a derived full name, and a new Appointments instance.\",\n  \"detailed_description\": \"Stores the provided first_name, last_name, national_id, phone_num, password, gender, city, and insurance_num as instance attributes. Builds the full_name attribute by joining first_name and last_name with a space. Assigns a newly created Appointments instance to the appointments attribute.\",\n  \"parameters\": [\n    {\"name\": \"self\", \"description\": null},\n    {\"name\": \"first_name\", \"description\": null},\n    {\"name\": \"last_name\", \"description\": null},\n    {\"name\": \"national_id\", \"description\": null},\n    {\"name\": \"phone_num\", \"description\": null},\n    {\"name\": \"password\", \"description\": null},\n    {\"name\": \"gender\", \"description\": null},\n    {\"name\": \"city\", \"description\": null},\n    {\"name\": \"insurance_num\", \"description\": null}\n  ],\n  \"return_value\": null,\n  \"raises\": [],\n  \"side_effects\": [\n    \"Sets instance attributes first_name, last_name, national_id, phone_num, password, gender, city, full_name, insurance_num, and appointments.\"\n  ],\n  \"dependencies\": [\n    \"Appointments\"\n  ],\n  \"notes\": [\n    \"full_name is formatted as the first name followed by the last name separated by a space.\",\n    \"appointments is initialized to a new Appointments instance.\"\n  ]\n}"
+      ],
+      "captured_output_sha256": [
+        "e333fe2f393c3be0274b2a1465fa6a687ff62efd68c58442c203dffbfffc3863"
+      ]
+    },
+    {
+      "case_id": "FD-04",
+      "repository": {
+        "project_id": 2,
+        "project_name": "Hospital-System",
+        "remote_url": "https://github.com/AvaGhiasian/Hospital-System.git",
+        "commit_sha": "da0b1f8cf04f36d6281a5fd44b797ad195147633"
+      },
+      "request": {
+        "identifier": "1df22345e37e9c6c7038efb4a6acb81e56298fbe587c4a4be47acb872f21650b",
+        "language": "fa"
+      },
+      "target": {
+        "file_id": 24,
+        "symbol_id": 316,
+        "chunk_id": "1df22345e37e9c6c7038efb4a6acb81e56298fbe587c4a4be47acb872f21650b",
+        "symbol_kind": "method",
+        "qualified_name": "QueueArray.dequeue",
+        "relative_path": "data_structures/queue.py",
+        "start_line": 22,
+        "end_line": 33,
+        "content_hash": "944d8f85f6b084022d064b0ad5fca1ffa00eece79395e2b470e29b34ad0c8d3b",
+        "source_file_sha256": "cf716b2183d11a0e735d551b794b99eeb777fff08b8a08234f98f8d92739b6e1",
+        "extracted_signature": "def dequeue(self)",
+        "extracted_parameters": [
+          "self"
+        ],
+        "return_annotation": null
+      },
+      "frozen_review": {
+        "expected_facts": [
+          "If self.is_empty() is true, the method returns the string 'Queue is empty.'.",
+          "For a non-empty queue, it increments self.front by one.",
+          "After incrementing self.front, it returns self.queue[self.front - 1]."
+        ],
+        "forbidden_or_unsupported_claims": [
+          "The active implementation decrements self.front.",
+          "The method removes an element from self.queue.",
+          "An empty queue raises an exception.",
+          "The commented-out triple-quoted code is executed."
+        ],
+        "expected_raises": [],
+        "expected_side_effects": [
+          "For a non-empty queue, self.front is incremented by one."
+        ],
+        "expected_dependencies": [
+          "self.is_empty"
+        ],
+        "expected_output_language": "fa"
+      },
+      "execution": {
+        "http_status": 502,
+        "latency_seconds": 18.715968,
+        "total_provider_calls": 1,
+        "first_generated_output_passed_service_validation": false,
+        "application_level_regeneration_occurred": false,
+        "regeneration_reason": null,
+        "finish_reason": null,
+        "explicit_truncation": false,
+        "safe_provider_error_type": "invalid_response",
+        "attempts": [
+          {
+            "case_id": "FD-04",
+            "request": {
+              "system_prompt_sha256": "6aae103231e65ffb0f58c93e93eafc8fa41e645176885661e7adcce43f1eadf3",
+              "prompt_sha256": "b9a40fec5ed56d9d79e2d4d88cee7d28bb3f99395fc83617c6438f8847a10e2c",
+              "temperature": 0.0,
+              "max_tokens": 1200,
+              "response_format": "json"
+            },
+            "provider_completed": false,
+            "latency_seconds": 18.688907,
+            "safe_provider_error_type": "invalid_response",
+            "finish_reason": null,
+            "explicit_truncation": false,
+            "provider_call_number": 1,
+            "json_schema_and_parameter_validation_passed": null,
+            "language_validation_passed": null,
+            "service_validation_passed": false,
+            "validation_result": "provider_failure",
+            "failure_code": "provider_failure"
+          }
+        ],
+        "exact_final_user_visible_response": "{\"error\":{\"code\":\"documentation_provider_failure\",\"message\":\"Documentation provider failed\",\"details\":{\"provider_error_type\":\"invalid_response\"}}}",
+        "final_response_json": {
+          "error": {
+            "code": "documentation_provider_failure",
+            "message": "Documentation provider failed",
+            "details": {
+              "provider_error_type": "invalid_response"
+            }
+          }
+        }
+      },
+      "contract_validation": {
+        "json_schema_valid": null,
+        "target_resolution_valid": true,
+        "target_identity_valid": null,
+        "parameters_valid": null,
+        "citation_valid": null,
+        "service_accepted": false,
+        "status": "NOT_ASSESSABLE"
+      },
+      "semantic_review": {
+        "required_expected_facts": 3,
+        "expected_facts_covered": null,
+        "missing_expected_facts": [],
+        "unsupported_or_fabricated_claims": [],
+        "parameter_validity": null,
+        "raises_validity": null,
+        "side_effect_validity": null,
+        "dependency_validity": null,
+        "missing_expected_dependencies": [],
+        "language_adherence": null,
+        "citation_validity": null,
+        "semantic_grade": "INCONCLUSIVE",
+        "failure_attribution": "PROVIDER",
+        "note": "The adapter returned safe provider_error_type=invalid_response and no model content was available for semantic review."
+      },
+      "exact_captured_outputs": [],
+      "captured_output_sha256": []
+    },
+    {
+      "case_id": "FD-05",
+      "repository": {
+        "project_id": 3,
+        "project_name": "CS-Bookstore",
+        "remote_url": "https://github.com/AvaGhiasian/CS-Bookstore.git",
+        "commit_sha": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a"
+      },
+      "request": {
+        "identifier": "862dff324241a2bb0ceccd033852bd5c6a0f0b969162a4dbee8f077968772b17",
+        "language": "en"
+      },
+      "target": {
+        "file_id": 85,
+        "symbol_id": 609,
+        "chunk_id": "862dff324241a2bb0ceccd033852bd5c6a0f0b969162a4dbee8f077968772b17",
+        "symbol_kind": "method",
+        "qualified_name": "Book.save",
+        "relative_path": "store/models.py",
+        "start_line": 67,
+        "end_line": 70,
+        "content_hash": "f82bb5ec6199de9881caf26641e7a869037bb7d4e4ad05c165f419aa99a16ee7",
+        "source_file_sha256": "eea8d5931e798bf5bc390e66dadb5a3cc05f1a8fc28eaa4b122de2fe2c4291a4",
+        "extracted_signature": "def save(self, *args, **kwargs)",
+        "extracted_parameters": [
+          "self",
+          "*args",
+          "**kwargs"
+        ],
+        "return_annotation": null
+      },
+      "frozen_review": {
+        "expected_facts": [
+          "When self.slug is falsy, it assigns slugify(self.title) to self.slug.",
+          "An existing truthy self.slug is preserved.",
+          "It calls super().save(*args, **kwargs) after the slug check."
+        ],
+        "forbidden_or_unsupported_claims": [
+          "The slug is regenerated on every save.",
+          "The method guarantees slug uniqueness.",
+          "The method returns an absolute URL.",
+          "The method saves before checking the slug."
+        ],
+        "expected_raises": [],
+        "expected_side_effects": [
+          "It may assign self.slug.",
+          "It delegates persistence to the superclass save method."
+        ],
+        "expected_dependencies": [
+          "slugify",
+          "super().save"
+        ],
+        "expected_output_language": "en"
+      },
+      "execution": {
+        "http_status": 200,
+        "latency_seconds": 17.125528,
+        "total_provider_calls": 1,
+        "first_generated_output_passed_service_validation": true,
+        "application_level_regeneration_occurred": false,
+        "regeneration_reason": null,
+        "finish_reason": "stop",
+        "explicit_truncation": false,
+        "safe_provider_error_type": null,
+        "attempts": [
+          {
+            "case_id": "FD-05",
+            "request": {
+              "system_prompt_sha256": "7515231a7844dff69ac52c0419f67f6b558ebdf4e5d63ff52bd23b872a4e12db",
+              "prompt_sha256": "773fc62f1d22172162a73e56978bfa27c527a17c2a06d51a65c0441e07e315cc",
+              "temperature": 0.0,
+              "max_tokens": 1200,
+              "response_format": "json"
+            },
+            "provider_completed": true,
+            "latency_seconds": 17.088997,
+            "provider": "openai_compatible",
+            "model": "glm-5.3-flash",
+            "finish_reason": "stop",
+            "explicit_truncation": false,
+            "safe_provider_error_type": null,
+            "raw_output": "{\n  \"summary\": \"Saves the Book instance, generating a slug from the title when one is not already set.\",\n  \"detailed_description\": \"If self.slug is empty, it is assigned the result of slugify(self.title). The method then calls the parent class save method, forwarding *args and **kwargs unchanged.\",\n  \"parameters\": [\n    {\"name\": \"self\", \"description\": null},\n    {\"name\": \"*args\", \"description\": null},\n    {\"name\": \"**kwargs\", \"description\": null}\n  ],\n  \"return_value\": null,\n  \"raises\": [],\n  \"side_effects\": [\n    \"Sets self.slug to slugify(self.title) when self.slug is empty\",\n    \"Delegates persistence to the parent class save method\"\n  ],\n  \"dependencies\": [\n    \"slugify\"\n  ],\n  \"notes\": [\n    \"Defined in store/models.py at lines 67-70\"\n  ]\n}",
+            "provider_call_number": 1,
+            "json_schema_and_parameter_validation_passed": true,
+            "language_validation_passed": true,
+            "service_validation_passed": true,
+            "validation_result": "accepted",
+            "failure_code": null
+          }
+        ],
+        "exact_final_user_visible_response": "{\"extracted\":{\"citation\":{\"project_id\":3,\"project_name\":\"CS-Bookstore\",\"file_id\":85,\"symbol_id\":609,\"chunk_id\":\"862dff324241a2bb0ceccd033852bd5c6a0f0b969162a4dbee8f077968772b17\",\"qualified_name\":\"Book.save\",\"relative_source_path\":\"store/models.py\",\"start_line\":67,\"end_line\":70,\"content_hash\":\"f82bb5ec6199de9881caf26641e7a869037bb7d4e4ad05c165f419aa99a16ee7\"},\"symbol_type\":\"method\",\"signature\":\"def save(self, *args, **kwargs)\",\"parameters\":[\"self\",\"*args\",\"**kwargs\"],\"return_annotation\":null,\"is_async\":false,\"source_file_hash\":\"eea8d5931e798bf5bc390e66dadb5a3cc05f1a8fc28eaa4b122de2fe2c4291a4\"},\"generated\":{\"summary\":\"Saves the Book instance, generating a slug from the title when one is not already set.\",\"detailed_description\":\"If self.slug is empty, it is assigned the result of slugify(self.title). The method then calls the parent class save method, forwarding *args and **kwargs unchanged.\",\"parameters\":[{\"name\":\"self\",\"description\":null},{\"name\":\"*args\",\"description\":null},{\"name\":\"**kwargs\",\"description\":null}],\"return_value\":null,\"raises\":[],\"side_effects\":[\"Sets self.slug to slugify(self.title) when self.slug is empty\",\"Delegates persistence to the parent class save method\"],\"dependencies\":[\"slugify\"],\"notes\":[\"Defined in store/models.py at lines 67-70\"]},\"citations\":[{\"project_id\":3,\"project_name\":\"CS-Bookstore\",\"file_id\":85,\"symbol_id\":609,\"chunk_id\":\"862dff324241a2bb0ceccd033852bd5c6a0f0b969162a4dbee8f077968772b17\",\"qualified_name\":\"Book.save\",\"relative_source_path\":\"store/models.py\",\"start_line\":67,\"end_line\":70,\"content_hash\":\"f82bb5ec6199de9881caf26641e7a869037bb7d4e4ad05c165f419aa99a16ee7\"}],\"generation\":{\"schema_version\":\"1\",\"provider\":\"openai_compatible\",\"model\":\"glm-5.3-flash\",\"language\":\"en\"}}",
+        "final_response_json": {
+          "extracted": {
+            "citation": {
+              "project_id": 3,
+              "project_name": "CS-Bookstore",
+              "file_id": 85,
+              "symbol_id": 609,
+              "chunk_id": "862dff324241a2bb0ceccd033852bd5c6a0f0b969162a4dbee8f077968772b17",
+              "qualified_name": "Book.save",
+              "relative_source_path": "store/models.py",
+              "start_line": 67,
+              "end_line": 70,
+              "content_hash": "f82bb5ec6199de9881caf26641e7a869037bb7d4e4ad05c165f419aa99a16ee7"
+            },
+            "symbol_type": "method",
+            "signature": "def save(self, *args, **kwargs)",
+            "parameters": [
+              "self",
+              "*args",
+              "**kwargs"
+            ],
+            "return_annotation": null,
+            "is_async": false,
+            "source_file_hash": "eea8d5931e798bf5bc390e66dadb5a3cc05f1a8fc28eaa4b122de2fe2c4291a4"
+          },
+          "generated": {
+            "summary": "Saves the Book instance, generating a slug from the title when one is not already set.",
+            "detailed_description": "If self.slug is empty, it is assigned the result of slugify(self.title). The method then calls the parent class save method, forwarding *args and **kwargs unchanged.",
+            "parameters": [
+              {
+                "name": "self",
+                "description": null
+              },
+              {
+                "name": "*args",
+                "description": null
+              },
+              {
+                "name": "**kwargs",
+                "description": null
+              }
+            ],
+            "return_value": null,
+            "raises": [],
+            "side_effects": [
+              "Sets self.slug to slugify(self.title) when self.slug is empty",
+              "Delegates persistence to the parent class save method"
+            ],
+            "dependencies": [
+              "slugify"
+            ],
+            "notes": [
+              "Defined in store/models.py at lines 67-70"
+            ]
+          },
+          "citations": [
+            {
+              "project_id": 3,
+              "project_name": "CS-Bookstore",
+              "file_id": 85,
+              "symbol_id": 609,
+              "chunk_id": "862dff324241a2bb0ceccd033852bd5c6a0f0b969162a4dbee8f077968772b17",
+              "qualified_name": "Book.save",
+              "relative_source_path": "store/models.py",
+              "start_line": 67,
+              "end_line": 70,
+              "content_hash": "f82bb5ec6199de9881caf26641e7a869037bb7d4e4ad05c165f419aa99a16ee7"
+            }
+          ],
+          "generation": {
+            "schema_version": "1",
+            "provider": "openai_compatible",
+            "model": "glm-5.3-flash",
+            "language": "en"
+          }
+        }
+      },
+      "contract_validation": {
+        "json_schema_valid": true,
+        "target_resolution_valid": true,
+        "target_identity_valid": true,
+        "parameters_valid": true,
+        "citation_valid": true,
+        "service_accepted": true,
+        "status": "PASS"
+      },
+      "semantic_review": {
+        "required_expected_facts": 3,
+        "expected_facts_covered": 3,
+        "missing_expected_facts": [],
+        "unsupported_or_fabricated_claims": [],
+        "parameter_validity": true,
+        "raises_validity": true,
+        "side_effect_validity": true,
+        "dependency_validity": false,
+        "missing_expected_dependencies": [
+          "super().save"
+        ],
+        "language_adherence": true,
+        "citation_validity": true,
+        "semantic_grade": "PARTIAL",
+        "failure_attribution": "GENERATION_SEMANTICS",
+        "note": "All frozen behavior facts are present, but the generated dependencies field omits the frozen expected dependency super().save."
+      },
+      "exact_captured_outputs": [
+        "{\n  \"summary\": \"Saves the Book instance, generating a slug from the title when one is not already set.\",\n  \"detailed_description\": \"If self.slug is empty, it is assigned the result of slugify(self.title). The method then calls the parent class save method, forwarding *args and **kwargs unchanged.\",\n  \"parameters\": [\n    {\"name\": \"self\", \"description\": null},\n    {\"name\": \"*args\", \"description\": null},\n    {\"name\": \"**kwargs\", \"description\": null}\n  ],\n  \"return_value\": null,\n  \"raises\": [],\n  \"side_effects\": [\n    \"Sets self.slug to slugify(self.title) when self.slug is empty\",\n    \"Delegates persistence to the parent class save method\"\n  ],\n  \"dependencies\": [\n    \"slugify\"\n  ],\n  \"notes\": [\n    \"Defined in store/models.py at lines 67-70\"\n  ]\n}"
+      ],
+      "captured_output_sha256": [
+        "353a20cf047ad5f94a5e53f26636423c7d8aeaa13af921c32422d1f209a07b27"
+      ]
+    },
+    {
+      "case_id": "FD-06",
+      "repository": {
+        "project_id": 3,
+        "project_name": "CS-Bookstore",
+        "remote_url": "https://github.com/AvaGhiasian/CS-Bookstore.git",
+        "commit_sha": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a"
+      },
+      "request": {
+        "identifier": "82ed47caefdd51b242f09859d1d8f4b25e6b7e2dfd40c032212672896f024738",
+        "language": "fa"
+      },
+      "target": {
+        "file_id": 49,
+        "symbol_id": 536,
+        "chunk_id": "82ed47caefdd51b242f09859d1d8f4b25e6b7e2dfd40c032212672896f024738",
+        "symbol_kind": "method",
+        "qualified_name": "CommentForm.clean_name",
+        "relative_path": "blog/forms.py",
+        "start_line": 45,
+        "end_line": 51,
+        "content_hash": "cc1926c4fd09c5115003272bbfac1fa7e9ae5094c1407a2e3d6849b063ff6784",
+        "source_file_sha256": "1cefdfa14aa09927d8fd068c8e98ee8bc96fe8b5a66cacb60ac15ad20323af37",
+        "extracted_signature": "def clean_name(self)",
+        "extracted_parameters": [
+          "self"
+        ],
+        "return_annotation": null
+      },
+      "frozen_review": {
+        "expected_facts": [
+          "The method reads name from self.cleaned_data['name'].",
+          "For a truthy name shorter than 2 characters or longer than 250 characters, it raises forms.ValidationError with the source-defined Persian message.",
+          "For a truthy name whose length is between 2 and 250 inclusive, it returns name.",
+          "For a falsy name, execution reaches an implicit None return."
+        ],
+        "forbidden_or_unsupported_claims": [
+          "The method trims whitespace.",
+          "The method checks name uniqueness.",
+          "The method changes letter case.",
+          "A falsy name explicitly raises forms.ValidationError."
+        ],
+        "expected_raises": [
+          "forms.ValidationError when a truthy name length is outside the inclusive range 2 to 250"
+        ],
+        "expected_side_effects": [],
+        "expected_dependencies": [
+          "forms.ValidationError"
+        ],
+        "expected_output_language": "fa"
+      },
+      "execution": {
+        "http_status": 502,
+        "latency_seconds": 25.881256,
+        "total_provider_calls": 1,
+        "first_generated_output_passed_service_validation": false,
+        "application_level_regeneration_occurred": false,
+        "regeneration_reason": null,
+        "finish_reason": null,
+        "explicit_truncation": false,
+        "safe_provider_error_type": "invalid_response",
+        "attempts": [
+          {
+            "case_id": "FD-06",
+            "request": {
+              "system_prompt_sha256": "6aae103231e65ffb0f58c93e93eafc8fa41e645176885661e7adcce43f1eadf3",
+              "prompt_sha256": "15f475a86ba614f4b263c1490f540f666b4ea688192eb2b61e497c9761803559",
+              "temperature": 0.0,
+              "max_tokens": 1200,
+              "response_format": "json"
+            },
+            "provider_completed": false,
+            "latency_seconds": 25.849805,
+            "safe_provider_error_type": "invalid_response",
+            "finish_reason": null,
+            "explicit_truncation": false,
+            "provider_call_number": 1,
+            "json_schema_and_parameter_validation_passed": null,
+            "language_validation_passed": null,
+            "service_validation_passed": false,
+            "validation_result": "provider_failure",
+            "failure_code": "provider_failure"
+          }
+        ],
+        "exact_final_user_visible_response": "{\"error\":{\"code\":\"documentation_provider_failure\",\"message\":\"Documentation provider failed\",\"details\":{\"provider_error_type\":\"invalid_response\"}}}",
+        "final_response_json": {
+          "error": {
+            "code": "documentation_provider_failure",
+            "message": "Documentation provider failed",
+            "details": {
+              "provider_error_type": "invalid_response"
+            }
+          }
+        }
+      },
+      "contract_validation": {
+        "json_schema_valid": null,
+        "target_resolution_valid": true,
+        "target_identity_valid": null,
+        "parameters_valid": null,
+        "citation_valid": null,
+        "service_accepted": false,
+        "status": "NOT_ASSESSABLE"
+      },
+      "semantic_review": {
+        "required_expected_facts": 4,
+        "expected_facts_covered": null,
+        "missing_expected_facts": [],
+        "unsupported_or_fabricated_claims": [],
+        "parameter_validity": null,
+        "raises_validity": null,
+        "side_effect_validity": null,
+        "dependency_validity": null,
+        "missing_expected_dependencies": [],
+        "language_adherence": null,
+        "citation_validity": null,
+        "semantic_grade": "INCONCLUSIVE",
+        "failure_attribution": "PROVIDER",
+        "note": "The adapter returned safe provider_error_type=invalid_response and no model content was available for semantic review."
+      },
+      "exact_captured_outputs": [],
+      "captured_output_sha256": []
+    }
+  ],
+  "aggregate": {
+    "cases": 6,
+    "semantic_results": {
+      "PASS": 1,
+      "PARTIAL": 2,
+      "FAIL": 0,
+      "INCONCLUSIVE": 3
+    },
+    "language_breakdown": {
+      "en": {
+        "total": 3,
+        "PARTIAL": 2,
+        "PASS": 1
+      },
+      "fa": {
+        "total": 3,
+        "INCONCLUSIVE": 3
+      }
+    },
+    "contract_service_acceptance": {
+      "passed": 3,
+      "total": 6,
+      "rate": 0.5
+    },
+    "total_provider_calls": 6,
+    "persian_cases_with_regeneration": 0,
+    "finish_reason_distribution": {
+      "stop": 3,
+      "not_available": 3
+    },
+    "provider_error_type_distribution": {
+      "invalid_response": 3
+    },
+    "latency_seconds": {
+      "mean": 16.83691616666667,
+      "median": 17.0132465,
+      "min": 8.749634,
+      "max": 25.881256
+    },
+    "failure_attribution": {
+      "GENERATION_SEMANTICS": 2,
+      "PROVIDER": 3,
+      "NONE": 1
+    }
+  },
+  "descriptive_v1_comparison": {
+    "v1_semantic_results": {
+      "PASS": 0,
+      "PARTIAL": 1,
+      "FAIL": 2,
+      "INCONCLUSIVE": 3
+    },
+    "v1_contract_service_acceptance": "1/6",
+    "v2_semantic_results": {
+      "PASS": 1,
+      "PARTIAL": 2,
+      "FAIL": 0,
+      "INCONCLUSIVE": 3
+    },
+    "v2_contract_service_acceptance": "3/6",
+    "interpretation": "The runs are described separately. Observed differences do not establish improved semantic quality or provider reliability because the hardening was diagnostic rather than generative."
+  },
+  "root_cause_information": {
+    "new_information": [
+      "All three accepted responses explicitly reported finish_reason=stop.",
+      "All three failed requests exposed the safe category invalid_response.",
+      "No v2 request explicitly reported finish_reason=length, so no v2 failure is classified as truncation."
+    ],
+    "remaining_gap": "The invalid_response category does not identify whether the upstream payload was invalid JSON, missing choices, missing message content, or empty content."
+  },
+  "conclusion": {
+    "m20_closeable": false,
+    "reason": "Only 3/6 requests were service-accepted and no Persian case produced a reviewable result. Another generative or validator change is not justified yet; a narrower safe invalid-response subtype diagnostic is the next evidence-driven step."
+  },
+  "data_limitations": [
+    "Token usage, cost, HTTP cause, raw provider exception text, and unexposed provider behavior were not captured or inferred.",
+    "Provider-failed cases returned no model content or trusted final citation."
+  ]
+}
