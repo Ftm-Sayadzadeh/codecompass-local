@@ -177,7 +177,7 @@ def create_app(settings: APISettings | None = None) -> FastAPI:
     def ask(project_id: int, body: AskRequest, runtime: APIRuntime = Depends(get_runtime)) -> AskResponse:
         retrieval = runtime.retrieval(project_id, runtime.embedding_config(body.embedding), compatible=body.method != "lexical")
         service = GroundedQAService(retrieval, RAGContextBuilder(), QAPromptBuilder(), create_llm(runtime, body.llm))
-        answer = service.answer(QARequest(question=body.question, project_id=project_id, retrieval_method=body.method))
+        answer = service.answer(QARequest(question=body.question, project_id=project_id, retrieval_method=body.method, max_tokens=body.max_tokens))
         chunks = runtime.citation_chunks(project_id, tuple(item.chunk_id for item in answer.citations))
         return AskResponse(question=answer.question, answer=answer.answer, method=answer.retrieval_method, citations=[_citation(chunks[item.chunk_id]) for item in answer.citations], omitted_context_count=answer.omitted_context_count, llm_model=answer.llm_model, llm_provider=answer.llm_provider)
 

@@ -33,9 +33,11 @@ class FakeLLMProvider:
     def __init__(self, error: LLMProviderError | None = None) -> None:
         self.error = error
         self.calls = 0
+        self.requests = []
 
     def generate(self, request):
         self.calls += 1
+        self.requests.append(request)
         if self.error:
             raise self.error
         if request.response_format == "json":
@@ -234,6 +236,29 @@ def test_ask_and_documentation_preserve_trusted_citations(api) -> None:
     assert success.json()["extracted"]["citation"] == documentation_citation
     assert client.get(f"/projects/{project_id}/files/{documentation_citation['file_id']}/content").status_code == 200
     assert str(repo) not in success.text
+
+
+def test_ask_max_tokens_default_override_validation_and_documentation_independence(api) -> None:
+    client, _, llm, repo = api
+    project_id = index_project(client, repo)
+
+    default = client.post(f"/projects/{project_id}/ask", json={"question": "What does shared return?", "method": "lexical"})
+    explicit = client.post(f"/projects/{project_id}/ask", json={"question": "How does shared work?", "method": "lexical", "max_tokens": 1024})
+
+    assert default.status_code == 200
+    assert explicit.status_code == 200
+    assert [request.max_tokens for request in llm.requests] == [180, 1024]
+
+    calls = llm.calls
+    for invalid in (0, -1, 8001):
+        response = client.post(f"/projects/{project_id}/ask", json={"question": "Invalid budget", "method": "lexical", "max_tokens": invalid})
+        assert response.status_code == 422
+    assert llm.calls == calls
+
+    symbol_id = client.get(f"/projects/{project_id}/symbols").json()[0]["id"]
+    documented = client.post(f"/projects/{project_id}/documentation", json={"identifier": symbol_id})
+    assert documented.status_code == 200
+    assert llm.requests[-1].max_tokens == 1200
 
 
 def test_provider_cannot_author_documentation_file_id(api, monkeypatch) -> None:

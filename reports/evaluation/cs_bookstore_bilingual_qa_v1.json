@@ -1,0 +1,2687 @@
+{
+  "experiment_id": "cs_bookstore_bilingual_qa_v1",
+  "matrix": {
+    "schema_version": 1,
+    "matrix_id": "cs_bookstore_bilingual_qa_matrix_v1",
+    "repository": {
+      "remote_url": "https://github.com/AvaGhiasian/CS-Bookstore.git",
+      "branch": "main",
+      "commit_sha": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+      "commit_date": "2025-08-12T13:12:50+03:30"
+    },
+    "project": {
+      "project_id": 3,
+      "name": "CS-Bookstore"
+    },
+    "questions": [
+      {
+        "id": "CSB-QA-01",
+        "language": "EN",
+        "category": "model_field_structure",
+        "question": "Which Book fields represent availability, inventory, base price, discount, and discounted price?",
+        "target_file": "store/models.py",
+        "target_symbol": "Book",
+        "start_line": 40,
+        "end_line": 76,
+        "source_sha256": "eea8d5931e798bf5bc390e66dadb5a3cc05f1a8fc28eaa4b122de2fe2c4291a4",
+        "expected_facts": [
+          "available is a BooleanField with default=True",
+          "inventory is a PositiveIntegerField with default=0",
+          "price is a PositiveIntegerField with default=0",
+          "off is a PositiveIntegerField with default=0",
+          "new_price is a PositiveIntegerField with default=0"
+        ],
+        "forbidden_facts": [
+          "new_price is automatically calculated from price and off",
+          "inventory automatically controls available",
+          "pricing or inventory fields not declared in Book"
+        ],
+        "why_useful": "Tests exact Django field extraction, defaults, and resistance to inferred pricing logic."
+      },
+      {
+        "id": "CSB-QA-02",
+        "language": "FA",
+        "category": "model_field_structure",
+        "question": "مدل User چه فیلدهای اضافه‌ای نسبت به AbstractUser تعریف می‌کند؟",
+        "target_file": "users/models.py",
+        "target_symbol": "User",
+        "start_line": 7,
+        "end_line": 12,
+        "source_sha256": "4ffe6bcf7dad022c018c4f89ba7763cefec0682062ba845fa9f90e1595d382d9",
+        "expected_facts": [
+          "date_of_birth is DateField(blank=True, null=True)",
+          "bio is TextField(null=True, blank=True)",
+          "photo is ImageField(upload_to=\"profile_images/\", null=True, blank=True)",
+          "job is CharField(max_length=25, null=True, blank=True)",
+          "phone is CharField(max_length=11, null=True, blank=True)"
+        ],
+        "forbidden_facts": [
+          "username, password, or email are newly declared by User",
+          "phone is unique",
+          "the added fields are required"
+        ],
+        "why_useful": "Tests Persian explanation of inherited versus explicitly declared model fields."
+      },
+      {
+        "id": "CSB-QA-03",
+        "language": "EN",
+        "category": "method_behavior",
+        "question": "How does Book.save populate the slug before saving?",
+        "target_file": "store/models.py",
+        "target_symbol": "Book.save",
+        "start_line": 67,
+        "end_line": 70,
+        "source_sha256": "eea8d5931e798bf5bc390e66dadb5a3cc05f1a8fc28eaa4b122de2fe2c4291a4",
+        "expected_facts": [
+          "when self.slug is falsy, it sets self.slug to slugify(self.title)",
+          "an existing truthy slug is not replaced",
+          "it calls super().save(*args, **kwargs) afterwards"
+        ],
+        "forbidden_facts": [
+          "the slug is regenerated on every save",
+          "the method guarantees slug uniqueness",
+          "the method returns an absolute URL"
+        ],
+        "why_useful": "Tests conditional behavior and save-call ordering in a small overridden method."
+      },
+      {
+        "id": "CSB-QA-04",
+        "language": "FA",
+        "category": "method_behavior",
+        "question": "متد Post.delete پیش از حذف خود پست با فایل‌های تصاویرش چه می‌کند؟",
+        "target_file": "blog/models.py",
+        "target_symbol": "Post.delete",
+        "start_line": 74,
+        "end_line": 78,
+        "source_sha256": "2cf852d78fd32babb82c2d89bb9c006d962feb986ca6798e2af3612f70548c2c",
+        "expected_facts": [
+          "it iterates over self.images.all()",
+          "for each image it obtains img.image_file.storage and img.image_file.path",
+          "it calls storage.delete(path) for each image file",
+          "it calls super().delete(*args, **kwargs) afterwards"
+        ],
+        "forbidden_facts": [
+          "it deletes only database image records and leaves files untouched",
+          "it stops after deleting the first image",
+          "it explicitly calls Image.delete()"
+        ],
+        "why_useful": "Tests Persian explanation of filesystem cleanup and operation order."
+      },
+      {
+        "id": "CSB-QA-05",
+        "language": "EN",
+        "category": "django_model_relationship",
+        "question": "How is Review related to Book and the configured user model, and what deletion behavior is defined?",
+        "target_file": "store/models.py",
+        "target_symbol": "Review",
+        "start_line": 95,
+        "end_line": 113,
+        "source_sha256": "eea8d5931e798bf5bc390e66dadb5a3cc05f1a8fc28eaa4b122de2fe2c4291a4",
+        "expected_facts": [
+          "book is a ForeignKey to Book with related_name=\"reviews\" and on_delete=models.CASCADE",
+          "user is a ForeignKey to settings.AUTH_USER_MODEL with on_delete=models.CASCADE"
+        ],
+        "forbidden_facts": [
+          "either relationship is many-to-many",
+          "the user relationship defines a related_name",
+          "either relationship uses SET_NULL"
+        ],
+        "why_useful": "Tests two ORM relationships, reverse naming, and deletion semantics."
+      },
+      {
+        "id": "CSB-QA-06",
+        "language": "FA",
+        "category": "django_model_relationship",
+        "question": "مدل Comment چگونه به Post متصل است و نام دسترسی معکوس این رابطه چیست؟",
+        "target_file": "blog/models.py",
+        "target_symbol": "Comment",
+        "start_line": 81,
+        "end_line": 98,
+        "source_sha256": "2cf852d78fd32babb82c2d89bb9c006d962feb986ca6798e2af3612f70548c2c",
+        "expected_facts": [
+          "post is a ForeignKey to Post",
+          "the relationship uses on_delete=models.CASCADE",
+          "the reverse related_name is \"comments\""
+        ],
+        "forbidden_facts": [
+          "the relationship is many-to-many",
+          "the reverse related_name is \"posts\"",
+          "the post relationship is nullable"
+        ],
+        "why_useful": "Tests concise Persian grounding for a Django foreign-key relationship."
+      },
+      {
+        "id": "CSB-QA-07",
+        "language": "EN",
+        "category": "view_request_flow",
+        "question": "What happens in review_book when a valid POST review is submitted?",
+        "target_file": "store/views.py",
+        "target_symbol": "review_book",
+        "start_line": 95,
+        "end_line": 107,
+        "source_sha256": "5d5efe661c98ae6c42ff5e85e1866ac067fdff3679f38e7af7343364768b833f",
+        "expected_facts": [
+          "it fetches Book using id=pk and slug=slug",
+          "on POST it constructs ReviewForm(data=request.POST)",
+          "after validation it saves with commit=False",
+          "it assigns the fetched book to review.book",
+          "it assigns request.user to review.user",
+          "it saves the review",
+          "it redirects to book.get_absolute_url()"
+        ],
+        "forbidden_facts": [
+          "the view automatically sets review.active=True",
+          "a successful submission renders a success template",
+          "the review is saved before its book and user are assigned"
+        ],
+        "why_useful": "Tests a multi-step request flow and trusted relationship assignment."
+      },
+      {
+        "id": "CSB-QA-08",
+        "language": "FA",
+        "category": "view_request_flow",
+        "question": "نمای post_search پس از دریافت query معتبر چگونه نتایج جست‌وجو را می‌سازد؟",
+        "target_file": "blog/views.py",
+        "target_symbol": "post_search",
+        "start_line": 77,
+        "end_line": 94,
+        "source_sha256": "98019ca700e198cb3d5cdad1e4f29dd050da0e58abb23ec3ff106b9f3a95e598",
+        "expected_facts": [
+          "when query is present in request.GET, it validates SearchForm(data=request.GET)",
+          "it reads query from form.cleaned_data",
+          "it searches Post.published with TrigramSimilarity on title and description separately",
+          "each query filters similarity__gte=0.1 and orders by descending similarity",
+          "it unions results_1 and results_2 and orders the union by descending similarity",
+          "it renders blog/search.html with query and results"
+        ],
+        "forbidden_facts": [
+          "it searches Book objects",
+          "it deliberately includes draft or inactive posts",
+          "it uses only exact or contains matching",
+          "it writes search results to the database"
+        ],
+        "why_useful": "Tests Persian explanation of a real PostgreSQL-backed search request flow."
+      },
+      {
+        "id": "CSB-QA-09",
+        "language": "EN",
+        "category": "form_validation_behavior",
+        "question": "How does UserRegisterForm.clean_password_2 validate the repeated password?",
+        "target_file": "users/forms.py",
+        "target_symbol": "UserRegisterForm.clean_password_2",
+        "start_line": 22,
+        "end_line": 25,
+        "source_sha256": "cc7bd1fc2c16ec9d9cb68094b14f799ee30ef0b8943c7d51bd5056e60c72c4b6",
+        "expected_facts": [
+          "it compares cleaned_data[\"password\"] with cleaned_data[\"password_2\"]",
+          "when they differ, it raises forms.ValidationError with the Persian mismatch message",
+          "when they match, it returns cleaned_data[\"password_2\"]"
+        ],
+        "forbidden_facts": [
+          "the method hashes the password",
+          "the method saves the user",
+          "the method authenticates the user"
+        ],
+        "why_useful": "Tests precise form validation without inferring unrelated registration behavior."
+      },
+      {
+        "id": "CSB-QA-10",
+        "language": "FA",
+        "category": "form_validation_behavior",
+        "question": "متد CommentForm.clean_name چه نام‌هایی را رد می‌کند و در حالت معتبر چه برمی‌گرداند؟",
+        "target_file": "blog/forms.py",
+        "target_symbol": "CommentForm.clean_name",
+        "start_line": 45,
+        "end_line": 51,
+        "source_sha256": "1cefdfa14aa09927d8fd068c8e98ee8bc96fe8b5a66cacb60ac15ad20323af37",
+        "expected_facts": [
+          "it reads name from cleaned_data",
+          "when name is truthy and its length is greater than 250 or less than 2, it raises ValidationError",
+          "when name is truthy and its length is between 2 and 250 inclusive, it returns name",
+          "a falsy name reaches the implicit None return"
+        ],
+        "forbidden_facts": [
+          "the method trims whitespace",
+          "the method checks name uniqueness",
+          "the method changes letter case"
+        ],
+        "why_useful": "Tests Persian explanation of explicit boundary validation, valid return behavior, and the falsy fall-through."
+      },
+      {
+        "id": "CSB-QA-11",
+        "language": "EN",
+        "category": "authentication_user_logic",
+        "question": "How does PhoneAuthBackend.authenticate handle valid credentials, a wrong password, and missing or duplicate phone matches?",
+        "target_file": "users/authentication.py",
+        "target_symbol": "PhoneAuthBackend.authenticate",
+        "start_line": 5,
+        "end_line": 13,
+        "source_sha256": "bd928e3c0e09ce0b56a912010999601653ce49c229b423ccc9597913777e60c4",
+        "expected_facts": [
+          "it looks up User with phone=username",
+          "a matching password returns the user",
+          "a wrong password returns None",
+          "User.DoesNotExist returns None",
+          "User.MultipleObjectsReturned returns None"
+        ],
+        "forbidden_facts": [
+          "it looks up users by username or email",
+          "missing or duplicate matches propagate an exception",
+          "the backend creates a user"
+        ],
+        "why_useful": "Tests authentication branches, password checking, and safe lookup failure behavior."
+      },
+      {
+        "id": "CSB-QA-12",
+        "language": "FA",
+        "category": "authentication_user_logic",
+        "question": "تابع register رمز عبور کاربر جدید را چگونه ذخیره می‌کند و چه زمانی صفحه موفقیت را نمایش می‌دهد؟",
+        "target_file": "users/views.py",
+        "target_symbol": "register",
+        "start_line": 35,
+        "end_line": 45,
+        "source_sha256": "6eaa10faf9f30f7487078a209f40043db1a4b75a810ceed74757a9f92ed1d227",
+        "expected_facts": [
+          "on POST it constructs UserRegisterForm(request.POST)",
+          "when valid, it calls form.save(commit=False)",
+          "it calls user.set_password(form.cleaned_data[\"password\"])",
+          "it saves the user",
+          "after a valid POST it renders users/registration/register_done.html with the user",
+          "on GET it creates a blank UserRegisterForm and renders users/registration/register.html",
+          "an invalid POST renders users/registration/register.html with the bound form"
+        ],
+        "forbidden_facts": [
+          "the password is stored directly in plaintext",
+          "the view automatically logs in the new user",
+          "successful registration redirects to another URL"
+        ],
+        "why_useful": "Tests Persian explanation of secure password handling and request branching."
+      }
+    ]
+  },
+  "matrix_sha256": "72c371f058a9301f034d291240f60545d3b3c85d5ae8fb9446a66fab24ee5252",
+  "rubric": {
+    "schema_version": 1,
+    "matrix_id": "cs_bookstore_bilingual_qa_matrix_v1",
+    "PASS": [
+      "all expected facts are present",
+      "no material invented or unsupported facts",
+      "correct target symbol",
+      "valid CodeCompass citation",
+      "answer language matches question language",
+      "no truncation or provider error"
+    ],
+    "PARTIAL": [
+      "answer is grounded and factually correct",
+      "one or more expected facts are missing",
+      "no material hallucination"
+    ],
+    "FAIL": [
+      "invented or unsupported material claim",
+      "wrong core behavior",
+      "wrong target symbol",
+      "invalid citation",
+      "truncation or provider failure"
+    ]
+  },
+  "rubric_sha256": "f1a2af66613d1ee2713a1de6dc699603add0e5c4132c3b6875ae4d35e28234f7",
+  "configuration": {
+    "project_id": 3,
+    "project_name": "CS-Bookstore",
+    "repository_commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+    "retrieval": "hybrid",
+    "embedding_provider": "ollama",
+    "embedding_model": "nomic-embed-text-local:latest",
+    "embedding_dimensions": 768,
+    "temperature": 0,
+    "local_model": "qwen2.5-coder-3b-codecompass:latest",
+    "local_max_tokens": 512,
+    "cloud_provider": "openai_compatible",
+    "cloud_model": "glm-5.3-flash",
+    "cloud_max_tokens": 1024,
+    "token_budget_note": "Controlled model comparison with model-appropriate budgets; not an equal-token benchmark."
+  },
+  "records": [
+    {
+      "question": {
+        "id": "CSB-QA-01",
+        "language": "EN",
+        "category": "model_field_structure",
+        "question": "Which Book fields represent availability, inventory, base price, discount, and discounted price?",
+        "target_file": "store/models.py",
+        "target_symbol": "Book",
+        "start_line": 40,
+        "end_line": 76,
+        "source_sha256": "eea8d5931e798bf5bc390e66dadb5a3cc05f1a8fc28eaa4b122de2fe2c4291a4",
+        "expected_facts": [
+          "available is a BooleanField with default=True",
+          "inventory is a PositiveIntegerField with default=0",
+          "price is a PositiveIntegerField with default=0",
+          "off is a PositiveIntegerField with default=0",
+          "new_price is a PositiveIntegerField with default=0"
+        ],
+        "forbidden_facts": [
+          "new_price is automatically calculated from price and off",
+          "inventory automatically controls available",
+          "pricing or inventory fields not declared in Book"
+        ],
+        "why_useful": "Tests exact Django field extraction, defaults, and resistance to inferred pricing logic."
+      },
+      "retrieval": {
+        "retrieval_latency_seconds": 0.652848,
+        "focus_latency_seconds": 0.000673,
+        "preparation_latency_seconds": 0.001691,
+        "retrieved_chunk_ids": [
+          "9b28a4ad93db07e8f65e6f869a7973b48dccd5759e316d2eea35cf2324297049",
+          "8cb684c7cf26f367db9e3283205746a55b916cc5bb0e935cc8853564f91d8060",
+          "0ef8f27d0496d4f8f7a1a70b0761883690f0ac7725bb6da5d381acbdb2ad0fed",
+          "8ea04ce2e9174073080e3a01e0c5bae9fdc0e110c6b86f17cd401bb536544101",
+          "f28d33b022186539b0040f427dcebe5c016d4a4bac0fdbf455ddf6990653d3d5"
+        ],
+        "retrieved_symbols": [
+          "Book",
+          "StoreConfig",
+          "Migration",
+          "Migration",
+          "Book.Meta"
+        ],
+        "focused_chunk_ids": [
+          "9b28a4ad93db07e8f65e6f869a7973b48dccd5759e316d2eea35cf2324297049",
+          "f28d33b022186539b0040f427dcebe5c016d4a4bac0fdbf455ddf6990653d3d5"
+        ],
+        "focused_symbols": [
+          "Book",
+          "Book.Meta"
+        ],
+        "expected_target_retrieved": true,
+        "expected_target_focused": true,
+        "context_chars": 1475,
+        "context_blocks": 2,
+        "omitted_context_count": 0,
+        "context_sha256": "7e25679497252599ec73350b29be6e9134e58bd3a4ee74a1e33fccc44b896e6d",
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "c1c5d592b7408832997bab445eed820f6f45e7ec532017db41f2785655a3171f",
+        "citations": [
+          {
+            "project_id": 3,
+            "file_id": 85,
+            "symbol_id": 607,
+            "chunk_id": "9b28a4ad93db07e8f65e6f869a7973b48dccd5759e316d2eea35cf2324297049",
+            "qualified_name": "Book",
+            "relative_path": "store/models.py",
+            "start_line": 40,
+            "end_line": 76,
+            "sqlite_valid": true
+          },
+          {
+            "project_id": 3,
+            "file_id": 85,
+            "symbol_id": 608,
+            "chunk_id": "f28d33b022186539b0040f427dcebe5c016d4a4bac0fdbf455ddf6990653d3d5",
+            "qualified_name": "Book.Meta",
+            "relative_path": "store/models.py",
+            "start_line": 57,
+            "end_line": 65,
+            "sqlite_valid": true
+          }
+        ]
+      },
+      "models": {
+        "qwen": {
+          "status": "success",
+          "exact_answer": "The Book fields that represent availability, inventory, base price, discount, and discounted price are:\n\n- `available`: A Boolean field indicating whether the book is available for purchase.\n- `inventory`: A PositiveIntegerField representing the number of copies in stock.\n- `price`: A PositiveIntegerField representing the base price of the book.\n- `off`: A PositiveIntegerField representing the discount percentage applied to the book.\n- `new_price`: A PositiveIntegerField representing the discounted price of the book.",
+          "latency_seconds": 34.916766,
+          "provider": "ollama",
+          "model": "qwen2.5-coder-3b-codecompass:latest",
+          "error_type": null,
+          "max_tokens": 512,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "FAIL",
+          "expected_facts": [
+            "available is a BooleanField with default=True",
+            "inventory is a PositiveIntegerField with default=0",
+            "price is a PositiveIntegerField with default=0",
+            "off is a PositiveIntegerField with default=0",
+            "new_price is a PositiveIntegerField with default=0"
+          ],
+          "mentioned_expected_facts": [],
+          "missing_facts": [
+            "available is a BooleanField with default=True",
+            "inventory is a PositiveIntegerField with default=0",
+            "price is a PositiveIntegerField with default=0",
+            "off is a PositiveIntegerField with default=0",
+            "new_price is a PositiveIntegerField with default=0"
+          ],
+          "invented_or_unsupported_facts": [
+            "Claims that off represents a discount percentage, which is not explicit in the source."
+          ],
+          "language_adherence": true,
+          "groundedness": "not_fully_grounded",
+          "completeness": false,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 85,
+              "symbol_id": 607,
+              "chunk_id": "9b28a4ad93db07e8f65e6f869a7973b48dccd5759e316d2eea35cf2324297049",
+              "qualified_name": "Book",
+              "relative_path": "store/models.py",
+              "start_line": 40,
+              "end_line": 76,
+              "sqlite_valid": true
+            },
+            {
+              "project_id": 3,
+              "file_id": 85,
+              "symbol_id": 608,
+              "chunk_id": "f28d33b022186539b0040f427dcebe5c016d4a4bac0fdbf455ddf6990653d3d5",
+              "qualified_name": "Book.Meta",
+              "relative_path": "store/models.py",
+              "start_line": 57,
+              "end_line": 65,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "GENERATION",
+          "truncation_observed": false,
+          "evaluation_note": "Fields and types were named, but all defaults were omitted and an unsupported percentage interpretation was added."
+        },
+        "glm": {
+          "status": "success",
+          "exact_answer": "Based on the `Book` model in `store/models.py` (lines 40–76), the fields are:\n\n| Concept | Field | Definition |\n|---|---|---|\n| Availability | `available` | `models.BooleanField(default=True)` |\n| Inventory | `inventory` | `models.PositiveIntegerField(default=0, verbose_name='موجودی')` |\n| Base price | `price` | `models.PositiveIntegerField(default=0, verbose_name='قیمت')` |\n| Discount | `off` | `models.PositiveIntegerField(default=0, verbose_name='تخفیف')` |\n| Discounted price | `new_price` | `models.PositiveIntegerField(default=0, verbose_name='قیمت پس از تخفیف')` |\n\nAll of the numeric fields (`inventory`, `price`, `off`, `new_price`) are `PositiveIntegerField` with a default of `0`, while `available` is a `BooleanField` defaulting to `True`.",
+          "latency_seconds": 11.413415,
+          "provider": "openai_compatible",
+          "model": "glm-5.3-flash",
+          "error_type": null,
+          "max_tokens": 1024,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "PASS",
+          "expected_facts": [
+            "available is a BooleanField with default=True",
+            "inventory is a PositiveIntegerField with default=0",
+            "price is a PositiveIntegerField with default=0",
+            "off is a PositiveIntegerField with default=0",
+            "new_price is a PositiveIntegerField with default=0"
+          ],
+          "mentioned_expected_facts": [
+            "available is a BooleanField with default=True",
+            "inventory is a PositiveIntegerField with default=0",
+            "price is a PositiveIntegerField with default=0",
+            "off is a PositiveIntegerField with default=0",
+            "new_price is a PositiveIntegerField with default=0"
+          ],
+          "missing_facts": [],
+          "invented_or_unsupported_facts": [],
+          "language_adherence": true,
+          "groundedness": "grounded",
+          "completeness": true,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 85,
+              "symbol_id": 607,
+              "chunk_id": "9b28a4ad93db07e8f65e6f869a7973b48dccd5759e316d2eea35cf2324297049",
+              "qualified_name": "Book",
+              "relative_path": "store/models.py",
+              "start_line": 40,
+              "end_line": 76,
+              "sqlite_valid": true
+            },
+            {
+              "project_id": 3,
+              "file_id": 85,
+              "symbol_id": 608,
+              "chunk_id": "f28d33b022186539b0040f427dcebe5c016d4a4bac0fdbf455ddf6990653d3d5",
+              "qualified_name": "Book.Meta",
+              "relative_path": "store/models.py",
+              "start_line": 57,
+              "end_line": 65,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "NONE",
+          "truncation_observed": false,
+          "evaluation_note": "All five fields, types, and defaults were reported without unsupported additions."
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "CSB-QA-02",
+        "language": "FA",
+        "category": "model_field_structure",
+        "question": "مدل User چه فیلدهای اضافه‌ای نسبت به AbstractUser تعریف می‌کند؟",
+        "target_file": "users/models.py",
+        "target_symbol": "User",
+        "start_line": 7,
+        "end_line": 12,
+        "source_sha256": "4ffe6bcf7dad022c018c4f89ba7763cefec0682062ba845fa9f90e1595d382d9",
+        "expected_facts": [
+          "date_of_birth is DateField(blank=True, null=True)",
+          "bio is TextField(null=True, blank=True)",
+          "photo is ImageField(upload_to=\"profile_images/\", null=True, blank=True)",
+          "job is CharField(max_length=25, null=True, blank=True)",
+          "phone is CharField(max_length=11, null=True, blank=True)"
+        ],
+        "forbidden_facts": [
+          "username, password, or email are newly declared by User",
+          "phone is unique",
+          "the added fields are required"
+        ],
+        "why_useful": "Tests Persian explanation of inherited versus explicitly declared model fields."
+      },
+      "retrieval": {
+        "retrieval_latency_seconds": 0.164897,
+        "focus_latency_seconds": 0.001445,
+        "preparation_latency_seconds": 0.002335,
+        "retrieved_chunk_ids": [
+          "74ebf3fe0bdfbb8d4a462bf29c1819e6fc2dd017ec785dcbf81a516b18315a39",
+          "acddfafb34681cfe168ef2315a923275436f7eb181f1693cb7ba19340d81b686",
+          "73584ba139825189b856ef9b67a4315681d960a352c30f455d13be5ecd255d8c",
+          "c1ee7b7afdd44fe9793ffb9b64b9ae6442642804fbcfb73ea9aa4618a8c6aaf6",
+          "46de66c3ac86377fa47d491d0009f226546e81050910ad80d1e37d77f949a73e"
+        ],
+        "retrieved_symbols": [
+          "Migration",
+          "User",
+          "UserRegistrationForm.Meta",
+          "LoginForm",
+          "UserEditForm.Meta"
+        ],
+        "focused_chunk_ids": [
+          "acddfafb34681cfe168ef2315a923275436f7eb181f1693cb7ba19340d81b686"
+        ],
+        "focused_symbols": [
+          "User"
+        ],
+        "expected_target_retrieved": true,
+        "expected_target_focused": true,
+        "context_chars": 535,
+        "context_blocks": 1,
+        "omitted_context_count": 0,
+        "context_sha256": "3a122a1a2536375554c977a2437c7ebfade531f39cd5bc2b711aa48bbdea9d42",
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "3c775dc815b54660fa121415ff877fe213f35caa534f176c12f8776502436f61",
+        "citations": [
+          {
+            "project_id": 3,
+            "file_id": 98,
+            "symbol_id": 654,
+            "chunk_id": "acddfafb34681cfe168ef2315a923275436f7eb181f1693cb7ba19340d81b686",
+            "qualified_name": "User",
+            "relative_path": "users/models.py",
+            "start_line": 7,
+            "end_line": 12,
+            "sqlite_valid": true
+          }
+        ]
+      },
+      "models": {
+        "qwen": {
+          "status": "success",
+          "exact_answer": "مدل User از فیلدهای زیر اضافه‌ای تعریف می‌کند:\n\n- `date_of_birth`: یک پروپرتی برای ذخیره تاریخ تولد کاربر.\n- `bio`: یک پروپرتی برای ذخیره بایو کاربر.\n- `photo`: یک پروپرتی برای ذخیره تصویر کاربر.\n- `job`: یک پروپرتی برای ذخیره شغل کاربر.\n- `phone`: یک پروپرتی برای ذخیره شماره تماس کاربر.",
+          "latency_seconds": 18.804926,
+          "provider": "ollama",
+          "model": "qwen2.5-coder-3b-codecompass:latest",
+          "error_type": null,
+          "max_tokens": 512,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "PARTIAL",
+          "expected_facts": [
+            "date_of_birth is DateField(blank=True, null=True)",
+            "bio is TextField(null=True, blank=True)",
+            "photo is ImageField(upload_to=\"profile_images/\", null=True, blank=True)",
+            "job is CharField(max_length=25, null=True, blank=True)",
+            "phone is CharField(max_length=11, null=True, blank=True)"
+          ],
+          "mentioned_expected_facts": [],
+          "missing_facts": [
+            "date_of_birth is DateField(blank=True, null=True)",
+            "bio is TextField(null=True, blank=True)",
+            "photo is ImageField(upload_to=\"profile_images/\", null=True, blank=True)",
+            "job is CharField(max_length=25, null=True, blank=True)",
+            "phone is CharField(max_length=11, null=True, blank=True)"
+          ],
+          "invented_or_unsupported_facts": [],
+          "language_adherence": true,
+          "groundedness": "grounded",
+          "completeness": false,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 98,
+              "symbol_id": 654,
+              "chunk_id": "acddfafb34681cfe168ef2315a923275436f7eb181f1693cb7ba19340d81b686",
+              "qualified_name": "User",
+              "relative_path": "users/models.py",
+              "start_line": 7,
+              "end_line": 12,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "GENERATION",
+          "truncation_observed": false,
+          "evaluation_note": "All field names were identified, but their required types and options were omitted."
+        },
+        "glm": {
+          "status": "success",
+          "exact_answer": "بر اساس کد موجود در `users/models.py`، مدل `User` که از `AbstractUser` ارث‌بری می‌کند، **پنج فیلد اضافه** تعریف می‌کند:\n\n1. **`date_of_birth`** — فیلد `DateField` با verbose_name «تاریخ تولد»، با `blank=True, null=True`\n2. **`bio`** — فیلد `TextField` با verbose_name «بایو»، با `null=True, blank=True`\n3. **`photo`** — فیلد `ImageField` با verbose_name «تصویر» و `upload_to=\"profile_images/\"`، با `null=True, blank=True`\n4. **`job`** — فیلد `CharField` با verbose_name «شغل» و `max_length=25`، با `null=True, blank=True`\n5. **`phone`** — فیلد `CharField` با verbose_name «شماره تماس» و `max_length=11`، با `null=True, blank=True`\n\nهمان‌طور که در کامنت کد نیز اشاره شده، فیلدهای `username`، `password`، `email`، `firstname` و `lastname` از قبل توسط `AbstractUser` تأمین شده‌اند و مدل `User` صرفاً فیلدهای فوق را به آن‌ها اضافه می‌کند.",
+          "latency_seconds": 13.323235,
+          "provider": "openai_compatible",
+          "model": "glm-5.3-flash",
+          "error_type": null,
+          "max_tokens": 1024,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "PASS",
+          "expected_facts": [
+            "date_of_birth is DateField(blank=True, null=True)",
+            "bio is TextField(null=True, blank=True)",
+            "photo is ImageField(upload_to=\"profile_images/\", null=True, blank=True)",
+            "job is CharField(max_length=25, null=True, blank=True)",
+            "phone is CharField(max_length=11, null=True, blank=True)"
+          ],
+          "mentioned_expected_facts": [
+            "date_of_birth is DateField(blank=True, null=True)",
+            "bio is TextField(null=True, blank=True)",
+            "photo is ImageField(upload_to=\"profile_images/\", null=True, blank=True)",
+            "job is CharField(max_length=25, null=True, blank=True)",
+            "phone is CharField(max_length=11, null=True, blank=True)"
+          ],
+          "missing_facts": [],
+          "invented_or_unsupported_facts": [],
+          "language_adherence": true,
+          "groundedness": "grounded",
+          "completeness": true,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 98,
+              "symbol_id": 654,
+              "chunk_id": "acddfafb34681cfe168ef2315a923275436f7eb181f1693cb7ba19340d81b686",
+              "qualified_name": "User",
+              "relative_path": "users/models.py",
+              "start_line": 7,
+              "end_line": 12,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "NONE",
+          "truncation_observed": false,
+          "evaluation_note": "All five added fields and their declared options were reported."
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "CSB-QA-03",
+        "language": "EN",
+        "category": "method_behavior",
+        "question": "How does Book.save populate the slug before saving?",
+        "target_file": "store/models.py",
+        "target_symbol": "Book.save",
+        "start_line": 67,
+        "end_line": 70,
+        "source_sha256": "eea8d5931e798bf5bc390e66dadb5a3cc05f1a8fc28eaa4b122de2fe2c4291a4",
+        "expected_facts": [
+          "when self.slug is falsy, it sets self.slug to slugify(self.title)",
+          "an existing truthy slug is not replaced",
+          "it calls super().save(*args, **kwargs) afterwards"
+        ],
+        "forbidden_facts": [
+          "the slug is regenerated on every save",
+          "the method guarantees slug uniqueness",
+          "the method returns an absolute URL"
+        ],
+        "why_useful": "Tests conditional behavior and save-call ordering in a small overridden method."
+      },
+      "retrieval": {
+        "retrieval_latency_seconds": 0.095057,
+        "focus_latency_seconds": 0.000309,
+        "preparation_latency_seconds": 0.001806,
+        "retrieved_chunk_ids": [
+          "862dff324241a2bb0ceccd033852bd5c6a0f0b969162a4dbee8f077968772b17",
+          "4c5665b949d56076a539e66f2ffa0967048e1134e268a2218cd1f3ead9e577a5",
+          "0ef8f27d0496d4f8f7a1a70b0761883690f0ac7725bb6da5d381acbdb2ad0fed",
+          "9b28a4ad93db07e8f65e6f869a7973b48dccd5759e316d2eea35cf2324297049",
+          "f28d33b022186539b0040f427dcebe5c016d4a4bac0fdbf455ddf6990653d3d5"
+        ],
+        "retrieved_symbols": [
+          "Book.save",
+          "Post.save",
+          "Migration",
+          "Book",
+          "Book.Meta"
+        ],
+        "focused_chunk_ids": [
+          "862dff324241a2bb0ceccd033852bd5c6a0f0b969162a4dbee8f077968772b17"
+        ],
+        "focused_symbols": [
+          "Book.save"
+        ],
+        "expected_target_retrieved": true,
+        "expected_target_focused": true,
+        "context_chars": 145,
+        "context_blocks": 1,
+        "omitted_context_count": 0,
+        "context_sha256": "2fe87366a5894a7090e6722858863afc388170f5e6cda995c8e77c0da0b1e8c7",
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "571bf00e1707736cb87249c32a28f9d714a6adcb7e9a86d41bacab9f49ce3ba3",
+        "citations": [
+          {
+            "project_id": 3,
+            "file_id": 85,
+            "symbol_id": 609,
+            "chunk_id": "862dff324241a2bb0ceccd033852bd5c6a0f0b969162a4dbee8f077968772b17",
+            "qualified_name": "Book.save",
+            "relative_path": "store/models.py",
+            "start_line": 67,
+            "end_line": 70,
+            "sqlite_valid": true
+          }
+        ]
+      },
+      "models": {
+        "qwen": {
+          "status": "success",
+          "exact_answer": "Book.save populates the slug before saving by checking if the slug attribute is empty. If it is, it uses the `slugify` function from the `slugify` module to generate a slug based on the title attribute and assigns it to the slug attribute. This ensures that every book has a unique slug before being saved to the database.",
+          "latency_seconds": 7.947568,
+          "provider": "ollama",
+          "model": "qwen2.5-coder-3b-codecompass:latest",
+          "error_type": null,
+          "max_tokens": 512,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "FAIL",
+          "expected_facts": [
+            "when self.slug is falsy, it sets self.slug to slugify(self.title)",
+            "an existing truthy slug is not replaced",
+            "it calls super().save(*args, **kwargs) afterwards"
+          ],
+          "mentioned_expected_facts": [
+            "when self.slug is falsy, it sets self.slug to slugify(self.title)",
+            "an existing truthy slug is not replaced"
+          ],
+          "missing_facts": [
+            "it calls super().save(*args, **kwargs) afterwards"
+          ],
+          "invented_or_unsupported_facts": [
+            "Claims that the method ensures every book has a unique slug; uniqueness is not established by the source."
+          ],
+          "language_adherence": true,
+          "groundedness": "not_fully_grounded",
+          "completeness": false,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 85,
+              "symbol_id": 609,
+              "chunk_id": "862dff324241a2bb0ceccd033852bd5c6a0f0b969162a4dbee8f077968772b17",
+              "qualified_name": "Book.save",
+              "relative_path": "store/models.py",
+              "start_line": 67,
+              "end_line": 70,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "GENERATION",
+          "truncation_observed": false,
+          "evaluation_note": "The conditional slug generation was described, but the parent save call was omitted and uniqueness was invented."
+        },
+        "glm": {
+          "status": "success",
+          "exact_answer": "According to the provided code (store/models.py, `Book.save`, lines 67–70), the slug is populated as follows:\n\n1. **Check for an existing slug**: Before saving, the method checks `if not self.slug:` — i.e., it only generates a slug when the `slug` field is empty/falsy.\n2. **Generate the slug**: If the slug is missing, it sets `self.slug = slugify(self.title)`, meaning the slug is derived by applying `slugify` to the book's `title`.\n3. **Delegate to the parent save**: After the slug is set (or left as-is if already present), it calls `super().save(*args, **kwargs)` to perform the actual save.\n\nIn short: `Book.save` auto-populates the slug from the title via `slugify` only when the slug is not already set, and then proceeds with the normal save.",
+          "latency_seconds": 11.00373,
+          "provider": "openai_compatible",
+          "model": "glm-5.3-flash",
+          "error_type": null,
+          "max_tokens": 1024,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "PASS",
+          "expected_facts": [
+            "when self.slug is falsy, it sets self.slug to slugify(self.title)",
+            "an existing truthy slug is not replaced",
+            "it calls super().save(*args, **kwargs) afterwards"
+          ],
+          "mentioned_expected_facts": [
+            "when self.slug is falsy, it sets self.slug to slugify(self.title)",
+            "an existing truthy slug is not replaced",
+            "it calls super().save(*args, **kwargs) afterwards"
+          ],
+          "missing_facts": [],
+          "invented_or_unsupported_facts": [],
+          "language_adherence": true,
+          "groundedness": "grounded",
+          "completeness": true,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 85,
+              "symbol_id": 609,
+              "chunk_id": "862dff324241a2bb0ceccd033852bd5c6a0f0b969162a4dbee8f077968772b17",
+              "qualified_name": "Book.save",
+              "relative_path": "store/models.py",
+              "start_line": 67,
+              "end_line": 70,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "NONE",
+          "truncation_observed": false,
+          "evaluation_note": "The condition, non-replacement behavior, and parent save call were all reported."
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "CSB-QA-04",
+        "language": "FA",
+        "category": "method_behavior",
+        "question": "متد Post.delete پیش از حذف خود پست با فایل‌های تصاویرش چه می‌کند؟",
+        "target_file": "blog/models.py",
+        "target_symbol": "Post.delete",
+        "start_line": 74,
+        "end_line": 78,
+        "source_sha256": "2cf852d78fd32babb82c2d89bb9c006d962feb986ca6798e2af3612f70548c2c",
+        "expected_facts": [
+          "it iterates over self.images.all()",
+          "for each image it obtains img.image_file.storage and img.image_file.path",
+          "it calls storage.delete(path) for each image file",
+          "it calls super().delete(*args, **kwargs) afterwards"
+        ],
+        "forbidden_facts": [
+          "it deletes only database image records and leaves files untouched",
+          "it stops after deleting the first image",
+          "it explicitly calls Image.delete()"
+        ],
+        "why_useful": "Tests Persian explanation of filesystem cleanup and operation order."
+      },
+      "retrieval": {
+        "retrieval_latency_seconds": 0.17302,
+        "focus_latency_seconds": 0.000538,
+        "preparation_latency_seconds": 0.001888,
+        "retrieved_chunk_ids": [
+          "d34b861a3ab8320c85a5880e9c1f057a6d9cdb9575c2e6fefb09fbdcb5d8d738",
+          "07e15bff23d8677f608862c82d4c2ebdaa251950a7d7b2e7b39fde3e76a4bd73",
+          "9dfd9b4e2d8965e8af5ad272501313f48854df660a7df4b20e6bfc2a7a33c345",
+          "17de2243a1960cb0a6dfa65c2ca8fd75418921b29bfb3b2a5be8f9115db09985",
+          "d0db285ad80fb1a94e16dec58ce074727475105983952353f747378263875210"
+        ],
+        "retrieved_symbols": [
+          "Post.delete",
+          "Image.delete",
+          "UserEditForm.clean_email",
+          "Post.Meta",
+          "Post"
+        ],
+        "focused_chunk_ids": [
+          "d34b861a3ab8320c85a5880e9c1f057a6d9cdb9575c2e6fefb09fbdcb5d8d738"
+        ],
+        "focused_symbols": [
+          "Post.delete"
+        ],
+        "expected_target_retrieved": true,
+        "expected_target_focused": true,
+        "context_chars": 222,
+        "context_blocks": 1,
+        "omitted_context_count": 0,
+        "context_sha256": "45772f18a4fd7062355aca03489962479c137f6a2bb3fb2b6b067c58f112a5c1",
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "97b01b86692cb1950f44d599789829433dcc6634446a3e416e836e1df15ec6ec",
+        "citations": [
+          {
+            "project_id": 3,
+            "file_id": 52,
+            "symbol_id": 554,
+            "chunk_id": "d34b861a3ab8320c85a5880e9c1f057a6d9cdb9575c2e6fefb09fbdcb5d8d738",
+            "qualified_name": "Post.delete",
+            "relative_path": "blog/models.py",
+            "start_line": 74,
+            "end_line": 78,
+            "sqlite_valid": true
+          }
+        ]
+      },
+      "models": {
+        "qwen": {
+          "status": "success",
+          "exact_answer": "متد `Post.delete` پیش از حذف خود پست با فایل‌های تصاویرش، بررسی می‌کند که چگونه باید فایل‌های تصاویر را حذف کنید. این متد به صورت زیر عمل می‌کند:\n\n1. با استفاده از `self.images.all()`، تمام تصاویر پست را دریافت می‌کند.\n2. برای هر تصویر در لیست تصاویر، فایل آن را حذف می‌کند.\n3. ابتدا، متد `storage.delete(path)` استفاده می‌شود تا فایل را از سرویس ذخیره‌سازی (storage) حذف کند.\n4. بعد از حذف فایل تصویر، متد پدر (`super().delete(*args, **kwargs)`) را استفاده می‌کند تا پست خود را به صورت عادی حذف کند.\n\nاین عملیات نشان می‌دهد که `Post.delete` از فایل‌های تصاویر پست برای حذف استفاده می‌کند و این فایل‌ها را از سرویس ذخیره‌سازی حذف می‌کند قبل از حذف پست خود.",
+          "latency_seconds": 29.942363,
+          "provider": "ollama",
+          "model": "qwen2.5-coder-3b-codecompass:latest",
+          "error_type": null,
+          "max_tokens": 512,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "PARTIAL",
+          "expected_facts": [
+            "it iterates over self.images.all()",
+            "for each image it obtains img.image_file.storage and img.image_file.path",
+            "it calls storage.delete(path) for each image file",
+            "it calls super().delete(*args, **kwargs) afterwards"
+          ],
+          "mentioned_expected_facts": [
+            "it iterates over self.images.all()",
+            "it calls storage.delete(path) for each image file",
+            "it calls super().delete(*args, **kwargs) afterwards"
+          ],
+          "missing_facts": [
+            "for each image it obtains img.image_file.storage and img.image_file.path"
+          ],
+          "invented_or_unsupported_facts": [],
+          "language_adherence": true,
+          "groundedness": "grounded",
+          "completeness": false,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 52,
+              "symbol_id": 554,
+              "chunk_id": "d34b861a3ab8320c85a5880e9c1f057a6d9cdb9575c2e6fefb09fbdcb5d8d738",
+              "qualified_name": "Post.delete",
+              "relative_path": "blog/models.py",
+              "start_line": 74,
+              "end_line": 78,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "GENERATION",
+          "truncation_observed": false,
+          "evaluation_note": "The loop, storage deletion, and parent deletion were correct; the exact image_file storage/path extraction was omitted."
+        },
+        "glm": {
+          "status": "success",
+          "exact_answer": "متد `Post.delete` (در `blog/models.py`، خطوط ۷۴–۷۸) پیش از حذف خود پست، فایل‌های تصاویر مرتبط با آن را از storage حذف می‌کند. به‌طور دقیق:\n\n1. روی همه تصاویر مرتبط با پست پیمایش می‌کند: `for img in self.images.all():`\n2. برای هر تصویر، storage و مسیر (path) فایل را از `img.image_file` استخراج می‌کند:\n   ```python\n   storage, path = img.image_file.storage, img.image_file.path\n   ```\n3. فایل هر تصویر را با فراخوانی `storage.delete(path)` از storage پاک می‌کند.\n4. در نهایت با فراخوانی `super().delete(*args, **kwargs)` خود پست را حذف می‌کند.\n\nبه بیان خلاصه: این متد پیش از حذف رکورد پست، فایل فیزیکی تک‌تک تصاویر وابسته به آن را از storage حذف می‌کند تا فایل‌های یتیم باقی نمانند.",
+          "latency_seconds": 12.510484,
+          "provider": "openai_compatible",
+          "model": "glm-5.3-flash",
+          "error_type": null,
+          "max_tokens": 1024,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "PASS",
+          "expected_facts": [
+            "it iterates over self.images.all()",
+            "for each image it obtains img.image_file.storage and img.image_file.path",
+            "it calls storage.delete(path) for each image file",
+            "it calls super().delete(*args, **kwargs) afterwards"
+          ],
+          "mentioned_expected_facts": [
+            "it iterates over self.images.all()",
+            "for each image it obtains img.image_file.storage and img.image_file.path",
+            "it calls storage.delete(path) for each image file",
+            "it calls super().delete(*args, **kwargs) afterwards"
+          ],
+          "missing_facts": [],
+          "invented_or_unsupported_facts": [],
+          "language_adherence": true,
+          "groundedness": "grounded",
+          "completeness": true,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 52,
+              "symbol_id": 554,
+              "chunk_id": "d34b861a3ab8320c85a5880e9c1f057a6d9cdb9575c2e6fefb09fbdcb5d8d738",
+              "qualified_name": "Post.delete",
+              "relative_path": "blog/models.py",
+              "start_line": 74,
+              "end_line": 78,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "NONE",
+          "truncation_observed": false,
+          "evaluation_note": "The complete cleanup sequence was reported."
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "CSB-QA-05",
+        "language": "EN",
+        "category": "django_model_relationship",
+        "question": "How is Review related to Book and the configured user model, and what deletion behavior is defined?",
+        "target_file": "store/models.py",
+        "target_symbol": "Review",
+        "start_line": 95,
+        "end_line": 113,
+        "source_sha256": "eea8d5931e798bf5bc390e66dadb5a3cc05f1a8fc28eaa4b122de2fe2c4291a4",
+        "expected_facts": [
+          "book is a ForeignKey to Book with related_name=\"reviews\" and on_delete=models.CASCADE",
+          "user is a ForeignKey to settings.AUTH_USER_MODEL with on_delete=models.CASCADE"
+        ],
+        "forbidden_facts": [
+          "either relationship is many-to-many",
+          "the user relationship defines a related_name",
+          "either relationship uses SET_NULL"
+        ],
+        "why_useful": "Tests two ORM relationships, reverse naming, and deletion semantics."
+      },
+      "retrieval": {
+        "retrieval_latency_seconds": 0.107144,
+        "focus_latency_seconds": 0.000556,
+        "preparation_latency_seconds": 0.001071,
+        "retrieved_chunk_ids": [
+          "8ea04ce2e9174073080e3a01e0c5bae9fdc0e110c6b86f17cd401bb536544101",
+          "0ef8f27d0496d4f8f7a1a70b0761883690f0ac7725bb6da5d381acbdb2ad0fed",
+          "07e15bff23d8677f608862c82d4c2ebdaa251950a7d7b2e7b39fde3e76a4bd73",
+          "2fc2db0ab0373e4cc60c17372a02d577b919345806b2bb094487efc2cf1b2110",
+          "d34b861a3ab8320c85a5880e9c1f057a6d9cdb9575c2e6fefb09fbdcb5d8d738"
+        ],
+        "retrieved_symbols": [
+          "Migration",
+          "Migration",
+          "Image.delete",
+          "Review",
+          "Post.delete"
+        ],
+        "focused_chunk_ids": [
+          "2fc2db0ab0373e4cc60c17372a02d577b919345806b2bb094487efc2cf1b2110"
+        ],
+        "focused_symbols": [
+          "Review"
+        ],
+        "expected_target_retrieved": true,
+        "expected_target_focused": true,
+        "context_chars": 616,
+        "context_blocks": 1,
+        "omitted_context_count": 0,
+        "context_sha256": "7632f8cd5ca3f31934d72cb8815f45a40ca7b2978ccc1c0c9c56de10e2b2e0dc",
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "07bcd5f45d96f5a310600f30407c1cefab4905bfcdf5565391acbdefdd927681",
+        "citations": [
+          {
+            "project_id": 3,
+            "file_id": 85,
+            "symbol_id": 614,
+            "chunk_id": "2fc2db0ab0373e4cc60c17372a02d577b919345806b2bb094487efc2cf1b2110",
+            "qualified_name": "Review",
+            "relative_path": "store/models.py",
+            "start_line": 95,
+            "end_line": 113,
+            "sqlite_valid": true
+          }
+        ]
+      },
+      "models": {
+        "qwen": {
+          "status": "success",
+          "exact_answer": "Review is related to Book and the configured user model through foreign key relationships. Specifically:\n\n- `book`: This field is a ForeignKey that references the `Book` model. It establishes a one-to-many relationship where each Review can be associated with exactly one Book.\n- `user`: This field is also a ForeignKey that references the configured user model (likely `User` from Django's built-in authentication system). It establishes a one-to-many relationship where each Review can be associated with exactly one User.\n\nThe deletion behavior for both foreign key relationships is defined as `CASCADE`. This means that if a Book or User is deleted, all Reviews associated with it will also be deleted.",
+          "latency_seconds": 18.878167,
+          "provider": "ollama",
+          "model": "qwen2.5-coder-3b-codecompass:latest",
+          "error_type": null,
+          "max_tokens": 512,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "FAIL",
+          "expected_facts": [
+            "book is a ForeignKey to Book with related_name=\"reviews\" and on_delete=models.CASCADE",
+            "user is a ForeignKey to settings.AUTH_USER_MODEL with on_delete=models.CASCADE"
+          ],
+          "mentioned_expected_facts": [
+            "user is a ForeignKey to settings.AUTH_USER_MODEL with on_delete=models.CASCADE"
+          ],
+          "missing_facts": [
+            "book is a ForeignKey to Book with related_name=\"reviews\" and on_delete=models.CASCADE"
+          ],
+          "invented_or_unsupported_facts": [
+            "Speculates that the configured user model is likely Django's built-in User; the source only establishes settings.AUTH_USER_MODEL and this repository uses a custom user model."
+          ],
+          "language_adherence": true,
+          "groundedness": "not_fully_grounded",
+          "completeness": false,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 85,
+              "symbol_id": 614,
+              "chunk_id": "2fc2db0ab0373e4cc60c17372a02d577b919345806b2bb094487efc2cf1b2110",
+              "qualified_name": "Review",
+              "relative_path": "store/models.py",
+              "start_line": 95,
+              "end_line": 113,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "GENERATION",
+          "truncation_observed": false,
+          "evaluation_note": "Both foreign keys and cascade behavior were described, but related_name=reviews was omitted and the user-model identity was speculated about."
+        },
+        "glm": {
+          "status": "success",
+          "exact_answer": "Based on the provided code (`store/models.py`, `Review` class):\n\n**Relationship to Book:**\n- `Review` has a `book` field defined as `models.ForeignKey(Book, ...)`.\n- The reverse relation name is set via `related_name=\"reviews\"`, so reviews can be accessed from a `Book` instance (e.g., `book.reviews`).\n- The field has the verbose name `\"کتاب\"`.\n\n**Relationship to the configured user model:**\n- `Review` has a `user` field defined as `models.ForeignKey(settings.AUTH_USER_MODEL, ...)`, meaning it points to the user model configured in Django settings rather than a hardcoded user class.\n- The field has the verbose name `\"کاربر\"`.\n\n**Deletion behavior:**\n- Both foreign keys use `on_delete=models.CASCADE`:\n  - Deleting a `Book` will cascade-delete its related `Review` records.\n  - Deleting a user (from the configured `AUTH_USER_MODEL`) will cascade-delete that user's `Review` records.\n\nOther fields on `Review` visible in the context (not part of the relationships): `rating` (IntegerField with choices 1–5), `body` (TextField), `created` (DateTimeField with `auto_now_add=True`), `updated` (DateTimeField with `auto_now=True`), and `active` (BooleanField, default `False`).",
+          "latency_seconds": 12.966284,
+          "provider": "openai_compatible",
+          "model": "glm-5.3-flash",
+          "error_type": null,
+          "max_tokens": 1024,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "PASS",
+          "expected_facts": [
+            "book is a ForeignKey to Book with related_name=\"reviews\" and on_delete=models.CASCADE",
+            "user is a ForeignKey to settings.AUTH_USER_MODEL with on_delete=models.CASCADE"
+          ],
+          "mentioned_expected_facts": [
+            "book is a ForeignKey to Book with related_name=\"reviews\" and on_delete=models.CASCADE",
+            "user is a ForeignKey to settings.AUTH_USER_MODEL with on_delete=models.CASCADE"
+          ],
+          "missing_facts": [],
+          "invented_or_unsupported_facts": [],
+          "language_adherence": true,
+          "groundedness": "grounded",
+          "completeness": true,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 85,
+              "symbol_id": 614,
+              "chunk_id": "2fc2db0ab0373e4cc60c17372a02d577b919345806b2bb094487efc2cf1b2110",
+              "qualified_name": "Review",
+              "relative_path": "store/models.py",
+              "start_line": 95,
+              "end_line": 113,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "NONE",
+          "truncation_observed": false,
+          "evaluation_note": "Both relationships, related_name, and cascade behavior were reported."
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "CSB-QA-06",
+        "language": "FA",
+        "category": "django_model_relationship",
+        "question": "مدل Comment چگونه به Post متصل است و نام دسترسی معکوس این رابطه چیست؟",
+        "target_file": "blog/models.py",
+        "target_symbol": "Comment",
+        "start_line": 81,
+        "end_line": 98,
+        "source_sha256": "2cf852d78fd32babb82c2d89bb9c006d962feb986ca6798e2af3612f70548c2c",
+        "expected_facts": [
+          "post is a ForeignKey to Post",
+          "the relationship uses on_delete=models.CASCADE",
+          "the reverse related_name is \"comments\""
+        ],
+        "forbidden_facts": [
+          "the relationship is many-to-many",
+          "the reverse related_name is \"posts\"",
+          "the post relationship is nullable"
+        ],
+        "why_useful": "Tests concise Persian grounding for a Django foreign-key relationship."
+      },
+      "retrieval": {
+        "retrieval_latency_seconds": 0.152876,
+        "focus_latency_seconds": 0.000241,
+        "preparation_latency_seconds": 0.001724,
+        "retrieved_chunk_ids": [
+          "d27af98a29c2626a09d45b0d9ac934b4dfffd5af7af7f37a569217f8667ad858",
+          "6ff162dfdb7a7d2a59fd9de37cc8911cf0e9447a314a1e2b27d7a82fae9e72b4",
+          "0ef8f27d0496d4f8f7a1a70b0761883690f0ac7725bb6da5d381acbdb2ad0fed",
+          "c1ee7b7afdd44fe9793ffb9b64b9ae6442642804fbcfb73ea9aa4618a8c6aaf6",
+          "84bc0d4d5d9d47ff4fd592e34ff5651e8241d11bbe312a3cb59a3abb21ffd465"
+        ],
+        "retrieved_symbols": [
+          "Migration",
+          "Comment",
+          "Migration",
+          "LoginForm",
+          "Comment.__str__"
+        ],
+        "focused_chunk_ids": [
+          "6ff162dfdb7a7d2a59fd9de37cc8911cf0e9447a314a1e2b27d7a82fae9e72b4",
+          "84bc0d4d5d9d47ff4fd592e34ff5651e8241d11bbe312a3cb59a3abb21ffd465"
+        ],
+        "focused_symbols": [
+          "Comment",
+          "Comment.__str__"
+        ],
+        "expected_target_retrieved": true,
+        "expected_target_focused": true,
+        "context_chars": 555,
+        "context_blocks": 2,
+        "omitted_context_count": 0,
+        "context_sha256": "6c8216b1aee1f4b16718e679f5940b49f890d4ec7e265bf30ef625da522143ba",
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "170f9ea8381fdcb7d3b5b82dc9a6a2b94983f725fb1349f50ab08464ea6597c1",
+        "citations": [
+          {
+            "project_id": 3,
+            "file_id": 52,
+            "symbol_id": 555,
+            "chunk_id": "6ff162dfdb7a7d2a59fd9de37cc8911cf0e9447a314a1e2b27d7a82fae9e72b4",
+            "qualified_name": "Comment",
+            "relative_path": "blog/models.py",
+            "start_line": 81,
+            "end_line": 98,
+            "sqlite_valid": true
+          },
+          {
+            "project_id": 3,
+            "file_id": 52,
+            "symbol_id": 557,
+            "chunk_id": "84bc0d4d5d9d47ff4fd592e34ff5651e8241d11bbe312a3cb59a3abb21ffd465",
+            "qualified_name": "Comment.__str__",
+            "relative_path": "blog/models.py",
+            "start_line": 97,
+            "end_line": 98,
+            "sqlite_valid": true
+          }
+        ]
+      },
+      "models": {
+        "qwen": {
+          "status": "success",
+          "exact_answer": "مدل `Comment` به `Post` متصل است و نام دسترسی معکوس این رابطه \"comments\" است.",
+          "latency_seconds": 11.863441,
+          "provider": "ollama",
+          "model": "qwen2.5-coder-3b-codecompass:latest",
+          "error_type": null,
+          "max_tokens": 512,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "PARTIAL",
+          "expected_facts": [
+            "post is a ForeignKey to Post",
+            "the relationship uses on_delete=models.CASCADE",
+            "the reverse related_name is \"comments\""
+          ],
+          "mentioned_expected_facts": [
+            "the reverse related_name is \"comments\""
+          ],
+          "missing_facts": [
+            "post is a ForeignKey to Post",
+            "the relationship uses on_delete=models.CASCADE"
+          ],
+          "invented_or_unsupported_facts": [],
+          "language_adherence": true,
+          "groundedness": "grounded",
+          "completeness": false,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 52,
+              "symbol_id": 555,
+              "chunk_id": "6ff162dfdb7a7d2a59fd9de37cc8911cf0e9447a314a1e2b27d7a82fae9e72b4",
+              "qualified_name": "Comment",
+              "relative_path": "blog/models.py",
+              "start_line": 81,
+              "end_line": 98,
+              "sqlite_valid": true
+            },
+            {
+              "project_id": 3,
+              "file_id": 52,
+              "symbol_id": 557,
+              "chunk_id": "84bc0d4d5d9d47ff4fd592e34ff5651e8241d11bbe312a3cb59a3abb21ffd465",
+              "qualified_name": "Comment.__str__",
+              "relative_path": "blog/models.py",
+              "start_line": 97,
+              "end_line": 98,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "GENERATION",
+          "truncation_observed": false,
+          "evaluation_note": "The reverse name was correct, but ForeignKey and CASCADE were omitted."
+        },
+        "glm": {
+          "status": "success",
+          "exact_answer": "مدل `Comment` از طریق یک فیلد `ForeignKey` به نام `post` به مدل `Post` متصل است. این رابطه با تنظیمات زیر تعریف شده است:\n\n- **`on_delete=models.CASCADE`**: با حذف پست، کامنت‌های مرتبط با آن نیز حذف می‌شوند.\n- **`related_name=\"comments\"`**: نام دسترسی معکوس این رابطه است.\n\nنام دسترسی معکوس این رابطه **`comments`** است؛ یعنی از روی یک نمونه از `Post` می‌توان به کامنت‌های آن دسترسی داشت (مثلاً `post.comments.all()`).\n\nکد مربوطه (فایل `blog/models.py`، کلاس `Comment`):\n\n```python\npost = models.ForeignKey(Post, on_delete=models.CASCADE, related_name=\"comments\", verbose_name=\"پست\")\n```",
+          "latency_seconds": 10.001834,
+          "provider": "openai_compatible",
+          "model": "glm-5.3-flash",
+          "error_type": null,
+          "max_tokens": 1024,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "PASS",
+          "expected_facts": [
+            "post is a ForeignKey to Post",
+            "the relationship uses on_delete=models.CASCADE",
+            "the reverse related_name is \"comments\""
+          ],
+          "mentioned_expected_facts": [
+            "post is a ForeignKey to Post",
+            "the relationship uses on_delete=models.CASCADE",
+            "the reverse related_name is \"comments\""
+          ],
+          "missing_facts": [],
+          "invented_or_unsupported_facts": [],
+          "language_adherence": true,
+          "groundedness": "grounded",
+          "completeness": true,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 52,
+              "symbol_id": 555,
+              "chunk_id": "6ff162dfdb7a7d2a59fd9de37cc8911cf0e9447a314a1e2b27d7a82fae9e72b4",
+              "qualified_name": "Comment",
+              "relative_path": "blog/models.py",
+              "start_line": 81,
+              "end_line": 98,
+              "sqlite_valid": true
+            },
+            {
+              "project_id": 3,
+              "file_id": 52,
+              "symbol_id": 557,
+              "chunk_id": "84bc0d4d5d9d47ff4fd592e34ff5651e8241d11bbe312a3cb59a3abb21ffd465",
+              "qualified_name": "Comment.__str__",
+              "relative_path": "blog/models.py",
+              "start_line": 97,
+              "end_line": 98,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "NONE",
+          "truncation_observed": false,
+          "evaluation_note": "The relationship type, deletion behavior, and reverse name were all reported."
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "CSB-QA-07",
+        "language": "EN",
+        "category": "view_request_flow",
+        "question": "What happens in review_book when a valid POST review is submitted?",
+        "target_file": "store/views.py",
+        "target_symbol": "review_book",
+        "start_line": 95,
+        "end_line": 107,
+        "source_sha256": "5d5efe661c98ae6c42ff5e85e1866ac067fdff3679f38e7af7343364768b833f",
+        "expected_facts": [
+          "it fetches Book using id=pk and slug=slug",
+          "on POST it constructs ReviewForm(data=request.POST)",
+          "after validation it saves with commit=False",
+          "it assigns the fetched book to review.book",
+          "it assigns request.user to review.user",
+          "it saves the review",
+          "it redirects to book.get_absolute_url()"
+        ],
+        "forbidden_facts": [
+          "the view automatically sets review.active=True",
+          "a successful submission renders a success template",
+          "the review is saved before its book and user are assigned"
+        ],
+        "why_useful": "Tests a multi-step request flow and trusted relationship assignment."
+      },
+      "retrieval": {
+        "retrieval_latency_seconds": 0.076355,
+        "focus_latency_seconds": 0.000161,
+        "preparation_latency_seconds": 0.001091,
+        "retrieved_chunk_ids": [
+          "b049cd3fc50eaf7207561f81dbe7c88abf916d7732b5f8831b41ac908f055ad4",
+          "2fc2db0ab0373e4cc60c17372a02d577b919345806b2bb094487efc2cf1b2110",
+          "e85202532639117ed87018542e7095ca337513644afe3613ba7ecbca8bfdc26c",
+          "17de2243a1960cb0a6dfa65c2ca8fd75418921b29bfb3b2a5be8f9115db09985",
+          "8ea04ce2e9174073080e3a01e0c5bae9fdc0e110c6b86f17cd401bb536544101"
+        ],
+        "retrieved_symbols": [
+          "review_book",
+          "Review",
+          "add_book",
+          "Post.Meta",
+          "Migration"
+        ],
+        "focused_chunk_ids": [
+          "b049cd3fc50eaf7207561f81dbe7c88abf916d7732b5f8831b41ac908f055ad4"
+        ],
+        "focused_symbols": [
+          "review_book"
+        ],
+        "expected_target_retrieved": true,
+        "expected_target_focused": true,
+        "context_chars": 457,
+        "context_blocks": 1,
+        "omitted_context_count": 0,
+        "context_sha256": "2f4b54f8ad1c1aec7289f5d010775de63dd17048518ea1247fc35b2cea29101e",
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "2f4f9673ad9a1a4e614331adc1c8e1b3612ba41dbe70b6b0ac77e381b2447958",
+        "citations": [
+          {
+            "project_id": 3,
+            "file_id": 88,
+            "symbol_id": 625,
+            "chunk_id": "b049cd3fc50eaf7207561f81dbe7c88abf916d7732b5f8831b41ac908f055ad4",
+            "qualified_name": "review_book",
+            "relative_path": "store/views.py",
+            "start_line": 95,
+            "end_line": 107,
+            "sqlite_valid": true
+          }
+        ]
+      },
+      "models": {
+        "qwen": {
+          "status": "success",
+          "exact_answer": "When a valid POST review is submitted in the `review_book` function, the following happens:\n\n1. The function retrieves a book object using `get_object_or_404(Book, id=pk, slug=slug)`.\n2. It checks if the request method is 'POST'.\n3. If it is, it creates an instance of `ReviewForm` with the POST data.\n4. It verifies if the form is valid using `review_form.is_valid()`.\n5. If the form is valid, it creates a new `Review` object by calling `review_form.save(commit=False)`, which prevents saving to the database immediately.\n6. It assigns the book and user attributes of the review object to the corresponding values from the request (book ID and current user).\n7. Finally, it saves the review object to the database using `review.save()`.\n8. After saving, it redirects the user to the absolute URL of the book using `redirect(book.get_absolute_url())`.",
+          "latency_seconds": 21.867374,
+          "provider": "ollama",
+          "model": "qwen2.5-coder-3b-codecompass:latest",
+          "error_type": null,
+          "max_tokens": 512,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "PASS",
+          "expected_facts": [
+            "it fetches Book using id=pk and slug=slug",
+            "on POST it constructs ReviewForm(data=request.POST)",
+            "after validation it saves with commit=False",
+            "it assigns the fetched book to review.book",
+            "it assigns request.user to review.user",
+            "it saves the review",
+            "it redirects to book.get_absolute_url()"
+          ],
+          "mentioned_expected_facts": [
+            "it fetches Book using id=pk and slug=slug",
+            "on POST it constructs ReviewForm(data=request.POST)",
+            "after validation it saves with commit=False",
+            "it assigns the fetched book to review.book",
+            "it assigns request.user to review.user",
+            "it saves the review",
+            "it redirects to book.get_absolute_url()"
+          ],
+          "missing_facts": [],
+          "invented_or_unsupported_facts": [],
+          "language_adherence": true,
+          "groundedness": "grounded",
+          "completeness": true,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 88,
+              "symbol_id": 625,
+              "chunk_id": "b049cd3fc50eaf7207561f81dbe7c88abf916d7732b5f8831b41ac908f055ad4",
+              "qualified_name": "review_book",
+              "relative_path": "store/views.py",
+              "start_line": 95,
+              "end_line": 107,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "NONE",
+          "truncation_observed": false,
+          "evaluation_note": "The complete valid-POST flow was reported."
+        },
+        "glm": {
+          "status": "success",
+          "exact_answer": "When a valid POST review is submitted in `review_book` (store/views.py, lines 95–107), the following happens:\n\n1. **Book lookup**: The view first retrieves the book with `get_object_or_404(Book, id=pk, slug=slug)`.\n\n2. **Form validation**: Since the request method is `'POST'`, a `ReviewForm` is instantiated with `data=request.POST`, and `review_form.is_valid()` is checked.\n\n3. **If the form is valid**:\n   - `review = review_form.save(commit=False)` — a `Review` instance is created from the form data but **not yet saved** to the database (due to `commit=False`).\n   - `review.book = book` — the review is associated with the retrieved book.\n   - `review.user = request.user` — the review is associated with the currently logged-in user.\n   - `review.save()` — the review is now saved to the database.\n   - `return redirect(book.get_absolute_url())` — the user is redirected to the book's own URL (its detail page).\n\nNote that the redirect to `book.get_absolute_url()` also occurs if the request is not a POST or if the form is invalid, since that is the fall-through return at the end of the view.",
+          "latency_seconds": 12.021115,
+          "provider": "openai_compatible",
+          "model": "glm-5.3-flash",
+          "error_type": null,
+          "max_tokens": 1024,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "PASS",
+          "expected_facts": [
+            "it fetches Book using id=pk and slug=slug",
+            "on POST it constructs ReviewForm(data=request.POST)",
+            "after validation it saves with commit=False",
+            "it assigns the fetched book to review.book",
+            "it assigns request.user to review.user",
+            "it saves the review",
+            "it redirects to book.get_absolute_url()"
+          ],
+          "mentioned_expected_facts": [
+            "it fetches Book using id=pk and slug=slug",
+            "on POST it constructs ReviewForm(data=request.POST)",
+            "after validation it saves with commit=False",
+            "it assigns the fetched book to review.book",
+            "it assigns request.user to review.user",
+            "it saves the review",
+            "it redirects to book.get_absolute_url()"
+          ],
+          "missing_facts": [],
+          "invented_or_unsupported_facts": [],
+          "language_adherence": true,
+          "groundedness": "grounded",
+          "completeness": true,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 88,
+              "symbol_id": 625,
+              "chunk_id": "b049cd3fc50eaf7207561f81dbe7c88abf916d7732b5f8831b41ac908f055ad4",
+              "qualified_name": "review_book",
+              "relative_path": "store/views.py",
+              "start_line": 95,
+              "end_line": 107,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "NONE",
+          "truncation_observed": false,
+          "evaluation_note": "The complete valid-POST flow was reported; the additional fall-through note was also source-grounded."
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "CSB-QA-08",
+        "language": "FA",
+        "category": "view_request_flow",
+        "question": "نمای post_search پس از دریافت query معتبر چگونه نتایج جست‌وجو را می‌سازد؟",
+        "target_file": "blog/views.py",
+        "target_symbol": "post_search",
+        "start_line": 77,
+        "end_line": 94,
+        "source_sha256": "98019ca700e198cb3d5cdad1e4f29dd050da0e58abb23ec3ff106b9f3a95e598",
+        "expected_facts": [
+          "when query is present in request.GET, it validates SearchForm(data=request.GET)",
+          "it reads query from form.cleaned_data",
+          "it searches Post.published with TrigramSimilarity on title and description separately",
+          "each query filters similarity__gte=0.1 and orders by descending similarity",
+          "it unions results_1 and results_2 and orders the union by descending similarity",
+          "it renders blog/search.html with query and results"
+        ],
+        "forbidden_facts": [
+          "it searches Book objects",
+          "it deliberately includes draft or inactive posts",
+          "it uses only exact or contains matching",
+          "it writes search results to the database"
+        ],
+        "why_useful": "Tests Persian explanation of a real PostgreSQL-backed search request flow."
+      },
+      "retrieval": {
+        "retrieval_latency_seconds": 0.135814,
+        "focus_latency_seconds": 0.000118,
+        "preparation_latency_seconds": 0.000946,
+        "retrieved_chunk_ids": [
+          "e6e4fe2c5da879ce02ecbb1f5643604cc6e3fdfce3e84802c15c95a7f019d2bf",
+          "d0db285ad80fb1a94e16dec58ce074727475105983952353f747378263875210",
+          "0ef8f27d0496d4f8f7a1a70b0761883690f0ac7725bb6da5d381acbdb2ad0fed",
+          "9b28a4ad93db07e8f65e6f869a7973b48dccd5759e316d2eea35cf2324297049",
+          "c1ee7b7afdd44fe9793ffb9b64b9ae6442642804fbcfb73ea9aa4618a8c6aaf6"
+        ],
+        "retrieved_symbols": [
+          "post_search",
+          "Post",
+          "Migration",
+          "Book",
+          "LoginForm"
+        ],
+        "focused_chunk_ids": [
+          "e6e4fe2c5da879ce02ecbb1f5643604cc6e3fdfce3e84802c15c95a7f019d2bf"
+        ],
+        "focused_symbols": [
+          "post_search"
+        ],
+        "expected_target_retrieved": true,
+        "expected_target_focused": true,
+        "context_chars": 743,
+        "context_blocks": 1,
+        "omitted_context_count": 0,
+        "context_sha256": "30d6b857f408c682d626e8b0d7cbad1c907776177e3229f6be8a5793386a7950",
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "eaa9c19b1d27cb84d14963a7d2f86abaf411e573aeedec93564260f685d05b04",
+        "citations": [
+          {
+            "project_id": 3,
+            "file_id": 57,
+            "symbol_id": 571,
+            "chunk_id": "e6e4fe2c5da879ce02ecbb1f5643604cc6e3fdfce3e84802c15c95a7f019d2bf",
+            "qualified_name": "post_search",
+            "relative_path": "blog/views.py",
+            "start_line": 77,
+            "end_line": 94,
+            "sqlite_valid": true
+          }
+        ]
+      },
+      "models": {
+        "qwen": {
+          "status": "success",
+          "exact_answer": "پس از دریافت یک پرسش معتبر، نمای post_search نتایج جست‌وجو را با استفاده از دو قسمت مختلف انجام می‌دهد:\n\n1. **قسمت اول:**\n   - `results_1` محاسبه می‌شود که شامل پست‌ها است که در عنوان آن‌ها تشابه با پرسش مورد نظر دارد.\n   - این قسمت با استفاده از `TrigramSimilarity` و فیلتر برای پست‌های منتشر شده، پست‌ها را جست‌وجو می‌کند که تشابه بزرگتر 10% دارند.\n   - نتایج این قسمت با استفاده از `order_by('-similarity')` مرتب می‌شوند بر اساس تشابه بزرگتر.\n\n2. **قسمت دوم:**\n   - `results_2` محاسبه می‌شود که شامل پست‌ها است که در توضیحات آن‌ها تشابه با پرسش مورد نظر دارد.\n   - این قسمت همچون قسمت اول، با استفاده از `TrigramSimilarity` و فیلتر برای پست‌های منتشر شده، پست‌ها را جست‌وجو می‌کند که تشابه بزرگتر 10% دارند.\n   - نتایج این قسمت همچون قسمت اول، با استفاده از `order_by('-similarity')` مرتب می‌شوند بر اساس تشابه بزرگتر.\n\n3. **جمع نتایج:**\n   - نتایج از دو قسمت بالا با استفاده از `|` (union) جمع می‌شوند.\n   - نتایج جمع شده با استفاده از `order_by('-similarity')` مرتب می‌شوند بر اساس تشابه بزرگتر.\n\nدر نتیجه، نمای post_search",
+          "latency_seconds": 54.784512,
+          "provider": "ollama",
+          "model": "qwen2.5-coder-3b-codecompass:latest",
+          "error_type": null,
+          "max_tokens": 512,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "INCONCLUSIVE",
+          "expected_facts": [
+            "when query is present in request.GET, it validates SearchForm(data=request.GET)",
+            "it reads query from form.cleaned_data",
+            "it searches Post.published with TrigramSimilarity on title and description separately",
+            "each query filters similarity__gte=0.1 and orders by descending similarity",
+            "it unions results_1 and results_2 and orders the union by descending similarity",
+            "it renders blog/search.html with query and results"
+          ],
+          "mentioned_expected_facts": [
+            "it searches Post.published with TrigramSimilarity on title and description separately",
+            "each query filters similarity__gte=0.1 and orders by descending similarity",
+            "it unions results_1 and results_2 and orders the union by descending similarity"
+          ],
+          "missing_facts": [
+            "when query is present in request.GET, it validates SearchForm(data=request.GET)",
+            "it reads query from form.cleaned_data",
+            "it renders blog/search.html with query and results"
+          ],
+          "invented_or_unsupported_facts": [],
+          "language_adherence": true,
+          "groundedness": "grounded_but_truncated",
+          "completeness": false,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 57,
+              "symbol_id": 571,
+              "chunk_id": "e6e4fe2c5da879ce02ecbb1f5643604cc6e3fdfce3e84802c15c95a7f019d2bf",
+              "qualified_name": "post_search",
+              "relative_path": "blog/views.py",
+              "start_line": 77,
+              "end_line": 94,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "INCONCLUSIVE",
+          "truncation_observed": true,
+          "evaluation_note": "The output visibly ends mid-sentence. The adapter does not retain finish_reason, so no retry or token-limit claim was made; the result is conservatively inconclusive."
+        },
+        "glm": {
+          "status": "success",
+          "exact_answer": "بر اساس کد `post_search` در `blog/views.py` (خطوط ۷۷–۹۴)، پس از معتبر بودن فرم، ساخت نتایج به این شکل انجام می‌شود:\n\n1. **استخراج عبارت جست‌وجو:** مقدار پاک‌سازی‌شده از فرم گرفته می‌شود:\n   ```python\n   query = form.cleaned_data['query']\n   ```\n\n2. **ساخت دو کوئری‌ست با شباهت سه‌گانه (Trigram):**\n   - `results_1`: روی پست‌های منتشرشده (`Post.published`)، یک فیلد محاسباتی به نام `similarity` با `TrigramSimilarity('title', query)` اضافه می‌شود و سپس با `similarity__gte=0.1` فیلتر و با `order_by('-similarity')` مرتب می‌شود (شباهت بیشتر اول).\n   - `results_2`: همین کار با فیلد `description` انجام می‌شود:\n     ```python\n     Post.published.annotate(similarity=TrigramSimilarity('description', query)).filter(\n         similarity__gte=0.1).order_by('-similarity')\n     ```\n\n3. **ترکیب دو کوئری‌ست:** دو نتیجه با عملگر `|` ترکیب می‌شوند و دوباره بر اساس شباهت به‌صورت نزولی مرتب می‌شوند:\n   ```python\n   results = (results_1 | results_2).order_by('-similarity')\n   ```\n\n4. **ارسال به قالب:** در نهایت `query` و `results` در دیکشنری `context` قرار می‌گیرند و قالب `\"blog/search.html\"` رندر می‌شود:\n   ```python\n   context = {\n       'query': query,\n       'results': results,\n   }\n   return render(request, \"blog/search.html\", context)\n   ```\n\nبه‌طور خلاصه: جست‌وجو روی دو فیلد `title` و `description` پست‌های منتشرشده با آستانه شباهت `0.1` انجام می‌شود، نتایج هر دو فیلد با هم ترکیب و بر اساس میزان شباهت نزولی مرتب شده و همراه با عبارت جست‌وجو به قالب `blog/search.html` ارسال می‌شوند.",
+          "latency_seconds": 31.303071,
+          "provider": "openai_compatible",
+          "model": "glm-5.3-flash",
+          "error_type": null,
+          "max_tokens": 1024,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "PARTIAL",
+          "expected_facts": [
+            "when query is present in request.GET, it validates SearchForm(data=request.GET)",
+            "it reads query from form.cleaned_data",
+            "it searches Post.published with TrigramSimilarity on title and description separately",
+            "each query filters similarity__gte=0.1 and orders by descending similarity",
+            "it unions results_1 and results_2 and orders the union by descending similarity",
+            "it renders blog/search.html with query and results"
+          ],
+          "mentioned_expected_facts": [
+            "it reads query from form.cleaned_data",
+            "it searches Post.published with TrigramSimilarity on title and description separately",
+            "each query filters similarity__gte=0.1 and orders by descending similarity",
+            "it unions results_1 and results_2 and orders the union by descending similarity",
+            "it renders blog/search.html with query and results"
+          ],
+          "missing_facts": [
+            "when query is present in request.GET, it validates SearchForm(data=request.GET)"
+          ],
+          "invented_or_unsupported_facts": [],
+          "language_adherence": true,
+          "groundedness": "grounded",
+          "completeness": false,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 57,
+              "symbol_id": 571,
+              "chunk_id": "e6e4fe2c5da879ce02ecbb1f5643604cc6e3fdfce3e84802c15c95a7f019d2bf",
+              "qualified_name": "post_search",
+              "relative_path": "blog/views.py",
+              "start_line": 77,
+              "end_line": 94,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "GENERATION",
+          "truncation_observed": false,
+          "evaluation_note": "Search construction and rendering were correct, but the request.GET condition and SearchForm(data=request.GET) validation step were not stated."
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "CSB-QA-09",
+        "language": "EN",
+        "category": "form_validation_behavior",
+        "question": "How does UserRegisterForm.clean_password_2 validate the repeated password?",
+        "target_file": "users/forms.py",
+        "target_symbol": "UserRegisterForm.clean_password_2",
+        "start_line": 22,
+        "end_line": 25,
+        "source_sha256": "cc7bd1fc2c16ec9d9cb68094b14f799ee30ef0b8943c7d51bd5056e60c72c4b6",
+        "expected_facts": [
+          "it compares cleaned_data[\"password\"] with cleaned_data[\"password_2\"]",
+          "when they differ, it raises forms.ValidationError with the Persian mismatch message",
+          "when they match, it returns cleaned_data[\"password_2\"]"
+        ],
+        "forbidden_facts": [
+          "the method hashes the password",
+          "the method saves the user",
+          "the method authenticates the user"
+        ],
+        "why_useful": "Tests precise form validation without inferring unrelated registration behavior."
+      },
+      "retrieval": {
+        "retrieval_latency_seconds": 0.102631,
+        "focus_latency_seconds": 0.000606,
+        "preparation_latency_seconds": 0.000981,
+        "retrieved_chunk_ids": [
+          "e4ac744253be681fa0da265ef89cadbe5cd2e3ec6525bf2005d7886fb803d1d6",
+          "15511c30c5e5eb5c738b4c63e4cb295bbaf0ac507f1eb367ba0bf0e9b3347fe4",
+          "b85cf00bb8e70be4b59b12060a2f4391f158513ec2026487a6b1f992560a3ed6",
+          "509313257c160860f39f9bb00b6adcd9caab46dd2f25e0acc6438f80c3ba5c8a",
+          "7d0fd689a34e29857c12624a837769ea26f367331134d3989bad30d33496edaa"
+        ],
+        "retrieved_symbols": [
+          "UserRegisterForm.clean_password_2",
+          "UserRegistrationForm.clean_password_2",
+          "PhoneAuthBackend.authenticate",
+          "UserRegisterForm",
+          "UserRegisterForm.Meta"
+        ],
+        "focused_chunk_ids": [
+          "e4ac744253be681fa0da265ef89cadbe5cd2e3ec6525bf2005d7886fb803d1d6"
+        ],
+        "focused_symbols": [
+          "UserRegisterForm.clean_password_2"
+        ],
+        "expected_target_retrieved": true,
+        "expected_target_focused": true,
+        "context_chars": 222,
+        "context_blocks": 1,
+        "omitted_context_count": 0,
+        "context_sha256": "8a891e83afdc9722e3f4272beece21ed53ff7dd017e31001efe9f88fbae80fb6",
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "bf10ba9ebd20eb5d5eb48f24f335549fc5085792b623abd6aa4c2b7351862fce",
+        "citations": [
+          {
+            "project_id": 3,
+            "file_id": 93,
+            "symbol_id": 637,
+            "chunk_id": "e4ac744253be681fa0da265ef89cadbe5cd2e3ec6525bf2005d7886fb803d1d6",
+            "qualified_name": "UserRegisterForm.clean_password_2",
+            "relative_path": "users/forms.py",
+            "start_line": 22,
+            "end_line": 25,
+            "sqlite_valid": true
+          }
+        ]
+      },
+      "models": {
+        "qwen": {
+          "status": "success",
+          "exact_answer": "UserRegisterForm.clean_password_2 validates the repeated password by comparing it to the first password field. It checks if `self.cleaned_data['password']` is equal to `self.cleaned_data['password_2']`. If they are not equal, it raises a ValidationError with the message 'پسوردها مطابقت ندارند!'.",
+          "latency_seconds": 9.672777,
+          "provider": "ollama",
+          "model": "qwen2.5-coder-3b-codecompass:latest",
+          "error_type": null,
+          "max_tokens": 512,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "PARTIAL",
+          "expected_facts": [
+            "it compares cleaned_data[\"password\"] with cleaned_data[\"password_2\"]",
+            "when they differ, it raises forms.ValidationError with the Persian mismatch message",
+            "when they match, it returns cleaned_data[\"password_2\"]"
+          ],
+          "mentioned_expected_facts": [
+            "it compares cleaned_data[\"password\"] with cleaned_data[\"password_2\"]",
+            "when they differ, it raises forms.ValidationError with the Persian mismatch message"
+          ],
+          "missing_facts": [
+            "when they match, it returns cleaned_data[\"password_2\"]"
+          ],
+          "invented_or_unsupported_facts": [],
+          "language_adherence": true,
+          "groundedness": "grounded",
+          "completeness": false,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 93,
+              "symbol_id": 637,
+              "chunk_id": "e4ac744253be681fa0da265ef89cadbe5cd2e3ec6525bf2005d7886fb803d1d6",
+              "qualified_name": "UserRegisterForm.clean_password_2",
+              "relative_path": "users/forms.py",
+              "start_line": 22,
+              "end_line": 25,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "GENERATION",
+          "truncation_observed": false,
+          "evaluation_note": "The comparison and mismatch error were correct, but the successful return of password_2 was omitted."
+        },
+        "glm": {
+          "status": "success",
+          "exact_answer": "`UserRegisterForm.clean_password_2` (in `users/forms.py`, lines 22–25) validates the repeated password as follows:\n\n1. It compares the two cleaned field values: `self.cleaned_data['password']` (the original password) against `self.cleaned_data['password_2']` (the repeated password).\n2. If the two values are not equal, it raises `forms.ValidationError` with the message `'پسوردها مطابقت ندارند!'` (\"The passwords do not match!\").\n3. If they match, it returns `self.cleaned_data['password_2']`, confirming the repeated password is valid.\n\nIn short, the method enforces that the confirmation field `password_2` exactly matches the `password` field, raising a validation error otherwise.",
+          "latency_seconds": 8.500461,
+          "provider": "openai_compatible",
+          "model": "glm-5.3-flash",
+          "error_type": null,
+          "max_tokens": 1024,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "PASS",
+          "expected_facts": [
+            "it compares cleaned_data[\"password\"] with cleaned_data[\"password_2\"]",
+            "when they differ, it raises forms.ValidationError with the Persian mismatch message",
+            "when they match, it returns cleaned_data[\"password_2\"]"
+          ],
+          "mentioned_expected_facts": [
+            "it compares cleaned_data[\"password\"] with cleaned_data[\"password_2\"]",
+            "when they differ, it raises forms.ValidationError with the Persian mismatch message",
+            "when they match, it returns cleaned_data[\"password_2\"]"
+          ],
+          "missing_facts": [],
+          "invented_or_unsupported_facts": [],
+          "language_adherence": true,
+          "groundedness": "grounded",
+          "completeness": true,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 93,
+              "symbol_id": 637,
+              "chunk_id": "e4ac744253be681fa0da265ef89cadbe5cd2e3ec6525bf2005d7886fb803d1d6",
+              "qualified_name": "UserRegisterForm.clean_password_2",
+              "relative_path": "users/forms.py",
+              "start_line": 22,
+              "end_line": 25,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "NONE",
+          "truncation_observed": false,
+          "evaluation_note": "Both branches and the exact validation message were reported."
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "CSB-QA-10",
+        "language": "FA",
+        "category": "form_validation_behavior",
+        "question": "متد CommentForm.clean_name چه نام‌هایی را رد می‌کند و در حالت معتبر چه برمی‌گرداند؟",
+        "target_file": "blog/forms.py",
+        "target_symbol": "CommentForm.clean_name",
+        "start_line": 45,
+        "end_line": 51,
+        "source_sha256": "1cefdfa14aa09927d8fd068c8e98ee8bc96fe8b5a66cacb60ac15ad20323af37",
+        "expected_facts": [
+          "it reads name from cleaned_data",
+          "when name is truthy and its length is greater than 250 or less than 2, it raises ValidationError",
+          "when name is truthy and its length is between 2 and 250 inclusive, it returns name",
+          "a falsy name reaches the implicit None return"
+        ],
+        "forbidden_facts": [
+          "the method trims whitespace",
+          "the method checks name uniqueness",
+          "the method changes letter case"
+        ],
+        "why_useful": "Tests Persian explanation of explicit boundary validation, valid return behavior, and the falsy fall-through."
+      },
+      "retrieval": {
+        "retrieval_latency_seconds": 0.108396,
+        "focus_latency_seconds": 0.000338,
+        "preparation_latency_seconds": 0.000851,
+        "retrieved_chunk_ids": [
+          "82ed47caefdd51b242f09859d1d8f4b25e6b7e2dfd40c032212672896f024738",
+          "01a244797a583b59d338766fceee30a1751cf013c3b6af33b2df779b48bfd33c",
+          "8a73ad54443893906a9f7e2c13b10abb9cf232c49fe891a9cac4a3924b0a0c42",
+          "b955446e045a52e713db20acf46b08baaca7697ade83a3674349d19955c8e5c5",
+          "e71d96f48bbfff47a60bd64fbdda5ce55e3e26efea58708be9d9a107b330fc92"
+        ],
+        "retrieved_symbols": [
+          "CommentForm.clean_name",
+          "CommentForm.Meta",
+          "UserEditForm.clean_username",
+          "CommentForm",
+          "UserRegisterForm.clean_phone"
+        ],
+        "focused_chunk_ids": [
+          "82ed47caefdd51b242f09859d1d8f4b25e6b7e2dfd40c032212672896f024738"
+        ],
+        "focused_symbols": [
+          "CommentForm.clean_name"
+        ],
+        "expected_target_retrieved": true,
+        "expected_target_focused": true,
+        "context_chars": 242,
+        "context_blocks": 1,
+        "omitted_context_count": 0,
+        "context_sha256": "54f18e9f5ef0f1795038ec5fb48a85e184227dbaaa72f8a67c36ea587d8961c8",
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "6c81dfe56b401f35a72c93f3c467a7f95256aa86fd2dccb88448ce97b488daa7",
+        "citations": [
+          {
+            "project_id": 3,
+            "file_id": 49,
+            "symbol_id": 536,
+            "chunk_id": "82ed47caefdd51b242f09859d1d8f4b25e6b7e2dfd40c032212672896f024738",
+            "qualified_name": "CommentForm.clean_name",
+            "relative_path": "blog/forms.py",
+            "start_line": 45,
+            "end_line": 51,
+            "sqlite_valid": true
+          }
+        ]
+      },
+      "models": {
+        "qwen": {
+          "status": "success",
+          "exact_answer": "متد `CommentForm.clean_name` رد می‌کند:\n\n1. \"نام معتبر نیست!\" را در حالت معتبر برمی‌گرداند.\n\n2. این متد یک فیلد نام (`name`) را بررسی می‌کند و از آن استفاده می‌کند.\n\n3. اگر `name` خالی نباشد، فیلد را بررسی می‌کند:\n\n   - اگر طول `name` بین 2 تا 250 کاراکتر باشد، فیلد را به عنوان نام معتبر درخواست می‌دهد.\n   \n   - اگر طول `name` کمتر از 2 یا بیشتر از 250 کاراکتر باشد، یک خطا (`ValidationError`) را به عنوان \"نام معتبر نیست!\" بررسی می‌دهد.\n\n4. در حالت معتبر، `name` را به عنوان نام معتبر برمی‌گرداند.",
+          "latency_seconds": 27.504803,
+          "provider": "ollama",
+          "model": "qwen2.5-coder-3b-codecompass:latest",
+          "error_type": null,
+          "max_tokens": 512,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "FAIL",
+          "expected_facts": [
+            "it reads name from cleaned_data",
+            "when name is truthy and its length is greater than 250 or less than 2, it raises ValidationError",
+            "when name is truthy and its length is between 2 and 250 inclusive, it returns name",
+            "a falsy name reaches the implicit None return"
+          ],
+          "mentioned_expected_facts": [
+            "it reads name from cleaned_data",
+            "when name is truthy and its length is greater than 250 or less than 2, it raises ValidationError",
+            "when name is truthy and its length is between 2 and 250 inclusive, it returns name"
+          ],
+          "missing_facts": [
+            "a falsy name reaches the implicit None return"
+          ],
+          "invented_or_unsupported_facts": [
+            "Contradictorily says that the valid case returns the error message 'نام معتبر نیست!'."
+          ],
+          "language_adherence": true,
+          "groundedness": "not_fully_grounded",
+          "completeness": false,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 49,
+              "symbol_id": 536,
+              "chunk_id": "82ed47caefdd51b242f09859d1d8f4b25e6b7e2dfd40c032212672896f024738",
+              "qualified_name": "CommentForm.clean_name",
+              "relative_path": "blog/forms.py",
+              "start_line": 45,
+              "end_line": 51,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "GENERATION",
+          "truncation_observed": false,
+          "evaluation_note": "Later statements describe the length checks correctly, but the opening contradiction is material and the falsy fall-through was omitted."
+        },
+        "glm": {
+          "status": "success",
+          "exact_answer": "بر اساس کد `CommentForm.clean_name` در فایل `blog/forms.py` (خطوط ۴۵ تا ۵۱):\n\n**نام‌هایی که رد می‌شود:**\n- نام‌هایی که طولشان **بیشتر از ۲۵۰ کاراکتر** است (`len(name) > 250`)\n- نام‌هایی که طولشان **کمتر از ۲ کاراکتر** است (`len(name) < 2`)\n\nدر این دو حالت، متد خطای `forms.ValidationError` با پیام `'نام معتبر نیست!'` ایجاد (raise) می‌کند.\n\n**در حالت معتبر:**\nاگر طول نام بین ۲ تا ۲۵۰ کاراکتر باشد، متد همان `name` را برمی‌گرداند (`return name`).\n\n**نکته اضافی (قابل مشاهده در کد):** کل بررسی داخل شرط `if name:` قرار دارد؛ بنابراین اگر `name` خالی/falsy باشد، هیچ‌کدام از بررسی‌های طول انجام نمی‌شود و متد بدون مقدار بازگشتی صریح (یعنی عملاً `None`) پایان می‌یابد.",
+          "latency_seconds": 9.099516,
+          "provider": "openai_compatible",
+          "model": "glm-5.3-flash",
+          "error_type": null,
+          "max_tokens": 1024,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "PASS",
+          "expected_facts": [
+            "it reads name from cleaned_data",
+            "when name is truthy and its length is greater than 250 or less than 2, it raises ValidationError",
+            "when name is truthy and its length is between 2 and 250 inclusive, it returns name",
+            "a falsy name reaches the implicit None return"
+          ],
+          "mentioned_expected_facts": [
+            "it reads name from cleaned_data",
+            "when name is truthy and its length is greater than 250 or less than 2, it raises ValidationError",
+            "when name is truthy and its length is between 2 and 250 inclusive, it returns name",
+            "a falsy name reaches the implicit None return"
+          ],
+          "missing_facts": [],
+          "invented_or_unsupported_facts": [],
+          "language_adherence": true,
+          "groundedness": "grounded",
+          "completeness": true,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 49,
+              "symbol_id": 536,
+              "chunk_id": "82ed47caefdd51b242f09859d1d8f4b25e6b7e2dfd40c032212672896f024738",
+              "qualified_name": "CommentForm.clean_name",
+              "relative_path": "blog/forms.py",
+              "start_line": 45,
+              "end_line": 51,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "NONE",
+          "truncation_observed": false,
+          "evaluation_note": "Both length boundaries, valid return, and falsy fall-through were reported."
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "CSB-QA-11",
+        "language": "EN",
+        "category": "authentication_user_logic",
+        "question": "How does PhoneAuthBackend.authenticate handle valid credentials, a wrong password, and missing or duplicate phone matches?",
+        "target_file": "users/authentication.py",
+        "target_symbol": "PhoneAuthBackend.authenticate",
+        "start_line": 5,
+        "end_line": 13,
+        "source_sha256": "bd928e3c0e09ce0b56a912010999601653ce49c229b423ccc9597913777e60c4",
+        "expected_facts": [
+          "it looks up User with phone=username",
+          "a matching password returns the user",
+          "a wrong password returns None",
+          "User.DoesNotExist returns None",
+          "User.MultipleObjectsReturned returns None"
+        ],
+        "forbidden_facts": [
+          "it looks up users by username or email",
+          "missing or duplicate matches propagate an exception",
+          "the backend creates a user"
+        ],
+        "why_useful": "Tests authentication branches, password checking, and safe lookup failure behavior."
+      },
+      "retrieval": {
+        "retrieval_latency_seconds": 0.084279,
+        "focus_latency_seconds": 0.000196,
+        "preparation_latency_seconds": 0.000905,
+        "retrieved_chunk_ids": [
+          "b85cf00bb8e70be4b59b12060a2f4391f158513ec2026487a6b1f992560a3ed6",
+          "33ab926a2bc64b11ea4db759f19177cfaa74ba19f812c61083605f5ba0140803",
+          "eef6aa626beb1bed20976312aa406e1b00f35d6d7d26607475b37ba44c32ae40",
+          "6f1808581853cd638fbbd338fe14da07fe623aec9f6cc49c0773fe7eb24e0a31",
+          "ade023157fe3da21c7798e4ff8e26ead2cac72869e0aefb751eb20f07e50547d"
+        ],
+        "retrieved_symbols": [
+          "PhoneAuthBackend.authenticate",
+          "EmailAuthBackend.authenticate",
+          "Migration",
+          "TicketForm.clean_phone",
+          "PhoneAuthBackend"
+        ],
+        "focused_chunk_ids": [
+          "b85cf00bb8e70be4b59b12060a2f4391f158513ec2026487a6b1f992560a3ed6"
+        ],
+        "focused_symbols": [
+          "PhoneAuthBackend.authenticate"
+        ],
+        "expected_target_retrieved": true,
+        "expected_target_focused": true,
+        "context_chars": 347,
+        "context_blocks": 1,
+        "omitted_context_count": 0,
+        "context_sha256": "08a4772b574b750d511d7b9a10ca536fbdecac45333cbc06b377d4fc74a1f1fc",
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "5fe2306e254a983d1178d636f3424b44b0a7e27e0e77432a80ae3e2efe16e665",
+        "citations": [
+          {
+            "project_id": 3,
+            "file_id": 92,
+            "symbol_id": 629,
+            "chunk_id": "b85cf00bb8e70be4b59b12060a2f4391f158513ec2026487a6b1f992560a3ed6",
+            "qualified_name": "PhoneAuthBackend.authenticate",
+            "relative_path": "users/authentication.py",
+            "start_line": 5,
+            "end_line": 13,
+            "sqlite_valid": true
+          }
+        ]
+      },
+      "models": {
+        "qwen": {
+          "status": "success",
+          "exact_answer": "PhoneAuthBackend.authenticate handles valid credentials by checking if the provided username matches a phone number in the database and then verifying the password using the `check_password` method. If both checks pass, it returns the user object.\n\nFor a wrong password, the function will catch the `User.DoesNotExist` or `User.MultipleObjectsReturned` exception when trying to retrieve the user by phone number. In this case, it will return `None`.\n\nIf there are missing or duplicate phone matches, the function will also catch these exceptions and return `None`. This is because the `get` method in Django raises a `DoesNotExist` exception if no object is found, and a `MultipleObjectsReturned` exception if multiple objects match the query.",
+          "latency_seconds": 17.006171,
+          "provider": "ollama",
+          "model": "qwen2.5-coder-3b-codecompass:latest",
+          "error_type": null,
+          "max_tokens": 512,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "FAIL",
+          "expected_facts": [
+            "it looks up User with phone=username",
+            "a matching password returns the user",
+            "a wrong password returns None",
+            "User.DoesNotExist returns None",
+            "User.MultipleObjectsReturned returns None"
+          ],
+          "mentioned_expected_facts": [
+            "it looks up User with phone=username",
+            "a matching password returns the user",
+            "a wrong password returns None",
+            "User.DoesNotExist returns None",
+            "User.MultipleObjectsReturned returns None"
+          ],
+          "missing_facts": [],
+          "invented_or_unsupported_facts": [
+            "Incorrectly explains a wrong password as causing DoesNotExist or MultipleObjectsReturned during lookup; the source returns None after check_password is false."
+          ],
+          "language_adherence": true,
+          "groundedness": "not_fully_grounded",
+          "completeness": true,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 92,
+              "symbol_id": 629,
+              "chunk_id": "b85cf00bb8e70be4b59b12060a2f4391f158513ec2026487a6b1f992560a3ed6",
+              "qualified_name": "PhoneAuthBackend.authenticate",
+              "relative_path": "users/authentication.py",
+              "start_line": 5,
+              "end_line": 13,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "GENERATION",
+          "truncation_observed": false,
+          "evaluation_note": "The final outcomes were listed, but the wrong-password control flow was materially misexplained."
+        },
+        "glm": {
+          "status": "success",
+          "exact_answer": "Based on the code in `users/authentication.py` (lines 5–13), `PhoneAuthBackend.authenticate` works as follows:\n\n**Valid credentials**\n- The method treats the `username` parameter as a phone number and looks up the user with `User.objects.get(phone=username)`.\n- If a user is found and `user.check_password(password)` returns `True`, the user object is returned.\n\n**Wrong password**\n- If the user is found but `user.check_password(password)` returns `False`, the method returns `None` (no exception is raised; it simply falls through to `return None`).\n\n**Missing phone match**\n- If no user exists with the given phone number, `User.DoesNotExist` is raised by `User.objects.get(...)`. The method catches this exception and returns `None`.\n\n**Duplicate phone matches**\n- If more than one user matches the phone number, `User.MultipleObjectsReturned` is raised by `User.objects.get(...)`. This is also caught by the same `except` clause, and the method returns `None`.\n\nIn summary: the method returns the `User` only when exactly one user matches the phone and the password check succeeds; in every other case (wrong password, no match, or multiple matches), it returns `None`.",
+          "latency_seconds": 9.856413,
+          "provider": "openai_compatible",
+          "model": "glm-5.3-flash",
+          "error_type": null,
+          "max_tokens": 1024,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "PASS",
+          "expected_facts": [
+            "it looks up User with phone=username",
+            "a matching password returns the user",
+            "a wrong password returns None",
+            "User.DoesNotExist returns None",
+            "User.MultipleObjectsReturned returns None"
+          ],
+          "mentioned_expected_facts": [
+            "it looks up User with phone=username",
+            "a matching password returns the user",
+            "a wrong password returns None",
+            "User.DoesNotExist returns None",
+            "User.MultipleObjectsReturned returns None"
+          ],
+          "missing_facts": [],
+          "invented_or_unsupported_facts": [],
+          "language_adherence": true,
+          "groundedness": "grounded",
+          "completeness": true,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 92,
+              "symbol_id": 629,
+              "chunk_id": "b85cf00bb8e70be4b59b12060a2f4391f158513ec2026487a6b1f992560a3ed6",
+              "qualified_name": "PhoneAuthBackend.authenticate",
+              "relative_path": "users/authentication.py",
+              "start_line": 5,
+              "end_line": 13,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "NONE",
+          "truncation_observed": false,
+          "evaluation_note": "All lookup, password, and exception branches were correctly distinguished."
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "CSB-QA-12",
+        "language": "FA",
+        "category": "authentication_user_logic",
+        "question": "تابع register رمز عبور کاربر جدید را چگونه ذخیره می‌کند و چه زمانی صفحه موفقیت را نمایش می‌دهد؟",
+        "target_file": "users/views.py",
+        "target_symbol": "register",
+        "start_line": 35,
+        "end_line": 45,
+        "source_sha256": "6eaa10faf9f30f7487078a209f40043db1a4b75a810ceed74757a9f92ed1d227",
+        "expected_facts": [
+          "on POST it constructs UserRegisterForm(request.POST)",
+          "when valid, it calls form.save(commit=False)",
+          "it calls user.set_password(form.cleaned_data[\"password\"])",
+          "it saves the user",
+          "after a valid POST it renders users/registration/register_done.html with the user",
+          "on GET it creates a blank UserRegisterForm and renders users/registration/register.html",
+          "an invalid POST renders users/registration/register.html with the bound form"
+        ],
+        "forbidden_facts": [
+          "the password is stored directly in plaintext",
+          "the view automatically logs in the new user",
+          "successful registration redirects to another URL"
+        ],
+        "why_useful": "Tests Persian explanation of secure password handling and request branching."
+      },
+      "retrieval": {
+        "retrieval_latency_seconds": 0.151491,
+        "focus_latency_seconds": 0.000177,
+        "preparation_latency_seconds": 0.001001,
+        "retrieved_chunk_ids": [
+          "c1ee7b7afdd44fe9793ffb9b64b9ae6442642804fbcfb73ea9aa4618a8c6aaf6",
+          "0ef8f27d0496d4f8f7a1a70b0761883690f0ac7725bb6da5d381acbdb2ad0fed",
+          "6bce017ec5405b5a1b9875b630a02a9ec8fee65df72f2d41e2586b77a16492a8",
+          "74ebf3fe0bdfbb8d4a462bf29c1819e6fc2dd017ec785dcbf81a516b18315a39",
+          "509313257c160860f39f9bb00b6adcd9caab46dd2f25e0acc6438f80c3ba5c8a"
+        ],
+        "retrieved_symbols": [
+          "LoginForm",
+          "Migration",
+          "register",
+          "Migration",
+          "UserRegisterForm"
+        ],
+        "focused_chunk_ids": [
+          "6bce017ec5405b5a1b9875b630a02a9ec8fee65df72f2d41e2586b77a16492a8"
+        ],
+        "focused_symbols": [
+          "register"
+        ],
+        "expected_target_retrieved": true,
+        "expected_target_focused": true,
+        "context_chars": 473,
+        "context_blocks": 1,
+        "omitted_context_count": 0,
+        "context_sha256": "6234c2aa8be94eeddfa5e17b68c60a520487fd9c912d33fc937c20a43633391e",
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "009e615abbde3d3184fcad961abeb13bc9e25a8afe70b0cb8c8a8ee1a7ce1442",
+        "citations": [
+          {
+            "project_id": 3,
+            "file_id": 101,
+            "symbol_id": 657,
+            "chunk_id": "6bce017ec5405b5a1b9875b630a02a9ec8fee65df72f2d41e2586b77a16492a8",
+            "qualified_name": "register",
+            "relative_path": "users/views.py",
+            "start_line": 35,
+            "end_line": 45,
+            "sqlite_valid": true
+          }
+        ]
+      },
+      "models": {
+        "qwen": {
+          "status": "success",
+          "exact_answer": "تابع `register` در کد context ذخیره رمز عبور کاربر جدید به این صورت می‌کند:\n\n1. ابتدا، فرم `UserRegisterForm` با داده‌های پست شده توسط کاربر ساخته می‌شود.\n2. بررسی از اعتبارات فرم استفاده می‌شود.\n3. اگر فرم اعتبارسنجی شده باشد، کاربر جدید ساخته می‌شود و رمز عبور آن به صورت پیشفرض ذخیره می‌شود (با استفاده از `set_password`).\n4. سپس کاربر ذخیره شده با فرم نمایش داده می‌شود.\n\nصفحه موفقیت نمایش داده می‌شود:\n\n- در صورت اعتبارسنجی و ذخیره کردن کاربر جدید، از `render` استفاده شده تا فرم نمایش داده شود.\n- فرم نمایش داده شده شامل پیام موفقیت و اطلاعات کاربر ذخیره شده است.\n\nپس، صفحه موفقیت نمایش داده می‌شود چنین زمانی که کاربر جدید با رمز عبور صحیح ثبت نام می‌کند.",
+          "latency_seconds": 38.135498,
+          "provider": "ollama",
+          "model": "qwen2.5-coder-3b-codecompass:latest",
+          "error_type": null,
+          "max_tokens": 512,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "FAIL",
+          "expected_facts": [
+            "on POST it constructs UserRegisterForm(request.POST)",
+            "when valid, it calls form.save(commit=False)",
+            "it calls user.set_password(form.cleaned_data[\"password\"])",
+            "it saves the user",
+            "after a valid POST it renders users/registration/register_done.html with the user",
+            "on GET it creates a blank UserRegisterForm and renders users/registration/register.html",
+            "an invalid POST renders users/registration/register.html with the bound form"
+          ],
+          "mentioned_expected_facts": [
+            "on POST it constructs UserRegisterForm(request.POST)",
+            "it calls user.set_password(form.cleaned_data[\"password\"])",
+            "it saves the user"
+          ],
+          "missing_facts": [
+            "when valid, it calls form.save(commit=False)",
+            "after a valid POST it renders users/registration/register_done.html with the user",
+            "on GET it creates a blank UserRegisterForm and renders users/registration/register.html",
+            "an invalid POST renders users/registration/register.html with the bound form"
+          ],
+          "invented_or_unsupported_facts": [
+            "Describes the success response as displaying a form with a success message, which is not shown by the source.",
+            "Says success occurs when the user registers with a correct password rather than when the full form is valid."
+          ],
+          "language_adherence": true,
+          "groundedness": "not_fully_grounded",
+          "completeness": false,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 101,
+              "symbol_id": 657,
+              "chunk_id": "6bce017ec5405b5a1b9875b630a02a9ec8fee65df72f2d41e2586b77a16492a8",
+              "qualified_name": "register",
+              "relative_path": "users/views.py",
+              "start_line": 35,
+              "end_line": 45,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "GENERATION",
+          "truncation_observed": false,
+          "evaluation_note": "set_password and saving were mentioned, but commit=False and both non-success branches were omitted and the success rendering was mischaracterized."
+        },
+        "glm": {
+          "status": "success",
+          "exact_answer": "بر اساس کد موجود در `users/views.py` (تابع `register`، خطوط ۳۵-۴۵):\n\n**نحوه ذخیره رمز عبور:**\n\n1. ابتدا با `form.save(commit=False)` یک شیء کاربر ساخته می‌شود اما هنوز در دیتابیس ذخیره نمی‌شود.\n2. سپس با فراخوانی `user.set_password(form.cleaned_data['password'])` رمز عبورِ پاک‌سازی‌شده (cleaned data) از فرم روی شیء کاربر تنظیم می‌شود.\n3. در نهایت با `user.save()` کاربر (همراه با رمز عبور تنظیم‌شده) در دیتابیس ذخیره می‌شود.\n\n**زمان نمایش صفحه موفقیت:**\n\nصفحه موفقیت (`users/registration/register_done.html`) فقط زمانی رندر و بازگردانده می‌شود که هر دو شرط زیر برقرار باشند:\n\n- درخواست از نوع `POST` باشد، و\n- فرم `UserRegisterForm` معتبر باشد (`form.is_valid()` مقدار True برگرداند).\n\nدر این حالت، پس از ذخیره کاربر، صفحه موفقیت با کانتکست `{'user': user}` نمایش داده می‌شود. در غیر این صورت (درخواست GET یا فرم نامعتبر)، صفحه `users/registration/register.html` همراه با فرم نمایش داده می‌شود",
+          "latency_seconds": 20.563265,
+          "provider": "openai_compatible",
+          "model": "glm-5.3-flash",
+          "error_type": null,
+          "max_tokens": 1024,
+          "temperature": 0,
+          "usage": null,
+          "retry_count": 0,
+          "result": "PARTIAL",
+          "expected_facts": [
+            "on POST it constructs UserRegisterForm(request.POST)",
+            "when valid, it calls form.save(commit=False)",
+            "it calls user.set_password(form.cleaned_data[\"password\"])",
+            "it saves the user",
+            "after a valid POST it renders users/registration/register_done.html with the user",
+            "on GET it creates a blank UserRegisterForm and renders users/registration/register.html",
+            "an invalid POST renders users/registration/register.html with the bound form"
+          ],
+          "mentioned_expected_facts": [
+            "when valid, it calls form.save(commit=False)",
+            "it calls user.set_password(form.cleaned_data[\"password\"])",
+            "it saves the user",
+            "after a valid POST it renders users/registration/register_done.html with the user",
+            "an invalid POST renders users/registration/register.html with the bound form"
+          ],
+          "missing_facts": [
+            "on POST it constructs UserRegisterForm(request.POST)",
+            "on GET it creates a blank UserRegisterForm and renders users/registration/register.html"
+          ],
+          "invented_or_unsupported_facts": [],
+          "language_adherence": true,
+          "groundedness": "grounded",
+          "completeness": false,
+          "target_symbol_fidelity": true,
+          "citation_validity": true,
+          "citation_records": [
+            {
+              "project_id": 3,
+              "file_id": 101,
+              "symbol_id": 657,
+              "chunk_id": "6bce017ec5405b5a1b9875b630a02a9ec8fee65df72f2d41e2586b77a16492a8",
+              "qualified_name": "register",
+              "relative_path": "users/views.py",
+              "start_line": 35,
+              "end_line": 45,
+              "sqlite_valid": true
+            }
+          ],
+          "failure_attribution": "GENERATION",
+          "truncation_observed": false,
+          "evaluation_note": "Password handling and success conditions were correct; explicit POST form construction and creation of a blank GET form were omitted."
+        }
+      }
+    }
+  ],
+  "aggregate_results": {
+    "qwen": {
+      "model": "qwen2.5-coder-3b-codecompass:latest",
+      "provider": "ollama",
+      "result_counts": {
+        "PASS": 1,
+        "PARTIAL": 4,
+        "FAIL": 6,
+        "INCONCLUSIVE": 1
+      },
+      "language_results": {
+        "EN": {
+          "PASS": 1,
+          "PARTIAL": 1,
+          "FAIL": 4,
+          "INCONCLUSIVE": 0
+        },
+        "FA": {
+          "PASS": 0,
+          "PARTIAL": 3,
+          "FAIL": 2,
+          "INCONCLUSIVE": 1
+        }
+      },
+      "category_results": {
+        "authentication_user_logic": {
+          "PASS": 0,
+          "PARTIAL": 0,
+          "FAIL": 2,
+          "INCONCLUSIVE": 0
+        },
+        "django_model_relationship": {
+          "PASS": 0,
+          "PARTIAL": 1,
+          "FAIL": 1,
+          "INCONCLUSIVE": 0
+        },
+        "form_validation_behavior": {
+          "PASS": 0,
+          "PARTIAL": 1,
+          "FAIL": 1,
+          "INCONCLUSIVE": 0
+        },
+        "method_behavior": {
+          "PASS": 0,
+          "PARTIAL": 1,
+          "FAIL": 1,
+          "INCONCLUSIVE": 0
+        },
+        "model_field_structure": {
+          "PASS": 0,
+          "PARTIAL": 1,
+          "FAIL": 1,
+          "INCONCLUSIVE": 0
+        },
+        "view_request_flow": {
+          "PASS": 1,
+          "PARTIAL": 0,
+          "FAIL": 0,
+          "INCONCLUSIVE": 1
+        }
+      },
+      "language_adherence": "12/12",
+      "symbol_fidelity": "12/12",
+      "citation_validity": "14/14",
+      "unsupported_claim_count": 7,
+      "missing_fact_count": 24,
+      "retrieval_failure_count": 0,
+      "generation_failure_count": 10,
+      "provider_failure_count": 0,
+      "latency_seconds": {
+        "mean": 24.27703,
+        "median": 20.372771,
+        "min": 7.947568,
+        "max": 54.784512
+      },
+      "usage": null,
+      "estimated_cost": null,
+      "usage_note": "The existing provider-neutral LLMResponse does not retain provider usage or finish_reason metadata; no extra request was made.",
+      "final_verdict": "NOT_READY"
+    },
+    "glm": {
+      "model": "glm-5.3-flash",
+      "provider": "openai_compatible",
+      "result_counts": {
+        "PASS": 10,
+        "PARTIAL": 2,
+        "FAIL": 0,
+        "INCONCLUSIVE": 0
+      },
+      "language_results": {
+        "EN": {
+          "PASS": 6,
+          "PARTIAL": 0,
+          "FAIL": 0,
+          "INCONCLUSIVE": 0
+        },
+        "FA": {
+          "PASS": 4,
+          "PARTIAL": 2,
+          "FAIL": 0,
+          "INCONCLUSIVE": 0
+        }
+      },
+      "category_results": {
+        "authentication_user_logic": {
+          "PASS": 1,
+          "PARTIAL": 1,
+          "FAIL": 0,
+          "INCONCLUSIVE": 0
+        },
+        "django_model_relationship": {
+          "PASS": 2,
+          "PARTIAL": 0,
+          "FAIL": 0,
+          "INCONCLUSIVE": 0
+        },
+        "form_validation_behavior": {
+          "PASS": 2,
+          "PARTIAL": 0,
+          "FAIL": 0,
+          "INCONCLUSIVE": 0
+        },
+        "method_behavior": {
+          "PASS": 2,
+          "PARTIAL": 0,
+          "FAIL": 0,
+          "INCONCLUSIVE": 0
+        },
+        "model_field_structure": {
+          "PASS": 2,
+          "PARTIAL": 0,
+          "FAIL": 0,
+          "INCONCLUSIVE": 0
+        },
+        "view_request_flow": {
+          "PASS": 1,
+          "PARTIAL": 1,
+          "FAIL": 0,
+          "INCONCLUSIVE": 0
+        }
+      },
+      "language_adherence": "12/12",
+      "symbol_fidelity": "12/12",
+      "citation_validity": "14/14",
+      "unsupported_claim_count": 0,
+      "missing_fact_count": 3,
+      "retrieval_failure_count": 0,
+      "generation_failure_count": 2,
+      "provider_failure_count": 0,
+      "latency_seconds": {
+        "mean": 13.546902,
+        "median": 11.717265,
+        "min": 8.500461,
+        "max": 31.303071
+      },
+      "usage": null,
+      "estimated_cost": null,
+      "usage_note": "The existing provider-neutral LLMResponse does not retain provider usage or finish_reason metadata; no extra request was made.",
+      "final_verdict": "READY_WITH_LIMITATIONS"
+    }
+  },
+  "direct_comparison": {
+    "BOTH_PASS": [
+      "CSB-QA-07"
+    ],
+    "GLM_ONLY_PASS": [
+      "CSB-QA-01",
+      "CSB-QA-02",
+      "CSB-QA-03",
+      "CSB-QA-04",
+      "CSB-QA-05",
+      "CSB-QA-06",
+      "CSB-QA-09",
+      "CSB-QA-10",
+      "CSB-QA-11"
+    ],
+    "QWEN_ONLY_PASS": [],
+    "BOTH_NON_PASS": [
+      "CSB-QA-08",
+      "CSB-QA-12"
+    ]
+  },
+  "scientific_limits": [
+    "Small frozen sample of 12 questions from one pinned repository.",
+    "Single generation per model/question; no variance estimate or statistical significance claim.",
+    "Model-specific token budgets prevent artificial truncation but do not form an equal-token benchmark.",
+    "Provider usage, finish_reason, reasoning tokens, and cost are not retained by the current provider response model."
+  ]
+}

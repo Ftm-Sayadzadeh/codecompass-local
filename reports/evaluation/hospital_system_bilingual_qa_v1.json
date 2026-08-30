@@ -1,0 +1,617 @@
+{
+  "experiment": {
+    "id": "hospital_system_bilingual_qa_evaluation_v1",
+    "title": "Hospital-System Bilingual Grounded QA Evaluation",
+    "source": "retained session output only",
+    "production_path_smoke": {
+      "result": "PASS",
+      "question": "What attributes are assigned in Patient.__init__?",
+      "expected_attributes_present": "10/10",
+      "citation_path_valid": true
+    }
+  },
+  "project": {
+    "project_id": 2,
+    "name": "Hospital-System"
+  },
+  "index_identity": {
+    "source_files": 33,
+    "symbols": 409,
+    "chunks": 409,
+    "vectors": 409,
+    "sqlite_chroma_id_sets_exact": true,
+    "embedding_provider": "ollama",
+    "embedding_model": "nomic-embed-text-local:latest",
+    "embedding_dimensions": 768
+  },
+  "configuration": {
+    "retrieval_method": "hybrid",
+    "llm_provider": "openai_compatible",
+    "model": "glm-5.3-flash",
+    "temperature": 0,
+    "max_tokens": 1024,
+    "retries": 0,
+    "total_executions": 8,
+    "reindexed": false
+  },
+  "matrix": {
+    "id": "hospital_system_bilingual_qa_matrix_v1",
+    "sha256": "3fbeac128da1251ebc3cd262abcb3208044f058a53e3b94977c5e4fddebbe44d",
+    "question_count": 8,
+    "known_regression_anchor": [
+      "HS-QA-01"
+    ],
+    "novel_frozen_questions": [
+      "HS-QA-02",
+      "HS-QA-03",
+      "HS-QA-04",
+      "HS-QA-05",
+      "HS-QA-06",
+      "HS-QA-07",
+      "HS-QA-08"
+    ]
+  },
+  "rubric": {
+    "sha256": "17cc25b4435b9a44189c2ff87b7e04b800fb1a74a8fbd5de523ef7e53151638e",
+    "PASS": [
+      "All expected facts are present",
+      "No invented or forbidden facts",
+      "Correct target symbol",
+      "Valid CodeCompass citation/source metadata",
+      "Answer language matches question language",
+      "No truncation or provider error"
+    ],
+    "PARTIAL": [
+      "Stated facts are correct and grounded",
+      "One or more expected facts are missing",
+      "No material invented facts"
+    ],
+    "FAIL": [
+      "Invented or forbidden material fact",
+      "Contradictory behavior",
+      "Wrong target symbol",
+      "Invalid citation/source mapping",
+      "Provider or truncation failure",
+      "Materially wrong answer"
+    ]
+  },
+  "questions": [
+    {
+      "id": "HS-QA-01",
+      "language": "EN",
+      "category": "attribute_field_enumeration",
+      "question": "What attributes are assigned in Patient.__init__?",
+      "target_file": "models/patient.py",
+      "target_symbol": "Patient.__init__",
+      "start_line": 6,
+      "end_line": 16,
+      "expected_facts": [
+        "self.first_name",
+        "self.last_name",
+        "self.national_id",
+        "self.phone_num",
+        "self.password",
+        "self.gender",
+        "self.city",
+        "self.full_name",
+        "self.insurance_num",
+        "self.appointments"
+      ],
+      "forbidden_facts": [
+        "Any additional Patient attribute",
+        "A declared type for any attribute",
+        "A claim that appointments is a list; the code initializes Appointments()"
+      ],
+      "exact_answer": "In `Patient.__init__` (models/patient.py, lines 6–16), the following attributes are assigned on `self`:\n\n- `first_name`\n- `last_name`\n- `national_id`\n- `phone_num`\n- `password`\n- `gender`\n- `city`\n- `full_name` — set to an f-string combining `self.first_name` and `self.last_name`\n- `insurance_num`\n- `appointments` — initialized to a new `Appointments()` instance",
+      "result": "PASS",
+      "latency_seconds": 8.134,
+      "mentioned_expected_facts": [
+        "self.first_name",
+        "self.last_name",
+        "self.national_id",
+        "self.phone_num",
+        "self.password",
+        "self.gender",
+        "self.city",
+        "self.full_name",
+        "self.insurance_num",
+        "self.appointments"
+      ],
+      "missing_facts": [],
+      "invented_or_unsupported_facts": [],
+      "known_regression_anchor": true,
+      "novel_question": false,
+      "evaluation_note": "Known regression anchor. All 10 expected attributes were present, including self.appointments.",
+      "citations": [
+        {
+          "file_id": 36,
+          "symbol_id": 452,
+          "chunk_id": "42a0c185f2075dcce043fd60f2d6469f3048b722ebc4329967e065691664c5e2",
+          "source_file": "models/patient.py",
+          "symbol_name": "__init__",
+          "qualified_name": "Patient.__init__",
+          "start_line": 6,
+          "end_line": 16
+        }
+      ],
+      "source_sha256": "94807dc22e12abf8a46733e4b7333973834aa74ec17d4080d1986d85f054b873",
+      "exact_answer_available": true,
+      "language_adherence": true,
+      "symbol_fidelity": true,
+      "citation_valid": true,
+      "expected_facts_count": 10,
+      "mentioned_expected_facts_count": 10
+    },
+    {
+      "id": "HS-QA-02",
+      "language": "FA",
+      "category": "attribute_field_enumeration",
+      "question": "سازنده Node در models/appointment.py چه ویژگی‌هایی را مقداردهی می‌کند؟",
+      "target_file": "models/appointment.py",
+      "target_symbol": "Node.__init__",
+      "start_line": 2,
+      "end_line": 5,
+      "expected_facts": [
+        "self.doctor = doctor",
+        "self.day = day",
+        "self.hour = hour"
+      ],
+      "forbidden_facts": [
+        "Any attribute other than doctor, day, and hour",
+        "A next or previous pointer",
+        "A type claim not present in the source"
+      ],
+      "exact_answer": "سازنده `Node.__init__` در فایل `models/appointment.py` سه ویژگی را مقداردهی می‌کند:\n\n- **`self.doctor`** — از پارامتر `doctor`\n- **`self.day`** — از پارامتر `day`\n- **`self.hour`** — از پارامتر `hour`\n\nکد سازنده (خطوط ۲ تا ۵):\n\n```python\ndef __init__(self, doctor, day, hour):\n    self.doctor = doctor\n    self.day = day\n    self.hour = hour\n```",
+      "result": "PASS",
+      "latency_seconds": 5.494,
+      "mentioned_expected_facts": [
+        "self.doctor = doctor",
+        "self.day = day",
+        "self.hour = hour"
+      ],
+      "missing_facts": [],
+      "invented_or_unsupported_facts": [],
+      "known_regression_anchor": false,
+      "novel_question": true,
+      "evaluation_note": "All expected assignments were present. Additional returned citations were valid but broader than necessary.",
+      "citations": [
+        {
+          "file_id": 34,
+          "symbol_id": 425,
+          "chunk_id": "d03f82a50f1788c678260c9cc67483f95577f65bd820f427cdef7d8ec26a0468",
+          "source_file": "models/appointment.py",
+          "symbol_name": "Node",
+          "qualified_name": "Node",
+          "start_line": 1,
+          "end_line": 12
+        },
+        {
+          "file_id": 34,
+          "symbol_id": 426,
+          "chunk_id": "a94b4ac6724cd2ecf2a0e122d1a9016e512354664f1ebd566a44075575bd2609",
+          "source_file": "models/appointment.py",
+          "symbol_name": "__init__",
+          "qualified_name": "Node.__init__",
+          "start_line": 2,
+          "end_line": 5
+        },
+        {
+          "file_id": 34,
+          "symbol_id": 428,
+          "chunk_id": "abaf88ff0dcd4901c9b0a79be40b6b175975a55d7090213cdaba25d9b0308f9c",
+          "source_file": "models/appointment.py",
+          "symbol_name": "__repr__",
+          "qualified_name": "Node.__repr__",
+          "start_line": 11,
+          "end_line": 12
+        },
+        {
+          "file_id": 34,
+          "symbol_id": 427,
+          "chunk_id": "0223f0377d08c35f2cd173d3c4182cebe9d2079553576e40133ff417dcb61add",
+          "source_file": "models/appointment.py",
+          "symbol_name": "__lt__",
+          "qualified_name": "Node.__lt__",
+          "start_line": 7,
+          "end_line": 9
+        }
+      ],
+      "source_sha256": "2e7658e71cd322335df6068489f741e88ba513a2d475c07cb09420b30680eb4c",
+      "exact_answer_available": true,
+      "language_adherence": true,
+      "symbol_fidelity": true,
+      "citation_valid": true,
+      "expected_facts_count": 3,
+      "mentioned_expected_facts_count": 3
+    },
+    {
+      "id": "HS-QA-03",
+      "language": "EN",
+      "category": "method_behavior",
+      "question": "How does Schedule.is_available decide whether a time slot is available?",
+      "target_file": "models/doctor.py",
+      "target_symbol": "Schedule.is_available",
+      "start_line": 57,
+      "end_line": 63,
+      "expected_facts": [
+        "Converts time to int and subtracts 1 for the list index",
+        "Checks self.schedule[day] before reading the slot",
+        "Returns True only when the selected slot equals \"Available\"",
+        "Returns False when the day entry is truthy but the selected slot is not \"Available\"",
+        "Returns None implicitly when self.schedule[day] is falsy"
+      ],
+      "forbidden_facts": [
+        "A claim that it validates day or time bounds",
+        "A claim that it returns False when self.schedule[day] is falsy",
+        "A claim that it modifies the schedule"
+      ],
+      "exact_answer": "Based on the code in `models/doctor.py` (lines 57–63), `Schedule.is_available` works as follows:\n\n1. **Converts the time slot to a 0-based index**: It takes the `time` argument, converts it to an integer, and subtracts 1 (`time = int(time) - 1`). This means callers pass a 1-based slot number, which is mapped to a list index.\n\n2. **Checks that the day exists in the schedule**: It first tests `if self.schedule[day]:` — i.e., the entry for that day must be truthy (non-empty).\n\n3. **Compares the slot's value to the string \"Available\"**:\n   - If `self.schedule[day][time] == \"Available\"`, it returns `True`.\n   - Otherwise, it returns `False`.\n\nOne additional behavior visible in the code: if `self.schedule[day]` is falsy (e.g., empty), the outer `if` is not entered and the method has no explicit return in that path, so it implicitly returns `None` — which is falsy and would be treated as \"not available\" in a boolean context, though it is not an explicit `False`.",
+      "result": "PASS",
+      "latency_seconds": 8.99,
+      "mentioned_expected_facts": [
+        "Converts time to int and subtracts 1 for the list index",
+        "Checks self.schedule[day] before reading the slot",
+        "Returns True only when the selected slot equals \"Available\"",
+        "Returns False when the day entry is truthy but the selected slot is not \"Available\"",
+        "Returns None implicitly when self.schedule[day] is falsy"
+      ],
+      "missing_facts": [],
+      "invented_or_unsupported_facts": [],
+      "known_regression_anchor": false,
+      "novel_question": true,
+      "evaluation_note": "All branch-sensitive expected facts were present, including the implicit None path.",
+      "citations": [
+        {
+          "file_id": 35,
+          "symbol_id": 438,
+          "chunk_id": "8164f851e74f01a4f69a42e48ffc67282ab90a9aa4349da9bf235c10ac794e21",
+          "source_file": "models/doctor.py",
+          "symbol_name": "is_available",
+          "qualified_name": "Schedule.is_available",
+          "start_line": 57,
+          "end_line": 63
+        }
+      ],
+      "source_sha256": "d78eaa69c2d42ca1276993d706831130d73d451b6763fc0ba6500ebd49c72bc6",
+      "exact_answer_available": true,
+      "language_adherence": true,
+      "symbol_fidelity": true,
+      "citation_valid": true,
+      "expected_facts_count": 5,
+      "mentioned_expected_facts_count": 5
+    },
+    {
+      "id": "HS-QA-04",
+      "language": "FA",
+      "category": "method_behavior",
+      "question": "متد QueueArray.dequeue در صف خالی و غیرخالی چه رفتاری دارد؟",
+      "target_file": "data_structures/queue.py",
+      "target_symbol": "QueueArray.dequeue",
+      "start_line": 22,
+      "end_line": 33,
+      "expected_facts": [
+        "If the queue is empty, returns \"Queue is empty.\"",
+        "Otherwise increments self.front by 1",
+        "Returns self.queue[self.front - 1] after incrementing front"
+      ],
+      "forbidden_facts": [
+        "A claim that self.front is decremented",
+        "A claim that self.rear changes",
+        "A claim that the returned array slot is cleared or deleted"
+      ],
+      "exact_answer": "بر اساس کد موجود در `data_structures/queue.py` (خطوط ۲۲-۳۳)، متد `QueueArray.dequeue` دو رفتار دارد:\n\n**صف خالی:**\n- ابتدا با `self.is_empty()` بررسی می‌کند که صف خالی باشد.\n- اگر صف خالی باشد، رشته‌ی `\"Queue is empty.\"` را برمی‌گرداند (یعنی به‌جای پرتاب استثنا، یک پیام متنی برمی‌گرداند).\n\n**صف غیرخالی:**\n- مقدار `self.front` را یک واحد افزایش می‌دهد: `self.front += 1`\n- سپس عنصر موجود در اندیس `self.front - 1` (یعنی همان موقعیت قبلیِ `front`) را برمی‌گرداند: `return self.queue[self.front - 1]`\n\nبه این ترتیب، عنصر ابتدای صف خوانده شده و نشانگر `front` به سمت جلو حرکت می‌کند.\n\n**نکته:** در بدنه‌ی متد یک بلوک کد کامنت‌شده نیز وجود دارد که پیاده‌سازی جایگزینی را نشان می‌دهد (خواندن عنصر از `self.queue[self.front]` و سپس کاهش `self.front`)، اما این کد اجرا نمی‌شود و نسخه‌ی فعال همان افزایش `front` است.",
+      "result": "PASS",
+      "latency_seconds": 7.65,
+      "mentioned_expected_facts": [
+        "If the queue is empty, returns \"Queue is empty.\"",
+        "Otherwise increments self.front by 1",
+        "Returns self.queue[self.front - 1] after incrementing front"
+      ],
+      "missing_facts": [],
+      "invented_or_unsupported_facts": [],
+      "known_regression_anchor": false,
+      "novel_question": true,
+      "evaluation_note": "Both active execution paths were explained correctly; the commented alternative was explicitly identified as inactive.",
+      "citations": [
+        {
+          "file_id": 24,
+          "symbol_id": 316,
+          "chunk_id": "1df22345e37e9c6c7038efb4a6acb81e56298fbe587c4a4be47acb872f21650b",
+          "source_file": "data_structures/queue.py",
+          "symbol_name": "dequeue",
+          "qualified_name": "QueueArray.dequeue",
+          "start_line": 22,
+          "end_line": 33
+        }
+      ],
+      "source_sha256": "cf716b2183d11a0e735d551b794b99eeb777fff08b8a08234f98f8d92739b6e1",
+      "exact_answer_available": true,
+      "language_adherence": true,
+      "symbol_fidelity": true,
+      "citation_valid": true,
+      "expected_facts_count": 3,
+      "mentioned_expected_facts_count": 3
+    },
+    {
+      "id": "HS-QA-05",
+      "language": "EN",
+      "category": "class_object_relationship",
+      "question": "Which helper objects does Doctor.__init__ create and store?",
+      "target_file": "models/doctor.py",
+      "target_symbol": "Doctor.__init__",
+      "start_line": 9,
+      "end_line": 23,
+      "expected_facts": [
+        "self.schedule is initialized with Schedule()",
+        "self.appointments is initialized with Appointments()"
+      ],
+      "forbidden_facts": [
+        "A claim that either helper object is passed into the constructor",
+        "A claim that Doctor inherits from Schedule or Appointments",
+        "A claim that this is the Patient Appointments class"
+      ],
+      "exact_answer": "Based on the provided code, `Doctor.__init__` creates and stores two helper objects:\n\n1. **`Schedule()`** — a new `Schedule` instance assigned to `self.schedule`\n2. **`Appointments()`** — a new `Appointments` instance assigned to `self.appointments`\n\nAll other attributes set in `__init__` are plain values, not helper objects: the string parameters (`first_name`, `last_name`, `national_id`, `medical_num`, `phone_num`, `address`, `city`, `speciality`, `password`), the integer `self.visits = 0`, and the f-string `self.full_name = f\"{self.first_name} {self.last_name}\"`.",
+      "result": "FAIL",
+      "latency_seconds": 9.91,
+      "mentioned_expected_facts": [
+        "self.schedule is initialized with Schedule()",
+        "self.appointments is initialized with Appointments()"
+      ],
+      "missing_facts": [],
+      "invented_or_unsupported_facts": [
+        "Described unannotated constructor parameters as \"string parameters\""
+      ],
+      "known_regression_anchor": false,
+      "novel_question": true,
+      "evaluation_note": "The requested helper-object facts were complete, but the unsupported parameter-type claim is a material generation/prose grounding failure under the frozen rubric.",
+      "citations": [
+        {
+          "file_id": 35,
+          "symbol_id": 430,
+          "chunk_id": "9c72cb460e7b3d43f4ccfa12ea1c0cbcea8ff63a35683885deed828231679f3c",
+          "source_file": "models/doctor.py",
+          "symbol_name": "__init__",
+          "qualified_name": "Doctor.__init__",
+          "start_line": 9,
+          "end_line": 23
+        }
+      ],
+      "source_sha256": "d78eaa69c2d42ca1276993d706831130d73d451b6763fc0ba6500ebd49c72bc6",
+      "exact_answer_available": true,
+      "language_adherence": true,
+      "symbol_fidelity": true,
+      "citation_valid": true,
+      "expected_facts_count": 2,
+      "mentioned_expected_facts_count": 2
+    },
+    {
+      "id": "HS-QA-06",
+      "language": "FA",
+      "category": "class_object_relationship",
+      "question": "سازنده Manage چه مجموعه‌هایی را نگه می‌دارد و چه شیء مدیریت روزی می‌سازد؟",
+      "target_file": "logic/management.py",
+      "target_symbol": "Manage.__init__",
+      "start_line": 7,
+      "end_line": 12,
+      "expected_facts": [
+        "Stores cities in self.cities",
+        "Stores specialities in self.specialities",
+        "Stores patients in self.patients",
+        "Stores doctors in self.doctors",
+        "Creates DayManager() and stores it in self.day_manager"
+      ],
+      "forbidden_facts": [
+        "A claim that the supplied collections are copied or transformed",
+        "Any validation or loading behavior in the constructor",
+        "Any additional manager object"
+      ],
+      "exact_answer": "بر اساس کد سازندهٔ `Manage.__init__` (فایل `logic/management.py`، خطوط ۷ تا ۱۲):\n\n**مجموعه‌هایی که نگه می‌دارد** (که همگی به‌عنوان پارامتر ورودی دریافت می‌شوند):\n- `self.cities` — شهرها\n- `self.specialities` — تخصص‌ها\n- `self.patients` — بیماران\n- `self.doctors` — پزشکان\n\n**شیء مدیریت روزی که می‌سازد:**\n- `self.day_manager = DayManager()` — یک نمونه از کلاس `DayManager` می‌سازد (این پارامتر ورودی نیست و مستقیماً درون سازنده نمونه‌سازی می‌شود).",
+      "result": "PASS",
+      "latency_seconds": 7.525,
+      "mentioned_expected_facts": [
+        "Stores cities in self.cities",
+        "Stores specialities in self.specialities",
+        "Stores patients in self.patients",
+        "Stores doctors in self.doctors",
+        "Creates DayManager() and stores it in self.day_manager"
+      ],
+      "missing_facts": [],
+      "invented_or_unsupported_facts": [],
+      "known_regression_anchor": false,
+      "novel_question": true,
+      "evaluation_note": "All stored dependencies and the constructed DayManager were identified. Additional returned citations were valid but broader than necessary.",
+      "citations": [
+        {
+          "file_id": 30,
+          "symbol_id": 381,
+          "chunk_id": "69c8ba061c1bec5d408854c7261ff2649807ec56b40b998e8a133d9bbf27d2d7",
+          "source_file": "logic/management.py",
+          "symbol_name": "Manage",
+          "qualified_name": "Manage",
+          "start_line": 6,
+          "end_line": 203
+        },
+        {
+          "file_id": 30,
+          "symbol_id": 382,
+          "chunk_id": "e5423fb10dff0fafa428a81cff245fca3072c81c2f53b611630c5e234355f617",
+          "source_file": "logic/management.py",
+          "symbol_name": "__init__",
+          "qualified_name": "Manage.__init__",
+          "start_line": 7,
+          "end_line": 12
+        },
+        {
+          "file_id": 30,
+          "symbol_id": 383,
+          "chunk_id": "4309dea23016534ac81b5feb84e06e0dfdbaa2ac88509b7092a247156e2b3b62",
+          "source_file": "logic/management.py",
+          "symbol_name": "admin_display_doctors",
+          "qualified_name": "Manage.admin_display_doctors",
+          "start_line": 16,
+          "end_line": 18
+        }
+      ],
+      "source_sha256": "b6d9eed6f6537dd3285ead4c44de36bb0fe4a20da68f9d69d04030b17bb8bff5",
+      "exact_answer_available": true,
+      "language_adherence": true,
+      "symbol_fidelity": true,
+      "citation_valid": true,
+      "expected_facts_count": 5,
+      "mentioned_expected_facts_count": 5
+    },
+    {
+      "id": "HS-QA-07",
+      "language": "EN",
+      "category": "symbol_specific_explanation",
+      "question": "What exactly does DayManager.next_day do?",
+      "target_file": "logic/day_manager.py",
+      "target_symbol": "DayManager.next_day",
+      "start_line": 27,
+      "end_line": 29,
+      "expected_facts": [
+        "Increments self.curr_day by 1",
+        "Calls self.save_day() after incrementing"
+      ],
+      "forbidden_facts": [
+        "A claim that it returns the new day",
+        "A claim that it resets appointments or schedules",
+        "A claim that it validates a date range"
+      ],
+      "exact_answer": "Based on the provided code, `DayManager.next_day` (defined in `logic/day_manager.py`, lines 27–29) does exactly two things:\n\n1. **Increments the current day**: `self.curr_day += 1` — it adds 1 to the instance attribute `curr_day`.\n2. **Saves the day**: it then calls `self.save_day()`.\n\n```python\ndef next_day(self):\n    self.curr_day += 1\n    self.save_day()\n```\n\nNote: The retrieved context does not include the implementation of `save_day()`, so what that save operation actually does (e.g., where or how the day is persisted) cannot be determined from the provided evidence.",
+      "result": "PASS",
+      "latency_seconds": 12.609,
+      "mentioned_expected_facts": [
+        "Increments self.curr_day by 1",
+        "Calls self.save_day() after incrementing"
+      ],
+      "missing_facts": [],
+      "invented_or_unsupported_facts": [],
+      "known_regression_anchor": false,
+      "novel_question": true,
+      "evaluation_note": "The two operations and their order were correct; the answer appropriately bounded claims about save_day().",
+      "citations": [
+        {
+          "file_id": 29,
+          "symbol_id": 379,
+          "chunk_id": "c4412c63a3df489c8bac4713e4b7eb9e04dad1b47be79e617a4a923b71bdd817",
+          "source_file": "logic/day_manager.py",
+          "symbol_name": "next_day",
+          "qualified_name": "DayManager.next_day",
+          "start_line": 27,
+          "end_line": 29
+        }
+      ],
+      "source_sha256": "37b19d6a465b7ecf9dacd98379bf032d4a95b59ec34b0555121f984697ded68c",
+      "exact_answer_available": true,
+      "language_adherence": true,
+      "symbol_fidelity": true,
+      "citation_valid": true,
+      "expected_facts_count": 2,
+      "mentioned_expected_facts_count": 2
+    },
+    {
+      "id": "HS-QA-08",
+      "language": "FA",
+      "category": "symbol_specific_explanation",
+      "question": "متد File.append متن ورودی را دقیقاً چگونه به فایل اضافه می‌کند؟",
+      "target_file": "tools/file_handling.py",
+      "target_symbol": "File.append",
+      "start_line": 19,
+      "end_line": 22,
+      "expected_facts": [
+        "Opens self.path in append mode \"a\"",
+        "Writes the supplied line",
+        "Writes a newline \"\\n\" immediately afterward"
+      ],
+      "forbidden_facts": [
+        "A claim that the file is overwritten",
+        "A guaranteed text encoding; none is specified",
+        "A claim that the method returns written content"
+      ],
+      "exact_answer": "متد `File.append` (در فایل `tools/file_handling.py`، خطوط ۱۹ تا ۲۲) متن ورودی را به این صورت اضافه می‌کند:\n\n1. فایل را با حالت `\"a\"` (append) باز می‌کند، یعنی محتوا به انتهای فایل اضافه می‌شود و محتوای قبلی حذف نمی‌شود:\n   ```python\n   with open(self.path, \"a\") as file:\n   ```\n2. متن ورودی (`line`) را با `file.write(line)` می‌نویسد.\n3. بلافاصله یک کاراکتر خط جدید (`\"\n\"`) را با `file.write(\"\n\")` اضافه می‌کند.\n\nبنابراین متن ورودی دقیقاً همان‌طور که هست (بدون هیچ تغییری) در انتهای فایل نوشته می‌شود و پس از آن یک خط جدید قرار می‌گیرد، به‌طوری که هر فراخوانی بعدی در خط جداگانه‌ای نوشته شود.",
+      "result": "PASS",
+      "latency_seconds": 9.059,
+      "mentioned_expected_facts": [
+        "Opens self.path in append mode \"a\"",
+        "Writes the supplied line",
+        "Writes a newline \"\\n\" immediately afterward"
+      ],
+      "missing_facts": [],
+      "invented_or_unsupported_facts": [],
+      "known_regression_anchor": false,
+      "novel_question": true,
+      "evaluation_note": "The append mode, input write, and trailing newline were all described correctly.",
+      "citations": [
+        {
+          "file_id": 44,
+          "symbol_id": 518,
+          "chunk_id": "20fde1b51d208c3d95db9b5108c353ed49af83cd5b6348410fd5b1ca8f01932d",
+          "source_file": "tools/file_handling.py",
+          "symbol_name": "append",
+          "qualified_name": "File.append",
+          "start_line": 19,
+          "end_line": 22
+        }
+      ],
+      "source_sha256": "29cb8f549b6a465dbc7faa45088dd5edd1c1d0591ec4c5e5139b3976bb2f6156",
+      "exact_answer_available": true,
+      "language_adherence": true,
+      "symbol_fidelity": true,
+      "citation_valid": true,
+      "expected_facts_count": 3,
+      "mentioned_expected_facts_count": 3
+    }
+  ],
+  "aggregate_results": {
+    "total_questions": 8,
+    "pass": 7,
+    "partial": 0,
+    "fail": 1,
+    "english": {
+      "questions": 4,
+      "pass": 3
+    },
+    "persian": {
+      "questions": 4,
+      "pass": 4
+    },
+    "known_regression_anchor": {
+      "questions": 1,
+      "pass": 1
+    },
+    "novel_frozen_questions": {
+      "questions": 7,
+      "pass": 6
+    },
+    "language_adherence": {
+      "valid": 8,
+      "total": 8
+    },
+    "symbol_fidelity": {
+      "valid": 8,
+      "total": 8
+    },
+    "citation_records": {
+      "valid": 13,
+      "total": 13
+    },
+    "latency_seconds": {
+      "mean": 8.671375,
+      "median": 8.562,
+      "min": 5.494,
+      "max": 12.609
+    }
+  },
+  "limitations": [
+    "Small frozen matrix of eight questions from one sample Python repository",
+    "HS-QA-01 is a known regression anchor rather than a novel unseen question",
+    "Only seven questions are novel frozen questions",
+    "One unsupported parameter-type claim was observed",
+    "Additional but valid citation noise was observed for HS-QA-02 and HS-QA-06",
+    "No statistical significance or broad language comparison is supported",
+    "The result does not establish hallucination-free behavior",
+    "Token usage, monetary cost, and provider finish_reason were not retained by the normal Ask API response"
+  ],
+  "final_verdict": "READY_WITH_LIMITATIONS"
+}

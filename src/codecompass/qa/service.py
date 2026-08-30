@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Callable
 
 from codecompass.llm import LLMProvider, LLMProviderError, LLMRequest
@@ -12,6 +13,16 @@ from codecompass.retrieval import RetrievalError, RetrievalQuery, RetrievalResul
 from codecompass.retrieval.models import RetrievalMethod
 
 SearchFn = Callable[[RetrievalQuery], RetrievalResult]
+
+
+def _mentions_symbol(text: str, qualified_name: str) -> bool:
+    pattern = rf"(?<![\w.]){re.escape(qualified_name)}(?!\w)"
+    return re.search(pattern, text, flags=re.IGNORECASE) is not None
+
+
+def _mentions_code_name(text: str, name: str) -> bool:
+    pattern = rf"(?<![\w.]){re.escape(name)}(?![\w.])"
+    return re.search(pattern, text) is not None
 
 
 class GroundedQAService:
@@ -33,6 +44,7 @@ class GroundedQAService:
         """Return a grounded answer with metadata-derived citations."""
         self._validate(request)
         retrieval_result = self._retrieve(request)
+        retrieval_result = self._focus_on_named_symbol(retrieval_result)
         context = self._context(retrieval_result, request.max_context_chars)
         citations = self._citations(context)
         if not context.blocks:
@@ -94,6 +106,34 @@ class GroundedQAService:
         if not callable(search):
             raise QAError("request", "Retrieval service does not support requested method")
         return search
+
+    def _focus_on_named_symbol(self, result: RetrievalResult) -> RetrievalResult:
+        question = result.query.text
+        exact = {
+            chunk.qualified_name
+            for chunk in result.results
+            if chunk.qualified_name and "." in chunk.qualified_name and _mentions_symbol(question, chunk.qualified_name)
+        }
+        if exact:
+            return RetrievalResult(query=result.query, results=tuple(chunk for chunk in result.results if chunk.qualified_name in exact))
+
+        roots = {
+            chunk.qualified_name.split(".", 1)[0]
+            for chunk in result.results
+            if chunk.qualified_name and _mentions_code_name(question, chunk.qualified_name.split(".", 1)[0])
+        }
+        if roots:
+            return RetrievalResult(query=result.query, results=tuple(chunk for chunk in result.results if chunk.qualified_name and chunk.qualified_name.split(".", 1)[0] in roots))
+
+        symbols = {
+            chunk.symbol_name
+            for chunk in result.results
+            if chunk.symbol_name and not chunk.symbol_name.startswith("__") and _mentions_code_name(question, chunk.symbol_name)
+        }
+        if symbols:
+            return RetrievalResult(query=result.query, results=tuple(chunk for chunk in result.results if chunk.symbol_name in symbols))
+
+        return result
 
     def _context(self, retrieval_result: RetrievalResult, max_chars: int) -> RAGContext:
         try:
