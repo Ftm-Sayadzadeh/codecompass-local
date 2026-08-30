@@ -36,9 +36,14 @@ class OpenAICompatibleLLMProvider:
         """Generate text using the current provider-neutral request model."""
         self._validate_request(request)
         response = self._post_json(self._payload(request))
-        text = self._response_text(response)
+        text, finish_reason = self._response(response)
         model = response.get("model") if isinstance(response.get("model"), str) else self.model
-        return LLMResponse(text=text, model=model, provider="openai_compatible")
+        return LLMResponse(
+            text=text,
+            model=model,
+            provider="openai_compatible",
+            finish_reason=finish_reason,
+        )
 
     def _payload(self, request: LLMRequest) -> dict[str, Any]:
         messages: list[dict[str, str]] = []
@@ -68,17 +73,30 @@ class OpenAICompatibleLLMProvider:
         except OpenAICompatibleHTTPError as error:
             raise self._error(error.error_type, error.message) from None
 
-    def _response_text(self, response: dict[str, Any]) -> str:
+    def _response(self, response: dict[str, Any]) -> tuple[str, str | None]:
         choices = response.get("choices")
         if not isinstance(choices, list) or not choices or not isinstance(choices[0], dict):
-            raise self._error("InvalidResponse", "OpenAI-compatible response missing choices")
-        message = choices[0].get("message")
-        if not isinstance(message, dict) or not isinstance(message.get("content"), str):
-            raise self._error("InvalidResponse", "OpenAI-compatible response missing message content")
-        text = message["content"]
+            raise self._error(
+                "invalid_response_choices", "OpenAI-compatible response missing choices"
+            )
+        choice = choices[0]
+        message = choice.get("message")
+        if not isinstance(message, dict):
+            raise self._error(
+                "invalid_response_message", "OpenAI-compatible response missing message"
+            )
+        text = message.get("content")
+        if not isinstance(text, str):
+            raise self._error(
+                "invalid_response_content", "OpenAI-compatible response missing message content"
+            )
         if not text.strip():
-            raise self._error("InvalidResponse", "OpenAI-compatible generated text must not be empty")
-        return text
+            raise self._error(
+                "invalid_response_empty_content",
+                "OpenAI-compatible generated text must not be empty",
+            )
+        finish_reason = choice.get("finish_reason")
+        return text, finish_reason if isinstance(finish_reason, str) else None
 
     def _validate_request(self, request: LLMRequest) -> None:
         if not isinstance(request.prompt, str) or not request.prompt.strip():

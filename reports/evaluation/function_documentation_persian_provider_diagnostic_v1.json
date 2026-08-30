@@ -1,0 +1,85 @@
+{
+  "diagnostic_id": "function_documentation_persian_provider_diagnostic_v1",
+  "record_type": "controlled_provider_diagnostic_not_evaluation",
+  "created_at": "2026-08-30T15:18:08.616896+00:00",
+  "frozen_source": {
+    "evaluation": "function_documentation_review_v2",
+    "case_id": "FD-02",
+    "matrix_sha256": "2408cc6fbc55158deeb97070d6df3278ff15a75a5645fae7575e10162bddc890",
+    "rubric_sha256": "ad9664d35443b4d29c9890d3b118e2e3684b5f9c181fcdc759ba74b2762a5a13"
+  },
+  "target": {
+    "project_id": 1,
+    "project_name": "MarkupSafe M17 Smoke",
+    "file_id": 8,
+    "symbol_id": 67,
+    "chunk_id": "07853da78d9e9f24028e38076c45c58c1049bda24b0f5952f3bfa54316d57796",
+    "qualified_name": "test_escape",
+    "relative_path": "tests/test_escape.py",
+    "start_line": 33,
+    "end_line": 34,
+    "content_hash": "21429afc09cd23955af89d874de705a72f3a0432610c9f00e75aa2c6c02d08c4",
+    "source_file_sha256": "4ac2de8fdd11b4279e71285da66f15386d790a86c3ea2fccb3501204d90d17d6",
+    "extracted_signature": "def test_escape(value, expect) -> None",
+    "extracted_parameters": [
+      "value",
+      "expect"
+    ]
+  },
+  "target_identity_verified_against_v2": true,
+  "configuration": {
+    "application_path": "FunctionDocumentationService.document_symbol",
+    "provider": "openai_compatible",
+    "model": "glm-5.3-flash",
+    "temperature": 0.0,
+    "max_tokens": 1200,
+    "language": "fa",
+    "retrieval": "none",
+    "provider_transport_retries": 0,
+    "manual_reruns": 0,
+    "persian_application_regeneration": "exact_production_behavior"
+  },
+  "execution": {
+    "reviewable_documentation_result": false,
+    "total_provider_calls": 1,
+    "attempts": [
+      {
+        "attempt_number": 1,
+        "request": {
+          "temperature": 0.0,
+          "max_tokens": 1200,
+          "response_format": "json",
+          "system_prompt_sha256": "6aae103231e65ffb0f58c93e93eafc8fa41e645176885661e7adcce43f1eadf3",
+          "prompt_sha256": "70d270d1af30c79f4f4f5c68b967ac75c399d3e35c4fc3703314283fc106b839"
+        },
+        "latency_seconds": 19.921079,
+        "finish_reason": null,
+        "provider_error_type": "invalid_response_content",
+        "provider_content_available": false,
+        "contract_validation_result": "provider_failure"
+      }
+    ],
+    "application_level_regeneration_triggered": false,
+    "regeneration_reason": null,
+    "final_contract_validation_status": "provider_failure",
+    "safe_response_class": "invalid_response_content",
+    "provider_error_type": "invalid_response_content",
+    "error_code": "provider_failure",
+    "finish_reason": null,
+    "latency_seconds": 19.930484
+  },
+  "trusted_identity": {
+    "citation_verified": null,
+    "file_id_verified_from_sqlite": 8
+  },
+  "final_structured_output": null,
+  "semantic_review": {
+    "status": "not_scored_single_provider_diagnostic",
+    "note": "This diagnostic is not function_documentation_review_v3 and is not a benchmark result."
+  },
+  "diagnosis": {
+    "codecompass_product_bug_evidence": false,
+    "upstream_provider_limitation_evidence": true,
+    "m20_closeable_as_done_with_limitations": true
+  }
+}

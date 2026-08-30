@@ -66,13 +66,19 @@ def post_json(
     except OSError:
         raise OpenAICompatibleHTTPError("ConnectionError", "OpenAI-compatible request failed") from None
     try:
-        decoded = json.loads(raw.decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError):
+        text = raw.decode("utf-8")
+    except UnicodeDecodeError:
         raise OpenAICompatibleHTTPError(
-            "InvalidResponse", "OpenAI-compatible response was not valid JSON"
+            "invalid_response_encoding", "OpenAI-compatible response was not valid UTF-8"
+        ) from None
+    try:
+        decoded = json.loads(text)
+    except json.JSONDecodeError:
+        raise OpenAICompatibleHTTPError(
+            "invalid_response_json", "OpenAI-compatible response was not valid JSON"
         ) from None
     if not isinstance(decoded, dict):
         raise OpenAICompatibleHTTPError(
-            "InvalidResponse", "OpenAI-compatible response must be a JSON object"
+            "invalid_response_top_level", "OpenAI-compatible response must be a JSON object"
         )
     return decoded

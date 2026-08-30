@@ -67,6 +67,8 @@ def create_app(settings: APISettings | None = None) -> FastAPI:
     def documentation_error(_: Request, error: DocumentationError) -> JSONResponse:
         status = {"invalid_request": 422, "not_found": 404, "ambiguous": 409, "insufficient_evidence": 422, "provider_timeout": 504}.get(error.code, 502)
         details = {"candidates": [asdict(item) for item in error.candidates]} if error.candidates else {}
+        if error.provider_error_type:
+            details["provider_error_type"] = error.provider_error_type
         return _error(status, f"documentation_{error.code}", error.message, details)
 
     @app.exception_handler(QAError)

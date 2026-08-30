@@ -214,9 +214,16 @@ class FunctionDocumentationService:
                     )
                 )
             except LLMProviderError as error:
-                code = "provider_timeout" if "timeout" in error.error_type.lower() else "provider_failure"
-                raise DocumentationError(code, "Documentation provider failed") from None
+                provider_error_type = _safe_provider_error_type(error.error_type)
+                code = "provider_timeout" if provider_error_type == "timeout" else "provider_failure"
+                raise DocumentationError(
+                    code,
+                    "Documentation provider failed",
+                    provider_error_type=provider_error_type,
+                ) from None
 
+            if response.finish_reason == "length":
+                raise DocumentationError("output_truncated", "Documentation output was truncated")
             generated = self._parse(response.text, target.parameters)
             if language != "fa" or self._is_persian(generated):
                 break
@@ -441,3 +448,28 @@ class FunctionDocumentationService:
         if any(not isinstance(item, str) or not item.strip() or len(item) > _MAX_TEXT for item in value):
             raise DocumentationError("invalid_output", f"{field} must contain non-empty bounded strings")
         return tuple(item.strip() for item in value)
+
+
+def _safe_provider_error_type(error_type: str) -> str:
+    value = error_type.lower()
+    if value in {
+        "invalid_response_encoding",
+        "invalid_response_json",
+        "invalid_response_top_level",
+        "invalid_response_choices",
+        "invalid_response_message",
+        "invalid_response_content",
+        "invalid_response_empty_content",
+    }:
+        return value
+    if "timeout" in value:
+        return "timeout"
+    if value == "httperror":
+        return "http_error"
+    if value in {"connectionerror", "urlerror", "oserror"}:
+        return "connection_error"
+    if value in {"invalidresponse", "jsondecodeerror"}:
+        return "invalid_response"
+    if value == "invalidinput":
+        return "invalid_input"
+    return "provider_error"

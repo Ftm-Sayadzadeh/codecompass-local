@@ -24,10 +24,12 @@ class FakeLLMProvider:
         text: str | None = None,
         error: LLMProviderError | None = None,
         texts: tuple[str, ...] | None = None,
+        finish_reason: str | None = None,
     ) -> None:
         self.text = text or valid_output()
         self.error = error
         self.texts = texts
+        self.finish_reason = finish_reason
         self.requests: list[LLMRequest] = []
 
     def generate(self, request: LLMRequest) -> LLMResponse:
@@ -35,7 +37,12 @@ class FakeLLMProvider:
         if self.error:
             raise self.error
         text = self.texts[min(len(self.requests) - 1, len(self.texts) - 1)] if self.texts else self.text
-        return LLMResponse(text, "fake-model", "fake-provider")
+        return LLMResponse(
+            text,
+            "fake-model",
+            "fake-provider",
+            finish_reason=self.finish_reason,
+        )
 
 
 def valid_output(
@@ -368,6 +375,29 @@ def test_rejects_wrong_types_and_oversized_fields(indexed_store) -> None:
         assert raised.value.code == "invalid_output"
 
 
+def test_explicit_length_finish_reason_is_truncated_without_retry(indexed_store) -> None:
+    store, project_id, _ = indexed_store
+    llm = FakeLLMProvider('{"summary": "incomplete', finish_reason="length")
+
+    with pytest.raises(DocumentationError) as raised:
+        FunctionDocumentationService(store, llm).document_symbol(
+            project_id, "greet", language="fa"
+        )
+
+    assert raised.value.code == "output_truncated"
+    assert len(llm.requests) == 1
+
+
+def test_valid_json_with_stop_finish_reason_is_accepted(indexed_store) -> None:
+    store, project_id, _ = indexed_store
+
+    result = FunctionDocumentationService(
+        store, FakeLLMProvider(finish_reason="stop")
+    ).document_symbol(project_id, "greet")
+
+    assert result.generated.summary == "Builds a greeting."
+
+
 def test_rejects_model_attempts_to_replace_trusted_identity(indexed_store) -> None:
     store, project_id, _ = indexed_store
     payload = json.loads(valid_output())
@@ -389,11 +419,22 @@ def test_rejects_model_attempts_to_replace_trusted_identity(indexed_store) -> No
 
 
 @pytest.mark.parametrize(
-    ("error_type", "expected_code"),
-    [("TimeoutError", "provider_timeout"), ("HTTPError", "provider_failure")],
+    ("error_type", "expected_code", "safe_error_type"),
+    [
+        ("TimeoutError", "provider_timeout", "timeout"),
+        ("HTTPError", "provider_failure", "http_error"),
+        ("ConnectionError", "provider_failure", "connection_error"),
+        ("InvalidResponse", "provider_failure", "invalid_response"),
+        (
+            "invalid_response_empty_content",
+            "provider_failure",
+            "invalid_response_empty_content",
+        ),
+        ("untrusted-secret-category", "provider_failure", "provider_error"),
+    ],
 )
 def test_provider_errors_are_mapped_without_secret_leakage(
-    indexed_store, error_type: str, expected_code: str
+    indexed_store, error_type: str, expected_code: str, safe_error_type: str
 ) -> None:
     store, project_id, _ = indexed_store
     secret = "test-secret-value"
@@ -403,7 +444,9 @@ def test_provider_errors_are_mapped_without_secret_leakage(
         FunctionDocumentationService(store, llm).document_symbol(project_id, "greet")
 
     assert raised.value.code == expected_code
+    assert raised.value.provider_error_type == safe_error_type
     assert secret not in str(raised.value)
+    assert error_type not in str(raised.value)
     assert raised.value.__cause__ is None
 
 

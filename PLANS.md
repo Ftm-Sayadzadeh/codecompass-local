@@ -30,11 +30,11 @@ This file tracks the approved implementation plan. Codex should update milestone
 | M13 | RAG context builder | DONE | M10 |
 | M14 | Local LLM answer adapter | DONE | M13 |
 | M15 | Grounded Q&A + verified citations | DONE | M13, M14 |
-| M16 | Function documentation | NOT STARTED | M5, M14 |
-| M17 | FastAPI backend surface | NOT STARTED | M5, M8, M15, M16 |
-| M18 | React + Vite web UI | NOT STARTED | M17 |
-| M19 | Monaco clickable code citations | NOT STARTED | M18 |
-| M20 | Final evaluation and hardening | NOT STARTED | M10, M12, M15, M16 |
+| M16 | Function documentation | DONE | M5, M14 |
+| M17 | FastAPI backend surface | DONE | M5, M8, M15, M16 |
+| M18 | React + Vite web UI | DONE | M17 |
+| M19 | Monaco clickable code citations | DONE | M18 |
+| M20 | Final evaluation and hardening | DONE_WITH_LIMITATIONS | M10, M12, M15, M16 |
 | M21 | Stable MVP release | NOT STARTED | M17–M20 |
 | S1 | Query expansion | NOT STARTED | M8, M21 |
 
