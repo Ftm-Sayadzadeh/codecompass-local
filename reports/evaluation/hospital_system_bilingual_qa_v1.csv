@@ -1,0 +1,91 @@
+﻿matrix_id,matrix_sha256,rubric_sha256,question_id,language,category,question,target_file,target_symbol,start_line,end_line,result,latency_seconds,expected_facts_count,mentioned_expected_facts_count,missing_facts,invented_or_unsupported_facts,language_adherence,symbol_fidelity,citation_valid,known_regression_anchor,novel_question,exact_answer_available,exact_answer
+hospital_system_bilingual_qa_matrix_v1,3fbeac128da1251ebc3cd262abcb3208044f058a53e3b94977c5e4fddebbe44d,17cc25b4435b9a44189c2ff87b7e04b800fb1a74a8fbd5de523ef7e53151638e,HS-QA-01,EN,attribute_field_enumeration,What attributes are assigned in Patient.__init__?,models/patient.py,Patient.__init__,6,16,PASS,8.134,10,10,,,true,true,true,true,false,true,"In `Patient.__init__` (models/patient.py, lines 6–16), the following attributes are assigned on `self`:
+
+- `first_name`
+- `last_name`
+- `national_id`
+- `phone_num`
+- `password`
+- `gender`
+- `city`
+- `full_name` — set to an f-string combining `self.first_name` and `self.last_name`
+- `insurance_num`
+- `appointments` — initialized to a new `Appointments()` instance"
+hospital_system_bilingual_qa_matrix_v1,3fbeac128da1251ebc3cd262abcb3208044f058a53e3b94977c5e4fddebbe44d,17cc25b4435b9a44189c2ff87b7e04b800fb1a74a8fbd5de523ef7e53151638e,HS-QA-02,FA,attribute_field_enumeration,سازنده Node در models/appointment.py چه ویژگی‌هایی را مقداردهی می‌کند؟,models/appointment.py,Node.__init__,2,5,PASS,5.494,3,3,,,true,true,true,false,true,true,"سازنده `Node.__init__` در فایل `models/appointment.py` سه ویژگی را مقداردهی می‌کند:
+
+- **`self.doctor`** — از پارامتر `doctor`
+- **`self.day`** — از پارامتر `day`
+- **`self.hour`** — از پارامتر `hour`
+
+کد سازنده (خطوط ۲ تا ۵):
+
+```python
+def __init__(self, doctor, day, hour):
+    self.doctor = doctor
+    self.day = day
+    self.hour = hour
+```"
+hospital_system_bilingual_qa_matrix_v1,3fbeac128da1251ebc3cd262abcb3208044f058a53e3b94977c5e4fddebbe44d,17cc25b4435b9a44189c2ff87b7e04b800fb1a74a8fbd5de523ef7e53151638e,HS-QA-03,EN,method_behavior,How does Schedule.is_available decide whether a time slot is available?,models/doctor.py,Schedule.is_available,57,63,PASS,8.990,5,5,,,true,true,true,false,true,true,"Based on the code in `models/doctor.py` (lines 57–63), `Schedule.is_available` works as follows:
+
+1. **Converts the time slot to a 0-based index**: It takes the `time` argument, converts it to an integer, and subtracts 1 (`time = int(time) - 1`). This means callers pass a 1-based slot number, which is mapped to a list index.
+
+2. **Checks that the day exists in the schedule**: It first tests `if self.schedule[day]:` — i.e., the entry for that day must be truthy (non-empty).
+
+3. **Compares the slot's value to the string ""Available""**:
+   - If `self.schedule[day][time] == ""Available""`, it returns `True`.
+   - Otherwise, it returns `False`.
+
+One additional behavior visible in the code: if `self.schedule[day]` is falsy (e.g., empty), the outer `if` is not entered and the method has no explicit return in that path, so it implicitly returns `None` — which is falsy and would be treated as ""not available"" in a boolean context, though it is not an explicit `False`."
+hospital_system_bilingual_qa_matrix_v1,3fbeac128da1251ebc3cd262abcb3208044f058a53e3b94977c5e4fddebbe44d,17cc25b4435b9a44189c2ff87b7e04b800fb1a74a8fbd5de523ef7e53151638e,HS-QA-04,FA,method_behavior,متد QueueArray.dequeue در صف خالی و غیرخالی چه رفتاری دارد؟,data_structures/queue.py,QueueArray.dequeue,22,33,PASS,7.650,3,3,,,true,true,true,false,true,true,"بر اساس کد موجود در `data_structures/queue.py` (خطوط ۲۲-۳۳)، متد `QueueArray.dequeue` دو رفتار دارد:
+
+**صف خالی:**
+- ابتدا با `self.is_empty()` بررسی می‌کند که صف خالی باشد.
+- اگر صف خالی باشد، رشته‌ی `""Queue is empty.""` را برمی‌گرداند (یعنی به‌جای پرتاب استثنا، یک پیام متنی برمی‌گرداند).
+
+**صف غیرخالی:**
+- مقدار `self.front` را یک واحد افزایش می‌دهد: `self.front += 1`
+- سپس عنصر موجود در اندیس `self.front - 1` (یعنی همان موقعیت قبلیِ `front`) را برمی‌گرداند: `return self.queue[self.front - 1]`
+
+به این ترتیب، عنصر ابتدای صف خوانده شده و نشانگر `front` به سمت جلو حرکت می‌کند.
+
+**نکته:** در بدنه‌ی متد یک بلوک کد کامنت‌شده نیز وجود دارد که پیاده‌سازی جایگزینی را نشان می‌دهد (خواندن عنصر از `self.queue[self.front]` و سپس کاهش `self.front`)، اما این کد اجرا نمی‌شود و نسخه‌ی فعال همان افزایش `front` است."
+hospital_system_bilingual_qa_matrix_v1,3fbeac128da1251ebc3cd262abcb3208044f058a53e3b94977c5e4fddebbe44d,17cc25b4435b9a44189c2ff87b7e04b800fb1a74a8fbd5de523ef7e53151638e,HS-QA-05,EN,class_object_relationship,Which helper objects does Doctor.__init__ create and store?,models/doctor.py,Doctor.__init__,9,23,FAIL,9.910,2,2,,"Described unannotated constructor parameters as ""string parameters""",true,true,true,false,true,true,"Based on the provided code, `Doctor.__init__` creates and stores two helper objects:
+
+1. **`Schedule()`** — a new `Schedule` instance assigned to `self.schedule`
+2. **`Appointments()`** — a new `Appointments` instance assigned to `self.appointments`
+
+All other attributes set in `__init__` are plain values, not helper objects: the string parameters (`first_name`, `last_name`, `national_id`, `medical_num`, `phone_num`, `address`, `city`, `speciality`, `password`), the integer `self.visits = 0`, and the f-string `self.full_name = f""{self.first_name} {self.last_name}""`."
+hospital_system_bilingual_qa_matrix_v1,3fbeac128da1251ebc3cd262abcb3208044f058a53e3b94977c5e4fddebbe44d,17cc25b4435b9a44189c2ff87b7e04b800fb1a74a8fbd5de523ef7e53151638e,HS-QA-06,FA,class_object_relationship,سازنده Manage چه مجموعه‌هایی را نگه می‌دارد و چه شیء مدیریت روزی می‌سازد؟,logic/management.py,Manage.__init__,7,12,PASS,7.525,5,5,,,true,true,true,false,true,true,"بر اساس کد سازندهٔ `Manage.__init__` (فایل `logic/management.py`، خطوط ۷ تا ۱۲):
+
+**مجموعه‌هایی که نگه می‌دارد** (که همگی به‌عنوان پارامتر ورودی دریافت می‌شوند):
+- `self.cities` — شهرها
+- `self.specialities` — تخصص‌ها
+- `self.patients` — بیماران
+- `self.doctors` — پزشکان
+
+**شیء مدیریت روزی که می‌سازد:**
+- `self.day_manager = DayManager()` — یک نمونه از کلاس `DayManager` می‌سازد (این پارامتر ورودی نیست و مستقیماً درون سازنده نمونه‌سازی می‌شود)."
+hospital_system_bilingual_qa_matrix_v1,3fbeac128da1251ebc3cd262abcb3208044f058a53e3b94977c5e4fddebbe44d,17cc25b4435b9a44189c2ff87b7e04b800fb1a74a8fbd5de523ef7e53151638e,HS-QA-07,EN,symbol_specific_explanation,What exactly does DayManager.next_day do?,logic/day_manager.py,DayManager.next_day,27,29,PASS,12.609,2,2,,,true,true,true,false,true,true,"Based on the provided code, `DayManager.next_day` (defined in `logic/day_manager.py`, lines 27–29) does exactly two things:
+
+1. **Increments the current day**: `self.curr_day += 1` — it adds 1 to the instance attribute `curr_day`.
+2. **Saves the day**: it then calls `self.save_day()`.
+
+```python
+def next_day(self):
+    self.curr_day += 1
+    self.save_day()
+```
+
+Note: The retrieved context does not include the implementation of `save_day()`, so what that save operation actually does (e.g., where or how the day is persisted) cannot be determined from the provided evidence."
+hospital_system_bilingual_qa_matrix_v1,3fbeac128da1251ebc3cd262abcb3208044f058a53e3b94977c5e4fddebbe44d,17cc25b4435b9a44189c2ff87b7e04b800fb1a74a8fbd5de523ef7e53151638e,HS-QA-08,FA,symbol_specific_explanation,متد File.append متن ورودی را دقیقاً چگونه به فایل اضافه می‌کند؟,tools/file_handling.py,File.append,19,22,PASS,9.059,3,3,,,true,true,true,false,true,true,"متد `File.append` (در فایل `tools/file_handling.py`، خطوط ۱۹ تا ۲۲) متن ورودی را به این صورت اضافه می‌کند:
+
+1. فایل را با حالت `""a""` (append) باز می‌کند، یعنی محتوا به انتهای فایل اضافه می‌شود و محتوای قبلی حذف نمی‌شود:
+   ```python
+   with open(self.path, ""a"") as file:
+   ```
+2. متن ورودی (`line`) را با `file.write(line)` می‌نویسد.
+3. بلافاصله یک کاراکتر خط جدید (`""
+""`) را با `file.write(""
+"")` اضافه می‌کند.
+
+بنابراین متن ورودی دقیقاً همان‌طور که هست (بدون هیچ تغییری) در انتهای فایل نوشته می‌شود و پس از آن یک خط جدید قرار می‌گیرد، به‌طوری که هر فراخوانی بعدی در خط جداگانه‌ای نوشته شود."
