@@ -39,6 +39,7 @@ dist/
 
 # Frontend
 node_modules/
+frontend/dist/
 .next/
 coverage/
 

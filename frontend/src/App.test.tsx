@@ -1,0 +1,249 @@
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import App from "./App";
+
+vi.mock("@monaco-editor/react", () => ({
+  default: ({ value }: { value: string }) => <pre data-testid="monaco">{value}</pre>,
+}));
+
+const project = { id: 1, name: "MarkupSafe", created_at: "2026-01-01", updated_at: "2026-01-01", files: 1, symbols: 1, chunks: 1, vector_complete: true };
+const file = { id: 4, relative_path: "src/markupsafe/__init__.py", size_bytes: 4000, sha256: "abc", status: "indexed" };
+const symbol = { id: 12, file_id: 4, kind: "function", name: "escape_silent", qualified_name: "escape_silent", is_async: false, start_line: 48, end_line: 61, parameters: ["s"], returns: "Markup" };
+const citation = { file_id: 4, symbol_id: 12, chunk_id: "chunk-escape", source_file: file.relative_path, symbol_name: "escape_silent", qualified_name: "escape_silent", start_line: 48, end_line: 61 };
+const source = { id: 4, relative_path: file.relative_path, sha256: "abc", content: "\n".repeat(47) + "def escape_silent(s):\n    if s is None:\n        return Markup()\n" };
+const evaluation = {
+  scope: "benchmark_evaluation",
+  not_per_answer_confidence: true,
+  artifact_sha256: "baseline",
+  data: {
+    benchmark: { questions: 60, concepts: 30 },
+    aggregates: [
+      { slice: { kind: "global_micro", value: "all" }, method: "lexical", questions: 60, top_1: 0.43, top_3: 0.71, mrr_at_10: 0.58 },
+      { slice: { kind: "global_micro", value: "all" }, method: "semantic", questions: 60, top_1: 0.35, top_3: 0.65, mrr_at_10: 0.5 },
+      { slice: { kind: "global_micro", value: "all" }, method: "hybrid", questions: 60, top_1: 0.633, top_3: 0.783, mrr_at_10: 0.732 },
+    ],
+  },
+};
+const performance = {
+  scope: "benchmark_evaluation",
+  not_per_answer_confidence: true,
+  artifact_sha256: "performance",
+  data: {
+    measurement_context: "descriptive measurements from the recorded evaluation environment",
+    aggregates: [
+      { slice: { kind: "method", method: "lexical" }, samples: 300, latency_ms: { p95: 143.9 } },
+      { slice: { kind: "method", method: "semantic" }, samples: 300, latency_ms: { p95: 174.1 } },
+      { slice: { kind: "method", method: "hybrid" }, samples: 300, latency_ms: { p95: 283.1 } },
+    ],
+  },
+};
+
+function response(body: unknown, status = 200) {
+  return Promise.resolve(new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } }));
+}
+
+function installApi(handler?: (path: string, init?: RequestInit) => Promise<Response> | undefined) {
+  const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+    const path = String(input).replace("/api", "");
+    const custom = handler?.(path, init);
+    if (custom) return custom;
+    if (path === "/projects") return response([project]);
+    if (path === "/projects/1") return response(project);
+    if (path === "/projects/1/files") return response([file]);
+    if (path === "/projects/1/symbols") return response([symbol]);
+    if (path === "/projects/1/files/4/content") return response(source);
+    if (path === "/evaluation/summary") return response(evaluation);
+    if (path === "/evaluation/performance") return response(performance);
+    throw new Error(`Unhandled request: ${path}`);
+  });
+  vi.stubGlobal("fetch", fetchMock);
+  return fetchMock;
+}
+
+async function ready() {
+  expect(await screen.findByText("MarkupSafe")).toBeInTheDocument();
+  expect(await screen.findByText("63.3%")).toBeInTheDocument();
+}
+
+describe("CodeCompass SPA", () => {
+  beforeEach(() => {
+    Object.defineProperty(window, "localStorage", { value: { setItem: vi.fn(), getItem: vi.fn(), removeItem: vi.fn(), clear: vi.fn() }, configurable: true });
+    Object.defineProperty(window, "sessionStorage", { value: { setItem: vi.fn(), getItem: vi.fn(), removeItem: vi.fn(), clear: vi.fn() }, configurable: true });
+  });
+
+  it("renders API-driven project/evaluation data and keeps API keys memory-only", async () => {
+    installApi();
+    render(<App />);
+    await ready();
+
+    expect(screen.getByText("Benchmark evaluation results — not per-answer confidence.")).toBeInTheDocument();
+    expect(screen.getByText("283.1 ms")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Provider settings" }));
+    const defaults = screen.getAllByLabelText("Use backend defaults");
+    fireEvent.click(defaults[1]);
+    const providers = screen.getAllByLabelText("Provider");
+    fireEvent.change(providers[1], { target: { value: "openai_compatible" } });
+    const key = screen.getByLabelText("API key");
+    expect(key).toHaveAttribute("type", "password");
+    fireEvent.change(key, { target: { value: "DUMMY_FRONTEND_TEST_KEY" } });
+    expect(localStorage.setItem).not.toHaveBeenCalled();
+    expect(sessionStorage.setItem).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Clear key" }));
+    expect(key).toHaveValue("");
+  });
+
+  it("renders grounded Ask citations and navigates by file_id directly", async () => {
+    const fetchMock = installApi((path) => path === "/projects/1/ask" ? response({
+      question: "How does escape_silent handle None?",
+      answer: "It returns an empty Markup instance.",
+      method: "hybrid",
+      citations: [citation],
+      omitted_context_count: 0,
+      llm_model: "qwen",
+      llm_provider: "ollama",
+    }) : undefined);
+    render(<App />);
+    await ready();
+
+    fireEvent.change(screen.getByLabelText("Ask about this codebase"), { target: { value: "How does escape_silent handle None?" } });
+    fireEvent.click(screen.getByRole("button", { name: "Ask CodeCompass" }));
+    expect(await screen.findByText("It returns an empty Markup instance.")).toBeInTheDocument();
+    expect(screen.getByText("L48–61")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Open code/i }));
+    expect(await screen.findByTestId("monaco")).toHaveTextContent("def escape_silent");
+    expect(screen.getByText("Lines 48–61")).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith("/api/projects/1/files/4/content", expect.anything());
+  });
+
+  it("omits an empty Ask budget, sends a valid override, and blocks invalid values", async () => {
+    const askBodies: Record<string, unknown>[] = [];
+    installApi((path, init) => {
+      if (path !== "/projects/1/ask") return undefined;
+      askBodies.push(JSON.parse(String(init?.body)));
+      return response({ question: "Question", answer: "Answer", method: "hybrid", citations: [], omitted_context_count: 0, llm_model: "model", llm_provider: "provider" });
+    });
+    render(<App />);
+    await ready();
+
+    fireEvent.change(screen.getByLabelText("Ask about this codebase"), { target: { value: "Question" } });
+    fireEvent.click(screen.getByRole("button", { name: "Ask CodeCompass" }));
+    await waitFor(() => expect(askBodies).toHaveLength(1));
+    expect(askBodies[0]).not.toHaveProperty("max_tokens");
+
+    fireEvent.click(screen.getByText("Advanced"));
+    const budget = screen.getByLabelText("Answer token budget");
+    fireEvent.change(budget, { target: { value: "1024" } });
+    fireEvent.click(screen.getByRole("button", { name: "Provider settings" }));
+    fireEvent.click(screen.getAllByLabelText("Use backend defaults")[1]);
+    fireEvent.change(screen.getAllByLabelText("Model")[1], { target: { value: "another-model" } });
+    expect(budget).toHaveValue(1024);
+    fireEvent.click(screen.getByRole("button", { name: "Ask CodeCompass" }));
+    await waitFor(() => expect(askBodies).toHaveLength(2));
+    expect(askBodies[1]).toHaveProperty("max_tokens", 1024);
+
+    for (const invalid of ["0", "-1", "8001", "1.5"]) {
+      fireEvent.change(budget, { target: { value: invalid } });
+      expect(screen.getByRole("alert")).toHaveTextContent("Enter an integer from 1 to 8000.");
+      expect(screen.getByRole("button", { name: "Ask CodeCompass" })).toBeDisabled();
+    }
+    expect(askBodies).toHaveLength(2);
+  });
+
+  it("shows synchronous indexing state and refreshes the indexed project", async () => {
+    let indexed = false;
+    let finishIndex: (value: Response) => void = () => undefined;
+    const pendingIndex = new Promise<Response>((resolve) => { finishIndex = resolve; });
+    installApi((path) => {
+      if (path === "/projects") return response(indexed ? [project] : []);
+      if (path === "/projects/index") return pendingIndex;
+      return undefined;
+    });
+    render(<App />);
+    expect(await screen.findByText("Connect your first repository")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Repository path"), { target: { value: "<temporary-repository>" } });
+    fireEvent.click(screen.getByRole("button", { name: "Index repository" }));
+    expect(screen.getByRole("button", { name: "Indexing repository..." })).toBeDisabled();
+
+    indexed = true;
+    finishIndex(new Response(JSON.stringify({ project_id: 1, operation: "indexed", complete: true, structural_stats: { files_indexed: 1 }, vector_stats: { vectors_stored: 1 }, embedding: { provider: "ollama", model: "embed", dimensions: 768 } }), { status: 200, headers: { "Content-Type": "application/json" } }));
+    expect(await screen.findByText("MarkupSafe")).toBeInTheDocument();
+    expect(screen.getByText("Verified")).toBeInTheDocument();
+  });
+
+  it("turns source_changed into a safe re-index action", async () => {
+    installApi((path) => path === "/projects/1/files/4/content"
+      ? response({ error: { code: "source_changed", message: "private detail", details: { path: "PRIVATE_BACKEND_PATH" } } }, 409)
+      : undefined);
+    render(<App />);
+    await ready();
+    fireEvent.click(screen.getByRole("button", { name: file.relative_path }));
+    expect(await screen.findByText("Source changed")).toBeInTheDocument();
+    expect(screen.getByText("Source file changed after indexing. Re-index the repository.")).toBeInTheDocument();
+    expect(screen.queryByText("PRIVATE_BACKEND_PATH")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Re-index repository" }));
+    expect(screen.getByText("Index another repository or refresh the current source")).toBeInTheDocument();
+  });
+
+  it("preserves ordered Search results and explains embedding mismatch safely", async () => {
+    let mismatch = false;
+    installApi((path) => {
+      if (path !== "/projects/1/search") return undefined;
+      if (mismatch) return response({ error: { code: "embedding_configuration_mismatch", message: "raw", details: { internal_path: "PRIVATE_BACKEND_PATH" } } }, 409);
+      return response({ query: "escape", method: "lexical", results: [
+        { ...citation, score: 4.2, code: "def escape_silent(): pass", retrieval_method: "lexical" },
+        { ...citation, chunk_id: "chunk-escape-2", qualified_name: "escape", symbol_name: "escape", score: 2.1, start_line: 24, end_line: 45, code: "def escape(): pass", retrieval_method: "lexical" },
+      ] });
+    });
+    render(<App />);
+    await ready();
+    fireEvent.click(screen.getByRole("tab", { name: "Search" }));
+    fireEvent.change(screen.getByLabelText("Search indexed code"), { target: { value: "escape" } });
+    fireEvent.click(screen.getByRole("button", { name: "Lexical" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Search$/ }));
+    await screen.findByText("2 results");
+    const results = screen.getAllByRole("article");
+    expect(within(results[0]).getByText("escape_silent")).toBeInTheDocument();
+    expect(within(results[1]).getByText("escape")).toBeInTheDocument();
+
+    mismatch = true;
+    fireEvent.click(screen.getByRole("button", { name: "Hybrid" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Search$/ }));
+    expect(await screen.findByText("Embedding configuration mismatch")).toBeInTheDocument();
+    expect(screen.queryByText("PRIVATE_BACKEND_PATH")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Re-index repository" })).toBeInTheDocument();
+  });
+
+  it("separates extracted/generated documentation and resolves ambiguity explicitly", async () => {
+    let calls = 0;
+    let documentationRequest: Record<string, unknown> = {};
+    installApi((path, init) => {
+      if (path !== "/projects/1/documentation") return undefined;
+      calls += 1;
+      documentationRequest = JSON.parse(String(init?.body));
+      if (calls === 1) return response({ error: { code: "documentation_ambiguous", message: "Multiple matches", details: { candidates: [{ symbol_id: 12, chunk_id: "chunk-escape", symbol_type: "function", qualified_name: "escape_silent", relative_source_path: file.relative_path, start_line: 48, end_line: 61 }] } } }, 409);
+      return response({
+        extracted: { citation: { project_id: 1, project_name: "MarkupSafe", file_id: 4, symbol_id: 12, chunk_id: "chunk-escape", qualified_name: "escape_silent", relative_source_path: file.relative_path, start_line: 48, end_line: 61, content_hash: "content" }, symbol_type: "function", signature: "def escape_silent(s) -> Markup", parameters: ["s"], return_annotation: "Markup", is_async: false, source_file_hash: "abc" },
+        generated: { summary: "برای None یک Markup خالی برمی‌گرداند.", detailed_description: "پیش از فراخوانی escape() ورودی را بررسی می‌کند.", parameters: [{ name: "s", description: "مقداری که باید escape شود." }], return_value: "یک Markup امن.", raises: [], side_effects: [], dependencies: ["escape()"], notes: [] },
+        citations: [{ project_id: 1, project_name: "MarkupSafe", file_id: 4, symbol_id: 12, chunk_id: "chunk-escape", qualified_name: "escape_silent", relative_source_path: file.relative_path, start_line: 48, end_line: 61, content_hash: "content" }],
+        generation: { schema_version: "1", provider: "ollama", model: "qwen", language: "fa" },
+      });
+    });
+    render(<App />);
+    await ready();
+    fireEvent.click(screen.getByRole("tab", { name: "Documentation" }));
+    fireEvent.change(screen.getByLabelText("Function or method"), { target: { value: "escape_silent" } });
+    fireEvent.click(screen.getByRole("button", { name: "Persian" }));
+    fireEvent.click(screen.getByRole("button", { name: "Generate" }));
+    expect(await screen.findByText("Choose a matching symbol")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /escape_silent.*src\/markupsafe/i }));
+    expect(await screen.findByText("Extracted facts")).toBeInTheDocument();
+    expect(screen.getByText("Generated explanation")).toBeInTheDocument();
+    expect(screen.getByText("def escape_silent(s) -> Markup")).toBeInTheDocument();
+    expect(screen.getAllByText("escape()", { selector: "bdi" })).not.toHaveLength(0);
+    for (const identifier of screen.getAllByText("escape()", { selector: "bdi" })) {
+      expect(identifier).toHaveAttribute("dir", "ltr");
+    }
+    expect(documentationRequest).toMatchObject({ language: "fa", max_tokens: 500 });
+  });
+});
