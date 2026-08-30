@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import ast
 import json
+import textwrap
 from pathlib import PurePosixPath, PureWindowsPath
 from typing import Any
 
@@ -194,21 +196,32 @@ class FunctionDocumentationService:
         if target is None or not target.source_code.strip():
             raise DocumentationError("insufficient_evidence", "Target symbol has no indexed source evidence")
 
-        try:
-            response = self.llm_provider.generate(
-                LLMRequest(
-                    system_prompt=_SYSTEM_PROMPT,
-                    prompt=self._prompt(target, language),
-                    temperature=0.0,
-                    max_tokens=max_tokens,
-                    response_format="json",
+        attempts = 2 if language == "fa" else 1
+        for attempt in range(attempts):
+            try:
+                response = self.llm_provider.generate(
+                    LLMRequest(
+                        system_prompt=(
+                            _SYSTEM_PROMPT
+                            if language == "en"
+                            else _SYSTEM_PROMPT
+                            + "\nتمام متن‌های توضیحی در پاسخ باید فقط به زبان فارسی و با خط فارسی باشند."
+                        ),
+                        prompt=self._prompt(target, language, retry=attempt > 0),
+                        temperature=0.0,
+                        max_tokens=max_tokens,
+                        response_format="json",
+                    )
                 )
-            )
-        except LLMProviderError as error:
-            code = "provider_timeout" if "timeout" in error.error_type.lower() else "provider_failure"
-            raise DocumentationError(code, "Documentation provider failed") from None
+            except LLMProviderError as error:
+                code = "provider_timeout" if "timeout" in error.error_type.lower() else "provider_failure"
+                raise DocumentationError(code, "Documentation provider failed") from None
 
-        generated = self._parse(response.text, target.parameters)
+            generated = self._parse(response.text, target.parameters)
+            if language != "fa" or self._is_persian(generated):
+                break
+        else:
+            raise DocumentationError("invalid_output", "Model output did not use the requested Persian language")
         extracted = ExtractedDocumentationFacts(
             citation=target.citation,
             symbol_type=target.symbol_type,
@@ -230,8 +243,45 @@ class FunctionDocumentationService:
             ),
         )
 
-    def _prompt(self, target: ResolvedSymbol, language: DocumentationLanguage) -> str:
+    def _prompt(self, target: ResolvedSymbol, language: DocumentationLanguage, *, retry: bool = False) -> str:
         language_name = "Persian" if language == "fa" else "English"
+        documentation_role = (
+            "test function"
+            if target.name.startswith("test_") or "tests" in PurePosixPath(target.citation.relative_source_path).parts
+            else target.symbol_type
+        )
+        assertion_hint = self._assertion_hint(target.source_code, language) if documentation_role == "test function" else ()
+        language_rules = (
+            "- Write every natural-language JSON string value in Persian script.",
+            "- Keep Python identifiers and parameters[].name unchanged inside Persian text.",
+            "- Use concise, natural Persian; avoid literal translation and repeated phrases.",
+        ) if language == "fa" else ()
+        role_rules = (
+            "- Describe what behavior the assertion verifies; do not present test code as a production API.",
+            "- An assertion or comparison is a check, not a side effect.",
+        ) if documentation_role == "test function" else ()
+        final_role_rules = (
+            (
+                "Final test interpretation rule:",
+                "این نماد یک تست است؛ دقیقاً توضیح بده عبارت assert چه نتیجه واقعی را با چه مقدار مورد انتظاری مقایسه می‌کند.",
+                "خلاصه را با «این تست بررسی می‌کند که» شروع کن.",
+                "در مقایسه actual == expected، پارامترهای سمت actual ورودی آزمون و پارامترهای سمت expected مقدار مورد انتظار هستند.",
+                "درباره خلاصه‌سازی کد یا متن ادعایی نکن، مگر اینکه صریحاً در منبع دیده شود.",
+            )
+            if documentation_role == "test function" and language == "fa"
+            else (
+                "Final test interpretation rule:",
+                "This symbol is a test; explain exactly which actual and expected values its assertion compares.",
+                "Start the summary with 'This test verifies that'.",
+                "For actual == expected, describe actual-side parameters as test inputs and expected-side parameters as expected values.",
+                "Do not claim that it summarizes code or text unless the source explicitly does so.",
+            )
+            if documentation_role == "test function"
+            else ()
+        )
+        retry_rule = (
+            "- The previous response used the wrong language; Persian text is mandatory.",
+        ) if retry else ()
         parameter_template = ", ".join(
             f'{{"name": {json.dumps(name)}, "description": null}}' for name in target.parameters
         )
@@ -243,6 +293,13 @@ class FunctionDocumentationService:
                 "- The first response character must be { and the last response character must be }.",
                 "- Do not use Markdown, code fences, or commentary.",
                 "- Generate the object once and stop immediately after }.",
+                "- Keep the summary to one sentence and the detailed description to at most three sentences.",
+                "- State behavior directly and do not repeat the summary.",
+                "- Use only the supplied source evidence; do not invent a purpose or behavior.",
+                "- Use null or an empty list when evidence does not support a generated field.",
+                *language_rules,
+                *role_rules,
+                *retry_rule,
                 "JSON shape:",
                 "{",
                 '  "summary": "non-empty string",',
@@ -255,6 +312,7 @@ class FunctionDocumentationService:
                 '  "notes": []',
                 "}",
                 "Trusted extracted facts:",
+                f"documentation_role: {documentation_role}",
                 f"symbol_type: {target.symbol_type}",
                 f"qualified_name: {target.citation.qualified_name}",
                 f"signature: {target.signature}",
@@ -263,8 +321,51 @@ class FunctionDocumentationService:
                 f"lines: {target.citation.start_line}-{target.citation.end_line}",
                 "Source evidence:",
                 target.source_code,
+                *assertion_hint,
+                *final_role_rules,
+                *(
+                    (
+                        "Final mandatory language rule:",
+                        "تمام مقادیر توضیحی JSON را فقط به زبان فارسی و با خط فارسی بنویس.",
+                    )
+                    if language == "fa"
+                    else ()
+                ),
             )
         )
+
+    def _assertion_hint(self, source_code: str, language: DocumentationLanguage) -> tuple[str, ...]:
+        try:
+            tree = ast.parse(textwrap.dedent(source_code))
+        except SyntaxError:
+            return ()
+        assertion = next((node for node in ast.walk(tree) if isinstance(node, ast.Assert)), None)
+        if assertion is None:
+            return ()
+        expression = assertion.test
+        if (
+            isinstance(expression, ast.Compare)
+            and len(expression.ops) == 1
+            and isinstance(expression.ops[0], ast.Eq)
+            and len(expression.comparators) == 1
+        ):
+            actual = ast.unparse(expression.left)
+            expected = ast.unparse(expression.comparators[0])
+            sentence = (
+                f"این تست بررسی می‌کند که نتیجه {actual} با {expected} برابر باشد."
+                if language == "fa"
+                else f"This test verifies that {actual} equals {expected}."
+            )
+            return (f"Trusted AST assertion: {actual} == {expected}", f"Grounded summary: {sentence}")
+        return (f"Trusted AST assertion: {ast.unparse(expression)}",)
+
+    def _is_persian(self, generated: GeneratedDocumentation) -> bool:
+        texts = [
+            generated.summary,
+            generated.detailed_description,
+            *(item.description for item in generated.parameters if item.description),
+        ]
+        return all(any("\u0600" <= char <= "\u06ff" and char.isalpha() for char in text) for text in texts)
 
     def _parse(self, text: str, expected_parameters: tuple[str, ...]) -> GeneratedDocumentation:
         raw = self._json_text(text)

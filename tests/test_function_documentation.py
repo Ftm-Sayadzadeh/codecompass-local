@@ -19,16 +19,23 @@ from codecompass.storage import SQLiteMetadataStore
 
 
 class FakeLLMProvider:
-    def __init__(self, text: str | None = None, error: LLMProviderError | None = None) -> None:
+    def __init__(
+        self,
+        text: str | None = None,
+        error: LLMProviderError | None = None,
+        texts: tuple[str, ...] | None = None,
+    ) -> None:
         self.text = text or valid_output()
         self.error = error
+        self.texts = texts
         self.requests: list[LLMRequest] = []
 
     def generate(self, request: LLMRequest) -> LLMResponse:
         self.requests.append(request)
         if self.error:
             raise self.error
-        return LLMResponse(self.text, "fake-model", "fake-provider")
+        text = self.texts[min(len(self.requests) - 1, len(self.texts) - 1)] if self.texts else self.text
+        return LLMResponse(text, "fake-model", "fake-provider")
 
 
 def valid_output(
@@ -73,7 +80,7 @@ class Worker:
         encoding="utf-8",
     )
     (repository / "b.py").write_text(
-        "def shared(value):\n    return value * 2\n",
+        "def shared(value):\n    return value * 2\n\ndef test_escape(value):\n    assert value == 'expected'\n",
         encoding="utf-8",
     )
     store = SQLiteMetadataStore(tmp_path / "metadata.sqlite")
@@ -180,9 +187,13 @@ def test_generation_parses_return_errors_effects_dependencies_and_notes(indexed_
 
 def test_generation_supports_persian_without_changing_trusted_metadata(indexed_store) -> None:
     store, project_id, _ = indexed_store
-    llm = FakeLLMProvider(
+    payload = json.loads(
         valid_output(summary="یک پیام خوشامد می‌سازد.", details="نام را در پیام قرار می‌دهد.")
     )
+    payload["parameters"][0]["description"] = "نامی که در پیام قرار می‌گیرد."
+    payload["return_value"] = "رشته پیام خوشامدگویی."
+    payload["dependencies"] = ["normalize_name", "str"]
+    llm = FakeLLMProvider(json.dumps(payload, ensure_ascii=False))
 
     result = FunctionDocumentationService(store, llm).document_symbol(
         project_id, "greet", language="fa"
@@ -192,6 +203,42 @@ def test_generation_supports_persian_without_changing_trusted_metadata(indexed_s
     assert result.generation.language == "fa"
     assert result.extracted.citation.relative_source_path == "a.py"
     assert "Write the documentation in Persian." in llm.requests[0].prompt
+    assert "every natural-language JSON string value in Persian" in llm.requests[0].prompt
+    assert "فقط به زبان فارسی" in (llm.requests[0].system_prompt or "")
+    assert llm.requests[0].prompt.endswith(
+        "تمام مقادیر توضیحی JSON را فقط به زبان فارسی و با خط فارسی بنویس."
+    )
+
+
+def test_persian_generation_retries_one_wrong_language_response(indexed_store) -> None:
+    store, project_id, _ = indexed_store
+    payload = json.loads(
+        valid_output(summary="یک پیام خوشامد می‌سازد.", details="نام را در پیام قرار می‌دهد.")
+    )
+    payload["parameters"][0]["description"] = "نامی که در پیام قرار می‌گیرد."
+    payload["return_value"] = "رشته پیام خوشامدگویی."
+    llm = FakeLLMProvider(texts=(valid_output(), json.dumps(payload, ensure_ascii=False)))
+
+    result = FunctionDocumentationService(store, llm).document_symbol(
+        project_id, "greet", language="fa"
+    )
+
+    assert result.generated.summary == "یک پیام خوشامد می‌سازد."
+    assert len(llm.requests) == 2
+    assert "previous response used the wrong language" in llm.requests[1].prompt
+
+
+def test_persian_generation_rejects_english_after_bounded_retry(indexed_store) -> None:
+    store, project_id, _ = indexed_store
+    llm = FakeLLMProvider(texts=(valid_output(), valid_output()))
+
+    with pytest.raises(DocumentationError) as raised:
+        FunctionDocumentationService(store, llm).document_symbol(
+            project_id, "greet", language="fa"
+        )
+
+    assert raised.value.code == "invalid_output"
+    assert len(llm.requests) == 2
 
 
 def test_ambiguity_is_exposed_by_documentation_service(indexed_store) -> None:
@@ -288,6 +335,22 @@ def test_prompt_forbids_markdown_commentary_and_repetition(indexed_store) -> Non
     assert "Reply with exactly one JSON object." in llm.requests[0].prompt
     assert "Do not use Markdown, code fences, or commentary." in llm.requests[0].prompt
     assert "Generate the object once and stop immediately after }." in llm.requests[0].prompt
+    assert "Keep the summary to one sentence" in llm.requests[0].prompt
+
+
+def test_prompt_describes_test_role_without_calling_assertion_a_side_effect(indexed_store) -> None:
+    store, project_id, _ = indexed_store
+    llm = FakeLLMProvider(valid_output(parameters=("value",)))
+
+    FunctionDocumentationService(store, llm).document_symbol(project_id, "test_escape")
+
+    assert "documentation_role: test function" in llm.requests[0].prompt
+    assert "assertion or comparison is a check, not a side effect" in llm.requests[0].prompt
+    assert "actual and expected values its assertion compares" in llm.requests[0].prompt
+    assert "actual-side parameters as test inputs" in llm.requests[0].prompt
+    assert "do not invent a purpose or behavior" in llm.requests[0].prompt
+    assert "Trusted AST assertion: value" in llm.requests[0].prompt
+    assert "Grounded summary: This test verifies that value" in llm.requests[0].prompt
 
 
 def test_rejects_wrong_types_and_oversized_fields(indexed_store) -> None:
