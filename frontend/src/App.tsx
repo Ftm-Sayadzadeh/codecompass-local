@@ -192,7 +192,7 @@ export default function App() {
     setWorkspaceTab("documentation");
   };
 
-  const projectStatus = projectLoading ? "Loading" : project?.vector_complete ? "Ready" : project ? "Vector index incomplete" : "No project";
+  const projectStatus = projectLoading ? "Loading" : projectError ? "Project status unavailable" : project?.vector_complete ? "Ready" : project ? "Vector index incomplete" : "No project";
 
   return (
     <div className="app-shell">

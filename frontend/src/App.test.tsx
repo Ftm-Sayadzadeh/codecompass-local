@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "./App";
+import { loadPreferences } from "./preferences";
 
 vi.mock("@monaco-editor/react", () => ({
   default: ({ value }: { value: string }) => <pre data-testid="monaco">{value}</pre>,
@@ -143,6 +144,42 @@ describe("CodeCompass SPA", () => {
     for (const checkbox of screen.getAllByLabelText("Use backend defaults")) expect(checkbox).toBeChecked();
   });
 
+  it("rejects invalid persisted numeric preferences and restores valid values", () => {
+    stored.set("codecompass.preferences.v1", JSON.stringify([]));
+    expect(loadPreferences().embedding.useBackendDefault).toBe(true);
+
+    stored.clear();
+    stored.set("codecompass.preferences.v0", JSON.stringify({
+      embedding: { useBackendDefault: false, provider: "ollama", model: "old-model" },
+    }));
+    expect(loadPreferences().embedding).not.toHaveProperty("model", "old-model");
+
+    stored.clear();
+    stored.set("codecompass.preferences.v1", JSON.stringify({
+      embedding: { useBackendDefault: false, provider: "ollama", timeoutSeconds: "not-a-number", dimensions: "Infinity" },
+      llm: { useBackendDefault: false, provider: "openai_compatible", timeoutSeconds: "601" },
+      answerTokenBudget: "1.5",
+    }));
+
+    const invalid = loadPreferences();
+    expect(invalid.embedding.timeoutSeconds).toBe("");
+    expect(invalid.embedding.dimensions).toBe("");
+    expect(invalid.llm.timeoutSeconds).toBe("");
+    expect(invalid.answerTokenBudget).toBe("");
+
+    stored.set("codecompass.preferences.v1", JSON.stringify({
+      embedding: { useBackendDefault: false, provider: "ollama", timeoutSeconds: "45", dimensions: "768" },
+      llm: { useBackendDefault: false, provider: "openai_compatible", timeoutSeconds: "90" },
+      answerTokenBudget: "1024",
+    }));
+
+    const valid = loadPreferences();
+    expect(valid.embedding.timeoutSeconds).toBe("45");
+    expect(valid.embedding.dimensions).toBe("768");
+    expect(valid.llm.timeoutSeconds).toBe("90");
+    expect(valid.answerTokenBudget).toBe("1024");
+  });
+
   it("renders grounded Ask citations and navigates by file_id directly", async () => {
     const fetchMock = installApi((path) => path === "/projects/1/ask" ? response({
       question: "How does escape_silent handle None?",
@@ -258,6 +295,7 @@ describe("CodeCompass SPA", () => {
     });
     render(<App />);
     expect(await screen.findByText("Connect your first repository")).toBeInTheDocument();
+    expect(screen.getByText("No project")).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Repository path"), { target: { value: "<temporary-repository>" } });
     fireEvent.click(screen.getByRole("button", { name: "Index repository" }));
     expect(screen.getByRole("button", { name: "Indexing repository..." })).toBeDisabled();
@@ -278,6 +316,14 @@ describe("CodeCompass SPA", () => {
     expect(screen.queryByText("Needs attention")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Vector index incomplete" }));
     expect(screen.getByText("Index another repository or refresh the current source")).toBeInTheDocument();
+  });
+
+  it("does not claim there is no project when project loading fails", async () => {
+    installApi((path) => path === "/projects" ? Promise.reject(new Error("unavailable")) : undefined);
+    render(<App />);
+
+    expect(await screen.findByText("Project status unavailable")).toBeInTheDocument();
+    expect(screen.queryByText("No project")).not.toBeInTheDocument();
   });
 
   it("turns source_changed into a safe re-index action", async () => {

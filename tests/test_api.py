@@ -258,7 +258,7 @@ def test_ask_max_tokens_default_override_validation_and_documentation_independen
 
     assert default.status_code == 200
     assert explicit.status_code == 200
-    assert "finish_reason" not in default.json()
+    assert default.json()["finish_reason"] is None
     assert [request.max_tokens for request in llm.requests] == [180, 1024]
 
     calls = llm.calls
@@ -276,6 +276,15 @@ def test_ask_max_tokens_default_override_validation_and_documentation_independen
     truncated = client.post(f"/projects/{project_id}/ask", json={"question": "Explain shared", "method": "lexical"})
     assert truncated.status_code == 200
     assert truncated.json()["finish_reason"] == "length"
+
+    no_evidence = client.post(
+        f"/projects/{project_id}/ask",
+        json={"question": "definitely_absent_identifier", "method": "lexical"},
+    )
+    assert no_evidence.status_code == 200
+    assert no_evidence.json()["llm_model"] is None
+    assert no_evidence.json()["llm_provider"] is None
+    assert no_evidence.json()["finish_reason"] is None
 
 
 def test_provider_cannot_author_documentation_file_id(api, monkeypatch) -> None:
@@ -465,3 +474,5 @@ def test_swagger_has_only_intended_routes(api) -> None:
     assert "symbol_id" in schemas["CitationResponse"]["properties"]
     assert "file_id" in schemas["RetrievedChunkResponse"]["properties"]
     assert "file_id" in schemas["DocumentationCitationResponse"]["properties"]
+    assert "finish_reason" in schemas["AskResponse"]["properties"]
+    assert "finish_reason" not in schemas["AskResponse"]["required"]

@@ -39,6 +39,15 @@ function text(value: unknown, fallback: string): string {
   return typeof value === "string" ? value : fallback;
 }
 
+function numberText(value: unknown, fallback: string, min: number, max?: number, integer = false): string {
+  if (value === "") return "";
+  if (typeof value !== "string") return fallback;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed >= min && (max === undefined || parsed <= max) && (!integer || Number.isInteger(parsed))
+    ? value
+    : fallback;
+}
+
 function providerState(value: unknown, fallback: ProviderState): ProviderState {
   const saved = record(value);
   return {
@@ -47,7 +56,7 @@ function providerState(value: unknown, fallback: ProviderState): ProviderState {
     baseUrl: text(saved.baseUrl, fallback.baseUrl),
     model: text(saved.model, fallback.model),
     apiKey: "",
-    timeoutSeconds: text(saved.timeoutSeconds, fallback.timeoutSeconds),
+    timeoutSeconds: numberText(saved.timeoutSeconds, fallback.timeoutSeconds, 1, 600),
   };
 }
 
@@ -57,9 +66,9 @@ export function loadPreferences(): Preferences {
     const embedding = providerState(saved.embedding, defaultEmbedding);
     const embeddingSaved = record(saved.embedding);
     return {
-      embedding: { ...embedding, dimensions: text(embeddingSaved.dimensions, defaultEmbedding.dimensions) },
+      embedding: { ...embedding, dimensions: numberText(embeddingSaved.dimensions, defaultEmbedding.dimensions, 1, undefined, true) },
       llm: providerState(saved.llm, defaultLlm),
-      answerTokenBudget: text(saved.answerTokenBudget, ""),
+      answerTokenBudget: numberText(saved.answerTokenBudget, "", 1, 8000, true),
     };
   } catch {
     return { embedding: defaultEmbedding, llm: defaultLlm, answerTokenBudget: "" };

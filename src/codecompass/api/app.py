@@ -175,7 +175,7 @@ def create_app(settings: APISettings | None = None) -> FastAPI:
             ],
         )
 
-    @app.post("/projects/{project_id}/ask", response_model=AskResponse, response_model_exclude_none=True)
+    @app.post("/projects/{project_id}/ask", response_model=AskResponse)
     def ask(project_id: int, body: AskRequest, runtime: APIRuntime = Depends(get_runtime)) -> AskResponse:
         retrieval = runtime.retrieval(project_id, runtime.embedding_config(body.embedding), compatible=body.method != "lexical")
         service = GroundedQAService(retrieval, RAGContextBuilder(), QAPromptBuilder(), create_llm(runtime, body.llm))
