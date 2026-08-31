@@ -4,7 +4,7 @@ CodeCompass is a bachelor's final project for structure-aware retrieval over Pyt
 
 ## Current State
 
-The complete MVP workflow is implemented through M19:
+The complete Stable MVP workflow is implemented and released as `v1.0.0`:
 
 - Python repository scanning, AST parsing, structure-aware chunking, and SQLite metadata.
 - Ollama and OpenAI-compatible embedding and LLM providers.
@@ -15,7 +15,7 @@ The complete MVP workflow is implemented through M19:
 - React + Vite single-page frontend with project setup, provider configuration, search, Q&A, documentation, evaluation, and Monaco source navigation.
 - Frozen retrieval and bilingual QA evaluation artifacts under `data/evaluation/` and `reports/evaluation/`.
 
-The complete user workflow and M20 final hardening are complete. M20 closed with documented provider limitations; M21 release packaging and the stable version tag remain.
+M20 closed with documented provider limitations, and M21 published the Stable MVP release. Post-release UX hardening continues in M22 without changing the frozen retrieval or evaluation results.
 
 ## Prerequisites
 
