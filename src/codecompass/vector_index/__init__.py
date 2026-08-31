@@ -9,11 +9,12 @@ from codecompass.vector_index.base import (
     VectorRecord,
     VectorSearchResult,
 )
-from codecompass.vector_index.chroma import ChromaVectorIndex
+from codecompass.vector_index.chroma import ChromaVectorIndex, StagedVectorReplacement
 
 __all__ = [
     "ChromaVectorIndex",
     "StoredVectorRecord",
+    "StagedVectorReplacement",
     "VectorIndex",
     "VectorIndexError",
     "VectorIndexStateError",

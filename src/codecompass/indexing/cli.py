@@ -8,9 +8,9 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Sequence
 
-from codecompass.indexing.service import IndexingService
+from codecompass.embeddings import embedding_identity
+from codecompass.indexing.coordinator import IndexingCoordinatorError, RepositoryIndexCoordinator
 from codecompass.indexing.repository import RepositoryValidationError, validate_pinned_repository
-from codecompass.indexing.vectors import VectorIndexingService
 from codecompass.providers import OPENAI_COMPATIBLE, OLLAMA, ProviderConfig, create_embedding_provider
 from codecompass.storage import SQLiteMetadataStore
 from codecompass.vector_index import ChromaVectorIndex
@@ -34,47 +34,64 @@ def main(argv: Sequence[str] | None = None) -> int:
         parser.error(str(error))
 
     store = SQLiteMetadataStore(args.database)
-    structural = IndexingService(store).index_repository(args.repository, project_name=args.project_name)
-    if not structural.succeeded or structural.project_id is None:
+    model = config.embedding_model or "nomic-embed-text-local:latest"
+    identity = embedding_identity(
+        config.provider,
+        config.base_url or "http://localhost:11434",
+        model,
+        config.embedding_dimensions,
+    )
+    coordinator = RepositoryIndexCoordinator(
+        store,
+        embedding_provider,
+        identity,
+        lambda project_id: ChromaVectorIndex(
+            args.chroma,
+            args.collection,
+            managed=True,
+            project_id=project_id,
+        ),
+        batch_size=args.batch_size,
+    )
+    try:
+        result = coordinator.index_repository(args.repository, args.project_name)
+    except IndexingCoordinatorError as error:
+        failures = [asdict(item) for item in error.failures]
         print(
             json.dumps(
                 {
                     "repository": str(args.repository.resolve()),
                     "commit": commit,
                     "complete": False,
-                    "structural_stats": asdict(structural.stats),
-                    "structural_errors": [asdict(error) for error in structural.errors],
+                    "structural_stats": asdict(error.structural_stats) if error.structural_stats else {},
+                    "structural_errors": [item for item in failures if item["stage"] in {"scan", "parse", "chunk", "storage"}],
+                    "errors": failures,
+                    "truncated_details": [asdict(item) for item in error.truncated],
                 },
                 indent=2,
             )
         )
         return 1
 
-    vector = VectorIndexingService(
-        store,
-        embedding_provider,
-        ChromaVectorIndex(args.chroma, args.collection),
-        batch_size=args.batch_size,
-    ).index_project(structural.project_id)
     output = {
         "repository": str(args.repository.resolve()),
         "commit": commit,
-        "python_files": structural.stats.files_discovered,
-        "symbols": structural.stats.symbols_extracted,
-        "canonical_chunks": vector.stats.chunks_expected,
-        "embeddings": vector.stats.embeddings_generated,
-        "vectors": vector.stats.vectors_stored,
-        "truncated_embeddings": vector.stats.truncated_embeddings,
-        "embedding_retries": vector.stats.embedding_retries,
-        "embedding_failures": vector.stats.embedding_failures,
-        "vector_failures": vector.stats.vector_failures,
-        "id_set_equal": set(vector.sqlite_chunk_ids) == set(vector.vector_chunk_ids),
-        "complete": vector.stats.complete,
-        "truncated_details": [asdict(item) for item in vector.truncated],
-        "errors": [asdict(error) for error in vector.errors],
+        "python_files": result.structural_stats.files_discovered,
+        "symbols": result.structural_stats.symbols_extracted,
+        "canonical_chunks": result.chunks_expected,
+        "embeddings": result.embeddings_generated,
+        "vectors": result.vectors_stored,
+        "truncated_embeddings": len(result.truncated),
+        "embedding_retries": result.embedding_retries,
+        "embedding_failures": 0,
+        "vector_failures": 0,
+        "id_set_equal": set(result.expected_ids) == set(result.vector_ids),
+        "complete": True,
+        "truncated_details": [asdict(item) for item in result.truncated],
+        "errors": [],
     }
     print(json.dumps(output, indent=2))
-    return 0 if vector.succeeded else 1
+    return 0
 
 
 def _validate_repository(repository: Path, expected_commit: str, parser: argparse.ArgumentParser) -> str:

@@ -6,7 +6,7 @@ import type {
   AskResponse,
   DocumentationResponse,
   EvaluationResponse,
-  IndexResponse,
+  IndexJob,
   Project,
   RetrievalMethod,
   SearchResponse,
@@ -42,7 +42,8 @@ export default function App() {
   const [repositoryPath, setRepositoryPath] = useState("");
   const [projectLoading, setProjectLoading] = useState(true);
   const [projectError, setProjectError] = useState<unknown>(null);
-  const [indexState, setIndexState] = useState<RequestState<IndexResponse>>(idle);
+  const [indexJob, setIndexJob] = useState<IndexJob | null>(null);
+  const [indexError, setIndexError] = useState<unknown>(null);
   const [embedding, setEmbedding] = useState(savedPreferences.embedding);
   const [llm, setLlm] = useState(savedPreferences.llm);
   const [answerTokenBudget, setAnswerTokenBudget] = useState(savedPreferences.answerTokenBudget);
@@ -112,25 +113,62 @@ export default function App() {
   }, [loadProject]);
 
   useEffect(() => {
+    let active = true;
+    void api.activeIndexJob().then((job) => {
+      if (active && job) {
+        setIndexJob(job);
+        setSetupOpen(true);
+      }
+    }).catch((error) => {
+      if (active) {
+        setIndexError(error);
+        setSetupOpen(true);
+      }
+    });
+    return () => { active = false; };
+  }, []);
+
+  useEffect(() => {
     savePreferences({ embedding, llm, answerTokenBudget });
   }, [embedding, llm, answerTokenBudget]);
 
-  const refreshProjects = async (projectId: number) => {
+  const refreshProjects = useCallback(async (projectId: number) => {
     const items = await api.projects();
     setProjects(items);
     await loadProject(projectId);
-  };
+  }, [loadProject]);
+
+  useEffect(() => {
+    if (!indexJob || indexJob.state === "completed" || indexJob.state === "failed") return;
+    let active = true;
+    const timer = window.setTimeout(() => {
+      void api.indexJob(indexJob.id).then(async (next) => {
+        if (!active) return;
+        setIndexError(null);
+        setIndexJob(next);
+        if (next.state === "completed" && next.project_id !== null) await refreshProjects(next.project_id);
+      }).catch((error) => {
+        if (active) {
+          setIndexError(error);
+          setIndexJob((current) => current ? { ...current } : current);
+        }
+      });
+    }, 1000);
+    return () => { active = false; window.clearTimeout(timer); };
+  }, [indexJob, refreshProjects]);
 
   const indexRepository = async () => {
-    if (!repositoryPath.trim()) return;
-    setIndexState({ result: null, loading: true, error: null });
+    const repositoryPathValue = repositoryPath.trim();
+    if (!repositoryPathValue && !project) return;
+    setIndexError(null);
     try {
-      const result = await api.index(repositoryPath.trim(), embeddingOverride(embedding));
-      setIndexState({ result, loading: false, error: null });
-      await refreshProjects(result.project_id);
-      setSetupOpen(false);
+      const job = await api.startIndexJob(
+        repositoryPathValue ? { repositoryPath: repositoryPathValue } : { projectId: project!.id },
+        embeddingOverride(embedding),
+      );
+      setIndexJob(job);
     } catch (error) {
-      setIndexState({ result: null, loading: false, error });
+      setIndexError(error);
     }
   };
 
@@ -192,7 +230,8 @@ export default function App() {
     setWorkspaceTab("documentation");
   };
 
-  const projectStatus = projectLoading ? "Loading" : projectError ? "Project status unavailable" : project?.vector_complete ? "Ready" : project ? "Vector index incomplete" : "No project";
+  const indexing = Boolean(indexJob && indexJob.state !== "completed" && indexJob.state !== "failed");
+  const projectStatus = indexing ? "Indexing" : projectLoading ? "Loading" : projectError ? "Project status unavailable" : project?.vector_complete ? "Ready" : project ? "Vector index incomplete" : "No project";
 
   return (
     <div className="app-shell">
@@ -209,7 +248,7 @@ export default function App() {
         {project && !projectLoading && !project.vector_complete ? (
           <button className="status-badge status-action" type="button" onClick={reindex} title="Re-index repository"><i />{projectStatus}</button>
         ) : (
-          <span className={`status-badge ${project?.vector_complete ? "ready" : "idle"}`}><i />{projectStatus}</span>
+          <span className={`status-badge ${projectStatus === "Ready" ? "ready" : "idle"}`}><i />{projectStatus}</span>
         )}
         <div className="top-actions">
           <button className="secondary-button mobile-explorer-toggle" type="button" onClick={() => setExplorerOpen((current) => !current)}><Menu size={17} /> Explorer</button>
@@ -218,7 +257,7 @@ export default function App() {
         </div>
       </header>
 
-      {setupOpen ? <ProjectSetup path={repositoryPath} setPath={setRepositoryPath} currentProject={project} indexing={indexState.loading} result={indexState.result} error={indexState.error} onSubmit={indexRepository} /> : null}
+      {setupOpen ? <ProjectSetup path={repositoryPath} setPath={setRepositoryPath} currentProject={project} job={indexJob} error={indexError} onSubmit={indexRepository} /> : null}
       {projectError ? <div className="global-error"><ErrorMessage error={projectError} onReindex={reindex} /></div> : null}
 
       <div className={`main-layout ${source || sourceLoading || sourceError ? "with-code" : ""} ${explorerOpen ? "" : "explorer-closed"}`} id="workspace">

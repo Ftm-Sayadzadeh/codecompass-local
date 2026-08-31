@@ -49,9 +49,13 @@ class OllamaEmbeddingProvider:
             for vector in embeddings
         )
 
-    def _post_json(self, payload: dict[str, Any]) -> dict[str, Any]:
+    def preflight(self) -> None:
+        """Verify that the local server can resolve the configured model."""
+        self._post_json({"model": self.model}, endpoint="/api/show")
+
+    def _post_json(self, payload: dict[str, Any], endpoint: str = "/api/embed") -> dict[str, Any]:
         request = urllib.request.Request(
-            f"{self.base_url}/api/embed",
+            f"{self.base_url}{endpoint}",
             data=json.dumps(payload).encode("utf-8"),
             headers={"Content-Type": "application/json"},
             method="POST",
@@ -111,5 +115,8 @@ class OllamaEmbeddingProvider:
                 body = None
             if isinstance(body, dict) and isinstance(body.get("error"), str):
                 message = body["error"].strip() or message
-        error_type = "InputTooLong" if error.code == 400 and "context length" in message.casefold() else "HTTPError"
+        if error.code == 404:
+            error_type = "ModelNotFound"
+        else:
+            error_type = "InputTooLong" if error.code == 400 and "context length" in message.casefold() else "HTTPError"
         return self._error(error_type, message)

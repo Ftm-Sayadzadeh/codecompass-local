@@ -7,7 +7,8 @@ import io
 import os
 import threading
 import tokenize
-from dataclasses import asdict, dataclass, field
+import uuid
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -15,13 +16,17 @@ from codecompass.api.evaluation import project_artifact
 from codecompass.api.schemas import EmbeddingProviderOverride, ProviderOverride
 from codecompass.documentation import FunctionDocumentationService
 from codecompass.embeddings import EmbeddingIdentity, embedding_identity
-from codecompass.indexing import IndexingService, VectorIndexingService
+from codecompass.indexing import (
+    IndexingCoordinatorError,
+    RepositoryIndexCoordinator,
+    preflight_embedding,
+)
 from codecompass.providers import OLLAMA, ProviderConfig, create_embedding_provider, create_llm_provider
 from codecompass.qa import GroundedQAService, QAPromptBuilder, QARequest
 from codecompass.rag import RAGContextBuilder
 from codecompass.retrieval import RetrievalQuery, RetrievalService
-from codecompass.storage import SQLiteMetadataStore, StoredChunk
-from codecompass.vector_index import ChromaVectorIndex
+from codecompass.storage import IndexingJobRecord, SQLiteMetadataStore, StorageError, StoredChunk
+from codecompass.vector_index import ChromaVectorIndex, VectorIndexError
 
 
 class APIError(Exception):
@@ -66,7 +71,10 @@ class APIRuntime:
         self.settings = settings
         self.store = SQLiteMetadataStore(settings.database_path)
         self.store.initialize()
+        self.store.interrupt_active_indexing_jobs()
         self.index_lock = threading.Lock()
+        self._activation_lock = threading.Lock()
+        self._activating_projects: set[int] = set()
 
     def collection(self, project_id: int) -> ChromaVectorIndex:
         return ChromaVectorIndex(
@@ -122,39 +130,249 @@ class APIRuntime:
         if not self.index_lock.acquire(blocking=False):
             raise APIError(409, "indexing_in_progress", "Another indexing operation is already running")
         try:
-            path = Path(repository_path)
-            existed = self.store.get_project_by_root(path) is not None
-            structural = IndexingService(self.store).index_repository(path, project_name)
-            if not structural.succeeded or structural.project_id is None:
-                raise APIError(422, "indexing_failed", "Repository indexing did not complete", self._index_errors(structural.errors))
-            config = self.embedding_config(override)
-            identity = self.identity(config)
-            vector = VectorIndexingService(
-                self.store,
-                create_embedding_provider(config),
-                self.collection(structural.project_id),
-                embedding_identity=identity,
-            ).index_project(structural.project_id)
-            if not vector.succeeded:
-                if any(error.error_type == "VectorIndexStateError" for error in vector.errors):
-                    raise APIError(409, "vector_index_state_invalid", "Vector index state is invalid; re-index storage is required")
-                raise APIError(502, "vector_indexing_failed", "Vector indexing did not complete", self._index_errors(vector.errors))
-            return {
-                "project_id": structural.project_id,
-                "operation": "reindexed" if existed else "indexed",
-                "complete": True,
-                "structural_stats": asdict(structural.stats),
-                "vector_stats": asdict(vector.stats),
-                "embedding": {"provider": identity.provider, "model": identity.model, "dimensions": vector_index_dimensions(self.collection(structural.project_id))},
-            }
+            return self._index_pipeline(Path(repository_path), project_name, override)
         finally:
             self.index_lock.release()
 
+    def start_index_job(
+        self,
+        *,
+        repository_path: str | None,
+        project_id: int | None,
+        project_name: str | None,
+        override: EmbeddingProviderOverride | None,
+    ) -> IndexingJobRecord:
+        """Start one durable single-process indexing job."""
+        if not self.index_lock.acquire(blocking=False):
+            raise APIError(409, "indexing_in_progress", "Another indexing operation is already running")
+        try:
+            if project_id is not None:
+                project = self.require_project(project_id)
+                path = project.root_path
+                name = project_name or project.name
+                operation = "reindexed"
+            elif repository_path is not None:
+                path = Path(repository_path)
+                existing = self.store.get_project_by_root(path)
+                name = project_name
+                operation = "reindexed" if existing is not None else "indexed"
+                project_id = existing.id if existing is not None else None
+            else:
+                raise APIError(422, "validation_error", "Repository path or project id is required")
+            job = self.store.create_indexing_job(uuid.uuid4().hex, operation, project_id)
+            thread = threading.Thread(
+                target=self._run_index_job,
+                args=(job.id, path, name, override, project_id),
+                daemon=True,
+                name=f"codecompass-index-{job.id[:8]}",
+            )
+            thread.start()
+            return job
+        except Exception:
+            self.index_lock.release()
+            raise
+
+    def indexing_job(self, job_id: str) -> IndexingJobRecord:
+        job = self.store.get_indexing_job(job_id)
+        if job is None:
+            raise APIError(404, "indexing_job_not_found", "Indexing job was not found")
+        return job
+
+    def active_indexing_job(self) -> IndexingJobRecord | None:
+        return self.store.get_active_indexing_job()
+
+    def _run_index_job(
+        self,
+        job_id: str,
+        path: Path,
+        project_name: str | None,
+        override: EmbeddingProviderOverride | None,
+        previous_project_id: int | None,
+    ) -> None:
+        counters: dict[str, int] = {}
+
+        def progress(state: str, values: dict[str, int]) -> None:
+            counters.update(values)
+            self.store.update_indexing_job(job_id, state, counters, project_id=previous_project_id)
+
+        snapshot = self._index_snapshot(previous_project_id)
+        try:
+            result = self._index_pipeline(path, project_name, override, progress)
+            counters.update(self._result_counters(result))
+            self.store.update_indexing_job(
+                job_id,
+                "completed",
+                counters,
+                project_id=int(result["project_id"]),
+                result=result,
+            )
+        except APIError as error:
+            preserved = self._snapshot_preserved(snapshot)
+            self.store.update_indexing_job(
+                job_id,
+                "failed",
+                counters,
+                project_id=previous_project_id,
+                error={
+                    "code": error.code,
+                    "message": error.message,
+                    "stage": self._failed_stage(error.code, error.details),
+                    **self._safe_error_type(error.details),
+                },
+                previous_index_preserved=preserved,
+            )
+        except Exception:
+            preserved = self._snapshot_preserved(snapshot)
+            self.store.update_indexing_job(
+                job_id,
+                "failed",
+                counters,
+                project_id=previous_project_id,
+                error={
+                    "code": "indexing_failed",
+                    "message": "Repository indexing did not complete",
+                    "stage": "failed",
+                    "error_type": "InternalError",
+                },
+                previous_index_preserved=preserved,
+            )
+        finally:
+            self.index_lock.release()
+
+    def _index_pipeline(
+        self,
+        path: Path,
+        project_name: str | None,
+        override: EmbeddingProviderOverride | None,
+        progress: Any | None = None,
+    ) -> dict[str, Any]:
+        config = self.embedding_config(override)
+        identity = self.identity(config)
+        coordinator = RepositoryIndexCoordinator(
+            self.store,
+            create_embedding_provider(config),
+            embedding_identity=identity,
+            collection_factory=self.collection,
+            begin_activation=self._begin_activation,
+            end_activation=self._end_activation,
+        )
+        try:
+            return coordinator.index_repository(path, project_name, progress).api_result()
+        except IndexingCoordinatorError as error:
+            raise self._api_index_error(error) from error
+
     def require_project(self, project_id: int):
+        with self._activation_lock:
+            if project_id in self._activating_projects:
+                raise APIError(409, "index_activation_in_progress", "Index activation is in progress")
         project = self.store.get_project(project_id)
         if project is None:
             raise APIError(404, "project_not_found", "Project was not found")
         return project
+
+    def _preflight_embedding(self, provider: Any) -> None:
+        try:
+            preflight_embedding(provider)
+        except IndexingCoordinatorError as error:
+            raise self._api_index_error(error) from error
+
+    def _api_index_error(self, error: IndexingCoordinatorError) -> APIError:
+        details = {"errors": [{"stage": item.stage, "type": item.error_type} for item in error.failures]}
+        if error.code == "embedding_model_unavailable":
+            return APIError(422, error.code, "The selected embedding model is not available", details)
+        if error.code == "embedding_provider_unavailable":
+            return APIError(502, error.code, "The embedding provider is unavailable", details)
+        if error.code == "vector_index_state_invalid":
+            return APIError(409, error.code, "Vector index state is invalid; re-index storage is required", details)
+        if error.code == "vector_indexing_failed":
+            return APIError(502, error.code, "Vector indexing did not complete", details)
+        status = 500 if any(item.stage == "storage" for item in error.failures) else 422
+        return APIError(status, "indexing_failed", "Repository indexing did not complete", details)
+
+    def _begin_activation(self, project_id: int) -> None:
+        with self._activation_lock:
+            self._activating_projects.add(project_id)
+
+    def _end_activation(self, project_id: int) -> None:
+        with self._activation_lock:
+            self._activating_projects.discard(project_id)
+
+    def _index_snapshot(self, project_id: int | None) -> dict[str, Any] | None:
+        if project_id is None:
+            return None
+        try:
+            chunk_ids = tuple(sorted(chunk.chunk_id for chunk in self.store.list_chunks(project_id)))
+            vector_ids = self.collection(project_id).list_ids(project_id)
+        except (StorageError, VectorIndexError):
+            return None
+        if not chunk_ids or set(chunk_ids) != set(vector_ids):
+            return None
+        return {"project_id": project_id, "chunk_ids": chunk_ids}
+
+    def _snapshot_preserved(self, snapshot: dict[str, Any] | None) -> bool:
+        if snapshot is None:
+            return False
+        project_id = int(snapshot["project_id"])
+        try:
+            chunks = tuple(sorted(chunk.chunk_id for chunk in self.store.list_chunks(project_id)))
+            vectors = self.collection(project_id).list_ids(project_id)
+        except (StorageError, VectorIndexError):
+            return False
+        expected = tuple(snapshot["chunk_ids"])
+        return chunks == expected and vectors == expected
+
+    def _result_counters(self, result: dict[str, Any]) -> dict[str, int]:
+        structural = result.get("structural_stats") if isinstance(result.get("structural_stats"), dict) else {}
+        vector = result.get("vector_stats") if isinstance(result.get("vector_stats"), dict) else {}
+        keys = {
+            "files_discovered",
+            "files_parsed",
+            "symbols_extracted",
+            "chunks_generated",
+            "embeddings_generated",
+            "vectors_stored",
+            "chunks_expected",
+            "truncated_embeddings",
+            "embedding_retries",
+            "largest_embedding_input_chars",
+        }
+        values = {**structural, **vector}
+        return {
+            key: int(values[key])
+            for key in keys
+            if isinstance(values.get(key), int) and not isinstance(values.get(key), bool)
+        }
+
+    def _failed_stage(self, code: str, details: dict[str, Any]) -> str:
+        if code.startswith("embedding_"):
+            return "preflight"
+        errors = details.get("errors")
+        if isinstance(errors, list) and errors and isinstance(errors[0], dict):
+            stage = errors[0].get("stage")
+            mapped = {
+                "scan": "scanning",
+                "parse": "parsing",
+                "chunk": "chunking",
+                "embedding": "embedding",
+                "vector": "verifying",
+                "storage": "activating",
+            }.get(stage)
+            if mapped is not None:
+                return mapped
+        if code == "indexing_failed":
+            return "scanning"
+        if code in {"vector_indexing_failed", "vector_index_state_invalid"}:
+            return "verifying"
+        return "failed"
+
+    def _safe_error_type(self, details: dict[str, Any]) -> dict[str, str]:
+        errors = details.get("errors")
+        if not isinstance(errors, list) or not errors or not isinstance(errors[0], dict):
+            return {}
+        value = errors[0].get("type")
+        if not isinstance(value, str) or not value or len(value) > 80:
+            return {}
+        return {"error_type": value}
 
     def source_content(self, project_id: int, file_id: int) -> dict[str, Any]:
         project = self.require_project(project_id)
@@ -196,11 +414,3 @@ class APIRuntime:
     def evaluation(self, *, performance: bool) -> tuple[str, dict[str, Any]]:
         path = self.settings.performance_artifact if performance else self.settings.baseline_artifact
         return project_artifact(path, performance=performance)
-
-    def _index_errors(self, errors: tuple[Any, ...]) -> dict[str, Any]:
-        return {"errors": [{"stage": error.stage, "type": error.error_type} for error in errors]}
-
-
-def vector_index_dimensions(index: ChromaVectorIndex) -> int | None:
-    value = index.get_index_metadata().get("codecompass:embedding_dimensions")
-    return value if isinstance(value, int) and value > 0 else None

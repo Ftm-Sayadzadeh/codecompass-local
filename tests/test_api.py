@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import time
 from pathlib import Path
 
 import pytest
@@ -9,9 +10,10 @@ from fastapi.testclient import TestClient
 from codecompass.api import APISettings, create_app
 from codecompass.api import app as api_app
 from codecompass.api import runtime as api_runtime
-from codecompass.embeddings import EmbeddingProviderError, EmbeddingResult
+from codecompass.embeddings import EmbeddingProviderError, EmbeddingResult, OllamaEmbeddingProvider
 from codecompass.llm import LLMProviderError, LLMResponse
 from codecompass.providers import ProviderConfig
+from codecompass.vector_index import ChromaVectorIndex, VectorIndexError
 
 
 class FakeEmbeddingProvider:
@@ -123,6 +125,19 @@ def index_project(client: TestClient, repo: Path) -> int:
     return response.json()["project_id"]
 
 
+def wait_for_job(client: TestClient, job_id: str) -> dict:
+    deadline = time.monotonic() + 5
+    job: dict = {}
+    while time.monotonic() < deadline:
+        response = client.get(f"/projects/index-jobs/{job_id}")
+        assert response.status_code == 200, response.text
+        job = response.json()
+        if job["state"] in {"completed", "failed"}:
+            return job
+        time.sleep(0.1)
+    pytest.fail(f"Indexing job did not finish; last state: {job}")
+
+
 def test_health_project_index_and_navigation(api) -> None:
     client, _, _, repo = api
     assert client.get("/health").json() == {"status": "ok"}
@@ -139,6 +154,114 @@ def test_health_project_index_and_navigation(api) -> None:
     assert detail["files"] == 2
     assert files[0]["relative_path"] == "first.py"
     assert symbols[0]["qualified_name"] == "shared"
+
+
+def test_index_job_reports_real_progress_and_resumes_by_id(api) -> None:
+    client, runtime, _, repo = api
+    progress: list[tuple[str, dict[str, int]]] = []
+
+    result = runtime._index_pipeline(repo, None, None, lambda state, counters: progress.append((state, dict(counters))))
+    stages = tuple(dict.fromkeys(state for state, _ in progress))
+
+    assert stages == ("preflight", "scanning", "parsing", "chunking", "embedding", "verifying", "activating")
+    for key in {key for _, values in progress for key in values}:
+        values = [counters[key] for _, counters in progress if key in counters]
+        assert values == sorted(values)
+    assert result["complete"] is True
+
+    started = client.post("/projects/index-jobs", json={"project_id": result["project_id"]})
+    assert started.status_code == 202, started.text
+    assert str(repo) not in started.text
+    job = wait_for_job(client, started.json()["id"])
+    assert job["state"] == "completed"
+    assert job["counters"]["chunks_expected"] == job["counters"]["vectors_stored"]
+    assert job["result"]["complete"] is True
+    assert client.get("/projects/index-jobs/active").status_code == 204
+
+
+def test_failed_reindex_preserves_previous_metadata_and_vectors(api, monkeypatch) -> None:
+    client, runtime, _, repo = api
+    project_id = index_project(client, repo)
+    old_chunks = tuple(chunk.chunk_id for chunk in runtime.store.list_chunks(project_id))
+    old_vectors = runtime.collection(project_id).list_ids(project_id)
+    (repo / "first.py").write_text("def changed(value):\n    return value\n", encoding="utf-8")
+    monkeypatch.setattr(
+        api_runtime,
+        "create_embedding_provider",
+        lambda config: FakeEmbeddingProvider(EmbeddingProviderError("fake", "fake", "TimeoutError", "private provider detail")),
+    )
+
+    started = client.post("/projects/index-jobs", json={"project_id": project_id})
+    assert started.status_code == 202
+    job = wait_for_job(client, started.json()["id"])
+
+    assert job["state"] == "failed"
+    assert job["previous_index_preserved"] is True
+    assert job["error"]["stage"] == "embedding"
+    assert "private provider detail" not in json.dumps(job)
+    assert tuple(chunk.chunk_id for chunk in runtime.store.list_chunks(project_id)) == old_chunks
+    assert runtime.collection(project_id).list_ids(project_id) == old_vectors
+
+
+def test_failed_vector_activation_rolls_back_metadata_and_pointer(api, monkeypatch) -> None:
+    client, runtime, _, repo = api
+    project_id = index_project(client, repo)
+    old_chunks = tuple(chunk.chunk_id for chunk in runtime.store.list_chunks(project_id))
+    old_index = runtime.collection(project_id)
+    old_index._ready()
+    old_pointer = old_index.active_pointer.read_text(encoding="utf-8")
+    (repo / "first.py").write_text("def changed(value):\n    return value\n", encoding="utf-8")
+
+    def fail_activation(self, replacement) -> None:
+        raise VectorIndexError("activation failed")
+
+    monkeypatch.setattr(ChromaVectorIndex, "activate_staged", fail_activation)
+    started = client.post("/projects/index-jobs", json={"project_id": project_id})
+    job = wait_for_job(client, started.json()["id"])
+
+    assert job["state"] == "failed"
+    assert job["previous_index_preserved"] is True
+    assert tuple(chunk.chunk_id for chunk in runtime.store.list_chunks(project_id)) == old_chunks
+    reopened = runtime.collection(project_id)
+    assert reopened.active_pointer.read_text(encoding="utf-8") == old_pointer
+    assert reopened.list_ids(project_id) == old_chunks
+
+
+def test_index_job_validates_target_and_rejects_concurrent_work(api) -> None:
+    client, runtime, _, repo = api
+    assert client.post("/projects/index-jobs", json={}).status_code == 422
+    assert client.post("/projects/index-jobs", json={"repository_path": str(repo), "project_id": 1}).status_code == 422
+
+    runtime.index_lock.acquire()
+    try:
+        response = client.post("/projects/index-jobs", json={"repository_path": str(repo)})
+    finally:
+        runtime.index_lock.release()
+    assert response.status_code == 409
+    assert response.json()["error"]["code"] == "indexing_in_progress"
+
+
+@pytest.mark.parametrize(
+    ("error_type", "code", "status"),
+    [
+        ("ModelNotFound", "embedding_model_unavailable", 422),
+        ("URLError", "embedding_provider_unavailable", 502),
+    ],
+)
+def test_ollama_index_preflight_maps_safe_errors(api, monkeypatch, error_type: str, code: str, status: int) -> None:
+    _, runtime, _, _ = api
+    provider = OllamaEmbeddingProvider(model="missing")
+
+    def fail() -> None:
+        raise EmbeddingProviderError("ollama", "missing", error_type, "private provider response")
+
+    monkeypatch.setattr(provider, "preflight", fail)
+    with pytest.raises(api_runtime.APIError) as raised:
+        runtime._preflight_embedding(provider)
+
+    assert raised.value.status == status
+    assert raised.value.code == code
+    assert "private provider response" not in str(raised.value.details)
 
 
 def test_file_content_is_metadata_scoped_and_detects_changes(api) -> None:
@@ -460,6 +583,9 @@ def test_swagger_has_only_intended_routes(api) -> None:
         "/projects",
         "/projects/{project_id}",
         "/projects/index",
+        "/projects/index-jobs",
+        "/projects/index-jobs/active",
+        "/projects/index-jobs/{job_id}",
         "/projects/{project_id}/files",
         "/projects/{project_id}/files/{file_id}/content",
         "/projects/{project_id}/symbols",

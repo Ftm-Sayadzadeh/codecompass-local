@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import time
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 
+from codecompass.chunker import Chunk
 from codecompass.embeddings import EmbeddingIdentity, EmbeddingProvider, EmbeddingProviderError, EmbeddingResult
 from codecompass.indexing.models import (
     TruncatedEmbedding,
@@ -19,8 +20,38 @@ from codecompass.vector_index import VectorIndex, VectorIndexError, VectorRecord
 
 @dataclass(frozen=True, slots=True)
 class _EmbeddedChunk:
-    chunk: StoredChunk
+    chunk: StoredChunk | Chunk
     embedding: EmbeddingResult
+
+
+@dataclass(frozen=True, slots=True)
+class PreparedEmbeddings:
+    """Embedded structural chunks that have not changed vector storage."""
+
+    embedded: tuple[_EmbeddedChunk, ...]
+    truncated: tuple[TruncatedEmbedding, ...]
+    errors: tuple[VectorIndexingError, ...]
+    identity: EmbeddingIdentity | None
+    retries: int
+
+    @property
+    def expected_ids(self) -> tuple[str, ...]:
+        return tuple(sorted(item.chunk.chunk_id for item in self.embedded))
+
+    def records(self, project_id: int) -> tuple[VectorRecord, ...]:
+        return tuple(
+            VectorRecord(
+                chunk_id=item.chunk.chunk_id,
+                vector=item.embedding.vector,
+                metadata={
+                    "project_id": project_id,
+                    "content_hash": item.chunk.content_hash,
+                    "embedding_model": item.embedding.model,
+                    "dimensions": item.embedding.dimensions,
+                },
+            )
+            for item in self.embedded
+        )
 
 
 class VectorIndexingService:
@@ -30,7 +61,7 @@ class VectorIndexingService:
         self,
         store: SQLiteMetadataStore,
         embedding_provider: EmbeddingProvider,
-        vector_index: VectorIndex,
+        vector_index: VectorIndex | None,
         batch_size: int = 32,
         max_retries: int = 2,
         retry_delay_seconds: float = 0.5,
@@ -50,67 +81,63 @@ class VectorIndexingService:
         self.retry_delay_seconds = retry_delay_seconds
         self.embedding_identity = embedding_identity
         self._embedding_retries = 0
+        self._progress: Callable[[dict[str, int]], None] | None = None
+
+    def prepare_chunks(
+        self,
+        chunks: Sequence[StoredChunk | Chunk],
+        progress: Callable[[dict[str, int]], None] | None = None,
+    ) -> PreparedEmbeddings:
+        """Embed chunks without changing the active vector collection."""
+        self._embedding_retries = 0
+        self._progress = progress
+        embedded, truncated, errors = self._embed_chunks(chunks)
+        target_identity = None
+        if self.embedding_identity is not None and embedded:
+            dimensions = {item.embedding.dimensions for item in embedded}
+            if len(dimensions) != 1:
+                errors.append(VectorIndexingError("vector", (), "DimensionMismatch", "Embedding dimensions differ"))
+            else:
+                target_identity = self.embedding_identity.with_dimensions(dimensions.pop())
+        self._progress = None
+        return PreparedEmbeddings(
+            tuple(embedded),
+            tuple(truncated),
+            tuple(errors),
+            target_identity,
+            self._embedding_retries,
+        )
 
     def index_project(self, project_id: int) -> VectorIndexingResult:
         """Replace one project's vectors and verify exact chunk-id equality."""
-        self._embedding_retries = 0
+        if self.vector_index is None:
+            raise ValueError("Vector index is required for project activation")
         if self.store.get_project(project_id) is None:
             raise ValueError(f"Unknown project id: {project_id}")
         chunks = self.store.list_chunks(project_id)
         sqlite_ids = tuple(sorted(chunk.chunk_id for chunk in chunks))
-        embedded, truncated, errors = self._embed_chunks(chunks)
+        prepared = self.prepare_chunks(chunks)
+        embedded = list(prepared.embedded)
+        truncated = list(prepared.truncated)
+        errors = list(prepared.errors)
 
         if errors:
             vector_ids, vector_errors = self._current_ids(project_id)
             errors.extend(vector_errors)
             return self._result(project_id, sqlite_ids, vector_ids, embedded, truncated, errors)
 
-        target_identity = None
-        if self.embedding_identity is not None and embedded:
-            dimensions = {item.embedding.dimensions for item in embedded}
-            if len(dimensions) != 1:
-                errors.append(VectorIndexingError("vector", (), "DimensionMismatch", "Embedding dimensions differ"))
-                return self._result(project_id, sqlite_ids, (), embedded, truncated, errors)
-            target_identity = self.embedding_identity.with_dimensions(dimensions.pop())
-
-        records = tuple(
-            VectorRecord(
-                chunk_id=item.chunk.chunk_id,
-                vector=item.embedding.vector,
-                metadata={
-                    "project_id": project_id,
-                    "content_hash": item.chunk.content_hash,
-                    "embedding_model": item.embedding.model,
-                    "dimensions": item.embedding.dimensions,
-                },
-            )
-            for item in embedded
-        )
+        target_identity = prepared.identity
+        records = prepared.records(project_id)
         vector_ids: tuple[str, ...] = ()
         try:
-            replacement = False
-            if target_identity is not None and self.vector_index.list_ids(project_id):
-                metadata = self.vector_index.get_index_metadata()
-                current = (
-                    metadata.get("codecompass:embedding_provider"),
-                    metadata.get("codecompass:embedding_endpoint_sha256"),
-                    metadata.get("codecompass:embedding_model"),
-                    metadata.get("codecompass:embedding_dimensions"),
-                )
-                expected = (
-                    target_identity.provider,
-                    target_identity.endpoint_sha256,
-                    target_identity.model,
-                    target_identity.dimensions,
-                )
-                if current != expected:
-                    self.vector_index.replace_collection(
-                        records,
-                        self._identity_metadata(target_identity),
-                        sqlite_ids,
-                    )
-                    replacement = True
-            if not replacement:
+            replacement = bool(getattr(self.vector_index, "managed", False))
+            if replacement:
+                metadata = self.identity_metadata(target_identity) if target_identity is not None else {
+                    "codecompass:embedding_schema": 1,
+                    "codecompass:embedding_dimensions": 0,
+                }
+                self.vector_index.replace_collection(records, metadata, sqlite_ids)
+            else:
                 existing = set(self.vector_index.list_ids(project_id))
                 self.vector_index.upsert(records)
                 stale = tuple(sorted(existing - set(sqlite_ids)))
@@ -133,12 +160,13 @@ class VectorIndexingService:
             )
         if not errors and target_identity is not None and not replacement:
             try:
-                self.vector_index.set_index_metadata(self._identity_metadata(target_identity))
+                self.vector_index.set_index_metadata(self.identity_metadata(target_identity))
             except VectorIndexError as error:
                 errors.append(VectorIndexingError("vector", (), type(error).__name__, str(error)))
         return self._result(project_id, sqlite_ids, vector_ids, embedded, truncated, errors)
 
-    def _identity_metadata(self, identity: EmbeddingIdentity) -> dict[str, str | int]:
+    def identity_metadata(self, identity: EmbeddingIdentity) -> dict[str, str | int]:
+        """Return trusted collection metadata for an embedding identity."""
         return {
             "codecompass:embedding_schema": 1,
             "codecompass:embedding_provider": identity.provider,
@@ -149,7 +177,7 @@ class VectorIndexingService:
 
     def _embed_chunks(
         self,
-        chunks: Sequence[StoredChunk],
+        chunks: Sequence[StoredChunk | Chunk],
     ) -> tuple[list[_EmbeddedChunk], list[TruncatedEmbedding], list[VectorIndexingError]]:
         embedded: list[_EmbeddedChunk] = []
         truncated: list[TruncatedEmbedding] = []
@@ -159,11 +187,19 @@ class VectorIndexingService:
             embedded.extend(batch_embedded)
             truncated.extend(batch_truncated)
             errors.extend(batch_errors)
+            if self._progress is not None:
+                self._progress(
+                    {
+                        "embeddings_completed": len(embedded),
+                        "embedding_retries": self._embedding_retries,
+                        "compacted_embeddings": len(truncated),
+                    }
+                )
         return embedded, truncated, errors
 
     def _embed_batch(
         self,
-        chunks: Sequence[StoredChunk],
+        chunks: Sequence[StoredChunk | Chunk],
     ) -> tuple[list[_EmbeddedChunk], list[TruncatedEmbedding], list[VectorIndexingError]]:
         if not chunks:
             return [], [], []
@@ -182,7 +218,7 @@ class VectorIndexingService:
 
     def _embed_oversized(
         self,
-        chunk: StoredChunk,
+        chunk: StoredChunk | Chunk,
     ) -> tuple[list[_EmbeddedChunk], list[TruncatedEmbedding], list[VectorIndexingError]]:
         original = chunk.embedding_text
         try:
@@ -191,15 +227,15 @@ class VectorIndexingService:
             return [], [], [self._embedding_error((chunk,), error)]
         diagnostic = TruncatedEmbedding(
             chunk_id=chunk.chunk_id,
-            relative_path=chunk.relative_path,
-            qualified_name=chunk.qualified_name,
+            relative_path=self._relative_path(chunk),
+            qualified_name=self._qualified_name(chunk),
             original_chars=len(original),
             embedded_chars=len(embedded_text),
             strategy="head_tail_lines",
         )
         return [_EmbeddedChunk(chunk, embedding)], [diagnostic], []
 
-    def _embed_compacted_lines(self, chunk: StoredChunk) -> tuple[str, EmbeddingResult]:
+    def _embed_compacted_lines(self, chunk: StoredChunk | Chunk) -> tuple[str, EmbeddingResult]:
         source_section = f"\nsource:\n{chunk.code}"
         if not chunk.embedding_text.endswith(source_section):
             raise EmbeddingProviderError(
@@ -263,7 +299,7 @@ class VectorIndexingService:
 
     def _embedding_error(
         self,
-        chunks: Sequence[StoredChunk],
+        chunks: Sequence[StoredChunk | Chunk],
         error: EmbeddingProviderError,
     ) -> VectorIndexingError:
         return VectorIndexingError(
@@ -273,7 +309,15 @@ class VectorIndexingService:
             error.message,
         )
 
+    def _relative_path(self, chunk: StoredChunk | Chunk) -> str:
+        return chunk.relative_path if isinstance(chunk, StoredChunk) else chunk.source_file.relative_path
+
+    def _qualified_name(self, chunk: StoredChunk | Chunk) -> str | None:
+        return chunk.qualified_name if isinstance(chunk, StoredChunk) else chunk.symbol.qualified_name
+
     def _current_ids(self, project_id: int) -> tuple[tuple[str, ...], list[VectorIndexingError]]:
+        if self.vector_index is None:
+            return (), [VectorIndexingError("vector", (), "VectorIndexUnavailable", "Vector index is unavailable")]
         try:
             return self.vector_index.list_ids(project_id), []
         except VectorIndexError as error:

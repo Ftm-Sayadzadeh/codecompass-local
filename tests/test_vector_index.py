@@ -157,6 +157,20 @@ def test_orphan_collection_does_not_override_valid_pointer(tmp_path: Path) -> No
     assert orphan_name in {collection.name for collection in reopened._client.list_collections()}
 
 
+def test_orphan_staging_cleanup_keeps_only_active_collection(tmp_path: Path) -> None:
+    vector_index = managed_index(tmp_path)
+    active_name = vector_index._active_name
+    generation = "0" * 32
+    orphan_name = vector_index._physical_name("stage", generation)
+    vector_index._create_physical_index(orphan_name, generation)
+
+    vector_index.cleanup_orphan_staging()
+
+    names = {collection.name for collection in vector_index._client.list_collections()}
+    assert active_name in names
+    assert orphan_name not in names
+
+
 def test_create_upsert_get_and_search(tmp_path: Path) -> None:
     vector_index = index(tmp_path)
 
