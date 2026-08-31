@@ -166,6 +166,27 @@ describe("CodeCompass SPA", () => {
     expect(fetchMock).toHaveBeenCalledWith("/api/projects/1/files/4/content", expect.anything());
   });
 
+  it("renders safe grounded Markdown without interpreting raw HTML", async () => {
+    installApi((path) => path === "/projects/1/ask" ? response({
+      question: "Explain it",
+      answer: "**Result**\n\n1. Call `escape_silent`\n2. Return safely\n\n<script>window.pwned = true</script>",
+      method: "hybrid",
+      citations: [],
+      omitted_context_count: 0,
+      llm_model: "qwen",
+      llm_provider: "ollama",
+    }) : undefined);
+    const { container } = render(<App />);
+    await ready();
+
+    fireEvent.change(screen.getByLabelText("Ask about this codebase"), { target: { value: "Explain it" } });
+    fireEvent.click(screen.getByRole("button", { name: "Ask CodeCompass" }));
+    expect((await screen.findByText("Result")).tagName).toBe("STRONG");
+    expect(screen.getByText("escape_silent")).toHaveAttribute("dir", "ltr");
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+    expect(container.querySelector("script")).toBeNull();
+  });
+
   it("omits an empty Ask budget, sends a valid override, and blocks invalid values", async () => {
     const askBodies: Record<string, unknown>[] = [];
     installApi((path, init) => {

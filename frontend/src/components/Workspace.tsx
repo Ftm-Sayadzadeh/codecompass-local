@@ -1,5 +1,6 @@
 import { BookOpen, Braces, LoaderCircle, MessageSquareText, Search, Send, Sparkles } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
+import ReactMarkdown from "react-markdown";
 
 import { ApiError } from "../api/client";
 import type { AskResponse, DocumentationResponse, ResolutionCandidate, RetrievalMethod, SearchResponse } from "../api/types";
@@ -7,6 +8,22 @@ import { CitationList, type NavigationCitation } from "./CitationList";
 import { ErrorMessage } from "./ErrorMessage";
 
 export type WorkspaceTab = "ask" | "search" | "documentation";
+
+function GroundedMarkdown({ children }: { children: string }) {
+  return (
+    <div className="answer-markdown" dir="auto">
+      <ReactMarkdown
+        components={{
+          code: ({ children: code }) => <code dir="ltr">{code}</code>,
+          pre: ({ children: code }) => <pre dir="ltr">{code}</pre>,
+          a: ({ children: label, href }) => <a href={href} target="_blank" rel="noreferrer">{label}</a>,
+        }}
+      >
+        {children}
+      </ReactMarkdown>
+    </div>
+  );
+}
 
 function MethodControl({ value, onChange }: { value: RetrievalMethod; onChange: (value: RetrievalMethod) => void }) {
   return (
@@ -82,7 +99,7 @@ function AskPanel({ result, loading, error, onAsk, onOpenCitation, onReindex, ma
       {result ? (
         <section className="answer-section" aria-live="polite">
           <div className="answer-heading"><Sparkles size={18} /><span>Grounded answer</span><small>{result.method} · {result.llm_model ?? "backend model"}</small></div>
-          <p className="answer-text" dir="auto">{result.answer}</p>
+          <GroundedMarkdown>{result.answer}</GroundedMarkdown>
           <CitationList citations={citations} onOpen={onOpenCitation} />
         </section>
       ) : !loading && !error ? <div className="workspace-empty"><MessageSquareText size={28} /><p>Ask a Persian or English question about the selected project.</p></div> : null}
