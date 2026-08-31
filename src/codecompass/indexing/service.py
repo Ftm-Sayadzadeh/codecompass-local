@@ -2,13 +2,33 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
-
 from codecompass.chunker import Chunk, ChunkError, ChunkResult, CodeChunker
 from codecompass.indexing.models import IndexingError, IndexingResult, IndexingStats
 from codecompass.parser import ParseError, ParseResult, PythonASTParser, Symbol
-from codecompass.scanner import RepositoryPathError, RepositoryScanner, ScanError
+from codecompass.scanner import RepositoryPathError, RepositoryScanner, ScanError, SourceFile
 from codecompass.storage import SQLiteMetadataStore, StorageError
+
+ProgressCallback = Callable[[str, dict[str, int]], None]
+
+
+@dataclass(frozen=True, slots=True)
+class PreparedRepositoryIndex:
+    """Structural index candidate that has not changed canonical storage."""
+
+    root_path: Path | None
+    files: tuple[SourceFile, ...]
+    parse_results: tuple[ParseResult, ...]
+    chunk_results: tuple[ChunkResult, ...]
+    chunks: tuple[Chunk, ...]
+    stats: IndexingStats
+    errors: tuple[IndexingError, ...]
+
+    @property
+    def succeeded(self) -> bool:
+        return self.root_path is not None and not self.errors
 
 
 class IndexingService:
@@ -26,49 +46,115 @@ class IndexingService:
         self.parser = parser or PythonASTParser()
         self.chunker = chunker or CodeChunker()
 
-    def index_repository(self, repository_path: str | Path, project_name: str | None = None) -> IndexingResult:
-        """Run scanner, parser, chunker, and SQLite persistence for one repository."""
+    def prepare_repository(
+        self,
+        repository_path: str | Path,
+        progress: ProgressCallback | None = None,
+    ) -> PreparedRepositoryIndex:
+        """Build a structural candidate without changing canonical metadata."""
+        emit = progress or (lambda _stage, _counters: None)
+        emit("scanning", {})
         try:
             self.store.initialize()
-            scan_result = self.scanner.scan(repository_path)
+            scan_result = self.scanner.scan(
+                repository_path,
+                on_file=lambda count: emit("scanning", {"files_discovered": count}),
+            )
         except RepositoryPathError as error:
-            return self._failed_scan(error)
+            failed = self._failed_scan(error)
+            return PreparedRepositoryIndex(None, (), (), (), (), failed.stats, failed.errors)
         except StorageError as error:
-            return self._failed_storage(None, None, error)
+            failed = self._failed_storage(None, None, error)
+            return PreparedRepositoryIndex(None, (), (), (), (), failed.stats, failed.errors)
 
-        project_id: int | None = None
-        parse_results = self.parser.parse_files(scan_result.files)
-        chunk_results = self.chunker.chunk_parse_results(parse_results)
-        symbols = [symbol for result in parse_results for symbol in result.symbols]
-        chunks = [chunk for result in chunk_results for chunk in result.chunks]
+        parse_results: list[ParseResult] = []
+        symbols: list[Symbol] = []
+        emit("parsing", {"files_discovered": len(scan_result.files)})
+        for source_file in scan_result.files:
+            parsed = self.parser.parse_file(source_file)
+            parse_results.append(parsed)
+            symbols.extend(parsed.symbols)
+            emit(
+                "parsing",
+                {
+                    "files_discovered": len(scan_result.files),
+                    "files_parsed": len(parse_results),
+                    "symbols_extracted": len(symbols),
+                },
+            )
+
+        chunk_results: list[ChunkResult] = []
+        chunks: list[Chunk] = []
+        emit("chunking", {"files_discovered": len(scan_result.files), "files_parsed": len(parse_results)})
+        for parse_result in parse_results:
+            chunked = self.chunker.chunk_parse_result(parse_result)
+            chunk_results.append(chunked)
+            chunks.extend(chunked.chunks)
+            emit(
+                "chunking",
+                {
+                    "files_discovered": len(scan_result.files),
+                    "files_parsed": len(parse_results),
+                    "files_chunked": len(chunk_results),
+                    "symbols_extracted": len(symbols),
+                    "chunks_generated": len(chunks),
+                },
+            )
+
+        parsed_tuple = tuple(parse_results)
+        chunked_tuple = tuple(chunk_results)
         errors = [
             *self._scan_errors(scan_result.errors),
-            *self._parse_errors(parse_results),
-            *self._chunk_errors(chunk_results),
+            *self._parse_errors(parsed_tuple),
+            *self._chunk_errors(chunked_tuple),
         ]
-        stats = self._stats(len(scan_result.files), scan_result.errors, parse_results, chunk_results, symbols, chunks)
+        stats = self._stats(
+            len(scan_result.files),
+            scan_result.errors,
+            parsed_tuple,
+            chunked_tuple,
+            symbols,
+            chunks,
+        )
+        return PreparedRepositoryIndex(
+            scan_result.root_path,
+            scan_result.files,
+            parsed_tuple,
+            chunked_tuple,
+            tuple(chunks),
+            stats,
+            tuple(errors),
+        )
 
+    def index_repository(self, repository_path: str | Path, project_name: str | None = None) -> IndexingResult:
+        """Run scanner, parser, chunker, and SQLite persistence for one repository."""
+        prepared = self.prepare_repository(repository_path)
+        if prepared.root_path is None:
+            return IndexingResult(None, None, prepared.stats, prepared.errors)
+        project_id: int | None = None
         try:
-            project = self.store.upsert_project(project_name or scan_result.root_path.name, scan_result.root_path)
+            project = self.store.replace_project_index(
+                project_name or prepared.root_path.name,
+                prepared.root_path,
+                prepared.files,
+                prepared.parse_results,
+                prepared.chunks,
+            )
             project_id = project.id
-            file_ids = self.store.replace_source_files(project.id, scan_result.files)
-            for parse_result in parse_results:
-                self.store.replace_symbols(file_ids[parse_result.source_file.relative_path], parse_result.symbols)
-            self.store.replace_chunks(project.id, chunks)
         except StorageError as error:
             storage_error = self._storage_error(error)
             return IndexingResult(
                 project_id=project_id,
-                root_path=scan_result.root_path,
-                stats=self._with_storage_error(stats),
-                errors=tuple((*errors, storage_error)),
+                root_path=prepared.root_path,
+                stats=self._with_storage_error(prepared.stats),
+                errors=tuple((*prepared.errors, storage_error)),
             )
 
         return IndexingResult(
             project_id=project_id,
-            root_path=scan_result.root_path,
-            stats=stats,
-            errors=tuple(errors),
+            root_path=prepared.root_path,
+            stats=prepared.stats,
+            errors=prepared.errors,
         )
 
     def _stats(

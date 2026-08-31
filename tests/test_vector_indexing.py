@@ -344,12 +344,13 @@ def test_failed_identity_replacement_preserves_old_active_collection(tmp_path: P
     assert VectorIndexingService(store, FakeEmbeddingProvider(), vector_index, embedding_identity=first).index_project(project_id).succeeded
     old_ids = vector_index.list_ids(project_id)
     old_metadata = vector_index.get_index_metadata()
+    old_name = vector_index._active_name
 
     if failure == "upsert":
         original = ChromaVectorIndex.upsert
 
         def fail_upsert(self, records):
-            if "-stage-" in self.collection_name:
+            if self.collection_name.startswith("safe_reindex-active-"):
                 raise VectorIndexError("staging upsert failed")
             return original(self, records)
 
@@ -358,7 +359,7 @@ def test_failed_identity_replacement_preserves_old_active_collection(tmp_path: P
         original = ChromaVectorIndex.set_index_metadata
 
         def fail_metadata(self, metadata):
-            if "-stage-" in self.collection_name:
+            if self.collection_name.startswith("safe_reindex-active-"):
                 raise VectorIndexError("staging metadata failed")
             return original(self, metadata)
 
@@ -368,7 +369,7 @@ def test_failed_identity_replacement_preserves_old_active_collection(tmp_path: P
 
         def wrong_ids(self, project_id=None):
             values = original(self, project_id)
-            if "-stage-" not in self.collection_name:
+            if self.collection_name in {"safe_reindex", old_name}:
                 return values
             return () if failure == "missing_ids" else (*values, "unexpected-id")
 
@@ -392,7 +393,7 @@ def test_failed_identity_replacement_preserves_old_active_collection(tmp_path: P
     assert all("-stage-" not in collection.name for collection in reopened._client.list_collections())
 
 
-def test_same_identity_reindex_does_not_use_replacement(tmp_path: Path, monkeypatch) -> None:
+def test_same_identity_reindex_uses_safe_replacement(tmp_path: Path) -> None:
     store, project_id = indexed_store(tmp_path, "def current():\n    return 1\n")
     vector_index = ChromaVectorIndex(
         tmp_path / "chroma",
@@ -402,11 +403,13 @@ def test_same_identity_reindex_does_not_use_replacement(tmp_path: Path, monkeypa
     )
     identity = embedding_identity("fake", "https://one.example/v1", "same")
     assert VectorIndexingService(store, FakeEmbeddingProvider(), vector_index, embedding_identity=identity).index_project(project_id).succeeded
-    monkeypatch.setattr(vector_index, "replace_collection", lambda *args: (_ for _ in ()).throw(AssertionError("replacement used")))
+    old_name = vector_index._active_name
 
     result = VectorIndexingService(store, FakeEmbeddingProvider(), vector_index, embedding_identity=identity).index_project(project_id)
 
     assert result.succeeded
+    assert vector_index._active_name != old_name
+    assert old_name not in {collection.name for collection in vector_index._client.list_collections()}
 
 
 def test_inactive_cleanup_failure_keeps_new_collection_active(tmp_path: Path, monkeypatch) -> None:

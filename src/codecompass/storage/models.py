@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 
 class StorageError(Exception):
@@ -70,3 +71,21 @@ class StoredChunk:
     code: str
     embedding_text: str
     content_hash: str
+
+
+@dataclass(frozen=True, slots=True)
+class IndexingJobRecord:
+    """Durable, sanitized state for one local indexing run."""
+
+    id: str
+    state: str
+    operation: str
+    project_id: int | None
+    counters: dict[str, int]
+    result: dict[str, Any] | None
+    error: dict[str, Any] | None
+    previous_index_preserved: bool | None
+    created_at: str
+    started_at: str
+    updated_at: str
+    completed_at: str | None

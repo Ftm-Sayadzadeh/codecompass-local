@@ -25,9 +25,11 @@ class FakeOllamaEmbeddingProvider(OllamaEmbeddingProvider):
         super().__init__(model="fake-model")
         self.response = response
         self.payloads = []
+        self.endpoints = []
 
-    def _post_json(self, payload):
+    def _post_json(self, payload, endpoint="/api/embed"):
         self.payloads.append(payload)
+        self.endpoints.append(endpoint)
         if isinstance(self.response, Exception):
             raise self.response
         return self.response
@@ -63,6 +65,15 @@ def test_ollama_single_embedding_success() -> None:
 
     assert result == EmbeddingResult(vector=[1.0, 2.5, -3.0], model="fake-model", dimensions=3)
     assert provider.payloads == [{"model": "fake-model", "input": ["hello"], "truncate": False}]
+
+
+def test_ollama_preflight_uses_show_model_endpoint() -> None:
+    provider = FakeOllamaEmbeddingProvider({"details": {}})
+
+    provider.preflight()
+
+    assert provider.payloads == [{"model": "fake-model"}]
+    assert provider.endpoints == ["/api/show"]
 
 
 def test_ollama_batch_preserves_order_and_dimensions() -> None:
@@ -133,7 +144,7 @@ def test_ollama_invalid_model_http_error_is_structured(monkeypatch) -> None:
     with pytest.raises(EmbeddingProviderError) as raised:
         provider.embed_text("hello")
 
-    assert raised.value.error_type == "HTTPError"
+    assert raised.value.error_type == "ModelNotFound"
     assert "404" in raised.value.message
 
 

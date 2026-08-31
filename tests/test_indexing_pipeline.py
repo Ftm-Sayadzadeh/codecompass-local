@@ -186,7 +186,7 @@ class FailingStore:
     def initialize(self) -> None:
         pass
 
-    def upsert_project(self, name: str, root_path: Path):
+    def replace_project_index(self, *args, **kwargs):
         raise StorageError("database unavailable")
 
 

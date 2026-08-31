@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import os
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from pathlib import Path
 
 from codecompass.scanner.ignore import DEFAULT_IGNORED_DIRS, DEFAULT_IGNORED_FILE_PATTERNS, is_ignored_file
@@ -26,7 +26,11 @@ class RepositoryScanner:
         self.ignored_dirs = frozenset(ignored_dirs)
         self.ignored_file_patterns = tuple(ignored_file_patterns)
 
-    def scan(self, repository_path: str | Path) -> ScanResult:
+    def scan(
+        self,
+        repository_path: str | Path,
+        on_file: Callable[[int], None] | None = None,
+    ) -> ScanResult:
         """Scan a repository for eligible Python source files."""
         root = self._resolve_root(repository_path)
         files: list[SourceFile] = []
@@ -58,6 +62,8 @@ class RepositoryScanner:
                             sha256=self._sha256(absolute_path),
                         )
                     )
+                    if on_file is not None:
+                        on_file(len(files))
                 except OSError as error:
                     errors.append(self._error(root, path, error))
 

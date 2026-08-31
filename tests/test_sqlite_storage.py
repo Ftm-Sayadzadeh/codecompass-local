@@ -72,8 +72,8 @@ def test_create_database_and_schema(tmp_path: Path) -> None:
                 "SELECT name FROM sqlite_master WHERE type = 'table'"
             )
         }
-    assert version == 1
-    assert {"projects", "source_files", "symbols", "chunks"} <= tables
+    assert version == 2
+    assert {"projects", "source_files", "symbols", "chunks", "indexing_jobs"} <= tables
 
 
 def test_project_upsert_and_persistence_after_reopen(tmp_path: Path) -> None:
@@ -163,6 +163,55 @@ def test_rebuild_replaces_old_metadata_deterministically(tmp_path: Path) -> None
 
     assert [file.relative_path for file in metadata_store.list_source_files(project.id)] == ["new.py"]
     assert [chunk.relative_path for chunk in metadata_store.list_chunks(project.id)] == ["new.py"] * len(new_chunks)
+
+
+def test_atomic_project_replacement_rolls_back_all_metadata(tmp_path: Path) -> None:
+    metadata_store = store(tmp_path)
+    repo = tmp_path / "repo"
+    old_file, _, old_chunks = build_chunks(repo, "old.py")
+    old_parse = PythonASTParser().parse_file(old_file)
+    project = metadata_store.replace_project_index("Demo", repo, (old_file,), (old_parse,), old_chunks)
+    new_path = repo / "new.py"
+    new_path.write_text("def replacement(value):\n    return value\n", encoding="utf-8")
+    new_file = source_file(new_path, "new.py")
+    new_parse = PythonASTParser().parse_file(new_file)
+    new_chunks = CodeChunker().chunk_parse_result(new_parse).chunks
+
+    def fail_activation(_project_id: int) -> None:
+        raise RuntimeError("activation failed")
+
+    with pytest.raises(RuntimeError, match="activation failed"):
+        metadata_store.replace_project_index(
+            "Demo",
+            repo,
+            (new_file,),
+            (new_parse,),
+            new_chunks,
+            before_commit=fail_activation,
+        )
+
+    assert [item.relative_path for item in metadata_store.list_source_files(project.id)] == ["old.py"]
+    assert {item.chunk_id for item in metadata_store.list_chunks(project.id)} == {item.chunk_id for item in old_chunks}
+
+
+def test_running_jobs_are_failed_safely_after_restart(tmp_path: Path) -> None:
+    metadata_store = store(tmp_path)
+    job = metadata_store.create_indexing_job("job-1", "indexed", None)
+
+    assert metadata_store.get_active_indexing_job() == job
+    assert metadata_store.interrupt_active_indexing_jobs() == 1
+    interrupted = metadata_store.get_indexing_job(job.id)
+
+    assert interrupted is not None
+    assert interrupted.state == "failed"
+    assert interrupted.error == {
+        "code": "indexing_interrupted",
+        "message": "Indexing was interrupted",
+        "stage": "failed",
+    }
+    with sqlite3.connect(tmp_path / "metadata.sqlite") as connection:
+        columns = {row[1] for row in connection.execute("PRAGMA table_info(indexing_jobs)")}
+    assert "root_path" not in columns
 
 
 def test_missing_foreign_references_raise_storage_error(tmp_path: Path) -> None:

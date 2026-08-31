@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, SecretStr
+from pydantic import BaseModel, ConfigDict, Field, SecretStr, model_validator
 
 
 class StrictModel(BaseModel):
@@ -37,6 +37,19 @@ class IndexProjectRequest(StrictModel):
     repository_path: str = Field(min_length=1, examples=["/path/to/repository"])
     project_name: str | None = Field(default=None, min_length=1, max_length=200)
     embedding: EmbeddingProviderOverride | None = None
+
+
+class IndexJobRequest(StrictModel):
+    repository_path: str | None = Field(default=None, min_length=1, examples=["/path/to/repository"])
+    project_id: int | None = Field(default=None, ge=1)
+    project_name: str | None = Field(default=None, min_length=1, max_length=200)
+    embedding: EmbeddingProviderOverride | None = None
+
+    @model_validator(mode="after")
+    def exactly_one_target(self) -> "IndexJobRequest":
+        if (self.repository_path is None) == (self.project_id is None):
+            raise ValueError("Exactly one indexing target is required")
+        return self
 
 
 class SearchRequest(StrictModel):
@@ -145,6 +158,41 @@ class IndexProjectResponse(StrictModel):
     structural_stats: dict[str, Any]
     vector_stats: dict[str, Any]
     embedding: dict[str, Any]
+
+
+IndexJobState = Literal[
+    "preflight",
+    "scanning",
+    "parsing",
+    "chunking",
+    "embedding",
+    "verifying",
+    "activating",
+    "completed",
+    "failed",
+]
+
+
+class IndexJobError(StrictModel):
+    code: str
+    message: str
+    stage: str
+    error_type: str | None = None
+
+
+class IndexJobResponse(StrictModel):
+    id: str
+    state: IndexJobState
+    operation: Literal["indexed", "reindexed"]
+    project_id: int | None
+    counters: dict[str, int]
+    started_at: str
+    updated_at: str
+    completed_at: str | None
+    elapsed_seconds: float
+    previous_index_preserved: bool | None
+    result: IndexProjectResponse | None
+    error: IndexJobError | None
 
 
 class DocumentationCitationResponse(StrictModel):

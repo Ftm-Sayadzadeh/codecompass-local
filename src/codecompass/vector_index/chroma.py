@@ -7,6 +7,7 @@ import json
 import os
 import re
 import uuid
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -27,6 +28,17 @@ BINDING_SCHEMA = "codecompass:managed_schema"
 BINDING_LOGICAL = "codecompass:logical_collection"
 BINDING_GENERATION = "codecompass:generation"
 BINDING_PROJECT = "codecompass:project_id"
+
+
+@dataclass(frozen=True, slots=True)
+class StagedVectorReplacement:
+    """A verified managed collection waiting for pointer activation."""
+
+    logical_collection: str
+    old_name: str
+    old_generation: str
+    staging_name: str
+    generation: str
 
 
 class ChromaVectorIndex:
@@ -198,14 +210,31 @@ class ChromaVectorIndex:
         expected_ids: Sequence[str],
     ) -> None:
         """Build and verify staging, then atomically switch the active pointer."""
+        replacement = self.stage_replacement(records, metadata, expected_ids)
+        try:
+            self.activate_staged(replacement)
+        except Exception:
+            self.rollback_staged(replacement)
+            raise
+        self.finalize_staged(replacement)
+
+    def stage_replacement(
+        self,
+        records: Sequence[VectorRecord],
+        metadata: Mapping[str, VectorMetadataValue],
+        expected_ids: Sequence[str],
+    ) -> StagedVectorReplacement:
+        """Build and verify a replacement while leaving the active pointer unchanged."""
         if not self.managed:
             raise VectorIndexError("Safe collection replacement requires an active pointer")
         self._ready()
-        old_name = self._active_name or self.collection_name
+        pointer = self._read_pointer()
+        old_name = pointer["active_collection"]
+        old_generation = pointer["generation"]
+        self.cleanup_orphan_staging()
         generation = uuid.uuid4().hex
-        staging_name = self._physical_name("stage", generation)
+        staging_name = self._physical_name("active", generation)
         staging = self._create_physical_index(staging_name, generation)
-        activated = False
         try:
             staging.upsert(records)
             staging.set_index_metadata(metadata)
@@ -216,25 +245,103 @@ class ChromaVectorIndex:
             if any(actual_metadata.get(key) != value for key, value in metadata.items()):
                 raise VectorIndexError("Staging collection metadata does not match expected metadata")
             dimensions = metadata.get("codecompass:embedding_dimensions")
-            if not isinstance(dimensions, int) or dimensions < 1 or staging._stored_dimension() != dimensions:
+            stored_dimension = staging._stored_dimension()
+            valid_dimension = (
+                isinstance(dimensions, int)
+                and (
+                    (bool(expected_ids) and dimensions > 0 and stored_dimension == dimensions)
+                    or (not expected_ids and dimensions == 0 and stored_dimension is None)
+                )
+            )
+            if not valid_dimension:
                 raise VectorIndexError("Staging collection dimensions do not match expected dimensions")
 
             self._validate_binding(staging._ready(), staging_name, generation)
-            self._activate_pointer(staging_name, generation)
-            activated = True
-            collection, active_name = self._resolve_managed_collection()
-            self._collection = collection
-            self._active_name = active_name
-            self._dimension = self._stored_dimension()
         except Exception as error:
-            if not activated:
-                self._delete_collection(staging_name)
+            self._delete_collection(staging_name)
             if isinstance(error, VectorIndexError):
                 raise
             raise VectorIndexError(f"Failed to replace Chroma collection: {error}") from error
 
-        if old_name != staging_name:
-            self._delete_collection(old_name)
+        return StagedVectorReplacement(
+            self.collection_name,
+            old_name,
+            old_generation,
+            staging_name,
+            generation,
+        )
+
+    def activate_staged(self, replacement: StagedVectorReplacement) -> None:
+        """Atomically point the logical collection at a verified replacement."""
+        self._validate_replacement(replacement)
+        pointer = self._read_pointer()
+        if pointer["active_collection"] != replacement.old_name or pointer["generation"] != replacement.old_generation:
+            raise VectorIndexStateError("Active vector collection changed before activation")
+        self._activate_pointer(replacement.staging_name, replacement.generation)
+        collection, active_name = self._resolve_managed_collection()
+        self._collection = collection
+        self._active_name = active_name
+        self._dimension = self._stored_dimension()
+
+    def rollback_staged(self, replacement: StagedVectorReplacement) -> None:
+        """Restore the previous pointer and discard an uncommitted replacement."""
+        self._validate_replacement(replacement)
+        try:
+            pointer = self._read_pointer()
+            if pointer["active_collection"] == replacement.staging_name:
+                self._activate_pointer(replacement.old_name, replacement.old_generation)
+                collection, active_name = self._resolve_managed_collection()
+                self._collection = collection
+                self._active_name = active_name
+                self._dimension = self._stored_dimension()
+        finally:
+            self._delete_collection(replacement.staging_name)
+
+    def finalize_staged(self, replacement: StagedVectorReplacement) -> None:
+        """Delete the previous collection after metadata commit succeeds."""
+        self._validate_replacement(replacement)
+        pointer = self._read_pointer()
+        if pointer["active_collection"] != replacement.staging_name:
+            raise VectorIndexStateError("Replacement collection is not active")
+        if replacement.old_name != replacement.staging_name:
+            self._delete_collection(replacement.old_name)
+        self.cleanup_orphan_staging()
+
+    def discard_staged(self, replacement: StagedVectorReplacement) -> None:
+        """Delete a verified replacement that was never activated."""
+        self._validate_replacement(replacement)
+        pointer = self._read_pointer()
+        if pointer["active_collection"] == replacement.staging_name:
+            raise VectorIndexStateError("Active replacement cannot be discarded")
+        self._delete_collection(replacement.staging_name)
+
+    def cleanup_orphan_staging(self) -> None:
+        """Remove inactive staging collections bound to this managed index."""
+        if not self.managed:
+            return
+        self._ready()
+        pointer = self._read_pointer()
+        for name in self._managed_collection_names():
+            if name == pointer["active_collection"]:
+                continue
+            try:
+                collection = self._client.get_collection(name=name)
+                metadata = collection.metadata if isinstance(collection.metadata, dict) else {}
+                if metadata.get(BINDING_LOGICAL) != self.collection_name:
+                    continue
+                if self.project_id is not None and metadata.get(BINDING_PROJECT) != self.project_id:
+                    continue
+            except Exception:
+                continue
+            self._delete_collection(name)
+
+    def _validate_replacement(self, replacement: StagedVectorReplacement) -> None:
+        if replacement.logical_collection != self.collection_name:
+            raise VectorIndexError("Staged replacement belongs to another logical collection")
+        self._validate_collection_name(replacement.old_name)
+        self._validate_collection_name(replacement.staging_name)
+        if not GENERATION.fullmatch(replacement.old_generation) or not GENERATION.fullmatch(replacement.generation):
+            raise VectorIndexError("Staged replacement generation is invalid")
 
     def _ready(self) -> Any:
         if self._collection is None:

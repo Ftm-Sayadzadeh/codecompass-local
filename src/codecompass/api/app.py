@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import asdict
+from datetime import datetime, timezone
 from typing import Any
 
-from fastapi import Depends, FastAPI, Query, Request
+from fastapi import Depends, FastAPI, Query, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
@@ -22,6 +23,8 @@ from codecompass.api.schemas import (
     HealthResponse,
     IndexProjectRequest,
     IndexProjectResponse,
+    IndexJobRequest,
+    IndexJobResponse,
     ProjectResponse,
     RetrievedChunkResponse,
     SearchRequest,
@@ -34,7 +37,7 @@ from codecompass.documentation import DocumentationError, FunctionDocumentationS
 from codecompass.qa import GroundedQAService, QAError, QAPromptBuilder, QARequest
 from codecompass.rag import RAGContextBuilder
 from codecompass.retrieval import RetrievalError, RetrievalQuery
-from codecompass.storage import StorageError, StoredChunk
+from codecompass.storage import IndexingJobRecord, StorageError, StoredChunk
 from codecompass.vector_index import VectorIndexStateError
 
 
@@ -132,6 +135,26 @@ def create_app(settings: APISettings | None = None) -> FastAPI:
     @app.post("/projects/index", response_model=IndexProjectResponse)
     def index_project(body: IndexProjectRequest, runtime: APIRuntime = Depends(get_runtime)) -> dict[str, Any]:
         return runtime.index(body.repository_path, body.project_name, body.embedding)
+
+    @app.post("/projects/index-jobs", response_model=IndexJobResponse, status_code=202)
+    def start_index_job(body: IndexJobRequest, runtime: APIRuntime = Depends(get_runtime)) -> IndexJobResponse:
+        return _index_job(
+            runtime.start_index_job(
+                repository_path=body.repository_path,
+                project_id=body.project_id,
+                project_name=body.project_name,
+                override=body.embedding,
+            )
+        )
+
+    @app.get("/projects/index-jobs/active", response_model=IndexJobResponse)
+    def active_index_job(runtime: APIRuntime = Depends(get_runtime)) -> IndexJobResponse | Response:
+        job = runtime.active_indexing_job()
+        return _index_job(job) if job is not None else Response(status_code=204)
+
+    @app.get("/projects/index-jobs/{job_id}", response_model=IndexJobResponse)
+    def index_job(job_id: str, runtime: APIRuntime = Depends(get_runtime)) -> IndexJobResponse:
+        return _index_job(runtime.indexing_job(job_id))
 
     @app.get("/projects/{project_id}/files", response_model=list[SourceFileResponse])
     def files(project_id: int, runtime: APIRuntime = Depends(get_runtime)) -> list[SourceFileResponse]:
@@ -249,6 +272,25 @@ def _documentation_citation(chunk: StoredChunk, project_name: str) -> dict[str, 
         "end_line": chunk.end_line,
         "content_hash": chunk.content_hash,
     }
+
+
+def _index_job(job: IndexingJobRecord) -> IndexJobResponse:
+    started = datetime.fromisoformat(job.started_at)
+    ended = datetime.fromisoformat(job.completed_at) if job.completed_at else datetime.now(timezone.utc)
+    return IndexJobResponse(
+        id=job.id,
+        state=job.state,
+        operation=job.operation,
+        project_id=job.project_id,
+        counters=job.counters,
+        started_at=job.started_at,
+        updated_at=job.updated_at,
+        completed_at=job.completed_at,
+        elapsed_seconds=max(0.0, (ended - started).total_seconds()),
+        previous_index_preserved=job.previous_index_preserved,
+        result=job.result,
+        error=job.error,
+    )
 
 
 def _error(status: int, code: str, message: str, details: dict[str, Any] | None = None) -> JSONResponse:
