@@ -1,4 +1,4 @@
-import { BookOpen, Braces, LoaderCircle, MessageSquareText, Search, Send, Sparkles } from "lucide-react";
+import { AlertTriangle, BookOpen, Braces, LoaderCircle, MessageSquareText, Search, Send, Sparkles } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import ReactMarkdown from "react-markdown";
 
@@ -70,7 +70,7 @@ function AskPanel({ result, loading, error, onAsk, onOpenCitation, onReindex, ma
       <form className="prompt-form" onSubmit={submit}>
         <label htmlFor="question">Ask about this codebase</label>
         <textarea id="question" value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="How does escape_silent handle None?" dir="auto" rows={4} />
-        <details className="ask-advanced">
+        <details className="ask-advanced" open={result?.finish_reason === "length" || undefined}>
           <summary>Advanced</summary>
           <label htmlFor="answer-token-budget">Answer token budget</label>
           <input
@@ -99,6 +99,7 @@ function AskPanel({ result, loading, error, onAsk, onOpenCitation, onReindex, ma
       {result ? (
         <section className="answer-section" aria-live="polite">
           <div className="answer-heading"><Sparkles size={18} /><span>Grounded answer</span><small>{result.method} · {result.llm_model ?? "backend model"}</small></div>
+          {result.finish_reason === "length" ? <div className="answer-warning" role="status"><AlertTriangle size={17} /><span><strong>The answer reached its token limit.</strong> Increase Answer token budget in Advanced and ask again.</span></div> : null}
           <GroundedMarkdown>{result.answer}</GroundedMarkdown>
           <CitationList citations={citations} onOpen={onOpenCitation} />
         </section>

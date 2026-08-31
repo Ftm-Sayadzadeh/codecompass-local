@@ -46,6 +46,7 @@ class QAAnswer:
     omitted_context_count: int
     llm_model: str | None
     llm_provider: str | None
+    finish_reason: str | None = None
 
 
 class QAError(Exception):

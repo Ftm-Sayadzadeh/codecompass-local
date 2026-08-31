@@ -96,6 +96,7 @@ export interface AskResponse {
   omitted_context_count: number;
   llm_model: string | null;
   llm_provider: string | null;
+  finish_reason?: string | null;
 }
 
 export interface DocumentationCitation {

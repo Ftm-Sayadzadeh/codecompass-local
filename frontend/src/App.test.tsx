@@ -187,6 +187,32 @@ describe("CodeCompass SPA", () => {
     expect(container.querySelector("script")).toBeNull();
   });
 
+  it("shows truncation only from explicit provider metadata", async () => {
+    let truncated = false;
+    installApi((path) => path === "/projects/1/ask" ? response({
+      question: "Question",
+      answer: "An answer that may look unfinished",
+      method: "hybrid",
+      citations: [],
+      omitted_context_count: 0,
+      llm_model: "model",
+      llm_provider: "provider",
+      finish_reason: truncated ? "length" : null,
+    }) : undefined);
+    render(<App />);
+    await ready();
+    fireEvent.change(screen.getByLabelText("Ask about this codebase"), { target: { value: "Question" } });
+
+    fireEvent.click(screen.getByRole("button", { name: "Ask CodeCompass" }));
+    await screen.findByText("An answer that may look unfinished");
+    expect(screen.queryByText("The answer reached its token limit.")).not.toBeInTheDocument();
+
+    truncated = true;
+    fireEvent.click(screen.getByRole("button", { name: "Ask CodeCompass" }));
+    expect(await screen.findByText("The answer reached its token limit.")).toBeInTheDocument();
+    expect(screen.getByLabelText("Answer token budget")).toBeVisible();
+  });
+
   it("omits an empty Ask budget, sends a valid override, and blocks invalid values", async () => {
     const askBodies: Record<string, unknown>[] = [];
     installApi((path, init) => {
