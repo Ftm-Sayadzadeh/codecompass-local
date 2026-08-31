@@ -36,7 +36,7 @@ This file tracks the approved implementation plan. Codex should update milestone
 | M19 | Monaco clickable code citations | DONE | M18 |
 | M20 | Final evaluation and hardening | DONE_WITH_LIMITATIONS | M10, M12, M15, M16 |
 | M21 | Stable MVP release | DONE | M17–M20 |
-| M22 | Post-release frontend UX hardening | IN PROGRESS | M21 |
+| M22 | Post-release frontend UX hardening | DONE | M21 |
 | S1 | Query expansion | NOT STARTED | M8, M21 |
 
 ## Critical path
