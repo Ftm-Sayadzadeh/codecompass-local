@@ -54,6 +54,7 @@ function installApi(handler?: (path: string, init?: RequestInit) => Promise<Resp
     if (path === "/projects/1/files") return response([file]);
     if (path === "/projects/1/symbols") return response([symbol]);
     if (path === "/projects/1/files/4/content") return response(source);
+    if (path === "/projects/index-jobs/active") return Promise.resolve(new Response(null, { status: 204 }));
     if (path === "/evaluation/summary") return response(evaluation);
     if (path === "/evaluation/performance") return response(performance);
     throw new Error(`Unhandled request: ${path}`);
@@ -284,13 +285,26 @@ describe("CodeCompass SPA", () => {
     expect(askBodies).toHaveLength(2);
   });
 
-  it("shows synchronous indexing state and refreshes the indexed project", async () => {
+  it("shows real indexing stages and counters, then refreshes the indexed project", async () => {
     let indexed = false;
-    let finishIndex: (value: Response) => void = () => undefined;
-    const pendingIndex = new Promise<Response>((resolve) => { finishIndex = resolve; });
-    installApi((path) => {
+    installApi((path, init) => {
       if (path === "/projects") return response(indexed ? [project] : []);
-      if (path === "/projects/index") return pendingIndex;
+      if (path === "/projects/index-jobs" && init?.method === "POST") return response({
+        id: "job-1", state: "scanning", operation: "indexed", project_id: null,
+        counters: { files_discovered: 3 }, started_at: "2026-01-01", updated_at: "2026-01-01",
+        completed_at: null, elapsed_seconds: 0.4, previous_index_preserved: null, result: null, error: null,
+      }, 202);
+      if (path === "/projects/index-jobs/job-1") {
+        indexed = true;
+        return response({
+          id: "job-1", state: "completed", operation: "indexed", project_id: 1,
+          counters: { files_discovered: 3, files_parsed: 3, chunks_generated: 4, embeddings_completed: 4, chunks_expected: 4, vectors_stored: 4 },
+          started_at: "2026-01-01", updated_at: "2026-01-01", completed_at: "2026-01-01",
+          elapsed_seconds: 1.5, previous_index_preserved: false,
+          result: { project_id: 1, operation: "indexed", complete: true, structural_stats: { files_indexed: 1 }, vector_stats: { vectors_stored: 1 }, embedding: { provider: "ollama", model: "embed", dimensions: 768 } },
+          error: null,
+        });
+      }
       return undefined;
     });
     render(<App />);
@@ -298,13 +312,54 @@ describe("CodeCompass SPA", () => {
     expect(screen.getByText("No project")).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Repository path"), { target: { value: "<temporary-repository>" } });
     fireEvent.click(screen.getByRole("button", { name: "Index repository" }));
-    expect(screen.getByRole("button", { name: "Indexing repository..." })).toBeDisabled();
+    expect(await screen.findByRole("button", { name: "Indexing repository..." })).toBeDisabled();
+    expect(await screen.findByText("Scan files")).toBeInTheDocument();
+    expect(screen.getByText(/Files discovered:/)).toHaveTextContent("3");
+    expect(screen.queryByText("100%")).not.toBeInTheDocument();
     expect([...stored.values()].join("\n")).not.toContain("<temporary-repository>");
 
-    indexed = true;
-    finishIndex(new Response(JSON.stringify({ project_id: 1, operation: "indexed", complete: true, structural_stats: { files_indexed: 1 }, vector_stats: { vectors_stored: 1 }, embedding: { provider: "ollama", model: "embed", dimensions: 768 } }), { status: 200, headers: { "Content-Type": "application/json" } }));
-    expect(await screen.findByText("MarkupSafe")).toBeInTheDocument();
+    expect(await screen.findByText("MarkupSafe", {}, { timeout: 2500 })).toBeInTheDocument();
     expect(screen.getByText("Verified")).toBeInTheDocument();
+  });
+
+  it("resumes an active indexing job after refresh", async () => {
+    let activeReturned = false;
+    let retryCalls = 0;
+    installApi((path, init) => {
+      if (path === "/projects/index-jobs/active" && !activeReturned) {
+        activeReturned = true;
+        return response({
+          id: "job-resume", state: "embedding", operation: "reindexed", project_id: 1,
+          counters: { chunks_generated: 8, embeddings_completed: 5 }, started_at: "2026-01-01", updated_at: "2026-01-01",
+          completed_at: null, elapsed_seconds: 4.2, previous_index_preserved: null, result: null, error: null,
+        });
+      }
+      if (path === "/projects/index-jobs/job-resume") return response({
+        id: "job-resume", state: "failed", operation: "reindexed", project_id: 1,
+        counters: { chunks_generated: 8, embeddings_completed: 5 }, started_at: "2026-01-01", updated_at: "2026-01-01",
+        completed_at: "2026-01-01", elapsed_seconds: 5.1, previous_index_preserved: true, result: null,
+        error: { code: "embedding_provider_unavailable", message: "Embedding provider is unavailable.", stage: "embedding", error_type: "connection" },
+      });
+      if (path === "/projects/index-jobs" && init?.method === "POST") {
+        retryCalls += 1;
+        return response({
+          id: "job-retry", state: "failed", operation: "reindexed", project_id: 1, counters: {},
+          started_at: "2026-01-01", updated_at: "2026-01-01", completed_at: "2026-01-01",
+          elapsed_seconds: 0.1, previous_index_preserved: true, result: null,
+          error: { code: "embedding_provider_unavailable", message: "Embedding provider is unavailable.", stage: "preflight" },
+        }, 202);
+      }
+      return undefined;
+    });
+    render(<App />);
+    await ready();
+
+    expect(await screen.findByText("Generate embeddings")).toBeInTheDocument();
+    expect(screen.getByText(/Embeddings completed:/)).toHaveTextContent("5");
+    expect(await screen.findByText("Previous index remains available.", {}, { timeout: 2500 })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: file.relative_path })).toBeEnabled();
+    fireEvent.click(screen.getByRole("button", { name: "Retry / Re-index" }));
+    await waitFor(() => expect(retryCalls).toBe(1));
   });
 
   it("labels known incomplete vector state and offers re-indexing", async () => {

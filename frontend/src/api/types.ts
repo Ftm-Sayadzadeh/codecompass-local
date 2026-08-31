@@ -160,6 +160,37 @@ export interface IndexResponse {
   embedding: { provider: string; model: string; dimensions: number | null };
 }
 
+export type IndexJobState =
+  | "preflight"
+  | "scanning"
+  | "parsing"
+  | "chunking"
+  | "embedding"
+  | "verifying"
+  | "activating"
+  | "completed"
+  | "failed";
+
+export interface IndexJob {
+  id: string;
+  state: IndexJobState;
+  operation: "indexed" | "reindexed";
+  project_id: number | null;
+  counters: Record<string, number>;
+  started_at: string;
+  updated_at: string;
+  completed_at: string | null;
+  elapsed_seconds: number;
+  previous_index_preserved: boolean | null;
+  result: IndexResponse | null;
+  error: {
+    code: string;
+    message: string;
+    stage: string;
+    error_type?: string | null;
+  } | null;
+}
+
 export interface MetricAggregate {
   slice: Record<string, string>;
   method?: string;

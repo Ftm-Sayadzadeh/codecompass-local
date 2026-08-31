@@ -5,6 +5,7 @@ import type {
   EmbeddingOverride,
   EmbeddingState,
   EvaluationResponse,
+  IndexJob,
   IndexResponse,
   Project,
   ProviderOverride,
@@ -48,6 +49,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
       body?.error?.details ?? {},
     );
   }
+  if (response.status === 204) return null as T;
   return (await response.json()) as T;
 }
 
@@ -85,6 +87,20 @@ export const api = {
       method: "POST",
       body: JSON.stringify(compact({ repository_path: repositoryPath, embedding })),
     }),
+  startIndexJob: (
+    target: { repositoryPath?: string; projectId?: number },
+    embedding: EmbeddingOverride | undefined,
+  ) =>
+    request<IndexJob>("/projects/index-jobs", {
+      method: "POST",
+      body: JSON.stringify(compact({
+        repository_path: target.repositoryPath,
+        project_id: target.projectId,
+        embedding,
+      })),
+    }),
+  activeIndexJob: () => request<IndexJob | null>("/projects/index-jobs/active"),
+  indexJob: (jobId: string) => request<IndexJob>(`/projects/index-jobs/${jobId}`),
   files: (projectId: number) => request<SourceFile[]>(`/projects/${projectId}/files`),
   symbols: (projectId: number) => request<SymbolItem[]>(`/projects/${projectId}/symbols`),
   source: (projectId: number, fileId: number) =>
