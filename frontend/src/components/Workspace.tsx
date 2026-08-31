@@ -1,5 +1,6 @@
-import { BookOpen, Braces, LoaderCircle, MessageSquareText, Search, Send, Sparkles } from "lucide-react";
+import { AlertTriangle, BookOpen, Braces, LoaderCircle, MessageSquareText, Search, Send, Sparkles } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
+import ReactMarkdown from "react-markdown";
 
 import { ApiError } from "../api/client";
 import type { AskResponse, DocumentationResponse, ResolutionCandidate, RetrievalMethod, SearchResponse } from "../api/types";
@@ -7,6 +8,22 @@ import { CitationList, type NavigationCitation } from "./CitationList";
 import { ErrorMessage } from "./ErrorMessage";
 
 export type WorkspaceTab = "ask" | "search" | "documentation";
+
+function GroundedMarkdown({ children }: { children: string }) {
+  return (
+    <div className="answer-markdown" dir="auto">
+      <ReactMarkdown
+        components={{
+          code: ({ children: code }) => <code dir="ltr">{code}</code>,
+          pre: ({ children: code }) => <pre dir="ltr">{code}</pre>,
+          a: ({ children: label, href }) => <a href={href} target="_blank" rel="noreferrer">{label}</a>,
+        }}
+      >
+        {children}
+      </ReactMarkdown>
+    </div>
+  );
+}
 
 function MethodControl({ value, onChange }: { value: RetrievalMethod; onChange: (value: RetrievalMethod) => void }) {
   return (
@@ -20,17 +37,18 @@ function MethodControl({ value, onChange }: { value: RetrievalMethod; onChange: 
   );
 }
 
-function AskPanel({ result, loading, error, onAsk, onOpenCitation, onReindex }: {
+function AskPanel({ result, loading, error, onAsk, onOpenCitation, onReindex, maxTokens, onMaxTokensChange }: {
   result: AskResponse | null;
   loading: boolean;
   error: unknown;
   onAsk: (question: string, method: RetrievalMethod, maxTokens?: number) => void;
   onOpenCitation: (citation: NavigationCitation) => void;
   onReindex: () => void;
+  maxTokens: string;
+  onMaxTokensChange: (value: string) => void;
 }) {
   const [question, setQuestion] = useState("");
   const [method, setMethod] = useState<RetrievalMethod>("hybrid");
-  const [maxTokens, setMaxTokens] = useState("");
   const parsedMaxTokens = maxTokens === "" ? undefined : Number(maxTokens);
   const maxTokensError = parsedMaxTokens !== undefined && (!Number.isInteger(parsedMaxTokens) || parsedMaxTokens < 1 || parsedMaxTokens > 8000)
     ? "Enter an integer from 1 to 8000."
@@ -52,7 +70,7 @@ function AskPanel({ result, loading, error, onAsk, onOpenCitation, onReindex }: 
       <form className="prompt-form" onSubmit={submit}>
         <label htmlFor="question">Ask about this codebase</label>
         <textarea id="question" value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="How does escape_silent handle None?" dir="auto" rows={4} />
-        <details className="ask-advanced">
+        <details className="ask-advanced" open={result?.finish_reason === "length" || undefined}>
           <summary>Advanced</summary>
           <label htmlFor="answer-token-budget">Answer token budget</label>
           <input
@@ -62,7 +80,7 @@ function AskPanel({ result, loading, error, onAsk, onOpenCitation, onReindex }: 
             max="8000"
             step="1"
             value={maxTokens}
-            onChange={(event) => setMaxTokens(event.target.value)}
+            onChange={(event) => onMaxTokensChange(event.target.value)}
             placeholder="Backend default (180)"
             aria-invalid={Boolean(maxTokensError)}
             aria-describedby={maxTokensError ? "answer-token-budget-error" : undefined}
@@ -81,7 +99,8 @@ function AskPanel({ result, loading, error, onAsk, onOpenCitation, onReindex }: 
       {result ? (
         <section className="answer-section" aria-live="polite">
           <div className="answer-heading"><Sparkles size={18} /><span>Grounded answer</span><small>{result.method} · {result.llm_model ?? "backend model"}</small></div>
-          <p className="answer-text" dir="auto">{result.answer}</p>
+          {result.finish_reason === "length" ? <div className="answer-warning" role="status"><AlertTriangle size={17} /><span><strong>The answer reached its token limit.</strong> Increase Answer token budget in Advanced and ask again.</span></div> : null}
+          <GroundedMarkdown>{result.answer}</GroundedMarkdown>
           <CitationList citations={citations} onOpen={onOpenCitation} />
         </section>
       ) : !loading && !error ? <div className="workspace-empty"><MessageSquareText size={28} /><p>Ask a Persian or English question about the selected project.</p></div> : null}
@@ -244,6 +263,8 @@ export function Workspace(props: {
   onDocument: (identifier: string | number, language: "en" | "fa") => void;
   onOpenCitation: (citation: NavigationCitation) => void;
   onReindex: () => void;
+  answerTokenBudget: string;
+  onAnswerTokenBudgetChange: (value: string) => void;
 }) {
   return (
     <main className="workspace">
@@ -252,7 +273,7 @@ export function Workspace(props: {
         <button type="button" role="tab" aria-selected={props.tab === "search"} className={props.tab === "search" ? "active" : ""} onClick={() => props.setTab("search")}><Search size={17} /> Search</button>
         <button type="button" role="tab" aria-selected={props.tab === "documentation"} className={props.tab === "documentation" ? "active" : ""} onClick={() => props.setTab("documentation")}><BookOpen size={17} /> Documentation</button>
       </div>
-      {props.tab === "ask" ? <AskPanel {...props.ask} onAsk={props.onAsk} onOpenCitation={props.onOpenCitation} onReindex={props.onReindex} /> : null}
+      {props.tab === "ask" ? <AskPanel {...props.ask} onAsk={props.onAsk} onOpenCitation={props.onOpenCitation} onReindex={props.onReindex} maxTokens={props.answerTokenBudget} onMaxTokensChange={props.onAnswerTokenBudgetChange} /> : null}
       {props.tab === "search" ? <SearchPanel {...props.search} onSearch={props.onSearch} onOpenCitation={props.onOpenCitation} onReindex={props.onReindex} /> : null}
       {props.tab === "documentation" ? <DocumentationPanel {...props.documentation} onDocument={props.onDocument} onOpenCitation={props.onOpenCitation} /> : null}
     </main>

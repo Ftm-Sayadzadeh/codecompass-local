@@ -30,7 +30,13 @@ class OllamaLLMProvider:
         response = self._post_json(self._payload(request))
         text = self._response_text(response)
         model = response.get("model") if isinstance(response.get("model"), str) else self.model
-        return LLMResponse(text=text, model=model, provider="ollama")
+        finish_reason = response.get("done_reason")
+        return LLMResponse(
+            text=text,
+            model=model,
+            provider="ollama",
+            finish_reason=finish_reason if isinstance(finish_reason, str) else None,
+        )
 
     def _payload(self, request: LLMRequest) -> dict[str, Any]:
         payload: dict[str, Any] = {

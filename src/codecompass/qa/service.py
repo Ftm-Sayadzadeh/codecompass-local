@@ -56,6 +56,7 @@ class GroundedQAService:
                 omitted_context_count=context.omitted_count,
                 llm_model=None,
                 llm_provider=None,
+                finish_reason=None,
             )
 
         system_prompt, prompt = self.prompt_builder.build(request.question, context)
@@ -79,6 +80,7 @@ class GroundedQAService:
             omitted_context_count=context.omitted_count,
             llm_model=response.model,
             llm_provider=response.provider,
+            finish_reason=response.finish_reason,
         )
 
     def _validate(self, request: QARequest) -> None:

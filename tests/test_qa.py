@@ -112,13 +112,14 @@ def service(
 
 
 def test_happy_path_returns_answer_and_verified_citations() -> None:
-    llm = FakeLLMProvider(LLMResponse("Use target.", "model-a", "provider-a"))
+    llm = FakeLLMProvider(LLMResponse("Use target.", "model-a", "provider-a", finish_reason="length"))
 
     answer = service(llm=llm).answer(QARequest("Where is target?", 1))
 
     assert answer.answer == "Use target."
     assert answer.llm_model == "model-a"
     assert answer.llm_provider == "provider-a"
+    assert answer.finish_reason == "length"
     assert answer.retrieval_method == "hybrid"
     assert answer.citations[0].chunk_id == "a"
     assert answer.citations[0].source_file == "pkg/a.py"
@@ -167,6 +168,7 @@ def test_no_context_skips_llm_and_returns_exact_no_evidence_text() -> None:
     assert answer.omitted_context_count == 2
     assert answer.llm_model is None
     assert answer.llm_provider is None
+    assert answer.finish_reason is None
     assert llm.requests == []
 
 

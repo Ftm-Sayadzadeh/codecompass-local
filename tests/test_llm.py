@@ -51,6 +51,14 @@ def test_ollama_generation_success() -> None:
     ]
 
 
+def test_ollama_preserves_finish_reason_when_available() -> None:
+    provider = FakeOllamaLLMProvider({"model": "fake-model", "response": "hello", "done_reason": "length"})
+
+    result = provider.generate(LLMRequest("Say hello"))
+
+    assert result.finish_reason == "length"
+
+
 def test_structured_output_is_optional_and_maps_to_ollama_json_format() -> None:
     provider = FakeOllamaLLMProvider({"response": "{}"})
 

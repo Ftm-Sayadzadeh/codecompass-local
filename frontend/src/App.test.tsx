@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "./App";
+import { loadPreferences } from "./preferences";
 
 vi.mock("@monaco-editor/react", () => ({
   default: ({ value }: { value: string }) => <pre data-testid="monaco">{value}</pre>,
@@ -67,8 +68,16 @@ async function ready() {
 }
 
 describe("CodeCompass SPA", () => {
+  let stored: Map<string, string>;
+
   beforeEach(() => {
-    Object.defineProperty(window, "localStorage", { value: { setItem: vi.fn(), getItem: vi.fn(), removeItem: vi.fn(), clear: vi.fn() }, configurable: true });
+    stored = new Map();
+    Object.defineProperty(window, "localStorage", { value: {
+      setItem: vi.fn((key: string, value: string) => stored.set(key, value)),
+      getItem: vi.fn((key: string) => stored.get(key) ?? null),
+      removeItem: vi.fn((key: string) => stored.delete(key)),
+      clear: vi.fn(() => stored.clear()),
+    }, configurable: true });
     Object.defineProperty(window, "sessionStorage", { value: { setItem: vi.fn(), getItem: vi.fn(), removeItem: vi.fn(), clear: vi.fn() }, configurable: true });
   });
 
@@ -87,10 +96,88 @@ describe("CodeCompass SPA", () => {
     const key = screen.getByLabelText("API key");
     expect(key).toHaveAttribute("type", "password");
     fireEvent.change(key, { target: { value: "DUMMY_FRONTEND_TEST_KEY" } });
-    expect(localStorage.setItem).not.toHaveBeenCalled();
+    expect([...stored.values()].join("\n")).not.toContain("DUMMY_FRONTEND_TEST_KEY");
     expect(sessionStorage.setItem).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "Clear key" }));
     expect(key).toHaveValue("");
+  });
+
+  it("restores non-sensitive provider preferences and resets each provider independently", async () => {
+    installApi();
+    const first = render(<App />);
+    await ready();
+
+    fireEvent.click(screen.getByRole("button", { name: "Provider settings" }));
+    const defaults = screen.getAllByLabelText("Use backend defaults");
+    fireEvent.click(defaults[0]);
+    fireEvent.click(defaults[1]);
+    const models = screen.getAllByLabelText("Model");
+    fireEvent.change(models[0], { target: { value: "embed-custom" } });
+    fireEvent.change(models[1], { target: { value: "llm-custom" } });
+    fireEvent.click(screen.getByLabelText("Close provider settings"));
+    fireEvent.click(screen.getByText("Advanced"));
+    fireEvent.change(screen.getByLabelText("Answer token budget"), { target: { value: "1024" } });
+    await waitFor(() => expect([...stored.values()].join("\n")).toContain("embed-custom"));
+
+    first.unmount();
+    render(<App />);
+    await ready();
+    expect(screen.getByLabelText("Answer token budget")).toHaveValue(1024);
+    fireEvent.click(screen.getByRole("button", { name: "Provider settings" }));
+    expect(screen.getAllByLabelText("Model")[0]).toHaveValue("embed-custom");
+    expect(screen.getAllByLabelText("Model")[1]).toHaveValue("llm-custom");
+
+    fireEvent.click(screen.getAllByRole("button", { name: "Reset to backend defaults" })[1]);
+    expect(screen.getAllByLabelText("Use backend defaults")[0]).not.toBeChecked();
+    expect(screen.getAllByLabelText("Model")[0]).toHaveValue("embed-custom");
+    expect(screen.getAllByLabelText("Use backend defaults")[1]).toBeChecked();
+    expect(screen.getAllByLabelText("Model")[1]).toHaveValue("");
+  });
+
+  it("fails closed to backend defaults when saved preferences are corrupt", async () => {
+    stored.set("codecompass.preferences.v1", "{not-json");
+    installApi();
+    render(<App />);
+    await ready();
+    fireEvent.click(screen.getByRole("button", { name: "Provider settings" }));
+    expect(screen.getAllByLabelText("Use backend defaults")).toHaveLength(2);
+    for (const checkbox of screen.getAllByLabelText("Use backend defaults")) expect(checkbox).toBeChecked();
+  });
+
+  it("rejects invalid persisted numeric preferences and restores valid values", () => {
+    stored.set("codecompass.preferences.v1", JSON.stringify([]));
+    expect(loadPreferences().embedding.useBackendDefault).toBe(true);
+
+    stored.clear();
+    stored.set("codecompass.preferences.v0", JSON.stringify({
+      embedding: { useBackendDefault: false, provider: "ollama", model: "old-model" },
+    }));
+    expect(loadPreferences().embedding).not.toHaveProperty("model", "old-model");
+
+    stored.clear();
+    stored.set("codecompass.preferences.v1", JSON.stringify({
+      embedding: { useBackendDefault: false, provider: "ollama", timeoutSeconds: "not-a-number", dimensions: "Infinity" },
+      llm: { useBackendDefault: false, provider: "openai_compatible", timeoutSeconds: "601" },
+      answerTokenBudget: "1.5",
+    }));
+
+    const invalid = loadPreferences();
+    expect(invalid.embedding.timeoutSeconds).toBe("");
+    expect(invalid.embedding.dimensions).toBe("");
+    expect(invalid.llm.timeoutSeconds).toBe("");
+    expect(invalid.answerTokenBudget).toBe("");
+
+    stored.set("codecompass.preferences.v1", JSON.stringify({
+      embedding: { useBackendDefault: false, provider: "ollama", timeoutSeconds: "45", dimensions: "768" },
+      llm: { useBackendDefault: false, provider: "openai_compatible", timeoutSeconds: "90" },
+      answerTokenBudget: "1024",
+    }));
+
+    const valid = loadPreferences();
+    expect(valid.embedding.timeoutSeconds).toBe("45");
+    expect(valid.embedding.dimensions).toBe("768");
+    expect(valid.llm.timeoutSeconds).toBe("90");
+    expect(valid.answerTokenBudget).toBe("1024");
   });
 
   it("renders grounded Ask citations and navigates by file_id directly", async () => {
@@ -114,6 +201,53 @@ describe("CodeCompass SPA", () => {
     expect(await screen.findByTestId("monaco")).toHaveTextContent("def escape_silent");
     expect(screen.getByText("Lines 48–61")).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith("/api/projects/1/files/4/content", expect.anything());
+  });
+
+  it("renders safe grounded Markdown without interpreting raw HTML", async () => {
+    installApi((path) => path === "/projects/1/ask" ? response({
+      question: "Explain it",
+      answer: "**Result**\n\n1. Call `escape_silent`\n2. Return safely\n\n<script>window.pwned = true</script>",
+      method: "hybrid",
+      citations: [],
+      omitted_context_count: 0,
+      llm_model: "qwen",
+      llm_provider: "ollama",
+    }) : undefined);
+    const { container } = render(<App />);
+    await ready();
+
+    fireEvent.change(screen.getByLabelText("Ask about this codebase"), { target: { value: "Explain it" } });
+    fireEvent.click(screen.getByRole("button", { name: "Ask CodeCompass" }));
+    expect((await screen.findByText("Result")).tagName).toBe("STRONG");
+    expect(screen.getByText("escape_silent")).toHaveAttribute("dir", "ltr");
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+    expect(container.querySelector("script")).toBeNull();
+  });
+
+  it("shows truncation only from explicit provider metadata", async () => {
+    let truncated = false;
+    installApi((path) => path === "/projects/1/ask" ? response({
+      question: "Question",
+      answer: "An answer that may look unfinished",
+      method: "hybrid",
+      citations: [],
+      omitted_context_count: 0,
+      llm_model: "model",
+      llm_provider: "provider",
+      finish_reason: truncated ? "length" : null,
+    }) : undefined);
+    render(<App />);
+    await ready();
+    fireEvent.change(screen.getByLabelText("Ask about this codebase"), { target: { value: "Question" } });
+
+    fireEvent.click(screen.getByRole("button", { name: "Ask CodeCompass" }));
+    await screen.findByText("An answer that may look unfinished");
+    expect(screen.queryByText("The answer reached its token limit.")).not.toBeInTheDocument();
+
+    truncated = true;
+    fireEvent.click(screen.getByRole("button", { name: "Ask CodeCompass" }));
+    expect(await screen.findByText("The answer reached its token limit.")).toBeInTheDocument();
+    expect(screen.getByLabelText("Answer token budget")).toBeVisible();
   });
 
   it("omits an empty Ask budget, sends a valid override, and blocks invalid values", async () => {
@@ -161,14 +295,35 @@ describe("CodeCompass SPA", () => {
     });
     render(<App />);
     expect(await screen.findByText("Connect your first repository")).toBeInTheDocument();
+    expect(screen.getByText("No project")).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Repository path"), { target: { value: "<temporary-repository>" } });
     fireEvent.click(screen.getByRole("button", { name: "Index repository" }));
     expect(screen.getByRole("button", { name: "Indexing repository..." })).toBeDisabled();
+    expect([...stored.values()].join("\n")).not.toContain("<temporary-repository>");
 
     indexed = true;
     finishIndex(new Response(JSON.stringify({ project_id: 1, operation: "indexed", complete: true, structural_stats: { files_indexed: 1 }, vector_stats: { vectors_stored: 1 }, embedding: { provider: "ollama", model: "embed", dimensions: 768 } }), { status: 200, headers: { "Content-Type": "application/json" } }));
     expect(await screen.findByText("MarkupSafe")).toBeInTheDocument();
     expect(screen.getByText("Verified")).toBeInTheDocument();
+  });
+
+  it("labels known incomplete vector state and offers re-indexing", async () => {
+    const incomplete = { ...project, vector_complete: false };
+    installApi((path) => path === "/projects/1" ? response(incomplete) : undefined);
+    render(<App />);
+    await ready();
+
+    expect(screen.queryByText("Needs attention")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Vector index incomplete" }));
+    expect(screen.getByText("Index another repository or refresh the current source")).toBeInTheDocument();
+  });
+
+  it("does not claim there is no project when project loading fails", async () => {
+    installApi((path) => path === "/projects" ? Promise.reject(new Error("unavailable")) : undefined);
+    render(<App />);
+
+    expect(await screen.findByText("Project status unavailable")).toBeInTheDocument();
+    expect(screen.queryByText("No project")).not.toBeInTheDocument();
   });
 
   it("turns source_changed into a safe re-index action", async () => {
