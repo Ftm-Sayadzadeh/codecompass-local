@@ -37,6 +37,13 @@ This file tracks the approved implementation plan. Codex should update milestone
 | M20 | Final evaluation and hardening | DONE_WITH_LIMITATIONS | M10, M12, M15, M16 |
 | M21 | Stable MVP release | DONE | M17–M20 |
 | M22 | Post-release frontend UX hardening | DONE | M21 |
+| M23 | Indexing UX and reliability | DONE | M22 |
+| M24 | Incremental re-index | NOT STARTED | M23 |
+| M25 | Ask and Search improvements | NOT STARTED | M24 |
+| M26 | Function Documentation improvements | NOT STARTED | M25 |
+| M27 | Explorer and Monaco improvements | NOT STARTED | M26 |
+| M28 | Provider UX and Ollama model discovery | NOT STARTED | M27 |
+| M29 | Evaluation and research | NOT STARTED | M28 |
 | S1 | Query expansion | NOT STARTED | M8, M21 |
 
 ## Critical path
@@ -52,6 +59,8 @@ M0 → M1 → M2 → M3 → M4 → M5 → M6 → M7 → M8
 
 M10 → M13 → M14 → M15 → M17 → M18 → M19 → M20 → M21
                      ↘ M16 ↗
+
+Post-release: M22 → M23 → M24 → M25 → M26 → M27 → M28 → M29
 ```
 
 Hybrid retrieval is approved core because it is deterministic, measurable, and supports the required keyword vs semantic vs hybrid comparison. Query expansion is stretch-only and must not block the university core.

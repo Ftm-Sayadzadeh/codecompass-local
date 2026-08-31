@@ -15,7 +15,7 @@ The complete Stable MVP workflow is implemented and released as `v1.0.0`:
 - React + Vite single-page frontend with project setup, provider configuration, search, Q&A, documentation, evaluation, and Monaco source navigation.
 - Frozen retrieval and bilingual QA evaluation artifacts under `data/evaluation/` and `reports/evaluation/`.
 
-M20 closed with documented provider limitations, and M21 published the Stable MVP release. Post-release UX hardening continues in M22 without changing the frozen retrieval or evaluation results.
+M20 closed with documented provider limitations, M21 published the Stable MVP release, and M22–M23 added post-release UX hardening plus observable, recoverable indexing without changing frozen retrieval or evaluation results.
 
 ## Prerequisites
 
@@ -101,7 +101,8 @@ Evaluation metrics describe frozen benchmark runs. They are not confidence score
 
 ## Known Limitations
 
-- Indexing is synchronous and guarded only within a single API process.
+- Observable indexing jobs use SQLite-backed state and one in-process worker; multi-process job coordination is not supported.
+- Re-index preparation leaves the previous active metadata/vector index available, and handled failures do not activate incomplete candidates.
 - Local generation quality and latency depend strongly on the installed model and its chat template.
 - The frozen CS-Bookstore sample rated the evaluated local Qwen 3B configuration `NOT_READY` and GLM 5.3 Flash `READY_WITH_LIMITATIONS`; these findings apply only to that controlled sample.
 - In the recorded GLM 5.3 Flash diagnostic, an OpenAI-compatible Persian Function Documentation request returned no usable string content. CodeCompass failed closed and exposed only the safe `invalid_response_content` category; this observation is specific to that provider/model request.
