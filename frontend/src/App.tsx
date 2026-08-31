@@ -5,11 +5,9 @@ import { api, embeddingOverride, providerOverride } from "./api/client";
 import type {
   AskResponse,
   DocumentationResponse,
-  EmbeddingState,
   EvaluationResponse,
   IndexResponse,
   Project,
-  ProviderState,
   RetrievalMethod,
   SearchResponse,
   SourceFile,
@@ -23,27 +21,9 @@ import { ProjectExplorer } from "./components/ProjectExplorer";
 import { ProjectSetup } from "./components/ProjectSetup";
 import { ProviderSettings } from "./components/ProviderSettings";
 import { Workspace, type WorkspaceTab } from "./components/Workspace";
-
-const defaultEmbedding: EmbeddingState = {
-  useBackendDefault: true,
-  provider: "ollama",
-  baseUrl: "",
-  model: "",
-  apiKey: "",
-  timeoutSeconds: "",
-  dimensions: "",
-};
+import { defaultEmbedding, defaultLlm, loadPreferences, savePreferences } from "./preferences";
 
 const CodeDrawer = lazy(() => import("./components/CodeDrawer").then((module) => ({ default: module.CodeDrawer })));
-
-const defaultLlm: ProviderState = {
-  useBackendDefault: true,
-  provider: "ollama",
-  baseUrl: "",
-  model: "",
-  apiKey: "",
-  timeoutSeconds: "",
-};
 
 interface RequestState<T> {
   result: T | null;
@@ -54,6 +34,7 @@ interface RequestState<T> {
 const idle = <T,>(): RequestState<T> => ({ result: null, loading: false, error: null });
 
 export default function App() {
+  const [savedPreferences] = useState(loadPreferences);
   const [projects, setProjects] = useState<Project[]>([]);
   const [project, setProject] = useState<Project | null>(null);
   const [files, setFiles] = useState<SourceFile[]>([]);
@@ -62,8 +43,9 @@ export default function App() {
   const [projectLoading, setProjectLoading] = useState(true);
   const [projectError, setProjectError] = useState<unknown>(null);
   const [indexState, setIndexState] = useState<RequestState<IndexResponse>>(idle);
-  const [embedding, setEmbedding] = useState(defaultEmbedding);
-  const [llm, setLlm] = useState(defaultLlm);
+  const [embedding, setEmbedding] = useState(savedPreferences.embedding);
+  const [llm, setLlm] = useState(savedPreferences.llm);
+  const [answerTokenBudget, setAnswerTokenBudget] = useState(savedPreferences.answerTokenBudget);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [setupOpen, setSetupOpen] = useState(false);
   const [explorerOpen, setExplorerOpen] = useState(() => window.innerWidth > 900);
@@ -128,6 +110,10 @@ export default function App() {
     }).catch((error) => { if (active) setEvaluationError(error); }).finally(() => { if (active) setEvaluationLoading(false); });
     return () => { active = false; };
   }, [loadProject]);
+
+  useEffect(() => {
+    savePreferences({ embedding, llm, answerTokenBudget });
+  }, [embedding, llm, answerTokenBudget]);
 
   const refreshProjects = async (projectId: number) => {
     const items = await api.projects();
@@ -243,6 +229,8 @@ export default function App() {
             onDocument={documentSymbol}
             onOpenCitation={openCitation}
             onReindex={reindex}
+            answerTokenBudget={answerTokenBudget}
+            onAnswerTokenBudgetChange={setAnswerTokenBudget}
           />
         ) : !projectLoading ? (
           <main className="no-project">
@@ -269,7 +257,16 @@ export default function App() {
       ) : null}
 
       <EvaluationPanel summary={evaluation} performance={performance} loading={evaluationLoading} error={evaluationError} />
-      <ProviderSettings open={settingsOpen} embedding={embedding} llm={llm} onEmbeddingChange={setEmbedding} onLlmChange={setLlm} onClose={() => setSettingsOpen(false)} />
+      <ProviderSettings
+        open={settingsOpen}
+        embedding={embedding}
+        llm={llm}
+        onEmbeddingChange={setEmbedding}
+        onLlmChange={setLlm}
+        onResetEmbedding={() => setEmbedding(defaultEmbedding)}
+        onResetLlm={() => setLlm(defaultLlm)}
+        onClose={() => setSettingsOpen(false)}
+      />
     </div>
   );
 }

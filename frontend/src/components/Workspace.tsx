@@ -20,17 +20,18 @@ function MethodControl({ value, onChange }: { value: RetrievalMethod; onChange: 
   );
 }
 
-function AskPanel({ result, loading, error, onAsk, onOpenCitation, onReindex }: {
+function AskPanel({ result, loading, error, onAsk, onOpenCitation, onReindex, maxTokens, onMaxTokensChange }: {
   result: AskResponse | null;
   loading: boolean;
   error: unknown;
   onAsk: (question: string, method: RetrievalMethod, maxTokens?: number) => void;
   onOpenCitation: (citation: NavigationCitation) => void;
   onReindex: () => void;
+  maxTokens: string;
+  onMaxTokensChange: (value: string) => void;
 }) {
   const [question, setQuestion] = useState("");
   const [method, setMethod] = useState<RetrievalMethod>("hybrid");
-  const [maxTokens, setMaxTokens] = useState("");
   const parsedMaxTokens = maxTokens === "" ? undefined : Number(maxTokens);
   const maxTokensError = parsedMaxTokens !== undefined && (!Number.isInteger(parsedMaxTokens) || parsedMaxTokens < 1 || parsedMaxTokens > 8000)
     ? "Enter an integer from 1 to 8000."
@@ -62,7 +63,7 @@ function AskPanel({ result, loading, error, onAsk, onOpenCitation, onReindex }: 
             max="8000"
             step="1"
             value={maxTokens}
-            onChange={(event) => setMaxTokens(event.target.value)}
+            onChange={(event) => onMaxTokensChange(event.target.value)}
             placeholder="Backend default (180)"
             aria-invalid={Boolean(maxTokensError)}
             aria-describedby={maxTokensError ? "answer-token-budget-error" : undefined}
@@ -244,6 +245,8 @@ export function Workspace(props: {
   onDocument: (identifier: string | number, language: "en" | "fa") => void;
   onOpenCitation: (citation: NavigationCitation) => void;
   onReindex: () => void;
+  answerTokenBudget: string;
+  onAnswerTokenBudgetChange: (value: string) => void;
 }) {
   return (
     <main className="workspace">
@@ -252,7 +255,7 @@ export function Workspace(props: {
         <button type="button" role="tab" aria-selected={props.tab === "search"} className={props.tab === "search" ? "active" : ""} onClick={() => props.setTab("search")}><Search size={17} /> Search</button>
         <button type="button" role="tab" aria-selected={props.tab === "documentation"} className={props.tab === "documentation" ? "active" : ""} onClick={() => props.setTab("documentation")}><BookOpen size={17} /> Documentation</button>
       </div>
-      {props.tab === "ask" ? <AskPanel {...props.ask} onAsk={props.onAsk} onOpenCitation={props.onOpenCitation} onReindex={props.onReindex} /> : null}
+      {props.tab === "ask" ? <AskPanel {...props.ask} onAsk={props.onAsk} onOpenCitation={props.onOpenCitation} onReindex={props.onReindex} maxTokens={props.answerTokenBudget} onMaxTokensChange={props.onAnswerTokenBudgetChange} /> : null}
       {props.tab === "search" ? <SearchPanel {...props.search} onSearch={props.onSearch} onOpenCitation={props.onOpenCitation} onReindex={props.onReindex} /> : null}
       {props.tab === "documentation" ? <DocumentationPanel {...props.documentation} onDocument={props.onDocument} onOpenCitation={props.onOpenCitation} /> : null}
     </main>

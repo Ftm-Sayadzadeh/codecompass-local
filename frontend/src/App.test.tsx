@@ -67,8 +67,16 @@ async function ready() {
 }
 
 describe("CodeCompass SPA", () => {
+  let stored: Map<string, string>;
+
   beforeEach(() => {
-    Object.defineProperty(window, "localStorage", { value: { setItem: vi.fn(), getItem: vi.fn(), removeItem: vi.fn(), clear: vi.fn() }, configurable: true });
+    stored = new Map();
+    Object.defineProperty(window, "localStorage", { value: {
+      setItem: vi.fn((key: string, value: string) => stored.set(key, value)),
+      getItem: vi.fn((key: string) => stored.get(key) ?? null),
+      removeItem: vi.fn((key: string) => stored.delete(key)),
+      clear: vi.fn(() => stored.clear()),
+    }, configurable: true });
     Object.defineProperty(window, "sessionStorage", { value: { setItem: vi.fn(), getItem: vi.fn(), removeItem: vi.fn(), clear: vi.fn() }, configurable: true });
   });
 
@@ -87,10 +95,52 @@ describe("CodeCompass SPA", () => {
     const key = screen.getByLabelText("API key");
     expect(key).toHaveAttribute("type", "password");
     fireEvent.change(key, { target: { value: "DUMMY_FRONTEND_TEST_KEY" } });
-    expect(localStorage.setItem).not.toHaveBeenCalled();
+    expect([...stored.values()].join("\n")).not.toContain("DUMMY_FRONTEND_TEST_KEY");
     expect(sessionStorage.setItem).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "Clear key" }));
     expect(key).toHaveValue("");
+  });
+
+  it("restores non-sensitive provider preferences and resets each provider independently", async () => {
+    installApi();
+    const first = render(<App />);
+    await ready();
+
+    fireEvent.click(screen.getByRole("button", { name: "Provider settings" }));
+    const defaults = screen.getAllByLabelText("Use backend defaults");
+    fireEvent.click(defaults[0]);
+    fireEvent.click(defaults[1]);
+    const models = screen.getAllByLabelText("Model");
+    fireEvent.change(models[0], { target: { value: "embed-custom" } });
+    fireEvent.change(models[1], { target: { value: "llm-custom" } });
+    fireEvent.click(screen.getByLabelText("Close provider settings"));
+    fireEvent.click(screen.getByText("Advanced"));
+    fireEvent.change(screen.getByLabelText("Answer token budget"), { target: { value: "1024" } });
+    await waitFor(() => expect([...stored.values()].join("\n")).toContain("embed-custom"));
+
+    first.unmount();
+    render(<App />);
+    await ready();
+    expect(screen.getByLabelText("Answer token budget")).toHaveValue(1024);
+    fireEvent.click(screen.getByRole("button", { name: "Provider settings" }));
+    expect(screen.getAllByLabelText("Model")[0]).toHaveValue("embed-custom");
+    expect(screen.getAllByLabelText("Model")[1]).toHaveValue("llm-custom");
+
+    fireEvent.click(screen.getAllByRole("button", { name: "Reset to backend defaults" })[1]);
+    expect(screen.getAllByLabelText("Use backend defaults")[0]).not.toBeChecked();
+    expect(screen.getAllByLabelText("Model")[0]).toHaveValue("embed-custom");
+    expect(screen.getAllByLabelText("Use backend defaults")[1]).toBeChecked();
+    expect(screen.getAllByLabelText("Model")[1]).toHaveValue("");
+  });
+
+  it("fails closed to backend defaults when saved preferences are corrupt", async () => {
+    stored.set("codecompass.preferences.v1", "{not-json");
+    installApi();
+    render(<App />);
+    await ready();
+    fireEvent.click(screen.getByRole("button", { name: "Provider settings" }));
+    expect(screen.getAllByLabelText("Use backend defaults")).toHaveLength(2);
+    for (const checkbox of screen.getAllByLabelText("Use backend defaults")) expect(checkbox).toBeChecked();
   });
 
   it("renders grounded Ask citations and navigates by file_id directly", async () => {
@@ -164,6 +214,7 @@ describe("CodeCompass SPA", () => {
     fireEvent.change(screen.getByLabelText("Repository path"), { target: { value: "<temporary-repository>" } });
     fireEvent.click(screen.getByRole("button", { name: "Index repository" }));
     expect(screen.getByRole("button", { name: "Indexing repository..." })).toBeDisabled();
+    expect([...stored.values()].join("\n")).not.toContain("<temporary-repository>");
 
     indexed = true;
     finishIndex(new Response(JSON.stringify({ project_id: 1, operation: "indexed", complete: true, structural_stats: { files_indexed: 1 }, vector_stats: { vectors_stored: 1 }, embedding: { provider: "ollama", model: "embed", dimensions: 768 } }), { status: 200, headers: { "Content-Type": "application/json" } }));

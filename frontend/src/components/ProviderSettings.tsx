@@ -9,6 +9,8 @@ interface Props {
   llm: ProviderState;
   onEmbeddingChange: (value: EmbeddingState) => void;
   onLlmChange: (value: ProviderState) => void;
+  onResetEmbedding: () => void;
+  onResetLlm: () => void;
   onClose: () => void;
 }
 
@@ -17,12 +19,14 @@ function ProviderFields<T extends ProviderState>({
   title,
   value,
   onChange,
+  onReset,
   dimensions,
 }: {
   id: string;
   title: string;
   value: T;
   onChange: (value: T) => void;
+  onReset: () => void;
   dimensions?: boolean;
 }) {
   const [showKey, setShowKey] = useState(false);
@@ -105,6 +109,7 @@ function ProviderFields<T extends ProviderState>({
           ) : null}
         </details>
       </fieldset>
+      <button className="forget-key" type="button" onClick={onReset}>Reset to backend defaults</button>
     </section>
   );
 }
@@ -122,9 +127,9 @@ export function ProviderSettings(props: Props) {
           <X size={19} />
         </button>
       </header>
-      <ProviderFields id="embedding" title="Embedding provider" value={props.embedding} onChange={props.onEmbeddingChange} dimensions />
-      <ProviderFields id="llm" title="LLM provider" value={props.llm} onChange={props.onLlmChange} />
-      <p className="privacy-note"><KeyRound size={15} /> API keys stay in memory and are forgotten when this page refreshes.</p>
+      <ProviderFields id="embedding" title="Embedding provider" value={props.embedding} onChange={props.onEmbeddingChange} onReset={props.onResetEmbedding} dimensions />
+      <ProviderFields id="llm" title="LLM provider" value={props.llm} onChange={props.onLlmChange} onReset={props.onResetLlm} />
+      <p className="privacy-note"><KeyRound size={15} /> Non-sensitive settings persist in this browser. API keys stay in memory and are forgotten on refresh.</p>
     </aside>
   );
 }
