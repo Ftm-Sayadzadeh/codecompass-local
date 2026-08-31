@@ -269,6 +269,17 @@ describe("CodeCompass SPA", () => {
     expect(screen.getByText("Verified")).toBeInTheDocument();
   });
 
+  it("labels known incomplete vector state and offers re-indexing", async () => {
+    const incomplete = { ...project, vector_complete: false };
+    installApi((path) => path === "/projects/1" ? response(incomplete) : undefined);
+    render(<App />);
+    await ready();
+
+    expect(screen.queryByText("Needs attention")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Vector index incomplete" }));
+    expect(screen.getByText("Index another repository or refresh the current source")).toBeInTheDocument();
+  });
+
   it("turns source_changed into a safe re-index action", async () => {
     installApi((path) => path === "/projects/1/files/4/content"
       ? response({ error: { code: "source_changed", message: "private detail", details: { path: "PRIVATE_BACKEND_PATH" } } }, 409)

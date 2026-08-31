@@ -192,6 +192,8 @@ export default function App() {
     setWorkspaceTab("documentation");
   };
 
+  const projectStatus = projectLoading ? "Loading" : project?.vector_complete ? "Ready" : project ? "Vector index incomplete" : "No project";
+
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -204,7 +206,11 @@ export default function App() {
             {projects.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}
           </select>
         </div>
-        <span className={`status-badge ${project?.vector_complete ? "ready" : "idle"}`}><i />{projectLoading ? "Loading" : project?.vector_complete ? "Ready" : project ? "Needs attention" : "No project"}</span>
+        {project && !projectLoading && !project.vector_complete ? (
+          <button className="status-badge status-action" type="button" onClick={reindex} title="Re-index repository"><i />{projectStatus}</button>
+        ) : (
+          <span className={`status-badge ${project?.vector_complete ? "ready" : "idle"}`}><i />{projectStatus}</span>
+        )}
         <div className="top-actions">
           <button className="secondary-button mobile-explorer-toggle" type="button" onClick={() => setExplorerOpen((current) => !current)}><Menu size={17} /> Explorer</button>
           <button className="secondary-button" type="button" onClick={() => setSetupOpen((current) => !current)}><FolderCog size={17} /> Repository</button>

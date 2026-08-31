@@ -79,6 +79,8 @@ button:disabled { cursor: not-allowed; opacity: 0.55; }
 .status-badge i { width: 8px; height: 8px; border-radius: 50%; background: #9aa4af; }
 .status-badge.ready { color: var(--green-dark); background: var(--green-soft); border-color: #b9e3ca; }
 .status-badge.ready i { background: var(--green); }
+.status-badge.status-action { background: var(--surface); cursor: pointer; font: inherit; }
+.status-badge.status-action:hover { border-color: var(--amber); color: #76530a; }
 .top-actions { margin-left: auto; display: flex; gap: 8px; }
 .primary-button, .secondary-button, .text-button, .icon-button {
   border: 0;
