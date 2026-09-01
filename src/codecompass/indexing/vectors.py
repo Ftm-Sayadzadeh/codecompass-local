@@ -168,6 +168,7 @@ class VectorIndexingService:
     def identity_metadata(self, identity: EmbeddingIdentity) -> dict[str, str | int]:
         """Return trusted collection metadata for an embedding identity."""
         return {
+            "codecompass:index_schema_version": 1,
             "codecompass:embedding_schema": 1,
             "codecompass:embedding_provider": identity.provider,
             "codecompass:embedding_endpoint_sha256": identity.endpoint_sha256,

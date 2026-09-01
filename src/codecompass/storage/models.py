@@ -18,6 +18,8 @@ class ProjectRecord:
     root_path: Path
     created_at: str
     updated_at: str
+    index_schema_version: int | None = None
+    vector_generation: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -82,6 +84,7 @@ class IndexingJobRecord:
     operation: str
     project_id: int | None
     counters: dict[str, int]
+    observed_stages: tuple[str, ...]
     result: dict[str, Any] | None
     error: dict[str, Any] | None
     previous_index_preserved: bool | None

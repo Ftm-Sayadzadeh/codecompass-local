@@ -65,7 +65,7 @@ def configure_cli(monkeypatch, provider: FakeEmbeddingProvider) -> None:
     monkeypatch.setattr(indexing_cli, "create_embedding_provider", lambda _config: provider)
 
 
-def test_cli_same_identity_reindex_uses_managed_staging(tmp_path: Path, monkeypatch, capsys) -> None:
+def test_cli_same_identity_reindex_is_a_true_noop(tmp_path: Path, monkeypatch, capsys) -> None:
     repo = repository(tmp_path)
     configure_cli(monkeypatch, FakeEmbeddingProvider())
 
@@ -81,8 +81,11 @@ def test_cli_same_identity_reindex_uses_managed_staging(tmp_path: Path, monkeypa
     assert indexing_cli.main(cli_args(tmp_path, repo)) == 0
     second = managed_index(tmp_path, project.id)
     assert second.list_ids(project.id)
-    assert second._active_name != old_active
-    assert "\"complete\": true" in capsys.readouterr().out
+    assert second._active_name == old_active
+    output = capsys.readouterr().out
+    assert "\"complete\": true" in output
+    assert "\"strategy\": \"incremental\"" in output
+    assert "\"no_changes\": true" in output
 
 
 def test_cli_embedding_failure_preserves_previous_index(tmp_path: Path, monkeypatch, capsys) -> None:
@@ -171,7 +174,7 @@ def test_pointer_switch_is_compensated_when_sqlite_commit_fails(tmp_path: Path, 
         switched.append(replacement.staging_name)
 
     monkeypatch.setattr(ChromaVectorIndex, "activate_staged", record_activation)
-    original_replace = store.replace_project_index
+    original_replace = store.apply_incremental_project_index
 
     def fail_commit(*args, **kwargs):
         original_connect = store._connect
@@ -181,7 +184,7 @@ def test_pointer_switch_is_compensated_when_sqlite_commit_fails(tmp_path: Path, 
         finally:
             monkeypatch.setattr(store, "_connect", original_connect)
 
-    monkeypatch.setattr(store, "replace_project_index", fail_commit)
+    monkeypatch.setattr(store, "apply_incremental_project_index", fail_commit)
     with pytest.raises(IndexingCoordinatorError) as raised:
         coordinator.index_repository(repo)
 

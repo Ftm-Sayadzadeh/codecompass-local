@@ -59,6 +59,9 @@ class VectorIndex(Protocol):
     def get(self, chunk_ids: Sequence[str]) -> tuple[StoredVectorRecord, ...]:
         """Return stored vector metadata by chunk id."""
 
+    def get_vectors(self, chunk_ids: Sequence[str]) -> tuple[VectorRecord, ...]:
+        """Return stored embedding vectors and non-canonical consistency metadata."""
+
     def list_ids(self, project_id: int | None = None) -> tuple[str, ...]:
         """Return stored vector ids, optionally scoped to one project."""
 

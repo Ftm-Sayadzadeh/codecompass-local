@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import sqlite3
 import time
 from pathlib import Path
 
@@ -163,7 +164,7 @@ def test_index_job_reports_real_progress_and_resumes_by_id(api) -> None:
     result = runtime._index_pipeline(repo, None, None, lambda state, counters: progress.append((state, dict(counters))))
     stages = tuple(dict.fromkeys(state for state, _ in progress))
 
-    assert stages == ("preflight", "scanning", "parsing", "chunking", "embedding", "verifying", "activating")
+    assert stages == ("scanning", "parsing", "chunking", "preflight", "embedding", "verifying", "activating")
     for key in {key for _, values in progress for key in values}:
         values = [counters[key] for _, counters in progress if key in counters]
         assert values == sorted(values)
@@ -174,8 +175,12 @@ def test_index_job_reports_real_progress_and_resumes_by_id(api) -> None:
     assert str(repo) not in started.text
     job = wait_for_job(client, started.json()["id"])
     assert job["state"] == "completed"
+    assert job["observed_stages"] == ["scanning"]
     assert job["counters"]["chunks_expected"] == job["counters"]["vectors_stored"]
     assert job["result"]["complete"] is True
+    assert job["result"]["strategy"] == "incremental"
+    assert job["result"]["no_changes"] is True
+    assert job["counters"]["files_parsed"] == 0
     assert client.get("/projects/index-jobs/active").status_code == 204
 
 
@@ -331,6 +336,67 @@ def test_invalid_vector_pointer_fails_closed_with_safe_conflict(api) -> None:
     assert reindex.status_code == 409
     assert reindex.json()["error"]["code"] == "vector_index_state_invalid"
     assert {collection.name for collection in vector_index._client.list_collections()} == physical_names
+
+
+def test_cross_store_generation_mismatch_fails_vector_reads_closed(api) -> None:
+    client, runtime, _, repo = api
+    project_id = index_project(client, repo)
+    with sqlite3.connect(runtime.store.db_path) as connection:
+        connection.execute("UPDATE projects SET vector_generation = ? WHERE id = ?", ("0" * 32, project_id))
+
+    semantic = client.post(f"/projects/{project_id}/search", json={"query": "shared", "method": "semantic"})
+    lexical = client.post(f"/projects/{project_id}/search", json={"query": "shared", "method": "lexical"})
+    detail = client.get(f"/projects/{project_id}")
+
+    assert semantic.status_code == 409
+    assert semantic.json()["error"]["code"] == "vector_index_state_invalid"
+    assert detail.status_code == 200
+    assert detail.json()["vector_complete"] is False
+    assert lexical.status_code == 200
+
+
+def test_legacy_null_generation_is_structural_only_until_full_rebuild(api) -> None:
+    client, runtime, _, repo = api
+    project_id = index_project(client, repo)
+    with sqlite3.connect(runtime.store.db_path) as connection:
+        connection.execute(
+            "UPDATE projects SET index_schema_version = NULL, vector_generation = NULL WHERE id = ?",
+            (project_id,),
+        )
+
+    detail = client.get(f"/projects/{project_id}")
+    lexical = client.post(f"/projects/{project_id}/search", json={"query": "shared", "method": "lexical"})
+    semantic = client.post(f"/projects/{project_id}/search", json={"query": "shared", "method": "semantic"})
+    hybrid = client.post(f"/projects/{project_id}/search", json={"query": "shared", "method": "hybrid"})
+
+    assert detail.status_code == 200
+    assert detail.json()["vector_complete"] is False
+    assert lexical.status_code == 200
+    assert semantic.status_code == hybrid.status_code == 409
+    assert semantic.json()["error"]["code"] == "vector_index_state_invalid"
+
+    rebuilt = client.post("/projects/index", json={"repository_path": str(repo)})
+    assert rebuilt.status_code == 200
+    assert rebuilt.json()["strategy"] == "full"
+    assert client.get(f"/projects/{project_id}").json()["vector_complete"] is True
+
+
+@pytest.mark.parametrize("metadata", [{"content_hash": "stale"}, {"project_id": 999}])
+def test_project_completeness_sees_every_physical_vector(api, metadata) -> None:
+    client, runtime, _, repo = api
+    project_id = index_project(client, repo)
+    runtime.collection(project_id)._ready().upsert(
+        ids=["stale-vector"],
+        embeddings=[[1.0, 2.0]],
+        metadatas=[metadata],
+    )
+
+    assert client.get(f"/projects/{project_id}").json()["vector_complete"] is False
+    rebuilt = client.post("/projects/index", json={"repository_path": str(repo)})
+    assert rebuilt.status_code == 200
+    assert rebuilt.json()["strategy"] == "full"
+    assert "stale-vector" not in runtime.collection(project_id).list_ids()
+    assert client.get(f"/projects/{project_id}").json()["vector_complete"] is True
 
 
 def test_ask_and_documentation_preserve_trusted_citations(api) -> None:
@@ -494,6 +560,7 @@ def test_provider_failure_timeout_and_incomplete_index_are_safe(api, monkeypatch
     assert concurrent.json()["error"]["code"] == "indexing_in_progress"
 
     monkeypatch.setattr(api_runtime, "create_embedding_provider", lambda config: FakeEmbeddingProvider(EmbeddingProviderError("fake", "fake", "TimeoutError", secret)))
+    (repo / "first.py").write_text("def changed(value):\n    return value\n", encoding="utf-8")
     failed = client.post("/projects/index", json={"repository_path": str(repo)})
     assert failed.status_code == 502
     assert secret not in failed.text
