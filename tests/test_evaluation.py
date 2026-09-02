@@ -222,6 +222,11 @@ def test_metrics_compute_top_1_top_3_and_mrr() -> None:
     assert result.metrics["semantic"].top_1 == 0.0
     assert result.metrics["semantic"].top_3 == 0.5
     assert result.metrics["semantic"].mrr == 0.25
+    assert result.metrics["semantic"].top_5 == 0.5
+    assert result.metrics["semantic"].top_20 == 0.5
+    assert result.metrics["semantic"].recall_5 == 0.5
+    assert result.metrics["semantic"].target_rank_distribution["rank_2_5"] == 1
+    assert result.metrics["semantic"].target_rank_distribution["not_found"] == 1
 
 
 def test_evaluator_runs_all_methods_on_same_questions() -> None:
