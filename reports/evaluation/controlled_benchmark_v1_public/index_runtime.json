@@ -1,0 +1,164 @@
+{
+  "status": "completed",
+  "records": [
+    {
+      "repository_id": "hospital_system",
+      "name": "Hospital-System",
+      "repository_path": "<REPOSITORY_ROOT>/Hospital-System",
+      "commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633",
+      "elapsed_seconds": 94.404,
+      "index_result": {
+        "project_id": 1,
+        "operation": "indexed",
+        "strategy": "full",
+        "no_changes": false,
+        "complete": true,
+        "structural_stats": {
+          "files_discovered": 33,
+          "files_parsed": 33,
+          "scan_errors": 0,
+          "parse_errors": 0,
+          "chunk_errors": 0,
+          "symbols_extracted": 409,
+          "chunks_generated": 409,
+          "classes_extracted": 46,
+          "functions_extracted": 4,
+          "methods_extracted": 359,
+          "class_chunks": 46,
+          "function_chunks": 4,
+          "method_chunks": 359,
+          "storage_errors": 0,
+          "files_unchanged": 0,
+          "files_added": 33,
+          "files_modified": 0,
+          "files_deleted": 0
+        },
+        "vector_stats": {
+          "chunks_expected": 409,
+          "embeddings_generated": 409,
+          "vectors_stored": 409,
+          "chunks_reused": 0,
+          "vectors_reused": 0,
+          "vectors_deleted": 0,
+          "truncated_embeddings": 0,
+          "embedding_retries": 0,
+          "embedding_failures": 0,
+          "vector_failures": 0,
+          "largest_embedding_input_chars": 1964,
+          "complete": true
+        },
+        "embedding": {
+          "provider": "ollama",
+          "model": "nomic-embed-text-local:latest",
+          "dimensions": 768
+        }
+      }
+    },
+    {
+      "repository_id": "cs_bookstore",
+      "name": "CS-Bookstore",
+      "repository_path": "<REPOSITORY_ROOT>/CS-Bookstore",
+      "commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+      "elapsed_seconds": 54.327,
+      "index_result": {
+        "project_id": 2,
+        "operation": "indexed",
+        "strategy": "full",
+        "no_changes": false,
+        "complete": true,
+        "structural_stats": {
+          "files_discovered": 56,
+          "files_parsed": 56,
+          "scan_errors": 0,
+          "parse_errors": 0,
+          "chunk_errors": 0,
+          "symbols_extracted": 144,
+          "chunks_generated": 144,
+          "classes_extracted": 85,
+          "functions_extracted": 27,
+          "methods_extracted": 32,
+          "class_chunks": 85,
+          "function_chunks": 27,
+          "method_chunks": 32,
+          "storage_errors": 0,
+          "files_unchanged": 0,
+          "files_added": 56,
+          "files_modified": 0,
+          "files_deleted": 0
+        },
+        "vector_stats": {
+          "chunks_expected": 144,
+          "embeddings_generated": 144,
+          "vectors_stored": 144,
+          "chunks_reused": 0,
+          "vectors_reused": 0,
+          "vectors_deleted": 0,
+          "truncated_embeddings": 0,
+          "embedding_retries": 0,
+          "embedding_failures": 0,
+          "vector_failures": 0,
+          "largest_embedding_input_chars": 6494,
+          "complete": true
+        },
+        "embedding": {
+          "provider": "ollama",
+          "model": "nomic-embed-text-local:latest",
+          "dimensions": 768
+        }
+      }
+    },
+    {
+      "repository_id": "codecompass",
+      "name": "CodeCompass",
+      "repository_path": "<PROJECT_ROOT>",
+      "commit": "9e6ed02bf5edc4eb14341bfa838e4bfd10c92f1d",
+      "elapsed_seconds": 1041.177,
+      "index_result": {
+        "project_id": 3,
+        "operation": "indexed",
+        "strategy": "full",
+        "no_changes": false,
+        "complete": true,
+        "structural_stats": {
+          "files_discovered": 96,
+          "files_parsed": 96,
+          "scan_errors": 0,
+          "parse_errors": 0,
+          "chunk_errors": 0,
+          "symbols_extracted": 1220,
+          "chunks_generated": 1220,
+          "classes_extracted": 175,
+          "functions_extracted": 633,
+          "methods_extracted": 412,
+          "class_chunks": 175,
+          "function_chunks": 633,
+          "method_chunks": 412,
+          "storage_errors": 0,
+          "files_unchanged": 0,
+          "files_added": 96,
+          "files_modified": 0,
+          "files_deleted": 0
+        },
+        "vector_stats": {
+          "chunks_expected": 1220,
+          "embeddings_generated": 1220,
+          "vectors_stored": 1220,
+          "chunks_reused": 0,
+          "vectors_reused": 0,
+          "vectors_deleted": 0,
+          "truncated_embeddings": 6,
+          "embedding_retries": 0,
+          "embedding_failures": 0,
+          "vector_failures": 0,
+          "largest_embedding_input_chars": 13920,
+          "complete": true
+        },
+        "embedding": {
+          "provider": "ollama",
+          "model": "nomic-embed-text-local:latest",
+          "dimensions": 768
+        }
+      }
+    }
+  ]
+}

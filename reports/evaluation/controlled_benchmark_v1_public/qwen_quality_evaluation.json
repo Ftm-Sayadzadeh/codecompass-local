@@ -1,0 +1,728 @@
+{
+  "benchmark_id": "codecompass_controlled_bilingual_model_comparison_v1",
+  "source_artifacts": {
+    "benchmark_cases_sha256": "5fbec49e1ad4c70af6a8aabf028f473afbdeb807d189070914b778ed3e9699af",
+    "frozen_retrieval_evidence_sha256": "2359b07c36f19d47faf0171de0ab5e48ebc8b2f4620b6a8a8a6865cf75cc4c83",
+    "qwen_results_sha256": "f0ed5404b5a7b86f33147ac002841f42624c173807325abfc32faa62f00d4f86"
+  },
+  "model": {
+    "provider": "ollama",
+    "name": "qwen2.5-coder-3b-codecompass:latest",
+    "generation": {
+      "temperature": 0.0,
+      "max_tokens": 1200,
+      "local_provider": "ollama",
+      "local_model": "qwen2.5-coder-3b-codecompass:latest",
+      "local_base_url": "http://127.0.0.1:11434",
+      "external_provider": "openai_compatible",
+      "external_model": "glm-5.3-flash",
+      "provider_transport_retries": 0,
+      "manual_reruns": 0,
+      "execution_pass": "replay_of_frozen_inputs",
+      "external_provider_called": false
+    }
+  },
+  "qa_results": [
+    {
+      "case_id": "CB-QA-H-EN",
+      "repository": "hospital_system",
+      "question": "What attributes are assigned in Patient.__init__?",
+      "language": "en",
+      "target": {
+        "relative_path": "models/patient.py",
+        "qualified_symbol": "Patient.__init__",
+        "start_line": 6,
+        "end_line": 16
+      },
+      "generated_output": "In the `Patient.__init__` method, the following attributes are assigned:\n\n- `first_name`\n- `last_name`\n- `national_id`\n- `phone_num`\n- `password`\n- `gender`\n- `city`\n- `insurance_num`\n\nThe attribute `full_name` is calculated as a combination of `first_name` and `last_name`.",
+      "provider": "ollama",
+      "model": "qwen2.5-coder-3b-codecompass:latest",
+      "latency_seconds": 22.690917,
+      "finish_reason": "stop",
+      "token_usage": null,
+      "trusted_citations": [],
+      "expected_facts": [
+        "first_name",
+        "last_name",
+        "national_id",
+        "phone_num",
+        "password",
+        "gender",
+        "city",
+        "full_name",
+        "insurance_num",
+        "appointments"
+      ],
+      "forbidden_claims": [
+        "invented attributes",
+        "unsupported attribute types"
+      ],
+      "input_hashes": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "a47afbfd6ce69348d87437f4071fecb62ad17f4f5a28fbfb0f2805857ad19fa8",
+        "prompt_template_sha256": "7a8e886003ca8d2ed9ec7c1e5bfcc835a627125b3decf2493609b8f9554cf9ce"
+      },
+      "evaluation": {
+        "correctness": 8,
+        "groundedness": 10,
+        "citation_accuracy": 10,
+        "completeness": "partially complete",
+        "hallucination": "none",
+        "issues": [
+          {
+            "problem_description": "appointments missing",
+            "expected_behavior": "all ten attributes",
+            "actual_behavior": "nine listed",
+            "severity": "medium",
+            "category": "missing information"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "CB-QA-H-FA",
+      "repository": "hospital_system",
+      "question": "متد QueueArray.dequeue در صف خالی و غیرخالی چه رفتاری دارد؟",
+      "language": "fa",
+      "target": {
+        "relative_path": "data_structures/queue.py",
+        "qualified_symbol": "QueueArray.dequeue",
+        "start_line": 22,
+        "end_line": 33
+      },
+      "generated_output": "در صف خالی، متد `dequeue` باعث خطای \"Queue is empty.\" است. در صف غیرخالی، ابتدا فرانت صف به یک واحد بروزرسانی شده و سپس عنصر در فرانت جدید برگردانده می‌شود.",
+      "provider": "ollama",
+      "model": "qwen2.5-coder-3b-codecompass:latest",
+      "latency_seconds": 11.876142,
+      "finish_reason": "stop",
+      "token_usage": null,
+      "trusted_citations": [],
+      "expected_facts": [
+        "empty queue returns Queue is empty string",
+        "non-empty increments front",
+        "returns queue at front minus one"
+      ],
+      "forbidden_claims": [
+        "claims an exception is raised",
+        "uses behavior from another Queue class"
+      ],
+      "input_hashes": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "8ac76b7b93b698f7bd3f830fbfe573a5f8b835281e4710bebdbded01fb6dc96e",
+        "prompt_template_sha256": "8797758f7d2564ed83a9db16393f65952bf851ac4aae04c20b0d4d5a49765e7f"
+      },
+      "evaluation": {
+        "correctness": 6,
+        "groundedness": 7,
+        "citation_accuracy": 10,
+        "completeness": "partially complete",
+        "hallucination": "major",
+        "issues": [
+          {
+            "problem_description": "empty queue called error",
+            "expected_behavior": "literal Queue is empty.",
+            "actual_behavior": "error claimed",
+            "severity": "high",
+            "category": "wrong interpretation"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "CB-QA-B-EN",
+      "repository": "cs_bookstore",
+      "question": "How does Book.save populate the slug before saving?",
+      "language": "en",
+      "target": {
+        "relative_path": "store/models.py",
+        "qualified_symbol": "Book.save",
+        "start_line": 67,
+        "end_line": 70
+      },
+      "generated_output": "Book.save populates the slug before saving by checking if the slug attribute is empty. If it is, it uses the `slugify` function from the `slugify` module to generate a slug based on the title attribute and assigns it to the slug attribute. This ensures that every book has a unique slug before being saved to the database.",
+      "provider": "ollama",
+      "model": "qwen2.5-coder-3b-codecompass:latest",
+      "latency_seconds": 9.167451,
+      "finish_reason": "stop",
+      "token_usage": null,
+      "trusted_citations": [],
+      "expected_facts": [
+        "only populates when slug is falsy",
+        "uses slugify on title",
+        "calls superclass save with args and kwargs"
+      ],
+      "forbidden_claims": [
+        "always overwrites slug",
+        "invented uniqueness handling"
+      ],
+      "input_hashes": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "571bf00e1707736cb87249c32a28f9d714a6adcb7e9a86d41bacab9f49ce3ba3",
+        "prompt_template_sha256": "724a102ade19bf15cfb61b091040510aa067e229f1be0b13f3289be0719645b5"
+      },
+      "evaluation": {
+        "correctness": 6,
+        "groundedness": 8,
+        "citation_accuracy": 10,
+        "completeness": "partially complete",
+        "hallucination": "minor",
+        "issues": [
+          {
+            "problem_description": "super save omitted; uniqueness invented",
+            "expected_behavior": "super save; no uniqueness claim",
+            "actual_behavior": "both issues",
+            "severity": "medium",
+            "category": "unsupported claim"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "CB-QA-B-FA",
+      "repository": "cs_bookstore",
+      "question": "متد CommentForm.clean_name چه نام‌هایی را رد می‌کند و در حالت معتبر چه برمی‌گرداند؟",
+      "language": "fa",
+      "target": {
+        "relative_path": "blog/forms.py",
+        "qualified_symbol": "CommentForm.clean_name",
+        "start_line": 45,
+        "end_line": 51
+      },
+      "generated_output": "متد `CommentForm.clean_name` رد می‌کند:\n\n1. \"نام معتبر نیست!\" را در حالت معتبر برمی‌گرداند.\n\n2. این متد یک فیلد نام (`name`) را بررسی می‌کند و از آن استفاده می‌کند.\n\n3. اگر `name` خالی نباشد، فیلد را بررسی می‌کند:\n\n   - اگر طول `name` بین 2 تا 250 کاراکتر باشد، فیلد را به عنوان نام معتبر درخواست می‌دهد.\n   \n   - اگر طول `name` کمتر از 2 یا بیشتر از 250 کاراکتر باشد، یک خطا (`ValidationError`) را به عنوان \"نام معتبر نیست!\" بررسی می‌دهد.\n\n4. در حالت معتبر، `name` را به عنوان نام معتبر برمی‌گرداند.",
+      "provider": "ollama",
+      "model": "qwen2.5-coder-3b-codecompass:latest",
+      "latency_seconds": 27.03155,
+      "finish_reason": "stop",
+      "token_usage": null,
+      "trusted_citations": [],
+      "expected_facts": [
+        "reads cleaned_data name",
+        "rejects length greater than 250",
+        "rejects length less than 2",
+        "raises ValidationError with نام معتبر نیست",
+        "returns name when valid"
+      ],
+      "forbidden_claims": [
+        "invented trimming",
+        "invented character restrictions"
+      ],
+      "input_hashes": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "6c81dfe56b401f35a72c93f3c467a7f95256aa86fd2dccb88448ce97b488daa7",
+        "prompt_template_sha256": "e344059e463e081b0cb59f34d08047873d9d1518736f94a1562890c28b25c3a3"
+      },
+      "evaluation": {
+        "correctness": 9,
+        "groundedness": 9,
+        "citation_accuracy": 10,
+        "completeness": "complete",
+        "hallucination": "none",
+        "issues": []
+      }
+    },
+    {
+      "case_id": "CB-QA-C-EN",
+      "repository": "codecompass",
+      "question": "How does RAGContextBuilder.build enforce its context-size budget?",
+      "language": "en",
+      "target": {
+        "relative_path": "src/codecompass/rag/context.py",
+        "qualified_symbol": "RAGContextBuilder.build",
+        "start_line": 12,
+        "end_line": 28
+      },
+      "generated_output": "RAGContextBuilder.build enforces its context-size budget by checking if `max_chars` is positive at the beginning of the method. If `max_chars` is less than 1, it raises a ContextBuildError with an appropriate message.\n\nThe method then iterates over each chunk in the retrieval result's results, calculating the number of code characters in each chunk. It adds chunks to the context blocks list as long as adding them would not exceed the `max_chars` budget. If adding a chunk would exceed the budget, it increments the omitted_count and skips that chunk.\n\nAfter processing all chunks, it returns an RAGContext object containing the list of context blocks, the total number of characters used, and the count of chunks omitted due to exceeding the budget.",
+      "provider": "ollama",
+      "model": "qwen2.5-coder-3b-codecompass:latest",
+      "latency_seconds": 23.422783,
+      "finish_reason": "stop",
+      "token_usage": null,
+      "trusted_citations": [],
+      "expected_facts": [
+        "rejects max_chars below one",
+        "iterates unique sorted retrieval results",
+        "counts code characters",
+        "omits a chunk that would exceed budget",
+        "tracks omitted count",
+        "returns blocks total_chars and omitted_count"
+      ],
+      "forbidden_claims": [
+        "token-based budget",
+        "truncates individual chunks"
+      ],
+      "input_hashes": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "1f1b9d48e5499fab92b641a3db2e51d72e0a117b69a84729b1a3f9773c269a92",
+        "prompt_template_sha256": "0dc759c965d838c61ae3adc1bfc1463aeaa323e9100066817f459f4bde41a84e"
+      },
+      "evaluation": {
+        "correctness": 9,
+        "groundedness": 10,
+        "citation_accuracy": 10,
+        "completeness": "partially complete",
+        "hallucination": "none",
+        "issues": [
+          {
+            "problem_description": "unique sorted omitted",
+            "expected_behavior": "unique sorted results",
+            "actual_behavior": "generic iteration",
+            "severity": "low",
+            "category": "missing information"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "CB-QA-C-FA",
+      "repository": "codecompass",
+      "question": "GroundedQAService.answer پاسخ و citationهای قابل اعتماد را چگونه تولید می‌کند؟",
+      "language": "fa",
+      "target": {
+        "relative_path": "src/codecompass/qa/service.py",
+        "qualified_symbol": "GroundedQAService.answer",
+        "start_line": 43,
+        "end_line": 84
+      },
+      "generated_output": "GroundedQAService.answer می‌کند توسط چهار مرحله ای که در زیر آورده شده است:\n\n1. **اعتبارسنجی درخواست**: پایانده _validate_ بررسی معتبر بودن درخواست را انجام می‌دهد.\n\n2. **دریافت نتیجه های جستجوی**: پایانده _retrieve_ به عنوان داده‌ها استفاده می‌کند و نتیجه‌های جستجوی را دریافت می‌کند.\n\n3. **پردازش نتیجه های جستجوی**: پایانده _focus_on_named_symbol_ به عنوان داده‌ها استفاده می‌کند و نتیجه‌های جستجوی را بررسی می‌کند تا فقط اطلاعاتی که نام‌شناخته شده است را در نظر بگیرد.\n\n4. **ساخت متن پشتیبان**: پایانده _context_ به عنوان داده‌ها استفاده می‌کند و متن پشتیبان بر اساس نتیجه‌های جستجوی و درخواست را ساخت.\n\n5. **ساخت تیتراتور**: پایانده _citations_ به عنوان داده‌ها استفاده می‌کند و تیتراتور‌های قابل اعتماد بر اساس متن پشتیبان را ساخت.\n\n6. **تولید پاسخ**: پایانده _generate_ به عنوان داده‌ها استفاده می‌کند و پاسخ را تولید می‌کند.\n\n7. **ساخت پاسخ**: پایانده _QAAnswer_ به عنوان داده‌ها استفاده می‌کند و پاسخ را با اطلاعاتی که شامل نام‌شناخته شده‌ها، تیتراتور‌های قابل اعتماد، و ساختار داده‌های LLM دریافت می‌کند.\n\nپس از این مرحله‌ها، پاسخ به عنوان یک نمونه از _QAAnswer_ برگردانده می‌شود.",
+      "provider": "ollama",
+      "model": "qwen2.5-coder-3b-codecompass:latest",
+      "latency_seconds": 65.131017,
+      "finish_reason": "stop",
+      "token_usage": null,
+      "trusted_citations": [],
+      "expected_facts": [
+        "validates request",
+        "retrieves once",
+        "focuses on named symbol",
+        "builds context",
+        "derives citations from context metadata",
+        "returns fixed no-evidence answer without LLM for empty context",
+        "builds system and user prompts",
+        "calls LLM with temperature and max_tokens",
+        "returns provider finish reason and trusted citations"
+      ],
+      "forbidden_claims": [
+        "parses citations from model text",
+        "retries retrieval",
+        "uses LLM when context is empty"
+      ],
+      "input_hashes": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "da14825fbf512d6991e7e5200b391e0ba8ac625d1cb83b732b93938c1ce076e9",
+        "prompt_template_sha256": "84ff300cc66ddb993e237c29d89297c1a553b99e4c4fd11286894c6b47587c1e"
+      },
+      "evaluation": {
+        "correctness": 4,
+        "groundedness": 6,
+        "citation_accuracy": 10,
+        "completeness": "partially complete",
+        "hallucination": "major",
+        "issues": [
+          {
+            "problem_description": "garbled/wrong provider method",
+            "expected_behavior": "exact service sequence",
+            "actual_behavior": "_generate named; key facts omitted",
+            "severity": "high",
+            "category": "wrong interpretation"
+          }
+        ]
+      }
+    }
+  ],
+  "documentation_results": [
+    {
+      "case_id": "CB-DOC-H-EN",
+      "repository": "hospital_system",
+      "question": null,
+      "language": "en",
+      "target": {
+        "relative_path": "data_access/doctors.py",
+        "qualified_symbol": "Doctors.login",
+        "symbol_type": "method",
+        "start_line": 126,
+        "end_line": 134
+      },
+      "generated_output": "{\n  \"summary\": \"Logs in a doctor using their phone number and password.\",\n  \"detailed_description\": \"This method checks if the provided phone number matches the registered phone number for the given password. If they match, it returns True; otherwise, it returns False.\",\n  \"parameters\": [\n    {\"name\": \"self\", \"description\": null},\n    {\"name\": \"phone_num\", \"description\": \"The phone number of the doctor to log in.\"},\n    {\"name\": \"password\", \"description\": \"The password associated with the doctor's account.\"}\n  ],\n  \"return_value\": \"bool\",\n  \"raises\": [],\n  \"side_effects\": [\"Modifies the state of the `self` object by checking and updating the logged-in status of the doctor.\"],\n  \"dependencies\": [\"self.signed_in\", \"self.doctors\"],\n  \"notes\": []\n}",
+      "provider": "ollama",
+      "model": "qwen2.5-coder-3b-codecompass:latest",
+      "latency_seconds": 45.208763,
+      "finish_reason": "stop",
+      "token_usage": null,
+      "trusted_citations": [],
+      "expected_facts": [
+        "looks up national_id by password",
+        "checks corresponding doctor phone number",
+        "returns true only when phone matches",
+        "otherwise returns false"
+      ],
+      "forbidden_claims": [
+        "password hashing",
+        "exception handling"
+      ],
+      "input_hashes": {
+        "system_prompt_sha256": "7515231a7844dff69ac52c0419f67f6b558ebdf4e5d63ff52bd23b872a4e12db",
+        "user_prompt_sha256": "64a8c77bf2499ce0103bedd88222729cd3dfeac091b6374c4e8340f4c1a95443",
+        "prompt_template_sha256": "3b890d282343317a00e92195d9fa6cc6896bde73cee02586642a5cb1358f6b0a"
+      },
+      "evaluation": {
+        "overall_score": 7,
+        "purpose_accuracy": 9,
+        "parameter_accuracy": 10,
+        "return_value_accuracy": 9,
+        "behavior_accuracy": 9,
+        "dependency_accuracy": 8,
+        "citation_accuracy": 10,
+        "completeness": "complete",
+        "hallucination": "minor",
+        "invented_information": [
+          "unsupported self-state update"
+        ],
+        "missing_information": [
+          ""
+        ],
+        "unsupported_claims": [
+          "unsupported side effect"
+        ],
+        "issues": [
+          {
+            "problem_description": "unsupported side effect",
+            "expected_behavior": "source-supported behavior only",
+            "actual_behavior": "state update claimed",
+            "severity": "medium",
+            "category": "unsupported claim"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "CB-DOC-H-FA",
+      "repository": "hospital_system",
+      "question": null,
+      "language": "fa",
+      "target": {
+        "relative_path": "data_structures/heap.py",
+        "qualified_symbol": "MinHeap.extract_min",
+        "symbol_type": "method",
+        "start_line": 101,
+        "end_line": 108
+      },
+      "generated_output": "{\n  \"summary\": \"دسته‌بندی کننده خروجی از هایپ در پایگاه داده است\",\n  \"detailed_description\": \"تابع `extract_min` برای حذف و بازگرداندن عنصر کوچکترین از هایپ استفاده می‌شود. ابتدا بررسی می‌شود که آیا هایپ خالی نیست یا نه. اگر هایپ خالی باشد، خطای `IndexError` را به دست می‌آورد. در غیر این صورت، عنصر کوچکترین (به طور فردی) از هایپ بررسی می‌شود و سپس با عنصر آخر تبادل می‌شود. سپس حجم داده استفاده شده در هایپ به 1 کاهش می‌رسد و تابع `heapify_down` اجرا می‌شود تا ترتیب های پایین را بازگرداند. عنصر کوچکترین برگردانده شده است.\",\n  \"parameters\": [{\"name\": \"self\", \"description\": null}],\n  \"return_value\": \"عنصر کوچکترین از هایپ\",\n  \"raises\": [\"IndexError\"],\n  \"side_effects\": [\"حذف عنصر کوچکترین از هایپ و بازگرداندن آن\"],\n  \"dependencies\": [],\n  \"notes\": []\n}",
+      "provider": "ollama",
+      "model": "qwen2.5-coder-3b-codecompass:latest",
+      "latency_seconds": 67.449457,
+      "finish_reason": "stop",
+      "token_usage": null,
+      "trusted_citations": [],
+      "expected_facts": [
+        "raises IndexError for empty heap",
+        "stores root minimum",
+        "moves last element to root",
+        "decrements useful_data",
+        "heapifies down from zero",
+        "returns stored minimum"
+      ],
+      "forbidden_claims": [
+        "returns None on empty heap",
+        "removes list element with pop"
+      ],
+      "input_hashes": {
+        "system_prompt_sha256": "6aae103231e65ffb0f58c93e93eafc8fa41e645176885661e7adcce43f1eadf3",
+        "user_prompt_sha256": "bfa9e95a78bc0be017458dbeef335b516e6eb5c7e2cd367f7d0dc622bbf9745a",
+        "prompt_template_sha256": "c381f4e03bdb1669e0264e1673686ee9b53edf0ecb93f2e5b9620d404bf1d07c"
+      },
+      "evaluation": {
+        "overall_score": 9,
+        "purpose_accuracy": 9,
+        "parameter_accuracy": 10,
+        "return_value_accuracy": 9,
+        "behavior_accuracy": 10,
+        "dependency_accuracy": 8,
+        "citation_accuracy": 10,
+        "completeness": "complete",
+        "hallucination": "none",
+        "invented_information": [],
+        "missing_information": [],
+        "unsupported_claims": [],
+        "issues": []
+      }
+    },
+    {
+      "case_id": "CB-DOC-B-EN",
+      "repository": "cs_bookstore",
+      "question": null,
+      "language": "en",
+      "target": {
+        "relative_path": "store/views.py",
+        "qualified_symbol": "review_book",
+        "symbol_type": "function",
+        "start_line": 95,
+        "end_line": 107
+      },
+      "generated_output": "{\n  \"summary\": \"Reviews a book by ID or slug.\",\n  \"detailed_description\": \"This function reviews a book based on its unique identifier (pk) or slug. It retrieves the book from the database, checks if it exists, and then handles POST requests to submit a review form. If the request is valid, it saves the review with the associated book and user, then redirects to the book's absolute URL.\",\n  \"parameters\": [\n    {\"name\": \"request\", \"description\": \"The HTTP request object containing information about the client's request.\"},\n    {\"name\": \"pk\", \"description\": \"The unique identifier of the book to be reviewed.\"},\n    {\"name\": \"slug\", \"description\": \"The slug of the book to be reviewed.\"}\n  ],\n  \"return_value\": null,\n  \"raises\": [],\n  \"side_effects\": [\"Saves a review to the database if the request is valid.\", \"Redirects to the book's absolute URL after processing the request.\"],\n  \"dependencies\": [\"get_object_or_404\", \"ReviewForm\"],\n  \"notes\": []\n}",
+      "provider": "ollama",
+      "model": "qwen2.5-coder-3b-codecompass:latest",
+      "latency_seconds": 46.410416,
+      "finish_reason": "stop",
+      "token_usage": null,
+      "trusted_citations": [],
+      "expected_facts": [
+        "loads book by id and slug",
+        "on POST validates ReviewForm",
+        "saves with commit false",
+        "sets book and request user",
+        "saves review",
+        "redirects to book URL"
+      ],
+      "forbidden_claims": [
+        "payment processing",
+        "GET renders a review form"
+      ],
+      "input_hashes": {
+        "system_prompt_sha256": "7515231a7844dff69ac52c0419f67f6b558ebdf4e5d63ff52bd23b872a4e12db",
+        "user_prompt_sha256": "ebf9effceeed77666cfabb40f27d5ef2e660a1c265ad6d9656be7f0b5ff35e37",
+        "prompt_template_sha256": "8739753236e0d2ca1281545598fd5175d719368ee630171731187bd1d1a52608"
+      },
+      "evaluation": {
+        "overall_score": 9,
+        "purpose_accuracy": 10,
+        "parameter_accuracy": 10,
+        "return_value_accuracy": 8,
+        "behavior_accuracy": 10,
+        "dependency_accuracy": 9,
+        "citation_accuracy": 10,
+        "completeness": "complete",
+        "hallucination": "none",
+        "invented_information": [],
+        "missing_information": [],
+        "unsupported_claims": [],
+        "issues": []
+      }
+    },
+    {
+      "case_id": "CB-DOC-B-FA",
+      "repository": "cs_bookstore",
+      "question": null,
+      "language": "fa",
+      "target": {
+        "relative_path": "users/views.py",
+        "qualified_symbol": "register",
+        "symbol_type": "function",
+        "start_line": 35,
+        "end_line": 45
+      },
+      "generated_output": "{\n  \"summary\": \"فunkce درخواستی برای ثبت نام کاربران\",\n  \"detailed_description\": \"این funkce مربوط به ثبت نام کاربران است و از طریق فرم‌های HTML درخواستی می‌گیرد. اگر نوع پروتکل درخواست 'POST' باشد، فرم بررسی شده و اگر معتبر باشد، کاربر جدید ساخته می‌شود و رمز عبور آن تنظیم می‌شود. در غیر این صورت، فرم پیشفرض نمایش داده می‌شود.\",\n  \"parameters\": [{\"name\": \"request\", \"description\": null}],\n  \"return_value\": null,\n  \"raises\": [],\n  \"side_effects\": [\"کاربر جدید ساخته شده و رمز عبور آن تنظیم شده\"],\n  \"dependencies\": [\"UserRegisterForm\"],\n  \"notes\": []\n}",
+      "provider": "ollama",
+      "model": "qwen2.5-coder-3b-codecompass:latest",
+      "latency_seconds": 48.970779,
+      "finish_reason": "stop",
+      "token_usage": null,
+      "trusted_citations": [],
+      "expected_facts": [
+        "builds UserRegisterForm from POST",
+        "valid form saves with commit false",
+        "sets password using set_password",
+        "saves user",
+        "renders register_done after success",
+        "otherwise renders registration form"
+      ],
+      "forbidden_claims": [
+        "automatic login",
+        "email verification"
+      ],
+      "input_hashes": {
+        "system_prompt_sha256": "6aae103231e65ffb0f58c93e93eafc8fa41e645176885661e7adcce43f1eadf3",
+        "user_prompt_sha256": "e4acd4d66e28eeabb4083b26ca73a22a752cf475f8d0baa09db480967b73b1de",
+        "prompt_template_sha256": "090804e340bb8094864c8b875415cf334c727368dbd097318d97562c7598ed83"
+      },
+      "evaluation": {
+        "overall_score": 7,
+        "purpose_accuracy": 8,
+        "parameter_accuracy": 8,
+        "return_value_accuracy": 7,
+        "behavior_accuracy": 8,
+        "dependency_accuracy": 9,
+        "citation_accuracy": 10,
+        "completeness": "partially complete",
+        "hallucination": "none",
+        "invented_information": [],
+        "missing_information": [
+          "commit=False and register_done"
+        ],
+        "unsupported_claims": [],
+        "issues": [
+          {
+            "problem_description": "details omitted",
+            "expected_behavior": "both exact facts",
+            "actual_behavior": "generic save/success",
+            "severity": "medium",
+            "category": "missing information"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "CB-DOC-C-EN",
+      "repository": "codecompass",
+      "question": null,
+      "language": "en",
+      "target": {
+        "relative_path": "src/codecompass/storage/sqlite.py",
+        "qualified_symbol": "SQLiteMetadataStore.replace_project_index",
+        "symbol_type": "method",
+        "start_line": 155,
+        "end_line": 229
+      },
+      "generated_output": "{\n  \"summary\": \"Replaces a project's structural metadata in the SQLite database.\",\n  \"detailed_description\": \"This method atomically replaces one project's structural metadata, including its name, root path, and other associated data. It handles file replacements, symbol updates, chunk management, and ensures that the operation is rolled back if an error occurs.\",\n  \"parameters\": [\n    {\"name\": \"self\", \"description\": null},\n    {\"name\": \"name\", \"description\": \"The new name for the project.\"},\n    {\"name\": \"root_path\", \"description\": \"The new root path for the project.\"},\n    {\"name\": \"files\", \"description\": \"An iterable of SourceFile objects representing files to be replaced.\"},\n    {\"name\": \"parse_results\", \"description\": \"An iterable of ParseResult objects containing symbols and other parse information.\"},\n    {\"name\": \"chunks\", \"description\": \"An iterable of Chunk objects representing chunks of data.\"},\n    {\"name\": \"before_commit\", \"description\": \"A callable that is executed before the commit, allowing for custom activation logic.\"},\n    {\"name\": \"on_rollback\", \"description\": \"A callable that is executed if a rollback is needed after an error occurs.\"},\n    {\"name\": \"index_schema_version\", \"description\": \"The new schema version for the project's index.\"},\n    {\"name\": \"vector_generation\", \"description\": \"The new vector generation for the project's data.\"}\n  ],\n  \"return_value\": \"ProjectRecord\",\n  \"raises\": [\"StorageError\"],\n  \"side_effects\": [\"Modifies the SQLite database with new or updated project metadata and files.\"],\n  \"dependencies\": [\"sqlite3\", \"_connect\", \"_now\", \"_replace_source_files\", \"_replace_symbols\", \"_replace_chunks\", \"_project\"],\n  \"notes\": []\n}",
+      "provider": "ollama",
+      "model": "qwen2.5-coder-3b-codecompass:latest",
+      "latency_seconds": 93.380736,
+      "finish_reason": "stop",
+      "token_usage": null,
+      "trusted_citations": [],
+      "expected_facts": [
+        "starts BEGIN IMMEDIATE",
+        "upserts project",
+        "replaces files symbols and chunks",
+        "may activate through before_commit",
+        "writes schema and generation",
+        "commits atomically",
+        "rolls back on failure",
+        "attempts rollback callback after activation"
+      ],
+      "forbidden_claims": [
+        "holds transaction during embedding",
+        "guarantees crash-atomicity across SQLite and Chroma"
+      ],
+      "input_hashes": {
+        "system_prompt_sha256": "7515231a7844dff69ac52c0419f67f6b558ebdf4e5d63ff52bd23b872a4e12db",
+        "user_prompt_sha256": "dc228914b86dfd6b63f6fdb9911da251e154580ad7129b10fd635baf4c46769e",
+        "prompt_template_sha256": "7c2beb13fb28a017f0fbb760db0289a03d535eb10ae5d84d9782fa4e1cc9dbff"
+      },
+      "evaluation": {
+        "overall_score": 7,
+        "purpose_accuracy": 9,
+        "parameter_accuracy": 9,
+        "return_value_accuracy": 8,
+        "behavior_accuracy": 8,
+        "dependency_accuracy": 8,
+        "citation_accuracy": 10,
+        "completeness": "partially complete",
+        "hallucination": "none",
+        "invented_information": [],
+        "missing_information": [
+          "transaction/generation/callback details"
+        ],
+        "unsupported_claims": [],
+        "issues": [
+          {
+            "problem_description": "details omitted",
+            "expected_behavior": "all atomicity facts",
+            "actual_behavior": "high-level summary",
+            "severity": "medium",
+            "category": "missing information"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "CB-DOC-C-FA",
+      "repository": "codecompass",
+      "question": null,
+      "language": "fa",
+      "target": {
+        "relative_path": "src/codecompass/qa/service.py",
+        "qualified_symbol": "GroundedQAService.answer",
+        "symbol_type": "method",
+        "start_line": 43,
+        "end_line": 84
+      },
+      "generated_output": "{\n  \"summary\": \"این متد جواب‌گذاری از سوالات است که با استفاده از داده‌های مستقیم در پایان نتیجه‌گیری می‌شود.\",\n  \"detailed_description\": \"این متد به صورت خلاصه جواب را برای سوالات با استفاده از داده‌های مستقیم در پایان نتیجه‌گیری می‌دهد. ابتدا، تابع _validate() بررسی می‌کند که درخواست مناسب است یا خیر. سپس، تابع _retrieve() به داده‌ها برمی‌گرداند که با استفاده از روش پیدا کردن مورد نظر انجام شده است. سپس، تابع _focus_on_named_symbol() برای فکر کردن درباره یک متغیر مشخص می‌کند. سپس، تابع _context() به داده‌ها برمی‌گرداند که با استفاده از حجم معین مناسب شده است. سپس، تابع _citations() برای جستجوی مراجع مربوطه به داده‌ها برمی‌گرداند. در صورتی که هیچ بلاک نداشته باشد، یک جواب خالصی با استفاده از NO_EVIDENCE_ANSWER برای سوال و پاسخ می‌دهد. در غیر اینصورت، تابع prompt_builder.build() به داده‌ها برمی‌گرداند که شامل پرسش و حجم مناسب شده است. سپس، تابع llm_provider.generate() برای گرفتن جواب از مدل خود استفاده می‌کند. در صورتی که خطای llmProviderError را دریافت کند، یک QAError با نوع \"                               ",
+      "provider": "ollama",
+      "model": "qwen2.5-coder-3b-codecompass:latest",
+      "latency_seconds": 94.510438,
+      "finish_reason": null,
+      "token_usage": null,
+      "trusted_citations": [],
+      "expected_facts": [
+        "validates request",
+        "retrieves and focuses evidence",
+        "builds context and trusted citations",
+        "skips LLM for empty context",
+        "builds prompts",
+        "calls provider",
+        "maps provider error to QAError",
+        "returns QAAnswer with provider metadata"
+      ],
+      "forbidden_claims": [
+        "citations come from generated text",
+        "automatic retry"
+      ],
+      "input_hashes": {
+        "system_prompt_sha256": "6aae103231e65ffb0f58c93e93eafc8fa41e645176885661e7adcce43f1eadf3",
+        "user_prompt_sha256": "7d27cd7e9c84fc2cf8900115802ef6c73b241d64d3a6ed679d7e61d6c1661d37",
+        "prompt_template_sha256": "821513a7cca448b6109a4fc46e37f51403bbeca7d74781713f379f8b60fd6a0b"
+      },
+      "evaluation": {
+        "overall_score": 0,
+        "purpose_accuracy": 0,
+        "parameter_accuracy": 0,
+        "return_value_accuracy": 0,
+        "behavior_accuracy": 0,
+        "dependency_accuracy": 0,
+        "citation_accuracy": 10,
+        "completeness": "incomplete",
+        "hallucination": "none",
+        "invented_information": [],
+        "missing_information": [
+          "complete structured output"
+        ],
+        "unsupported_claims": [],
+        "issues": [
+          {
+            "problem_description": "truncated invalid JSON",
+            "expected_behavior": "complete object",
+            "actual_behavior": "ends mid-string",
+            "severity": "critical",
+            "category": "truncated answer"
+          }
+        ]
+      }
+    }
+  ],
+  "aggregate": {
+    "qa": {
+      "count": 6,
+      "average_correctness": 7,
+      "average_groundedness": 8.333333333333334,
+      "average_citation_accuracy": 10,
+      "hallucination_counts": {
+        "none": 3,
+        "minor": 1,
+        "major": 2,
+        "critical": 0
+      }
+    },
+    "documentation": {
+      "count": 6,
+      "average_overall_score": 6.5,
+      "average_citation_accuracy": 10,
+      "hallucination_counts": {
+        "none": 5,
+        "minor": 1,
+        "major": 0,
+        "critical": 0
+      }
+    },
+    "latency_seconds": {
+      "mean": 46.27087075,
+      "median": 45.8095895,
+      "min": 9.167451,
+      "max": 94.510438
+    }
+  },
+  "limitations": [
+    "Scores are evidence-based human-style review, not automatic metrics.",
+    "Ollama token usage was unavailable.",
+    "No GLM/AvalAI comparison was run."
+  ]
+}
