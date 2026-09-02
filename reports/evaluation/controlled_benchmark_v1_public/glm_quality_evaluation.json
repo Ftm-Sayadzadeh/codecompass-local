@@ -1,0 +1,875 @@
+{
+  "benchmark_id": "codecompass_controlled_bilingual_model_comparison_v1",
+  "source_artifacts": {
+    "benchmark_cases_sha256": "5fbec49e1ad4c70af6a8aabf028f473afbdeb807d189070914b778ed3e9699af",
+    "frozen_retrieval_evidence_sha256": "2359b07c36f19d47faf0171de0ab5e48ebc8b2f4620b6a8a8a6865cf75cc4c83",
+    "qwen_results_sha256": "f0ed5404b5a7b86f33147ac002841f42624c173807325abfc32faa62f00d4f86",
+    "glm_results_sha256": "a2802c6f598c36baf9496cf915491d977b8abb1f39811de7f7e8f2435c43aaa2"
+  },
+  "model": {
+    "provider": "openai_compatible",
+    "name": "glm-5.3-flash",
+    "generation": {
+      "temperature": 0.0,
+      "max_tokens": 1200,
+      "local_provider": "ollama",
+      "local_model": "qwen2.5-coder-3b-codecompass:latest",
+      "local_base_url": "http://127.0.0.1:11434",
+      "external_provider": "openai_compatible",
+      "external_model": "glm-5.3-flash",
+      "provider_transport_retries": 0,
+      "manual_reruns": 0,
+      "execution_pass": "replay_of_frozen_inputs",
+      "external_provider_called": false
+    }
+  },
+  "qa_results": [
+    {
+      "case_id": "CB-QA-H-EN",
+      "repository": "hospital_system",
+      "question": "What attributes are assigned in Patient.__init__?",
+      "language": "en",
+      "target": {
+        "relative_path": "models/patient.py",
+        "qualified_symbol": "Patient.__init__",
+        "start_line": 6,
+        "end_line": 16
+      },
+      "generated_output": "In `Patient.__init__` (models/patient.py, lines 6–16), the following attributes are assigned on `self`:\n\n- `self.first_name`\n- `self.last_name`\n- `self.national_id`\n- `self.phone_num`\n- `self.password`\n- `self.gender`\n- `self.city`\n- `self.full_name` — set to the formatted string `f\"{self.first_name} {self.last_name}\"`\n- `self.insurance_num`\n- `self.appointments` — initialized as `Appointments()`\n\nThat is a total of 10 attributes assigned in the constructor.",
+      "provider": "openai_compatible",
+      "model": "glm-5.3-flash",
+      "latency_seconds": 3.087417,
+      "finish_reason": "stop",
+      "token_usage": null,
+      "trusted_citations": [
+        {
+          "project_id": 1,
+          "file_id": 24,
+          "symbol_id": 336,
+          "chunk_id": "42a0c185f2075dcce043fd60f2d6469f3048b722ebc4329967e065691664c5e2",
+          "relative_path": "models/patient.py",
+          "qualified_name": "Patient.__init__",
+          "symbol_type": "method",
+          "start_line": 6,
+          "end_line": 16,
+          "content_hash": "bedd9e98c2b05f35c5c1f7af90990004d46553d0325729969df4e4bda4ba97c2"
+        }
+      ],
+      "expected_facts": [
+        "first_name",
+        "last_name",
+        "national_id",
+        "phone_num",
+        "password",
+        "gender",
+        "city",
+        "full_name",
+        "insurance_num",
+        "appointments"
+      ],
+      "forbidden_claims": [
+        "invented attributes",
+        "unsupported attribute types"
+      ],
+      "evaluation_status": "PASS",
+      "input_hashes": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "a47afbfd6ce69348d87437f4071fecb62ad17f4f5a28fbfb0f2805857ad19fa8",
+        "prompt_template_sha256": "7a8e886003ca8d2ed9ec7c1e5bfcc835a627125b3decf2493609b8f9554cf9ce"
+      },
+      "evaluation": {
+        "correctness": 10,
+        "groundedness": 10,
+        "citation_accuracy": 10,
+        "completeness": "complete",
+        "hallucination": "none",
+        "issues": []
+      }
+    },
+    {
+      "case_id": "CB-QA-H-FA",
+      "repository": "hospital_system",
+      "question": "متد QueueArray.dequeue در صف خالی و غیرخالی چه رفتاری دارد؟",
+      "language": "fa",
+      "target": {
+        "relative_path": "data_structures/queue.py",
+        "qualified_symbol": "QueueArray.dequeue",
+        "start_line": 22,
+        "end_line": 33
+      },
+      "generated_output": "## رفتار متد `QueueArray.dequeue`\n\nبر اساس کد ارائه‌شده (فایل `data_structures/queue.py`، خطوط ۲۲-۳۳):\n\n### صف خالی\nاگر `self.is_empty()` مقدار True برگرداند، متد رشته‌ی `\"Queue is empty.\"` را برمی‌گرداند (به‌جای raise کردن خطا).\n\n### صف غیرخالی\nاگر صف خالی نباشد، مراحل زیر انجام می‌شود:\n1. مقدار `self.front` **یک واحد افزایش** می‌یابد (`self.front += 1`)\n2. سپس عنصر `self.queue[self.front - 1]` برگردانده می‌شود؛ یعنی عنصری که قبلاً در موقعیت `front` بوده است.\n\n### نکته\nدر بدنه‌ی متد یک بلوک کد **کامنت‌شده** وجود دارد که پیاده‌سازی جایگزینی را نشان می‌دهد:\n```python\nelement = self.queue[self.front]\nself.front -= 1\nreturn element\n```\nاین نسخه اجرا نمی‌شود و رفتار فعال متد همان افزایش `front` و برگرداندن `self.queue[self.front - 1]` است.",
+      "provider": "openai_compatible",
+      "model": "glm-5.3-flash",
+      "latency_seconds": 5.262044,
+      "finish_reason": "stop",
+      "token_usage": null,
+      "trusted_citations": [
+        {
+          "project_id": 1,
+          "file_id": 12,
+          "symbol_id": 200,
+          "chunk_id": "1df22345e37e9c6c7038efb4a6acb81e56298fbe587c4a4be47acb872f21650b",
+          "relative_path": "data_structures/queue.py",
+          "qualified_name": "QueueArray.dequeue",
+          "symbol_type": "method",
+          "start_line": 22,
+          "end_line": 33,
+          "content_hash": "944d8f85f6b084022d064b0ad5fca1ffa00eece79395e2b470e29b34ad0c8d3b"
+        }
+      ],
+      "expected_facts": [
+        "empty queue returns Queue is empty string",
+        "non-empty increments front",
+        "returns queue at front minus one"
+      ],
+      "forbidden_claims": [
+        "claims an exception is raised",
+        "uses behavior from another Queue class"
+      ],
+      "evaluation_status": "PASS",
+      "input_hashes": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "8ac76b7b93b698f7bd3f830fbfe573a5f8b835281e4710bebdbded01fb6dc96e",
+        "prompt_template_sha256": "8797758f7d2564ed83a9db16393f65952bf851ac4aae04c20b0d4d5a49765e7f"
+      },
+      "evaluation": {
+        "correctness": 10,
+        "groundedness": 10,
+        "citation_accuracy": 10,
+        "completeness": "complete",
+        "hallucination": "none",
+        "issues": []
+      }
+    },
+    {
+      "case_id": "CB-QA-B-EN",
+      "repository": "cs_bookstore",
+      "question": "How does Book.save populate the slug before saving?",
+      "language": "en",
+      "target": {
+        "relative_path": "store/models.py",
+        "qualified_symbol": "Book.save",
+        "start_line": 67,
+        "end_line": 70
+      },
+      "generated_output": "According to the provided code for `Book.save` (store/models.py, lines 67–70), the slug is populated as follows:\n\n1. **Check if slug is empty**: The method first checks `if not self.slug:` — meaning the slug is only set if it hasn't already been provided.\n2. **Generate the slug**: If the slug is empty, it assigns `self.slug = slugify(self.title)`, using the `slugify` function applied to the book's `title`.\n3. **Proceed with saving**: Finally, it calls `super().save(*args, **kwargs)` to perform the actual save.\n\nIn short, `Book.save` auto-populates the slug from the title via `slugify`, but only when the slug is not already set; otherwise it leaves the existing slug untouched and saves as usual.",
+      "provider": "openai_compatible",
+      "model": "glm-5.3-flash",
+      "latency_seconds": 2.79541,
+      "finish_reason": "stop",
+      "token_usage": null,
+      "trusted_citations": [
+        {
+          "project_id": 2,
+          "file_id": 73,
+          "symbol_id": 493,
+          "chunk_id": "862dff324241a2bb0ceccd033852bd5c6a0f0b969162a4dbee8f077968772b17",
+          "relative_path": "store/models.py",
+          "qualified_name": "Book.save",
+          "symbol_type": "method",
+          "start_line": 67,
+          "end_line": 70,
+          "content_hash": "f82bb5ec6199de9881caf26641e7a869037bb7d4e4ad05c165f419aa99a16ee7"
+        }
+      ],
+      "expected_facts": [
+        "only populates when slug is falsy",
+        "uses slugify on title",
+        "calls superclass save with args and kwargs"
+      ],
+      "forbidden_claims": [
+        "always overwrites slug",
+        "invented uniqueness handling"
+      ],
+      "evaluation_status": "PASS",
+      "input_hashes": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "571bf00e1707736cb87249c32a28f9d714a6adcb7e9a86d41bacab9f49ce3ba3",
+        "prompt_template_sha256": "724a102ade19bf15cfb61b091040510aa067e229f1be0b13f3289be0719645b5"
+      },
+      "evaluation": {
+        "correctness": 10,
+        "groundedness": 10,
+        "citation_accuracy": 10,
+        "completeness": "complete",
+        "hallucination": "none",
+        "issues": []
+      }
+    },
+    {
+      "case_id": "CB-QA-B-FA",
+      "repository": "cs_bookstore",
+      "question": "متد CommentForm.clean_name چه نام‌هایی را رد می‌کند و در حالت معتبر چه برمی‌گرداند؟",
+      "language": "fa",
+      "target": {
+        "relative_path": "blog/forms.py",
+        "qualified_symbol": "CommentForm.clean_name",
+        "start_line": 45,
+        "end_line": 51
+      },
+      "generated_output": "بر اساس کد `CommentForm.clean_name` در `blog/forms.py` (خطوط ۴۵–۵۱):\n\n**نام‌هایی که رد می‌شود:**\n- نام‌هایی که طولشان **کمتر از ۲ کاراکتر** باشد (`len(name) < 2`)\n- نام‌هایی که طولشان **بیشتر از ۲۵۰ کاراکتر** باشد (`len(name) > 250`)\n\nدر این دو حالت، متد `forms.ValidationError` با پیام `'نام معتبر نیست!'` صادر (raise) می‌کند.\n\n**در حالت معتبر:**\nاگر طول نام بین ۲ تا ۲۵۰ کاراکتر باشد، متد همان `name` را (بدون تغییر) برمی‌گرداند (`return name`).\n\nنکته تکمیلی: کل این بررسی فقط زمانی انجام می‌شود که `name` مقدار truthy داشته باشد (`if name:`)؛ یعنی اگر نام خالی باشد، شرط اعتبارسنجی طول اجرا نمی‌شود و متد بدون return صریح، عملاً `None` برمی‌گرداند.",
+      "provider": "openai_compatible",
+      "model": "glm-5.3-flash",
+      "latency_seconds": 5.747394,
+      "finish_reason": "stop",
+      "token_usage": null,
+      "trusted_citations": [
+        {
+          "project_id": 2,
+          "file_id": 37,
+          "symbol_id": 420,
+          "chunk_id": "82ed47caefdd51b242f09859d1d8f4b25e6b7e2dfd40c032212672896f024738",
+          "relative_path": "blog/forms.py",
+          "qualified_name": "CommentForm.clean_name",
+          "symbol_type": "method",
+          "start_line": 45,
+          "end_line": 51,
+          "content_hash": "cc1926c4fd09c5115003272bbfac1fa7e9ae5094c1407a2e3d6849b063ff6784"
+        }
+      ],
+      "expected_facts": [
+        "reads cleaned_data name",
+        "rejects length greater than 250",
+        "rejects length less than 2",
+        "raises ValidationError with نام معتبر نیست",
+        "returns name when valid"
+      ],
+      "forbidden_claims": [
+        "invented trimming",
+        "invented character restrictions"
+      ],
+      "evaluation_status": "PASS",
+      "input_hashes": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "6c81dfe56b401f35a72c93f3c467a7f95256aa86fd2dccb88448ce97b488daa7",
+        "prompt_template_sha256": "e344059e463e081b0cb59f34d08047873d9d1518736f94a1562890c28b25c3a3"
+      },
+      "evaluation": {
+        "correctness": 10,
+        "groundedness": 10,
+        "citation_accuracy": 10,
+        "completeness": "complete",
+        "hallucination": "none",
+        "issues": []
+      }
+    },
+    {
+      "case_id": "CB-QA-C-EN",
+      "repository": "codecompass",
+      "question": "How does RAGContextBuilder.build enforce its context-size budget?",
+      "language": "en",
+      "target": {
+        "relative_path": "src/codecompass/rag/context.py",
+        "qualified_symbol": "RAGContextBuilder.build",
+        "start_line": 12,
+        "end_line": 28
+      },
+      "generated_output": "`RAGContextBuilder.build` enforces the budget with a greedy, per-chunk accumulation loop (src/codecompass/rag/context.py, lines 12–28):\n\n1. **Input validation**: It first rejects non-positive budgets — if `max_chars < 1`, it raises `ContextBuildError(\"max_chars must be positive\")`.\n\n2. **Running character counter**: It maintains `used_chars = 0` and iterates over the chunks in the order produced by `self._unique_sorted(retrieval_result.results)`.\n\n3. **Per-chunk admission check**: For each chunk it computes `code_chars = len(chunk.code)`. A chunk is included only if it fits within the remaining budget:\n   - If `used_chars + code_chars > max_chars`, the chunk is **skipped entirely** (not truncated), and `omitted_count` is incremented.\n   - Otherwise, the chunk's block (`self._block(chunk)`) is appended to `blocks` and `used_chars += code_chars`.\n\n4. **Result accounting**: It returns `RAGContext(blocks=tuple(blocks), total_chars=used_chars, omitted_count=omitted_count)`, so the caller can see both the characters actually used and how many chunks were dropped.\n\nTwo notable behaviors visible in the code:\n- Oversized chunks are skipped with `continue` rather than `break`, so a later, smaller chunk can still be admitted if it fits in the remaining budget.\n- The guarantee is that `total_chars` never exceeds `max_chars`, since a chunk is added only when `used_chars + code_chars <= max_chars`.",
+      "provider": "openai_compatible",
+      "model": "glm-5.3-flash",
+      "latency_seconds": 6.023187,
+      "finish_reason": "stop",
+      "token_usage": null,
+      "trusted_citations": [
+        {
+          "project_id": 3,
+          "file_id": 141,
+          "symbol_id": 1053,
+          "chunk_id": "f5e152a8790cf598b432c9b314440698f7d541974f800d4f1307a2cf4bf98db4",
+          "relative_path": "src/codecompass/rag/context.py",
+          "qualified_name": "RAGContextBuilder.build",
+          "symbol_type": "method",
+          "start_line": 12,
+          "end_line": 28,
+          "content_hash": "7d59c1f7107695d9156596deddac06adc8e66cd96ab869c69dd8fe751bf24500"
+        }
+      ],
+      "expected_facts": [
+        "rejects max_chars below one",
+        "iterates unique sorted retrieval results",
+        "counts code characters",
+        "omits a chunk that would exceed budget",
+        "tracks omitted count",
+        "returns blocks total_chars and omitted_count"
+      ],
+      "forbidden_claims": [
+        "token-based budget",
+        "truncates individual chunks"
+      ],
+      "evaluation_status": "PASS",
+      "input_hashes": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "1f1b9d48e5499fab92b641a3db2e51d72e0a117b69a84729b1a3f9773c269a92",
+        "prompt_template_sha256": "0dc759c965d838c61ae3adc1bfc1463aeaa323e9100066817f459f4bde41a84e"
+      },
+      "evaluation": {
+        "correctness": 10,
+        "groundedness": 10,
+        "citation_accuracy": 10,
+        "completeness": "complete",
+        "hallucination": "none",
+        "issues": []
+      }
+    },
+    {
+      "case_id": "CB-QA-C-FA",
+      "repository": "codecompass",
+      "question": "GroundedQAService.answer پاسخ و citationهای قابل اعتماد را چگونه تولید می‌کند؟",
+      "language": "fa",
+      "target": {
+        "relative_path": "src/codecompass/qa/service.py",
+        "qualified_symbol": "GroundedQAService.answer",
+        "start_line": 43,
+        "end_line": 84
+      },
+      "generated_output": "## پاسخ بر اساس کد موجود\n\nبر اساس بلوک S1 (`GroundedQAService.answer` در `src/codecompass/qa/service.py`، خطوط ۴۳–۸۴)، این متد پاسخ grounded را با این جریان تولید می‌کند:\n\n### مراحل تولید پاسخ\n\n1. **اعتبارسنجی و بازیابی:** ابتدا `self._validate(request)` اجرا می‌شود، سپس `self._retrieve(request)` نتایج بازیابی را می‌سازد.\n2. **تمرکز بر نماد:** `self._focus_on_named_symbol(retrieval_result)` نتایج را روی نماد نام‌برده متمرکز می‌کند.\n3. **ساخت context:** `self._context(retrieval_result, request.max_context_chars)` با توجه به سقف `max_context_chars` کانتکست را می‌سازد.\n4. **تولید citationها:** `citations = self._citations(context)` — یعنی citationها **از روی context ساخته‌شده** (و طبق docstring متد، «metadata-derived») تولید می‌شوند، **قبل و مستقل از خروجی LLM**. همین نکته آن‌ها را قابل‌اعتماد می‌کند: citationها ادعای مدل نیستند، بلکه از متادیتای بلوک‌های بازیابی‌شده می‌آیند.\n\n### رفتار grounded\n\n- اگر `context.blocks` خالی باشد، متد بدون فراخوانی LLM یک `QAAnswer` برمی‌گرداند که در آن `answer=NO_EVIDENCE_ANSWER` و `citations=()` است — یعنی در نبود شواهد، پاسخ بی‌پایه تولید نمی‌شود.\n\n### فراخوانی LLM و بازگشت نتیجه\n\n- در غیر این صورت، `self.prompt_builder.build(request.question, context)` پرامپت و system prompt را می‌سازد و `self.llm_provider.generate(LLMRequest(...))` با `temperature` و `max_tokens` درخواست اجرا می‌شود.\n- در صورت `LLMProviderError`، خطای `QAError(\"llm\", error.message)` با `from error` منتشر می‌شود.\n- `QAAnswer` نهایی شامل `answer=response.text`، `citations` (محاسبه‌شده از context)، و متادیتای",
+      "provider": "openai_compatible",
+      "model": "glm-5.3-flash",
+      "latency_seconds": 10.216212,
+      "finish_reason": "length",
+      "token_usage": null,
+      "trusted_citations": [
+        {
+          "project_id": 3,
+          "file_id": 139,
+          "symbol_id": 1044,
+          "chunk_id": "ca34cd491e0654b2e07ed86a4e6e3f30625a90fa1f40b943b12d1cc115e40b4e",
+          "relative_path": "src/codecompass/qa/service.py",
+          "qualified_name": "GroundedQAService.answer",
+          "symbol_type": "method",
+          "start_line": 43,
+          "end_line": 84,
+          "content_hash": "2705dee37d85d4f02cad20276e880afdcb4a89bad12af39bd419b7d02503cafa"
+        }
+      ],
+      "expected_facts": [
+        "validates request",
+        "retrieves once",
+        "focuses on named symbol",
+        "builds context",
+        "derives citations from context metadata",
+        "returns fixed no-evidence answer without LLM for empty context",
+        "builds system and user prompts",
+        "calls LLM with temperature and max_tokens",
+        "returns provider finish reason and trusted citations"
+      ],
+      "forbidden_claims": [
+        "parses citations from model text",
+        "retries retrieval",
+        "uses LLM when context is empty"
+      ],
+      "evaluation_status": "INCONCLUSIVE",
+      "input_hashes": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "da14825fbf512d6991e7e5200b391e0ba8ac625d1cb83b732b93938c1ce076e9",
+        "prompt_template_sha256": "84ff300cc66ddb993e237c29d89297c1a553b99e4c4fd11286894c6b47587c1e"
+      },
+      "evaluation": {
+        "correctness": null,
+        "groundedness": null,
+        "citation_accuracy": 10,
+        "completeness": "incomplete",
+        "hallucination": "none",
+        "issues": [
+          {
+            "problem_description": "finish_reason=length; output truncated",
+            "expected_behavior": "complete grounded answer",
+            "actual_behavior": "output ends before final metadata",
+            "severity": "high",
+            "category": "truncated answer"
+          }
+        ]
+      }
+    }
+  ],
+  "documentation_results": [
+    {
+      "case_id": "CB-DOC-H-EN",
+      "repository": "hospital_system",
+      "question": null,
+      "language": "en",
+      "target": {
+        "relative_path": "data_access/doctors.py",
+        "qualified_symbol": "Doctors.login",
+        "symbol_type": "method",
+        "start_line": 126,
+        "end_line": 134
+      },
+      "generated_output": null,
+      "provider": "openai_compatible",
+      "model": "glm-5.3-flash",
+      "latency_seconds": 10.522298,
+      "finish_reason": null,
+      "token_usage": null,
+      "trusted_citations": [
+        {
+          "project_id": 1,
+          "project_name": "Hospital-System",
+          "symbol_id": 20,
+          "chunk_id": "ec3224e2537721162d1281a5bb93a2e0b1012b8224603211302e03b25197032e",
+          "qualified_name": "Doctors.login",
+          "relative_source_path": "data_access/doctors.py",
+          "start_line": 126,
+          "end_line": 134,
+          "content_hash": "6cd157b4ed1696b85badcc7973d9dfdcb2cef37c7bef649eb047c68c89dafc16"
+        }
+      ],
+      "expected_facts": [
+        "looks up national_id by password",
+        "checks corresponding doctor phone number",
+        "returns true only when phone matches",
+        "otherwise returns false"
+      ],
+      "forbidden_claims": [
+        "password hashing",
+        "exception handling"
+      ],
+      "evaluation_status": "INCONCLUSIVE",
+      "input_hashes": {
+        "system_prompt_sha256": "7515231a7844dff69ac52c0419f67f6b558ebdf4e5d63ff52bd23b872a4e12db",
+        "user_prompt_sha256": "64a8c77bf2499ce0103bedd88222729cd3dfeac091b6374c4e8340f4c1a95443",
+        "prompt_template_sha256": "3b890d282343317a00e92195d9fa6cc6896bde73cee02586642a5cb1358f6b0a"
+      },
+      "evaluation": {
+        "overall_score": null,
+        "purpose_accuracy": null,
+        "parameter_accuracy": null,
+        "return_value_accuracy": null,
+        "behavior_accuracy": null,
+        "dependency_accuracy": null,
+        "citation_accuracy": null,
+        "completeness": "incomplete",
+        "hallucination": "none",
+        "invented_information": [],
+        "missing_information": [
+          "provider returned invalid_response_empty_content"
+        ],
+        "unsupported_claims": [],
+        "issues": [
+          {
+            "problem_description": "no reviewable output",
+            "expected_behavior": "complete documentation",
+            "actual_behavior": "provider empty content",
+            "severity": "high",
+            "category": "provider failure"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "CB-DOC-H-FA",
+      "repository": "hospital_system",
+      "question": null,
+      "language": "fa",
+      "target": {
+        "relative_path": "data_structures/heap.py",
+        "qualified_symbol": "MinHeap.extract_min",
+        "symbol_type": "method",
+        "start_line": 101,
+        "end_line": 108
+      },
+      "generated_output": "{\n\"summary\": \"کوچک‌ترین عنصر را از heap حداقلی حذف کرده و برمی‌گرداند.\",\n\"detailed_description\": \"اگر heap خالی باشد، خطای IndexError با پیام «empty heap» صادر می‌شود. در غیر این صورت ریشه (کوچک‌ترین عنصر) ذخیره می‌شود، آخرین عنصر جایگزین ریشه می‌گردد، مقدار useful_data یکی کاهش می‌یابد و با فراخوانی heapify_down(0) ساختار heap بازسازی می‌شود. در پایان عنصر ذخیره‌شده بازگردانده می‌شود.\",\n\"parameters\": [{\"name\": \"self\", \"description\": null}],\n\"return_value\": \"کوچک‌ترین عنصر heap پیش از حذف را برمی‌گرداند.\",\n\"raises\": [{\"name\": \"IndexError\", \"description\": \"اگر heap خالی باشد صادر می‌شود.\"}],\n\"side_effects\": [\"عنصر آخر را جایگزین ریشه در self.heap می‌کند\", \"مقدار self.heap.useful_data را یکی کاهش می‌دهد\", \"با فراخوانی heapify_down(0) ترتیب heap را بازسازی می‌کند\"],\n\"dependencies\": [\"heapify_down\"],\n\"notes\":",
+      "provider": "openai_compatible",
+      "model": "glm-5.3-flash",
+      "latency_seconds": 9.533046,
+      "finish_reason": "length",
+      "token_usage": null,
+      "trusted_citations": [
+        {
+          "project_id": 1,
+          "project_name": "Hospital-System",
+          "symbol_id": 156,
+          "chunk_id": "3f2f193c8d670b8c2874b04c8a8205e3acd0fcaab73d5f6923605d594d156553",
+          "qualified_name": "MinHeap.extract_min",
+          "relative_source_path": "data_structures/heap.py",
+          "start_line": 101,
+          "end_line": 108,
+          "content_hash": "c7dfb7b4e0ce6c4721ab839ca0faef155a0b8f0b45f5d756ddd85718c711a43b"
+        }
+      ],
+      "expected_facts": [
+        "raises IndexError for empty heap",
+        "stores root minimum",
+        "moves last element to root",
+        "decrements useful_data",
+        "heapifies down from zero",
+        "returns stored minimum"
+      ],
+      "forbidden_claims": [
+        "returns None on empty heap",
+        "removes list element with pop"
+      ],
+      "evaluation_status": "INCONCLUSIVE",
+      "input_hashes": {
+        "system_prompt_sha256": "6aae103231e65ffb0f58c93e93eafc8fa41e645176885661e7adcce43f1eadf3",
+        "user_prompt_sha256": "bfa9e95a78bc0be017458dbeef335b516e6eb5c7e2cd367f7d0dc622bbf9745a",
+        "prompt_template_sha256": "c381f4e03bdb1669e0264e1673686ee9b53edf0ecb93f2e5b9620d404bf1d07c"
+      },
+      "evaluation": {
+        "overall_score": null,
+        "purpose_accuracy": null,
+        "parameter_accuracy": null,
+        "return_value_accuracy": null,
+        "behavior_accuracy": null,
+        "dependency_accuracy": null,
+        "citation_accuracy": null,
+        "completeness": "incomplete",
+        "hallucination": "none",
+        "invented_information": [],
+        "missing_information": [
+          "finish_reason=length; JSON incomplete"
+        ],
+        "unsupported_claims": [],
+        "issues": [
+          {
+            "problem_description": "structured output truncated",
+            "expected_behavior": "complete JSON",
+            "actual_behavior": "output lacks closure",
+            "severity": "high",
+            "category": "truncated answer"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "CB-DOC-B-EN",
+      "repository": "cs_bookstore",
+      "question": null,
+      "language": "en",
+      "target": {
+        "relative_path": "store/views.py",
+        "qualified_symbol": "review_book",
+        "symbol_type": "function",
+        "start_line": 95,
+        "end_line": 107
+      },
+      "generated_output": null,
+      "provider": "openai_compatible",
+      "model": "glm-5.3-flash",
+      "latency_seconds": 10.505039,
+      "finish_reason": null,
+      "token_usage": null,
+      "trusted_citations": [
+        {
+          "project_id": 2,
+          "project_name": "CS-Bookstore",
+          "symbol_id": 509,
+          "chunk_id": "b049cd3fc50eaf7207561f81dbe7c88abf916d7732b5f8831b41ac908f055ad4",
+          "qualified_name": "review_book",
+          "relative_source_path": "store/views.py",
+          "start_line": 95,
+          "end_line": 107,
+          "content_hash": "0426afdcffd6bec46d4c4898c7e45f50d5517b27b8d0174beaac589fef817008"
+        }
+      ],
+      "expected_facts": [
+        "loads book by id and slug",
+        "on POST validates ReviewForm",
+        "saves with commit false",
+        "sets book and request user",
+        "saves review",
+        "redirects to book URL"
+      ],
+      "forbidden_claims": [
+        "payment processing",
+        "GET renders a review form"
+      ],
+      "evaluation_status": "INCONCLUSIVE",
+      "input_hashes": {
+        "system_prompt_sha256": "7515231a7844dff69ac52c0419f67f6b558ebdf4e5d63ff52bd23b872a4e12db",
+        "user_prompt_sha256": "ebf9effceeed77666cfabb40f27d5ef2e660a1c265ad6d9656be7f0b5ff35e37",
+        "prompt_template_sha256": "8739753236e0d2ca1281545598fd5175d719368ee630171731187bd1d1a52608"
+      },
+      "evaluation": {
+        "overall_score": null,
+        "purpose_accuracy": null,
+        "parameter_accuracy": null,
+        "return_value_accuracy": null,
+        "behavior_accuracy": null,
+        "dependency_accuracy": null,
+        "citation_accuracy": null,
+        "completeness": "incomplete",
+        "hallucination": "none",
+        "invented_information": [],
+        "missing_information": [
+          "provider returned invalid_response_empty_content"
+        ],
+        "unsupported_claims": [],
+        "issues": [
+          {
+            "problem_description": "no reviewable output",
+            "expected_behavior": "complete documentation",
+            "actual_behavior": "provider empty content",
+            "severity": "high",
+            "category": "provider failure"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "CB-DOC-B-FA",
+      "repository": "cs_bookstore",
+      "question": null,
+      "language": "fa",
+      "target": {
+        "relative_path": "users/views.py",
+        "qualified_symbol": "register",
+        "symbol_type": "function",
+        "start_line": 35,
+        "end_line": 45
+      },
+      "generated_output": "{\n\"summary\": \"این تابع یک view ثبت‌نام کاربر است که فرم UserRegisterForm را پردازش می‌کند و در صورت اعتبار فرم، کاربر را با رمز عبور هش‌شده ذخیره می‌کند.\",\n\"detailed_description\": \"در درخواست‌های POST، داده‌های ارسالی به UserRegisterForm داده می‌شود و در صورت اعتبار فرم، شیء کاربر با commit=False ساخته، رمز عبور آن با set_password تنظیم و سپس ذخیره می‌شود و الگوی users/registration/register_done",
+      "provider": "openai_compatible",
+      "model": "glm-5.3-flash",
+      "latency_seconds": 10.684965,
+      "finish_reason": "length",
+      "token_usage": null,
+      "trusted_citations": [
+        {
+          "project_id": 2,
+          "project_name": "CS-Bookstore",
+          "symbol_id": 541,
+          "chunk_id": "6bce017ec5405b5a1b9875b630a02a9ec8fee65df72f2d41e2586b77a16492a8",
+          "qualified_name": "register",
+          "relative_source_path": "users/views.py",
+          "start_line": 35,
+          "end_line": 45,
+          "content_hash": "096c0737a152fe731999b76d0b0b1f5cf0f6e0aa0ad69ac796a68608120ef9fb"
+        }
+      ],
+      "expected_facts": [
+        "builds UserRegisterForm from POST",
+        "valid form saves with commit false",
+        "sets password using set_password",
+        "saves user",
+        "renders register_done after success",
+        "otherwise renders registration form"
+      ],
+      "forbidden_claims": [
+        "automatic login",
+        "email verification"
+      ],
+      "evaluation_status": "INCONCLUSIVE",
+      "input_hashes": {
+        "system_prompt_sha256": "6aae103231e65ffb0f58c93e93eafc8fa41e645176885661e7adcce43f1eadf3",
+        "user_prompt_sha256": "e4acd4d66e28eeabb4083b26ca73a22a752cf475f8d0baa09db480967b73b1de",
+        "prompt_template_sha256": "090804e340bb8094864c8b875415cf334c727368dbd097318d97562c7598ed83"
+      },
+      "evaluation": {
+        "overall_score": null,
+        "purpose_accuracy": null,
+        "parameter_accuracy": null,
+        "return_value_accuracy": null,
+        "behavior_accuracy": null,
+        "dependency_accuracy": null,
+        "citation_accuracy": null,
+        "completeness": "incomplete",
+        "hallucination": "none",
+        "invented_information": [],
+        "missing_information": [
+          "finish_reason=length; JSON incomplete"
+        ],
+        "unsupported_claims": [],
+        "issues": [
+          {
+            "problem_description": "structured output truncated",
+            "expected_behavior": "complete JSON",
+            "actual_behavior": "output lacks closure",
+            "severity": "high",
+            "category": "truncated answer"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "CB-DOC-C-EN",
+      "repository": "codecompass",
+      "question": null,
+      "language": "en",
+      "target": {
+        "relative_path": "src/codecompass/storage/sqlite.py",
+        "qualified_symbol": "SQLiteMetadataStore.replace_project_index",
+        "symbol_type": "method",
+        "start_line": 155,
+        "end_line": 229
+      },
+      "generated_output": null,
+      "provider": "openai_compatible",
+      "model": "glm-5.3-flash",
+      "latency_seconds": 10.102195,
+      "finish_reason": null,
+      "token_usage": null,
+      "trusted_citations": [
+        {
+          "project_id": 3,
+          "project_name": "CodeCompass",
+          "symbol_id": 1118,
+          "chunk_id": "81f7a18ab151e2f8d27b00da81ddf788ad4b1d522070ad54818896aa7f2b23a6",
+          "qualified_name": "SQLiteMetadataStore.replace_project_index",
+          "relative_source_path": "src/codecompass/storage/sqlite.py",
+          "start_line": 155,
+          "end_line": 229,
+          "content_hash": "055b11ad80408c2700bb0fb8f2b85d301cfc5802db57cf51c019fc48ea525e54"
+        }
+      ],
+      "expected_facts": [
+        "starts BEGIN IMMEDIATE",
+        "upserts project",
+        "replaces files symbols and chunks",
+        "may activate through before_commit",
+        "writes schema and generation",
+        "commits atomically",
+        "rolls back on failure",
+        "attempts rollback callback after activation"
+      ],
+      "forbidden_claims": [
+        "holds transaction during embedding",
+        "guarantees crash-atomicity across SQLite and Chroma"
+      ],
+      "evaluation_status": "INCONCLUSIVE",
+      "input_hashes": {
+        "system_prompt_sha256": "7515231a7844dff69ac52c0419f67f6b558ebdf4e5d63ff52bd23b872a4e12db",
+        "user_prompt_sha256": "dc228914b86dfd6b63f6fdb9911da251e154580ad7129b10fd635baf4c46769e",
+        "prompt_template_sha256": "7c2beb13fb28a017f0fbb760db0289a03d535eb10ae5d84d9782fa4e1cc9dbff"
+      },
+      "evaluation": {
+        "overall_score": null,
+        "purpose_accuracy": null,
+        "parameter_accuracy": null,
+        "return_value_accuracy": null,
+        "behavior_accuracy": null,
+        "dependency_accuracy": null,
+        "citation_accuracy": null,
+        "completeness": "incomplete",
+        "hallucination": "none",
+        "invented_information": [],
+        "missing_information": [
+          "provider returned invalid_response_empty_content"
+        ],
+        "unsupported_claims": [],
+        "issues": [
+          {
+            "problem_description": "no reviewable output",
+            "expected_behavior": "complete documentation",
+            "actual_behavior": "provider empty content",
+            "severity": "high",
+            "category": "provider failure"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "CB-DOC-C-FA",
+      "repository": "codecompass",
+      "question": null,
+      "language": "fa",
+      "target": {
+        "relative_path": "src/codecompass/qa/service.py",
+        "qualified_symbol": "GroundedQAService.answer",
+        "symbol_type": "method",
+        "start_line": 43,
+        "end_line": 84
+      },
+      "generated_output": null,
+      "provider": "openai_compatible",
+      "model": "glm-5.3-flash",
+      "latency_seconds": 12.461999,
+      "finish_reason": null,
+      "token_usage": null,
+      "trusted_citations": [
+        {
+          "project_id": 3,
+          "project_name": "CodeCompass",
+          "symbol_id": 1044,
+          "chunk_id": "ca34cd491e0654b2e07ed86a4e6e3f30625a90fa1f40b943b12d1cc115e40b4e",
+          "qualified_name": "GroundedQAService.answer",
+          "relative_source_path": "src/codecompass/qa/service.py",
+          "start_line": 43,
+          "end_line": 84,
+          "content_hash": "2705dee37d85d4f02cad20276e880afdcb4a89bad12af39bd419b7d02503cafa"
+        }
+      ],
+      "expected_facts": [
+        "validates request",
+        "retrieves and focuses evidence",
+        "builds context and trusted citations",
+        "skips LLM for empty context",
+        "builds prompts",
+        "calls provider",
+        "maps provider error to QAError",
+        "returns QAAnswer with provider metadata"
+      ],
+      "forbidden_claims": [
+        "citations come from generated text",
+        "automatic retry"
+      ],
+      "evaluation_status": "INCONCLUSIVE",
+      "input_hashes": {
+        "system_prompt_sha256": "6aae103231e65ffb0f58c93e93eafc8fa41e645176885661e7adcce43f1eadf3",
+        "user_prompt_sha256": "7d27cd7e9c84fc2cf8900115802ef6c73b241d64d3a6ed679d7e61d6c1661d37",
+        "prompt_template_sha256": "821513a7cca448b6109a4fc46e37f51403bbeca7d74781713f379f8b60fd6a0b"
+      },
+      "evaluation": {
+        "overall_score": null,
+        "purpose_accuracy": null,
+        "parameter_accuracy": null,
+        "return_value_accuracy": null,
+        "behavior_accuracy": null,
+        "dependency_accuracy": null,
+        "citation_accuracy": null,
+        "completeness": "incomplete",
+        "hallucination": "none",
+        "invented_information": [],
+        "missing_information": [
+          "provider returned invalid_response_empty_content"
+        ],
+        "unsupported_claims": [],
+        "issues": [
+          {
+            "problem_description": "no reviewable output",
+            "expected_behavior": "complete documentation",
+            "actual_behavior": "provider empty content",
+            "severity": "high",
+            "category": "provider failure"
+          }
+        ]
+      }
+    }
+  ],
+  "aggregate": {
+    "qa": {
+      "count": 6,
+      "pass": 5,
+      "inconclusive": 1,
+      "average_correctness_reviewable": 10.0,
+      "average_groundedness_reviewable": 10.0,
+      "average_citation_accuracy": 10.0
+    },
+    "documentation": {
+      "count": 6,
+      "pass": 0,
+      "inconclusive": 6,
+      "average_overall_score": "اندازه‌گیری نشده",
+      "average_citation_accuracy": "اندازه‌گیری نشده"
+    },
+    "latency_seconds": {
+      "mean": 8.078433833333333,
+      "median": 9.8176205,
+      "min": 2.79541,
+      "max": 12.461999
+    },
+    "provider_error_types": {
+      "invalid_response_empty_content": 4
+    },
+    "finish_reasons": {
+      "stop": 8,
+      "length": 2,
+      "unavailable": 2
+    }
+  },
+  "limitations": [
+    "No semantic score was assigned to truncated/provider-failure outputs.",
+    "Token usage was unavailable.",
+    "Descriptive sample only; no broad statistical claim."
+  ]
+}

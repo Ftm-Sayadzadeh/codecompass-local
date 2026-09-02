@@ -1,0 +1,165 @@
+{
+  "artifact_id": "controlled_benchmark_v1_public",
+  "artifact_class": "sanitized_public_projection",
+  "authoritative_source": "local immutable controlled_benchmark_v1",
+  "sanitization_scope": "absolute local repository/runtime paths only",
+  "rules": [
+    {
+      "source_category": "CodeCompass workspace",
+      "replacement": "<PROJECT_ROOT>"
+    },
+    {
+      "source_category": "benchmark repository snapshot",
+      "replacement": "<REPOSITORY_ROOT>/<repository-name>"
+    }
+  ],
+  "semantic_results_modified": false,
+  "scores_modified": false,
+  "failures_removed": false,
+  "files": [
+    {
+      "file": "benchmark_cases.json",
+      "source_sha256": "5fbec49e1ad4c70af6a8aabf028f473afbdeb807d189070914b778ed3e9699af",
+      "public_sha256": "5fbec49e1ad4c70af6a8aabf028f473afbdeb807d189070914b778ed3e9699af",
+      "redaction_count": 0,
+      "redactions_by_placeholder": {},
+      "byte_identical": true
+    },
+    {
+      "file": "comparison_report_qwen_vs_glm.md",
+      "source_sha256": "951a8edf89fff18de66e6aa3d5b805210bd3c883b657838a74b52a4927adda94",
+      "public_sha256": "951a8edf89fff18de66e6aa3d5b805210bd3c883b657838a74b52a4927adda94",
+      "redaction_count": 0,
+      "redactions_by_placeholder": {},
+      "byte_identical": true
+    },
+    {
+      "file": "comparison_report_qwen_vs_glm.pdf",
+      "source_sha256": "76e09e7f404e5b25087c008acfbdec868082de2ef713f83a960a980b13ddaa25",
+      "public_sha256": "76e09e7f404e5b25087c008acfbdec868082de2ef713f83a960a980b13ddaa25",
+      "redaction_count": 0,
+      "redactions_by_placeholder": {},
+      "byte_identical": true
+    },
+    {
+      "file": "final_model_comparison_report.md",
+      "source_sha256": "1e4d950e3d184c3c9612e42587e1ca344113c1806736705601c66d2457bd0c97",
+      "public_sha256": "1e4d950e3d184c3c9612e42587e1ca344113c1806736705601c66d2457bd0c97",
+      "redaction_count": 0,
+      "redactions_by_placeholder": {},
+      "byte_identical": true
+    },
+    {
+      "file": "final_model_comparison_report.pdf",
+      "source_sha256": "6c05d01e21920e7b591ddd9254215ef03ae9f9fccfa385229c208dc4d37890bc",
+      "public_sha256": "6c05d01e21920e7b591ddd9254215ef03ae9f9fccfa385229c208dc4d37890bc",
+      "redaction_count": 0,
+      "redactions_by_placeholder": {},
+      "byte_identical": true
+    },
+    {
+      "file": "frozen_retrieval_evidence.json",
+      "source_sha256": "2359b07c36f19d47faf0171de0ab5e48ebc8b2f4620b6a8a8a6865cf75cc4c83",
+      "public_sha256": "39f1af375ce5e4dedc5395e1c1d40f31371796a42b2d81c685d6186ca915fddb",
+      "redaction_count": 3,
+      "redactions_by_placeholder": {
+        "<PROJECT_ROOT>": 1,
+        "<REPOSITORY_ROOT>/Hospital-System": 1,
+        "<REPOSITORY_ROOT>/CS-Bookstore": 1
+      },
+      "byte_identical": false
+    },
+    {
+      "file": "glm_quality_evaluation.json",
+      "source_sha256": "9966990408e7cd503ef34fc0078ec786fea386caee538dcef17dc5b66cf727bf",
+      "public_sha256": "9966990408e7cd503ef34fc0078ec786fea386caee538dcef17dc5b66cf727bf",
+      "redaction_count": 0,
+      "redactions_by_placeholder": {},
+      "byte_identical": true
+    },
+    {
+      "file": "glm_quality_report.md",
+      "source_sha256": "9bd064cb449a9fd8cad1eee48520e035b3518d7f988f6aaacfbf0a8421deb8b9",
+      "public_sha256": "9bd064cb449a9fd8cad1eee48520e035b3518d7f988f6aaacfbf0a8421deb8b9",
+      "redaction_count": 0,
+      "redactions_by_placeholder": {},
+      "byte_identical": true
+    },
+    {
+      "file": "glm_quality_report.pdf",
+      "source_sha256": "ff647ffeb9f18efa836f4d2d183a81dc8edbb59143139626f7203627c6219c19",
+      "public_sha256": "ff647ffeb9f18efa836f4d2d183a81dc8edbb59143139626f7203627c6219c19",
+      "redaction_count": 0,
+      "redactions_by_placeholder": {},
+      "byte_identical": true
+    },
+    {
+      "file": "glm_results.json",
+      "source_sha256": "a2802c6f598c36baf9496cf915491d977b8abb1f39811de7f7e8f2435c43aaa2",
+      "public_sha256": "a2802c6f598c36baf9496cf915491d977b8abb1f39811de7f7e8f2435c43aaa2",
+      "redaction_count": 0,
+      "redactions_by_placeholder": {},
+      "byte_identical": true
+    },
+    {
+      "file": "index_runtime.json",
+      "source_sha256": "9f1786b3956564ed3b40b7143f16db4d42ca4e8da9e830684db94c36d8a85f1d",
+      "public_sha256": "89934f6bd786db285fe2a4f8be09e4882fb6a98bc54df40791f418fff563cdf6",
+      "redaction_count": 3,
+      "redactions_by_placeholder": {
+        "<PROJECT_ROOT>": 1,
+        "<REPOSITORY_ROOT>/Hospital-System": 1,
+        "<REPOSITORY_ROOT>/CS-Bookstore": 1
+      },
+      "byte_identical": false
+    },
+    {
+      "file": "qwen_benchmark_report.md",
+      "source_sha256": "e2a20416a25b68ddd09dde2e8d67b04cc2e7586844eb1626332c5b2db4153f61",
+      "public_sha256": "e2a20416a25b68ddd09dde2e8d67b04cc2e7586844eb1626332c5b2db4153f61",
+      "redaction_count": 0,
+      "redactions_by_placeholder": {},
+      "byte_identical": true
+    },
+    {
+      "file": "qwen_benchmark_report.pdf",
+      "source_sha256": "019c475c712092573f0c31b2f6002a44db6d63bd21172f4261e3d5b95a98e287",
+      "public_sha256": "019c475c712092573f0c31b2f6002a44db6d63bd21172f4261e3d5b95a98e287",
+      "redaction_count": 0,
+      "redactions_by_placeholder": {},
+      "byte_identical": true
+    },
+    {
+      "file": "qwen_quality_evaluation.json",
+      "source_sha256": "e048e00fa3f1c38aebd261a9914fc1bce2987eba0d8b83a82c1fda7c8fddeccd",
+      "public_sha256": "e048e00fa3f1c38aebd261a9914fc1bce2987eba0d8b83a82c1fda7c8fddeccd",
+      "redaction_count": 0,
+      "redactions_by_placeholder": {},
+      "byte_identical": true
+    },
+    {
+      "file": "qwen_quality_report.md",
+      "source_sha256": "205d33b2c89639ea64a333796407f3374cd29d7bdf7a330fe6790e9b0d2e9dbd",
+      "public_sha256": "205d33b2c89639ea64a333796407f3374cd29d7bdf7a330fe6790e9b0d2e9dbd",
+      "redaction_count": 0,
+      "redactions_by_placeholder": {},
+      "byte_identical": true
+    },
+    {
+      "file": "qwen_quality_report.pdf",
+      "source_sha256": "da4f0b2805f164e6a5cff5d9fa356fdb3ddc38d2393a43c3527b7cb29d900dd3",
+      "public_sha256": "da4f0b2805f164e6a5cff5d9fa356fdb3ddc38d2393a43c3527b7cb29d900dd3",
+      "redaction_count": 0,
+      "redactions_by_placeholder": {},
+      "byte_identical": true
+    },
+    {
+      "file": "qwen_results.json",
+      "source_sha256": "f0ed5404b5a7b86f33147ac002841f42624c173807325abfc32faa62f00d4f86",
+      "public_sha256": "f0ed5404b5a7b86f33147ac002841f42624c173807325abfc32faa62f00d4f86",
+      "redaction_count": 0,
+      "redactions_by_placeholder": {},
+      "byte_identical": true
+    }
+  ]
+}

@@ -1,0 +1,399 @@
+{
+  "benchmark_id": "codecompass_controlled_bilingual_model_comparison_v1",
+  "benchmark_version": 1,
+  "status": "frozen_before_generation",
+  "purpose": "Controlled bilingual comparison of local Qwen and GLM 5.3 with model identity as the only generation variable.",
+  "design": {
+    "repositories": 3,
+    "search_base_cases": 18,
+    "search_executions": 54,
+    "qa_cases": 6,
+    "documentation_cases": 6,
+    "languages": ["en", "fa"],
+    "search_methods": ["lexical", "semantic", "hybrid"],
+    "retrieval_once_per_case_method": true,
+    "qa_evidence_reused_between_models": true,
+    "documentation_source_evidence_reused_between_models": true
+  },
+  "configuration": {
+    "embedding": {
+      "provider": "ollama",
+      "model": "nomic-embed-text-local:latest",
+      "dimensions": 768,
+      "base_url": "http://127.0.0.1:11434"
+    },
+    "retrieval": {
+      "search_limit": 10,
+      "qa_method": "hybrid",
+      "qa_retrieval_limit": 5,
+      "qa_max_context_chars": 6000
+    },
+    "generation": {
+      "temperature": 0.0,
+      "max_tokens": 1200,
+      "local_provider": "ollama",
+      "local_model": "qwen2.5-coder-3b-codecompass:latest",
+      "local_base_url": "http://127.0.0.1:11434",
+      "external_provider": "openai_compatible",
+      "external_model": "glm-5.3-flash",
+      "provider_transport_retries": 0,
+      "manual_reruns": 0
+    }
+  },
+  "repositories": [
+    {
+      "repository_id": "hospital_system",
+      "name": "Hospital-System",
+      "commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633"
+    },
+    {
+      "repository_id": "cs_bookstore",
+      "name": "CS-Bookstore",
+      "commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a"
+    },
+    {
+      "repository_id": "codecompass",
+      "name": "CodeCompass",
+      "commit": "9e6ed02bf5edc4eb14341bfa838e4bfd10c92f1d"
+    }
+  ],
+  "evaluation_rubric": {
+    "search_relevance": "0=no relevant target evidence; 5=target appears but ranking/evidence is weak; 10=correct target is first with valid metadata.",
+    "qa_correctness": "0=materially wrong; 5=mixed correct and incorrect or major omission; 10=all required facts correct.",
+    "qa_groundedness": "0=unsupported core answer; 5=partially supported; 10=every material claim supported by frozen evidence.",
+    "citation_accuracy": "0=invalid/wrong source mapping; 5=partially relevant valid citations; 10=all trusted citations valid and directly support the answer.",
+    "hallucination_levels": ["none", "minor", "major", "critical"],
+    "completeness_levels": ["complete", "partially complete", "incomplete"],
+    "documentation_dimension_scores": "Each of purpose, parameters, return, behavior, dependencies, and citations is scored 0-10 against frozen source facts. Not applicable dimensions are recorded as not_applicable, not guessed."
+  },
+  "search_cases": [
+    {
+      "id": "CB-S-H-ARCH-EN",
+      "repository_id": "hospital_system",
+      "language": "en",
+      "category": "architecture",
+      "query": "Which collections and day-management object does Manage.__init__ store?",
+      "methods": ["lexical", "semantic", "hybrid"],
+      "expected_target": {"relative_path": "logic/management.py", "qualified_symbol": "Manage.__init__", "symbol_type": "method", "start_line": 7, "end_line": 12},
+      "expected_facts": ["stores cities", "stores specialities", "stores patients", "stores doctors", "creates and stores DayManager as day_manager"],
+      "forbidden_claims": ["invented collection types", "invented persistence behavior"]
+    },
+    {
+      "id": "CB-S-H-ARCH-FA",
+      "repository_id": "hospital_system",
+      "language": "fa",
+      "category": "architecture",
+      "query": "سازنده Manage چه مجموعه‌هایی را نگه می‌دارد و چه شیء مدیریت روزی می‌سازد؟",
+      "methods": ["lexical", "semantic", "hybrid"],
+      "expected_target": {"relative_path": "logic/management.py", "qualified_symbol": "Manage.__init__", "symbol_type": "method", "start_line": 7, "end_line": 12},
+      "expected_facts": ["stores cities", "stores specialities", "stores patients", "stores doctors", "creates and stores DayManager as day_manager"],
+      "forbidden_claims": ["invented collection types", "invented persistence behavior"]
+    },
+    {
+      "id": "CB-S-H-CAP-EN",
+      "repository_id": "hospital_system",
+      "language": "en",
+      "category": "capability",
+      "query": "How does Schedule.is_available determine whether a requested slot is available?",
+      "methods": ["lexical", "semantic", "hybrid"],
+      "expected_target": {"relative_path": "models/doctor.py", "qualified_symbol": "Schedule.is_available", "symbol_type": "method", "start_line": 57, "end_line": 63},
+      "expected_facts": ["converts time to int and subtracts one", "returns true only for Available", "returns false for another value", "has implicit None when the day entry is falsy"],
+      "forbidden_claims": ["claims a false return for a falsy day entry", "invented exception handling"]
+    },
+    {
+      "id": "CB-S-H-CAP-FA",
+      "repository_id": "hospital_system",
+      "language": "fa",
+      "category": "capability",
+      "query": "متد Schedule.is_available چگونه تشخیص می‌دهد یک بازه زمانی آزاد است؟",
+      "methods": ["lexical", "semantic", "hybrid"],
+      "expected_target": {"relative_path": "models/doctor.py", "qualified_symbol": "Schedule.is_available", "symbol_type": "method", "start_line": 57, "end_line": 63},
+      "expected_facts": ["converts time to int and subtracts one", "returns true only for Available", "returns false for another value", "has implicit None when the day entry is falsy"],
+      "forbidden_claims": ["claims a false return for a falsy day entry", "invented exception handling"]
+    },
+    {
+      "id": "CB-S-H-IMPL-EN",
+      "repository_id": "hospital_system",
+      "language": "en",
+      "category": "implementation_location",
+      "query": "Where and how is a nearest appointment automatically reserved for a patient?",
+      "methods": ["lexical", "semantic", "hybrid"],
+      "expected_target": {"relative_path": "data_access/patients.py", "qualified_symbol": "Patients.auto_reservation", "symbol_type": "method", "start_line": 86, "end_line": 90},
+      "expected_facts": ["gets patient by patient_id", "finds nearest appointment", "creates appointment with day hour and doctor national_id", "removes that doctor schedule availability"],
+      "forbidden_claims": ["invented return value", "invented transaction or notification"]
+    },
+    {
+      "id": "CB-S-H-IMPL-FA",
+      "repository_id": "hospital_system",
+      "language": "fa",
+      "category": "implementation_location",
+      "query": "رزرو خودکار نزدیک‌ترین نوبت برای بیمار در کجا و چگونه پیاده‌سازی شده است؟",
+      "methods": ["lexical", "semantic", "hybrid"],
+      "expected_target": {"relative_path": "data_access/patients.py", "qualified_symbol": "Patients.auto_reservation", "symbol_type": "method", "start_line": 86, "end_line": 90},
+      "expected_facts": ["gets patient by patient_id", "finds nearest appointment", "creates appointment with day hour and doctor national_id", "removes that doctor schedule availability"],
+      "forbidden_claims": ["invented return value", "invented transaction or notification"]
+    },
+    {
+      "id": "CB-S-B-ARCH-EN",
+      "repository_id": "cs_bookstore",
+      "language": "en",
+      "category": "architecture",
+      "query": "How is Review related to Book and the configured user model?",
+      "methods": ["lexical", "semantic", "hybrid"],
+      "expected_target": {"relative_path": "store/models.py", "qualified_symbol": "Review", "symbol_type": "class", "start_line": 95, "end_line": 113},
+      "expected_facts": ["book is a ForeignKey to Book", "book reverse name is reviews", "user is a ForeignKey to AUTH_USER_MODEL", "both use CASCADE deletion"],
+      "forbidden_claims": ["invented many-to-many relationship", "invented user reverse name"]
+    },
+    {
+      "id": "CB-S-B-ARCH-FA",
+      "repository_id": "cs_bookstore",
+      "language": "fa",
+      "category": "architecture",
+      "query": "مدل Review چه رابطه‌ای با Book و مدل کاربر تنظیم‌شده دارد؟",
+      "methods": ["lexical", "semantic", "hybrid"],
+      "expected_target": {"relative_path": "store/models.py", "qualified_symbol": "Review", "symbol_type": "class", "start_line": 95, "end_line": 113},
+      "expected_facts": ["book is a ForeignKey to Book", "book reverse name is reviews", "user is a ForeignKey to AUTH_USER_MODEL", "both use CASCADE deletion"],
+      "forbidden_claims": ["invented many-to-many relationship", "invented user reverse name"]
+    },
+    {
+      "id": "CB-S-B-CAP-EN",
+      "repository_id": "cs_bookstore",
+      "language": "en",
+      "category": "capability",
+      "query": "How does post_search build results from a valid query?",
+      "methods": ["lexical", "semantic", "hybrid"],
+      "expected_target": {"relative_path": "blog/views.py", "qualified_symbol": "post_search", "symbol_type": "function", "start_line": 77, "end_line": 94},
+      "expected_facts": ["validates SearchForm from request.GET", "searches published post titles using trigram similarity", "searches descriptions using trigram similarity", "filters similarity at least 0.1", "unions and orders descending by similarity"],
+      "forbidden_claims": ["invented full-text vector search", "invented pagination"]
+    },
+    {
+      "id": "CB-S-B-CAP-FA",
+      "repository_id": "cs_bookstore",
+      "language": "fa",
+      "category": "capability",
+      "query": "نمای post_search پس از دریافت query معتبر چگونه نتایج را می‌سازد؟",
+      "methods": ["lexical", "semantic", "hybrid"],
+      "expected_target": {"relative_path": "blog/views.py", "qualified_symbol": "post_search", "symbol_type": "function", "start_line": 77, "end_line": 94},
+      "expected_facts": ["validates SearchForm from request.GET", "searches published post titles using trigram similarity", "searches descriptions using trigram similarity", "filters similarity at least 0.1", "unions and orders descending by similarity"],
+      "forbidden_claims": ["invented full-text vector search", "invented pagination"]
+    },
+    {
+      "id": "CB-S-B-IMPL-EN",
+      "repository_id": "cs_bookstore",
+      "language": "en",
+      "category": "implementation_location",
+      "query": "Where is phone-based authentication implemented and how are invalid credentials handled?",
+      "methods": ["lexical", "semantic", "hybrid"],
+      "expected_target": {"relative_path": "users/authentication.py", "qualified_symbol": "PhoneAuthBackend.authenticate", "symbol_type": "method", "start_line": 5, "end_line": 13},
+      "expected_facts": ["looks up User by phone=username", "returns user when password check succeeds", "returns None for wrong password", "returns None for missing or duplicate phone matches"],
+      "forbidden_claims": ["invented token generation", "invented account lockout"]
+    },
+    {
+      "id": "CB-S-B-IMPL-FA",
+      "repository_id": "cs_bookstore",
+      "language": "fa",
+      "category": "implementation_location",
+      "query": "احراز هویت با شماره تلفن در کجا پیاده‌سازی شده و اطلاعات نامعتبر چگونه مدیریت می‌شوند؟",
+      "methods": ["lexical", "semantic", "hybrid"],
+      "expected_target": {"relative_path": "users/authentication.py", "qualified_symbol": "PhoneAuthBackend.authenticate", "symbol_type": "method", "start_line": 5, "end_line": 13},
+      "expected_facts": ["looks up User by phone=username", "returns user when password check succeeds", "returns None for wrong password", "returns None for missing or duplicate phone matches"],
+      "forbidden_claims": ["invented token generation", "invented account lockout"]
+    },
+    {
+      "id": "CB-S-C-ARCH-EN",
+      "repository_id": "codecompass",
+      "language": "en",
+      "category": "architecture",
+      "query": "How does RepositoryIndexCoordinator.index_repository select full or incremental indexing?",
+      "methods": ["lexical", "semantic", "hybrid"],
+      "expected_target": {"relative_path": "src/codecompass/indexing/coordinator.py", "qualified_symbol": "RepositoryIndexCoordinator.index_repository", "symbol_type": "method", "start_line": 163, "end_line": 181},
+      "expected_facts": ["scans repository", "looks up existing project by root", "plans file changes", "uses incremental path only when an existing valid incremental base is available", "otherwise uses full path"],
+      "forbidden_claims": ["invented Git history dependency", "invented filesystem watcher"]
+    },
+    {
+      "id": "CB-S-C-ARCH-FA",
+      "repository_id": "codecompass",
+      "language": "fa",
+      "category": "architecture",
+      "query": "متد RepositoryIndexCoordinator.index_repository چگونه بین ایندکس کامل و افزایشی انتخاب می‌کند؟",
+      "methods": ["lexical", "semantic", "hybrid"],
+      "expected_target": {"relative_path": "src/codecompass/indexing/coordinator.py", "qualified_symbol": "RepositoryIndexCoordinator.index_repository", "symbol_type": "method", "start_line": 163, "end_line": 181},
+      "expected_facts": ["scans repository", "looks up existing project by root", "plans file changes", "uses incremental path only when an existing valid incremental base is available", "otherwise uses full path"],
+      "forbidden_claims": ["invented Git history dependency", "invented filesystem watcher"]
+    },
+    {
+      "id": "CB-S-C-CAP-EN",
+      "repository_id": "codecompass",
+      "language": "en",
+      "category": "capability",
+      "query": "How does APIRuntime.vector_generation_matches validate vector generation consistency?",
+      "methods": ["lexical", "semantic", "hybrid"],
+      "expected_target": {"relative_path": "src/codecompass/api/runtime.py", "qualified_symbol": "APIRuntime.vector_generation_matches", "symbol_type": "method", "start_line": 275, "end_line": 283},
+      "expected_facts": ["returns false when schema version is missing", "returns false when vector generation is missing", "reads active generation from the project collection", "maps vector state error to a safe API conflict", "compares active and SQLite generation"],
+      "forbidden_claims": ["silently repairs mismatch", "trusts Chroma metadata as canonical"]
+    },
+    {
+      "id": "CB-S-C-CAP-FA",
+      "repository_id": "codecompass",
+      "language": "fa",
+      "category": "capability",
+      "query": "متد APIRuntime.vector_generation_matches سازگاری نسل بردار را چگونه اعتبارسنجی می‌کند؟",
+      "methods": ["lexical", "semantic", "hybrid"],
+      "expected_target": {"relative_path": "src/codecompass/api/runtime.py", "qualified_symbol": "APIRuntime.vector_generation_matches", "symbol_type": "method", "start_line": 275, "end_line": 283},
+      "expected_facts": ["returns false when schema version is missing", "returns false when vector generation is missing", "reads active generation from the project collection", "maps vector state error to a safe API conflict", "compares active and SQLite generation"],
+      "forbidden_claims": ["silently repairs mismatch", "trusts Chroma metadata as canonical"]
+    },
+    {
+      "id": "CB-S-C-IMPL-EN",
+      "repository_id": "codecompass",
+      "language": "en",
+      "category": "implementation_location",
+      "query": "Where does the OpenAI-compatible LLM adapter extract generated text and finish reason?",
+      "methods": ["lexical", "semantic", "hybrid"],
+      "expected_target": {"relative_path": "src/codecompass/llm/openai_compatible.py", "qualified_symbol": "OpenAICompatibleLLMProvider.generate", "symbol_type": "method", "start_line": 35, "end_line": 46},
+      "expected_facts": ["validates request", "posts provider payload", "extracts text and finish_reason through _response", "uses returned model string when present", "returns provider name openai_compatible"],
+      "forbidden_claims": ["invented streaming", "invented retry"]
+    },
+    {
+      "id": "CB-S-C-IMPL-FA",
+      "repository_id": "codecompass",
+      "language": "fa",
+      "category": "implementation_location",
+      "query": "آداپتور OpenAI-compatible در کجا متن تولیدشده و finish_reason را استخراج می‌کند؟",
+      "methods": ["lexical", "semantic", "hybrid"],
+      "expected_target": {"relative_path": "src/codecompass/llm/openai_compatible.py", "qualified_symbol": "OpenAICompatibleLLMProvider.generate", "symbol_type": "method", "start_line": 35, "end_line": 46},
+      "expected_facts": ["validates request", "posts provider payload", "extracts text and finish_reason through _response", "uses returned model string when present", "returns provider name openai_compatible"],
+      "forbidden_claims": ["invented streaming", "invented retry"]
+    }
+  ],
+  "qa_cases": [
+    {
+      "id": "CB-QA-H-EN",
+      "repository_id": "hospital_system",
+      "language": "en",
+      "question": "What attributes are assigned in Patient.__init__?",
+      "expected_target": {"relative_path": "models/patient.py", "qualified_symbol": "Patient.__init__", "start_line": 6, "end_line": 16},
+      "expected_facts": ["first_name", "last_name", "national_id", "phone_num", "password", "gender", "city", "full_name", "insurance_num", "appointments"],
+      "forbidden_claims": ["invented attributes", "unsupported attribute types"]
+    },
+    {
+      "id": "CB-QA-H-FA",
+      "repository_id": "hospital_system",
+      "language": "fa",
+      "question": "متد QueueArray.dequeue در صف خالی و غیرخالی چه رفتاری دارد؟",
+      "expected_target": {"relative_path": "data_structures/queue.py", "qualified_symbol": "QueueArray.dequeue", "start_line": 22, "end_line": 33},
+      "expected_facts": ["empty queue returns Queue is empty string", "non-empty increments front", "returns queue at front minus one"],
+      "forbidden_claims": ["claims an exception is raised", "uses behavior from another Queue class"]
+    },
+    {
+      "id": "CB-QA-B-EN",
+      "repository_id": "cs_bookstore",
+      "language": "en",
+      "question": "How does Book.save populate the slug before saving?",
+      "expected_target": {"relative_path": "store/models.py", "qualified_symbol": "Book.save", "start_line": 67, "end_line": 70},
+      "expected_facts": ["only populates when slug is falsy", "uses slugify on title", "calls superclass save with args and kwargs"],
+      "forbidden_claims": ["always overwrites slug", "invented uniqueness handling"]
+    },
+    {
+      "id": "CB-QA-B-FA",
+      "repository_id": "cs_bookstore",
+      "language": "fa",
+      "question": "متد CommentForm.clean_name چه نام‌هایی را رد می‌کند و در حالت معتبر چه برمی‌گرداند؟",
+      "expected_target": {"relative_path": "blog/forms.py", "qualified_symbol": "CommentForm.clean_name", "start_line": 45, "end_line": 51},
+      "expected_facts": ["reads cleaned_data name", "rejects length greater than 250", "rejects length less than 2", "raises ValidationError with نام معتبر نیست", "returns name when valid"],
+      "forbidden_claims": ["invented trimming", "invented character restrictions"]
+    },
+    {
+      "id": "CB-QA-C-EN",
+      "repository_id": "codecompass",
+      "language": "en",
+      "question": "How does RAGContextBuilder.build enforce its context-size budget?",
+      "expected_target": {"relative_path": "src/codecompass/rag/context.py", "qualified_symbol": "RAGContextBuilder.build", "start_line": 12, "end_line": 28},
+      "expected_facts": ["rejects max_chars below one", "iterates unique sorted retrieval results", "counts code characters", "omits a chunk that would exceed budget", "tracks omitted count", "returns blocks total_chars and omitted_count"],
+      "forbidden_claims": ["token-based budget", "truncates individual chunks"]
+    },
+    {
+      "id": "CB-QA-C-FA",
+      "repository_id": "codecompass",
+      "language": "fa",
+      "question": "GroundedQAService.answer پاسخ و citationهای قابل اعتماد را چگونه تولید می‌کند؟",
+      "expected_target": {"relative_path": "src/codecompass/qa/service.py", "qualified_symbol": "GroundedQAService.answer", "start_line": 43, "end_line": 84},
+      "expected_facts": ["validates request", "retrieves once", "focuses on named symbol", "builds context", "derives citations from context metadata", "returns fixed no-evidence answer without LLM for empty context", "builds system and user prompts", "calls LLM with temperature and max_tokens", "returns provider finish reason and trusted citations"],
+      "forbidden_claims": ["parses citations from model text", "retries retrieval", "uses LLM when context is empty"]
+    }
+  ],
+  "documentation_cases": [
+    {
+      "id": "CB-DOC-H-EN",
+      "repository_id": "hospital_system",
+      "language": "en",
+      "identifier": "Doctors.login",
+      "expected_target": {"relative_path": "data_access/doctors.py", "qualified_symbol": "Doctors.login", "symbol_type": "method", "start_line": 126, "end_line": 134},
+      "expected_facts": ["looks up national_id by password", "checks corresponding doctor phone number", "returns true only when phone matches", "otherwise returns false"],
+      "expected_parameters": ["self", "phone_num", "password"],
+      "expected_return": "boolean values are returned; no annotation",
+      "expected_dependencies": ["self.signed_in", "self.doctors"],
+      "forbidden_claims": ["password hashing", "exception handling"]
+    },
+    {
+      "id": "CB-DOC-H-FA",
+      "repository_id": "hospital_system",
+      "language": "fa",
+      "identifier": "MinHeap.extract_min",
+      "expected_target": {"relative_path": "data_structures/heap.py", "qualified_symbol": "MinHeap.extract_min", "symbol_type": "method", "start_line": 101, "end_line": 108},
+      "expected_facts": ["raises IndexError for empty heap", "stores root minimum", "moves last element to root", "decrements useful_data", "heapifies down from zero", "returns stored minimum"],
+      "expected_parameters": ["self"],
+      "expected_return": "minimum item; no annotation",
+      "expected_dependencies": ["self.heap", "self.heapify_down"],
+      "forbidden_claims": ["returns None on empty heap", "removes list element with pop"]
+    },
+    {
+      "id": "CB-DOC-B-EN",
+      "repository_id": "cs_bookstore",
+      "language": "en",
+      "identifier": "review_book",
+      "expected_target": {"relative_path": "store/views.py", "qualified_symbol": "review_book", "symbol_type": "function", "start_line": 95, "end_line": 107},
+      "expected_facts": ["loads book by id and slug", "on POST validates ReviewForm", "saves with commit false", "sets book and request user", "saves review", "redirects to book URL"],
+      "expected_parameters": ["request", "pk", "slug"],
+      "expected_return": "redirect response; no annotation",
+      "expected_dependencies": ["get_object_or_404", "Book", "ReviewForm", "redirect"],
+      "forbidden_claims": ["payment processing", "GET renders a review form"]
+    },
+    {
+      "id": "CB-DOC-B-FA",
+      "repository_id": "cs_bookstore",
+      "language": "fa",
+      "identifier": "register",
+      "expected_target": {"relative_path": "users/views.py", "qualified_symbol": "register", "symbol_type": "function", "start_line": 35, "end_line": 45},
+      "expected_facts": ["builds UserRegisterForm from POST", "valid form saves with commit false", "sets password using set_password", "saves user", "renders register_done after success", "otherwise renders registration form"],
+      "expected_parameters": ["request"],
+      "expected_return": "render response; no annotation",
+      "expected_dependencies": ["UserRegisterForm", "render", "user.set_password"],
+      "forbidden_claims": ["automatic login", "email verification"]
+    },
+    {
+      "id": "CB-DOC-C-EN",
+      "repository_id": "codecompass",
+      "language": "en",
+      "identifier": "SQLiteMetadataStore.replace_project_index",
+      "expected_target": {"relative_path": "src/codecompass/storage/sqlite.py", "qualified_symbol": "SQLiteMetadataStore.replace_project_index", "symbol_type": "method", "start_line": 155, "end_line": 229},
+      "expected_facts": ["starts BEGIN IMMEDIATE", "upserts project", "replaces files symbols and chunks", "may activate through before_commit", "writes schema and generation", "commits atomically", "rolls back on failure", "attempts rollback callback after activation"],
+      "expected_parameters": ["self", "name", "root_path", "files", "parse_results", "chunks", "before_commit", "on_rollback", "index_schema_version", "vector_generation"],
+      "expected_return": "ProjectRecord from committed row",
+      "expected_dependencies": ["SQLite connection", "replacement helpers", "optional activation callbacks"],
+      "forbidden_claims": ["holds transaction during embedding", "guarantees crash-atomicity across SQLite and Chroma"]
+    },
+    {
+      "id": "CB-DOC-C-FA",
+      "repository_id": "codecompass",
+      "language": "fa",
+      "identifier": "GroundedQAService.answer",
+      "expected_target": {"relative_path": "src/codecompass/qa/service.py", "qualified_symbol": "GroundedQAService.answer", "symbol_type": "method", "start_line": 43, "end_line": 84},
+      "expected_facts": ["validates request", "retrieves and focuses evidence", "builds context and trusted citations", "skips LLM for empty context", "builds prompts", "calls provider", "maps provider error to QAError", "returns QAAnswer with provider metadata"],
+      "expected_parameters": ["self", "request"],
+      "expected_return": "QAAnswer",
+      "expected_dependencies": ["retrieval service", "context builder", "prompt builder", "LLM provider"],
+      "forbidden_claims": ["citations come from generated text", "automatic retry"]
+    }
+  ]
+}
