@@ -72,8 +72,91 @@ def test_create_database_and_schema(tmp_path: Path) -> None:
                 "SELECT name FROM sqlite_master WHERE type = 'table'"
             )
         }
-    assert version == 2
+    assert version == 3
     assert {"projects", "source_files", "symbols", "chunks", "indexing_jobs"} <= tables
+
+
+def test_v2_schema_migration_is_idempotent_and_preserves_legacy_project(tmp_path: Path) -> None:
+    db_path = tmp_path / "legacy.sqlite"
+    with sqlite3.connect(db_path) as connection:
+        connection.executescript(
+            """
+            CREATE TABLE projects (
+                id INTEGER PRIMARY KEY,
+                name TEXT NOT NULL,
+                root_path TEXT NOT NULL UNIQUE,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            );
+            INSERT INTO projects VALUES (1, 'Legacy', 'legacy-root', 'created', 'updated');
+            PRAGMA user_version = 2;
+            """
+        )
+
+    metadata_store = SQLiteMetadataStore(db_path)
+    metadata_store.initialize()
+    metadata_store.initialize()
+
+    project = metadata_store.get_project(1)
+    assert project is not None
+    assert project.index_schema_version is None
+    assert project.vector_generation is None
+    with sqlite3.connect(db_path) as connection:
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == 3
+        columns = {row[1] for row in connection.execute("PRAGMA table_info(projects)")}
+    assert {"index_schema_version", "vector_generation"} <= columns
+
+
+def test_v2_schema_migration_rolls_back_all_changes_on_failure(tmp_path: Path, monkeypatch) -> None:
+    db_path = tmp_path / "legacy-failure.sqlite"
+    with sqlite3.connect(db_path) as connection:
+        connection.executescript(
+            """
+            CREATE TABLE projects (
+                id INTEGER PRIMARY KEY,
+                name TEXT NOT NULL,
+                root_path TEXT NOT NULL UNIQUE,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            );
+            PRAGMA user_version = 2;
+            """
+        )
+
+    class FailingMigrationConnection(sqlite3.Connection):
+        def execute(self, sql, parameters=()):
+            if "ADD COLUMN vector_generation" in sql:
+                raise sqlite3.OperationalError("simulated migration failure")
+            return super().execute(sql, parameters)
+
+    metadata_store = SQLiteMetadataStore(db_path)
+    original_connect = metadata_store._connect
+
+    def failing_connect():
+        connection = sqlite3.connect(db_path, factory=FailingMigrationConnection)
+        connection.row_factory = sqlite3.Row
+        connection.execute("PRAGMA foreign_keys = ON")
+        return connection
+
+    monkeypatch.setattr(metadata_store, "_connect", failing_connect)
+    with pytest.raises(StorageError, match="simulated migration failure"):
+        metadata_store.initialize()
+
+    with sqlite3.connect(db_path) as connection:
+        columns = {row[1] for row in connection.execute("PRAGMA table_info(projects)")}
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == 2
+        assert "index_schema_version" not in columns
+        assert "vector_generation" not in columns
+        assert connection.execute(
+            "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'indexing_jobs'"
+        ).fetchone() is None
+
+    monkeypatch.setattr(metadata_store, "_connect", original_connect)
+    metadata_store.initialize()
+    with sqlite3.connect(db_path) as connection:
+        columns = {row[1] for row in connection.execute("PRAGMA table_info(projects)")}
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == 3
+    assert {"index_schema_version", "vector_generation"} <= columns
 
 
 def test_project_upsert_and_persistence_after_reopen(tmp_path: Path) -> None:
@@ -199,6 +282,7 @@ def test_running_jobs_are_failed_safely_after_restart(tmp_path: Path) -> None:
     job = metadata_store.create_indexing_job("job-1", "indexed", None)
 
     assert metadata_store.get_active_indexing_job() == job
+    assert job.observed_stages == ("scanning",)
     assert metadata_store.interrupt_active_indexing_jobs() == 1
     interrupted = metadata_store.get_indexing_job(job.id)
 

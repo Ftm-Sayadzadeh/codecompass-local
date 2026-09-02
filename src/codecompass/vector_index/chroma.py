@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import ipaddress
 import json
+import math
 import os
 import re
 import uuid
@@ -161,6 +162,45 @@ class ChromaVectorIndex:
         except Exception as error:
             raise VectorIndexError(f"Failed to get vectors: {error}") from error
         return self._stored_records(result)
+
+    def get_vectors(self, chunk_ids: Sequence[str]) -> tuple[VectorRecord, ...]:
+        """Return active embeddings with metadata suitable only for consistency checks."""
+        if not chunk_ids:
+            return ()
+        ids = [self._chunk_id(chunk_id) for chunk_id in chunk_ids]
+        try:
+            result = self._ready().get(ids=ids, include=["embeddings", "metadatas"])
+        except VectorIndexError:
+            raise
+        except Exception as error:
+            raise VectorIndexError(f"Failed to export vectors: {error}") from error
+        raw_embeddings = result.get("embeddings")
+        if hasattr(raw_embeddings, "tolist"):
+            raw_embeddings = raw_embeddings.tolist()
+        returned_ids = result.get("ids") or []
+        metadatas = result.get("metadatas") or []
+        if not isinstance(raw_embeddings, list) or not (
+            len(returned_ids) == len(raw_embeddings) == len(metadatas)
+        ):
+            raise VectorIndexError("Malformed Chroma embedding response")
+        records = tuple(
+            VectorRecord(
+                chunk_id=str(chunk_id),
+                vector=self._vector(vector),
+                metadata=self._clean_metadata(metadata),
+            )
+            for chunk_id, vector, metadata in zip(returned_ids, raw_embeddings, metadatas)
+        )
+        if {record.chunk_id for record in records} != set(ids) or len(records) != len(ids):
+            raise VectorIndexError("Chroma embedding response ids do not match requested ids")
+        return tuple(sorted(records, key=lambda record: record.chunk_id))
+
+    def active_generation(self) -> str:
+        """Return the validated generation named by the managed active pointer."""
+        if not self.managed:
+            raise VectorIndexStateError("Active generation requires a managed vector index")
+        self._ready()
+        return str(self._read_pointer()["generation"])
 
     def list_ids(self, project_id: int | None = None) -> tuple[str, ...]:
         """Return stored vector ids, optionally scoped to one project."""
@@ -335,6 +375,28 @@ class ChromaVectorIndex:
                 continue
             self._delete_collection(name)
 
+    def discard_empty_managed_index(self) -> None:
+        """Remove an uncommitted managed index whose active generation is empty."""
+        if not self.managed or self.active_pointer is None:
+            raise VectorIndexStateError("Managed vector index is required")
+        if self.list_ids():
+            raise VectorIndexStateError("Non-empty active vector index cannot be discarded")
+        for name in self._managed_collection_names():
+            try:
+                collection = self._client.get_collection(name=name)
+                metadata = collection.metadata if isinstance(collection.metadata, dict) else {}
+                if metadata.get(BINDING_LOGICAL) != self.collection_name:
+                    continue
+                if self.project_id is not None and metadata.get(BINDING_PROJECT) != self.project_id:
+                    continue
+            except Exception:
+                continue
+            self._delete_collection(name)
+        self.active_pointer.unlink(missing_ok=True)
+        self._collection = None
+        self._active_name = None
+        self._dimension = None
+
     def _validate_replacement(self, replacement: StagedVectorReplacement) -> None:
         if replacement.logical_collection != self.collection_name:
             raise VectorIndexError("Staged replacement belongs to another logical collection")
@@ -502,13 +564,18 @@ class ChromaVectorIndex:
         return chunk_id
 
     def _vector(self, vector: Sequence[float]) -> list[float]:
+        if hasattr(vector, "tolist"):
+            vector = vector.tolist()
         if not vector:
             raise VectorIndexError("Vector must be non-empty")
         values: list[float] = []
         for value in vector:
             if isinstance(value, bool) or not isinstance(value, (int, float)):
                 raise VectorIndexError("Vector values must be numeric")
-            values.append(float(value))
+            numeric = float(value)
+            if not math.isfinite(numeric):
+                raise VectorIndexError("Vector values must be finite")
+            values.append(numeric)
         return values
 
     def _check_dimension(self, dimension: int) -> None:

@@ -154,6 +154,8 @@ export interface ResolutionCandidate {
 export interface IndexResponse {
   project_id: number;
   operation: "indexed" | "reindexed";
+  strategy?: "full" | "incremental" | null;
+  no_changes?: boolean | null;
   complete: boolean;
   structural_stats: Record<string, number>;
   vector_stats: Record<string, number | boolean | string[]>;
@@ -177,6 +179,7 @@ export interface IndexJob {
   operation: "indexed" | "reindexed";
   project_id: number | null;
   counters: Record<string, number>;
+  observed_stages?: Array<Exclude<IndexJobState, "completed" | "failed">>;
   started_at: string;
   updated_at: string;
   completed_at: string | null;

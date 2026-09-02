@@ -8,7 +8,7 @@ from pathlib import Path
 from codecompass.chunker import Chunk, ChunkError, ChunkResult, CodeChunker
 from codecompass.indexing.models import IndexingError, IndexingResult, IndexingStats
 from codecompass.parser import ParseError, ParseResult, PythonASTParser, Symbol
-from codecompass.scanner import RepositoryPathError, RepositoryScanner, ScanError, SourceFile
+from codecompass.scanner import RepositoryPathError, RepositoryScanner, ScanError, ScanResult, SourceFile
 from codecompass.storage import SQLiteMetadataStore, StorageError
 
 ProgressCallback = Callable[[str, dict[str, int]], None]
@@ -53,13 +53,8 @@ class IndexingService:
     ) -> PreparedRepositoryIndex:
         """Build a structural candidate without changing canonical metadata."""
         emit = progress or (lambda _stage, _counters: None)
-        emit("scanning", {})
         try:
-            self.store.initialize()
-            scan_result = self.scanner.scan(
-                repository_path,
-                on_file=lambda count: emit("scanning", {"files_discovered": count}),
-            )
+            scan_result = self.scan_repository(repository_path, emit)
         except RepositoryPathError as error:
             failed = self._failed_scan(error)
             return PreparedRepositoryIndex(None, (), (), (), (), failed.stats, failed.errors)
@@ -67,10 +62,34 @@ class IndexingService:
             failed = self._failed_storage(None, None, error)
             return PreparedRepositoryIndex(None, (), (), (), (), failed.stats, failed.errors)
 
+        return self.prepare_files(scan_result, scan_result.files, emit)
+
+    def scan_repository(
+        self,
+        repository_path: str | Path,
+        progress: ProgressCallback | None = None,
+    ) -> ScanResult:
+        """Discover and hash source files without parsing them."""
+        emit = progress or (lambda _stage, _counters: None)
+        emit("scanning", {})
+        self.store.initialize()
+        return self.scanner.scan(
+            repository_path,
+            on_file=lambda count: emit("scanning", {"files_discovered": count}),
+        )
+
+    def prepare_files(
+        self,
+        scan_result: ScanResult,
+        files: tuple[SourceFile, ...],
+        progress: ProgressCallback | None = None,
+    ) -> PreparedRepositoryIndex:
+        """Parse and chunk a deterministic subset from one completed scan."""
+        emit = progress or (lambda _stage, _counters: None)
         parse_results: list[ParseResult] = []
         symbols: list[Symbol] = []
         emit("parsing", {"files_discovered": len(scan_result.files)})
-        for source_file in scan_result.files:
+        for source_file in files:
             parsed = self.parser.parse_file(source_file)
             parse_results.append(parsed)
             symbols.extend(parsed.symbols)
@@ -118,7 +137,7 @@ class IndexingService:
         )
         return PreparedRepositoryIndex(
             scan_result.root_path,
-            scan_result.files,
+            files,
             parsed_tuple,
             chunked_tuple,
             tuple(chunks),

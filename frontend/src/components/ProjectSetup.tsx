@@ -5,10 +5,10 @@ import type { IndexJob, IndexJobState, Project } from "../api/types";
 import { ErrorMessage } from "./ErrorMessage";
 
 const stages: Array<{ state: Exclude<IndexJobState, "completed" | "failed">; label: string }> = [
-  { state: "preflight", label: "Provider preflight" },
-  { state: "scanning", label: "Scan files" },
+  { state: "scanning", label: "Check source changes" },
   { state: "parsing", label: "Parse symbols" },
   { state: "chunking", label: "Build chunks" },
+  { state: "preflight", label: "Provider preflight" },
   { state: "embedding", label: "Generate embeddings" },
   { state: "verifying", label: "Verify vectors" },
   { state: "activating", label: "Activate index" },
@@ -16,12 +16,19 @@ const stages: Array<{ state: Exclude<IndexJobState, "completed" | "failed">; lab
 
 const counters: Array<[string, string]> = [
   ["files_discovered", "Files discovered"],
+  ["files_unchanged", "Files unchanged"],
+  ["files_added", "Files added"],
+  ["files_modified", "Files modified"],
+  ["files_deleted", "Files deleted"],
   ["files_parsed", "Files parsed"],
   ["symbols_extracted", "Symbols"],
   ["chunks_generated", "Chunks"],
   ["embeddings_completed", "Embeddings completed"],
   ["chunks_expected", "Expected vectors"],
   ["vectors_stored", "Stored vectors"],
+  ["chunks_reused", "Chunks reused"],
+  ["vectors_reused", "Vectors reused"],
+  ["vectors_deleted", "Vectors removed"],
   ["embedding_retries", "Embedding retries"],
   ["compacted_embeddings", "Compacted embeddings"],
   ["largest_embedding_input_chars", "Largest input characters"],
@@ -48,7 +55,11 @@ export function ProjectSetup({
   };
   const indexing = Boolean(job && job.state !== "completed" && job.state !== "failed");
   const currentStage = job?.state === "failed" ? job.error?.stage : job?.state;
-  const currentIndex = stages.findIndex(({ state }) => state === currentStage);
+  const observedStages = new Set(job?.observed_stages ?? (
+    stages.some(({ state }) => state === currentStage)
+      ? [currentStage as Exclude<IndexJobState, "completed" | "failed">]
+      : []
+  ));
   const visibleCounters = job ? counters.filter(([key]) => Object.hasOwn(job.counters, key)) : [];
   return (
     <section className="setup-band" aria-labelledby="repository-setup-title">
@@ -74,9 +85,9 @@ export function ProjectSetup({
       {job ? (
         <div className="index-progress" aria-live="polite">
           <ol className="index-timeline" aria-label="Indexing progress">
-            {stages.map((stage, index) => {
-              const complete = job.state === "completed" || currentIndex > index;
-              const current = currentIndex === index;
+            {stages.map((stage) => {
+              const current = currentStage === stage.state;
+              const complete = observedStages.has(stage.state) && !current;
               return (
                 <li className={complete ? "complete" : current ? "current" : "pending"} key={stage.state}>
                   {complete ? <Check size={15} /> : current && indexing ? <LoaderCircle className="spin" size={15} /> : current && job.state === "failed" ? <TriangleAlert size={15} /> : <Circle size={12} />}
@@ -102,7 +113,7 @@ export function ProjectSetup({
       ) : null}
       {job?.result ? (
         <div className="index-result" role="status">
-          <strong>{job.result.operation === "reindexed" ? "Repository re-indexed" : "Repository ready"}</strong>
+          <strong>{job.result.no_changes ? "Repository is already up to date" : job.result.strategy === "incremental" ? "Incremental update complete" : job.result.operation === "reindexed" ? "Full re-index complete" : "Repository ready"}</strong>
           <span>{job.result.complete ? "Vector index verified" : "Index incomplete"}</span>
           <span>{job.result.embedding.provider} · {job.result.embedding.model}</span>
         </div>

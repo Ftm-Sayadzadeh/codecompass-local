@@ -118,7 +118,9 @@ class APIRuntime:
         return embedding_identity(config.provider, base_url, model, config.embedding_dimensions)
 
     def retrieval(self, project_id: int, config: ProviderConfig, *, compatible: bool) -> RetrievalService:
-        self.require_project(project_id)
+        project = self.require_project(project_id)
+        if compatible:
+            self.require_vector_generation(project)
         return RetrievalService(
             self.store,
             create_embedding_provider(config),
@@ -270,6 +272,20 @@ class APIRuntime:
             raise APIError(404, "project_not_found", "Project was not found")
         return project
 
+    def vector_generation_matches(self, project: Any) -> bool:
+        """Return whether canonical metadata names the active vector generation."""
+        if project.index_schema_version is None or project.vector_generation is None:
+            return False
+        try:
+            active_generation = self.collection(project.id).active_generation()
+        except VectorIndexError:
+            raise APIError(409, "vector_index_state_invalid", "Vector index state is invalid; re-index storage is required") from None
+        return active_generation == project.vector_generation
+
+    def require_vector_generation(self, project: Any) -> None:
+        if not self.vector_generation_matches(project):
+            raise APIError(409, "vector_index_state_invalid", "Vector index state is invalid; re-index storage is required")
+
     def _preflight_embedding(self, provider: Any) -> None:
         try:
             preflight_embedding(provider)
@@ -286,6 +302,8 @@ class APIRuntime:
             return APIError(409, error.code, "Vector index state is invalid; re-index storage is required", details)
         if error.code == "vector_indexing_failed":
             return APIError(502, error.code, "Vector indexing did not complete", details)
+        if error.code == "repository_changed_during_index":
+            return APIError(409, error.code, "Repository changed during indexing; try again", details)
         status = 500 if any(item.stage == "storage" for item in error.failures) else 422
         return APIError(status, "indexing_failed", "Repository indexing did not complete", details)
 
@@ -302,12 +320,20 @@ class APIRuntime:
             return None
         try:
             chunk_ids = tuple(sorted(chunk.chunk_id for chunk in self.store.list_chunks(project_id)))
-            vector_ids = self.collection(project_id).list_ids(project_id)
+            vector_ids = self.collection(project_id).list_ids()
         except (StorageError, VectorIndexError):
             return None
-        if not chunk_ids or set(chunk_ids) != set(vector_ids):
+        project = self.store.get_project(project_id)
+        if project is None or set(chunk_ids) != set(vector_ids):
             return None
-        return {"project_id": project_id, "chunk_ids": chunk_ids}
+        if project.vector_generation is not None:
+            try:
+                generation = self.collection(project_id).active_generation()
+            except VectorIndexError:
+                return None
+            if generation != project.vector_generation:
+                return None
+        return {"project_id": project_id, "chunk_ids": chunk_ids, "vector_generation": project.vector_generation}
 
     def _snapshot_preserved(self, snapshot: dict[str, Any] | None) -> bool:
         if snapshot is None:
@@ -315,11 +341,22 @@ class APIRuntime:
         project_id = int(snapshot["project_id"])
         try:
             chunks = tuple(sorted(chunk.chunk_id for chunk in self.store.list_chunks(project_id)))
-            vectors = self.collection(project_id).list_ids(project_id)
+            vectors = self.collection(project_id).list_ids()
         except (StorageError, VectorIndexError):
             return False
         expected = tuple(snapshot["chunk_ids"])
-        return chunks == expected and vectors == expected
+        if chunks != expected or vectors != expected:
+            return False
+        generation = snapshot.get("vector_generation")
+        if generation is None:
+            return True
+        project = self.store.get_project(project_id)
+        if project is None or project.vector_generation != generation:
+            return False
+        try:
+            return self.collection(project_id).active_generation() == generation
+        except VectorIndexError:
+            return False
 
     def _result_counters(self, result: dict[str, Any]) -> dict[str, int]:
         structural = result.get("structural_stats") if isinstance(result.get("structural_stats"), dict) else {}
@@ -335,6 +372,13 @@ class APIRuntime:
             "truncated_embeddings",
             "embedding_retries",
             "largest_embedding_input_chars",
+            "files_unchanged",
+            "files_added",
+            "files_modified",
+            "files_deleted",
+            "chunks_reused",
+            "vectors_reused",
+            "vectors_deleted",
         }
         values = {**structural, **vector}
         return {
@@ -361,6 +405,8 @@ class APIRuntime:
                 return mapped
         if code == "indexing_failed":
             return "scanning"
+        if code == "repository_changed_during_index":
+            return "verifying"
         if code in {"vector_indexing_failed", "vector_index_state_invalid"}:
             return "verifying"
         return "failed"

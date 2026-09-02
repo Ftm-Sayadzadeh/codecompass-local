@@ -291,6 +291,7 @@ describe("CodeCompass SPA", () => {
       if (path === "/projects") return response(indexed ? [project] : []);
       if (path === "/projects/index-jobs" && init?.method === "POST") return response({
         id: "job-1", state: "scanning", operation: "indexed", project_id: null,
+        observed_stages: ["scanning"],
         counters: { files_discovered: 3 }, started_at: "2026-01-01", updated_at: "2026-01-01",
         completed_at: null, elapsed_seconds: 0.4, previous_index_preserved: null, result: null, error: null,
       }, 202);
@@ -298,6 +299,7 @@ describe("CodeCompass SPA", () => {
         indexed = true;
         return response({
           id: "job-1", state: "completed", operation: "indexed", project_id: 1,
+          observed_stages: ["scanning", "parsing", "chunking", "preflight", "embedding", "verifying", "activating"],
           counters: { files_discovered: 3, files_parsed: 3, chunks_generated: 4, embeddings_completed: 4, chunks_expected: 4, vectors_stored: 4 },
           started_at: "2026-01-01", updated_at: "2026-01-01", completed_at: "2026-01-01",
           elapsed_seconds: 1.5, previous_index_preserved: false,
@@ -313,13 +315,86 @@ describe("CodeCompass SPA", () => {
     fireEvent.change(screen.getByLabelText("Repository path"), { target: { value: "<temporary-repository>" } });
     fireEvent.click(screen.getByRole("button", { name: "Index repository" }));
     expect(await screen.findByRole("button", { name: "Indexing repository..." })).toBeDisabled();
-    expect(await screen.findByText("Scan files")).toBeInTheDocument();
+    expect(await screen.findByText("Check source changes")).toBeInTheDocument();
     expect(screen.getByText(/Files discovered:/)).toHaveTextContent("3");
     expect(screen.queryByText("100%")).not.toBeInTheDocument();
     expect([...stored.values()].join("\n")).not.toContain("<temporary-repository>");
 
     expect(await screen.findByText("MarkupSafe", {}, { timeout: 2500 })).toBeInTheDocument();
     expect(screen.getByText("Verified")).toBeInTheDocument();
+    for (const label of ["Check source changes", "Parse symbols", "Build chunks", "Provider preflight", "Generate embeddings", "Verify vectors", "Activate index"]) {
+      expect(screen.getByText(label).closest("li")).toHaveClass("complete");
+    }
+  });
+
+  it("shows an incremental no-op without invented progress", async () => {
+    let polls = 0;
+    installApi((path, init) => {
+      if (path === "/projects/index-jobs" && init?.method === "POST") return response({
+        id: "job-noop", state: "scanning", operation: "reindexed", project_id: 1,
+        observed_stages: ["scanning"],
+        counters: { files_discovered: 1 }, started_at: "2026-01-01", updated_at: "2026-01-01",
+        completed_at: null, elapsed_seconds: 0.1, previous_index_preserved: null, result: null, error: null,
+      }, 202);
+      if (path === "/projects/index-jobs/job-noop") {
+        polls += 1;
+        return response({
+        id: "job-noop", state: "completed", operation: "reindexed", project_id: 1,
+        observed_stages: ["scanning"],
+        counters: { files_discovered: 1, files_unchanged: 1, files_added: 0, files_modified: 0, files_deleted: 0, chunks_reused: 1, vectors_reused: 1, vectors_deleted: 0 },
+        started_at: "2026-01-01", updated_at: "2026-01-01", completed_at: "2026-01-01",
+        elapsed_seconds: 0.4, previous_index_preserved: null,
+        result: { project_id: 1, operation: "reindexed", strategy: "incremental", no_changes: true, complete: true, structural_stats: {}, vector_stats: {}, embedding: { provider: "ollama", model: "embed", dimensions: 768 } },
+        error: null,
+        });
+      }
+      return undefined;
+    });
+    render(<App />);
+    await ready();
+    fireEvent.click(screen.getByRole("button", { name: "Repository" }));
+    fireEvent.click(screen.getByRole("button", { name: "Index / Re-index" }));
+
+    expect(await screen.findByText("Repository is already up to date", {}, { timeout: 2500 })).toBeInTheDocument();
+    expect(screen.getByText(/Files unchanged:/)).toHaveTextContent("1");
+    expect(screen.queryByText("100%")).not.toBeInTheDocument();
+    expect(screen.getByText("Check source changes").closest("li")).toHaveClass("complete");
+    for (const label of ["Parse symbols", "Build chunks", "Provider preflight", "Generate embeddings", "Verify vectors", "Activate index"]) {
+      expect(screen.getByText(label).closest("li")).toHaveClass("pending");
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1100));
+    expect(polls).toBe(1);
+  });
+
+  it("shows only observed stages for a delete-only update", async () => {
+    installApi((path, init) => {
+      if (path === "/projects/index-jobs" && init?.method === "POST") return response({
+        id: "job-delete", state: "scanning", operation: "reindexed", project_id: 1,
+        observed_stages: ["scanning"], counters: {}, started_at: "2026-01-01", updated_at: "2026-01-01",
+        completed_at: null, elapsed_seconds: 0.1, previous_index_preserved: null, result: null, error: null,
+      }, 202);
+      if (path === "/projects/index-jobs/job-delete") return response({
+        id: "job-delete", state: "completed", operation: "reindexed", project_id: 1,
+        observed_stages: ["scanning", "verifying", "activating"], counters: { files_deleted: 1, vectors_deleted: 1 },
+        started_at: "2026-01-01", updated_at: "2026-01-01", completed_at: "2026-01-01", elapsed_seconds: 0.4,
+        previous_index_preserved: null,
+        result: { project_id: 1, operation: "reindexed", strategy: "incremental", no_changes: false, complete: true, structural_stats: {}, vector_stats: {}, embedding: { provider: "ollama", model: "embed", dimensions: 768 } },
+        error: null,
+      });
+      return undefined;
+    });
+    render(<App />);
+    await ready();
+    fireEvent.click(screen.getByRole("button", { name: "Repository" }));
+    fireEvent.click(screen.getByRole("button", { name: "Index / Re-index" }));
+
+    expect(await screen.findByText("Incremental update complete", {}, { timeout: 2500 })).toBeInTheDocument();
+    for (const label of ["Check source changes", "Verify vectors", "Activate index"]) {
+      expect(screen.getByText(label).closest("li")).toHaveClass("complete");
+    }
+    for (const label of ["Parse symbols", "Build chunks", "Provider preflight", "Generate embeddings"]) {
+      expect(screen.getByText(label).closest("li")).toHaveClass("pending");
+    }
   });
 
   it("resumes an active indexing job after refresh", async () => {
@@ -330,12 +405,14 @@ describe("CodeCompass SPA", () => {
         activeReturned = true;
         return response({
           id: "job-resume", state: "embedding", operation: "reindexed", project_id: 1,
+          observed_stages: ["scanning", "parsing", "chunking", "preflight", "embedding"],
           counters: { chunks_generated: 8, embeddings_completed: 5 }, started_at: "2026-01-01", updated_at: "2026-01-01",
           completed_at: null, elapsed_seconds: 4.2, previous_index_preserved: null, result: null, error: null,
         });
       }
       if (path === "/projects/index-jobs/job-resume") return response({
         id: "job-resume", state: "failed", operation: "reindexed", project_id: 1,
+        observed_stages: ["scanning", "parsing", "chunking", "preflight", "embedding"],
         counters: { chunks_generated: 8, embeddings_completed: 5 }, started_at: "2026-01-01", updated_at: "2026-01-01",
         completed_at: "2026-01-01", elapsed_seconds: 5.1, previous_index_preserved: true, result: null,
         error: { code: "embedding_provider_unavailable", message: "Embedding provider is unavailable.", stage: "embedding", error_type: "connection" },

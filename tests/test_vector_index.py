@@ -54,6 +54,18 @@ def test_managed_first_initialization_creates_bound_pointer(tmp_path: Path) -> N
     assert managed_index(tmp_path)._active_name == first._active_name
 
 
+def test_export_vectors_returns_exact_embeddings_and_safe_metadata(tmp_path: Path) -> None:
+    vector_index = managed_index(tmp_path)
+    vector_index.upsert((record("chunk-a", [1.0, 2.0]), record("chunk-b", [3.0, 4.0], "hash-b")))
+
+    exported = vector_index.get_vectors(("chunk-b", "chunk-a"))
+
+    assert [item.chunk_id for item in exported] == ["chunk-a", "chunk-b"]
+    assert exported[0].vector == [1.0, 2.0]
+    assert exported[1].metadata["content_hash"] == "hash-b"
+    assert set(exported[0].metadata) == {"chunk_id", "project_id", "content_hash", "embedding_model", "dimensions"}
+
+
 def test_missing_managed_pointer_fails_closed(tmp_path: Path) -> None:
     first = managed_index(tmp_path)
     names = {collection.name for collection in first._client.list_collections()}

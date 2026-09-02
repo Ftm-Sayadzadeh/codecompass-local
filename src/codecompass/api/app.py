@@ -123,13 +123,17 @@ def create_app(settings: APISettings | None = None) -> FastAPI:
         files = runtime.store.list_source_files(project_id)
         symbols = tuple(symbol for source in files for symbol in runtime.store.list_symbols(source.id))
         chunks = runtime.store.list_chunks(project_id)
-        vectors = runtime.collection(project_id).list_ids(project_id)
+        generation_matches = runtime.vector_generation_matches(item)
+        vectors = runtime.collection(project_id).list_ids() if generation_matches else ()
         return ProjectResponse(
             **_project(item).model_dump(exclude={"files", "symbols", "chunks", "vector_complete"}),
             files=len(files),
             symbols=len(symbols),
             chunks=len(chunks),
-            vector_complete=set(vectors) == {chunk.chunk_id for chunk in chunks} and bool(chunks),
+            vector_complete=(
+                generation_matches
+                and set(vectors) == {chunk.chunk_id for chunk in chunks}
+            ),
         )
 
     @app.post("/projects/index", response_model=IndexProjectResponse)
@@ -283,6 +287,7 @@ def _index_job(job: IndexingJobRecord) -> IndexJobResponse:
         operation=job.operation,
         project_id=job.project_id,
         counters=job.counters,
+        observed_stages=list(job.observed_stages),
         started_at=job.started_at,
         updated_at=job.updated_at,
         completed_at=job.completed_at,

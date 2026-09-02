@@ -14,7 +14,7 @@ from codecompass.parser import ParseResult, Symbol
 from codecompass.scanner import SourceFile
 from codecompass.storage.models import IndexingJobRecord, ProjectRecord, SourceFileRecord, StorageError, StoredChunk, SymbolRecord
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 
 class SQLiteMetadataStore:
@@ -30,6 +30,7 @@ class SQLiteMetadataStore:
             with self._connect() as connection:
                 connection.executescript(
                     """
+                    BEGIN IMMEDIATE;
                     PRAGMA foreign_keys = ON;
 
                     CREATE TABLE IF NOT EXISTS projects (
@@ -37,7 +38,9 @@ class SQLiteMetadataStore:
                         name TEXT NOT NULL,
                         root_path TEXT NOT NULL UNIQUE,
                         created_at TEXT NOT NULL,
-                        updated_at TEXT NOT NULL
+                        updated_at TEXT NOT NULL,
+                        index_schema_version INTEGER,
+                        vector_generation TEXT
                     );
 
                     CREATE TABLE IF NOT EXISTS source_files (
@@ -91,6 +94,7 @@ class SQLiteMetadataStore:
                         operation TEXT NOT NULL,
                         project_id INTEGER REFERENCES projects(id) ON DELETE SET NULL,
                         counters_json TEXT NOT NULL,
+                        stages_json TEXT NOT NULL DEFAULT '[]',
                         result_json TEXT,
                         error_json TEXT,
                         previous_index_preserved INTEGER,
@@ -106,6 +110,20 @@ class SQLiteMetadataStore:
                     CREATE INDEX IF NOT EXISTS idx_indexing_jobs_state ON indexing_jobs(state, updated_at);
                     """
                 )
+                project_columns = {
+                    str(row["name"])
+                    for row in connection.execute("PRAGMA table_info(projects)").fetchall()
+                }
+                if "index_schema_version" not in project_columns:
+                    connection.execute("ALTER TABLE projects ADD COLUMN index_schema_version INTEGER")
+                if "vector_generation" not in project_columns:
+                    connection.execute("ALTER TABLE projects ADD COLUMN vector_generation TEXT")
+                job_columns = {
+                    str(row["name"])
+                    for row in connection.execute("PRAGMA table_info(indexing_jobs)").fetchall()
+                }
+                if "stages_json" not in job_columns:
+                    connection.execute("ALTER TABLE indexing_jobs ADD COLUMN stages_json TEXT NOT NULL DEFAULT '[]'")
                 connection.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
         except sqlite3.Error as error:
             raise StorageError(f"Failed to initialize SQLite metadata store: {error}") from error
@@ -141,8 +159,11 @@ class SQLiteMetadataStore:
         files: Iterable[SourceFile],
         parse_results: Iterable[ParseResult],
         chunks: Iterable[Chunk],
-        before_commit: Callable[[int], None] | None = None,
+        before_commit: Callable[[int], str | None] | None = None,
         on_rollback: Callable[[], None] | None = None,
+        *,
+        index_schema_version: int | None = None,
+        vector_generation: str | None = None,
     ) -> ProjectRecord:
         """Atomically replace one project's structural metadata."""
         connection = self._connect()
@@ -178,8 +199,21 @@ class SQLiteMetadataStore:
             self._replace_chunks(connection, project_id, chunks)
             if before_commit is not None:
                 activation_started = True
-                before_commit(project_id)
+                activated_generation = before_commit(project_id)
+                if activated_generation is not None:
+                    vector_generation = activated_generation
+            connection.execute(
+                """
+                UPDATE projects
+                SET index_schema_version = ?, vector_generation = ?
+                WHERE id = ?
+                """,
+                (index_schema_version, vector_generation, project_id),
+            )
             connection.commit()
+            row = connection.execute("SELECT * FROM projects WHERE id = ?", (project_id,)).fetchone()
+            if row is None:
+                raise StorageError("Failed to resolve persisted project")
             return self._project(row)
         except Exception as error:
             connection.rollback()
@@ -190,6 +224,115 @@ class SQLiteMetadataStore:
                     pass
             if isinstance(error, sqlite3.Error):
                 raise StorageError(f"Failed to replace project index: {error}") from error
+            raise
+        finally:
+            connection.close()
+
+    def apply_incremental_project_index(
+        self,
+        project_id: int,
+        name: str,
+        changed_files: Iterable[SourceFile],
+        deleted_paths: Iterable[str],
+        parse_results: Iterable[ParseResult],
+        chunks: Iterable[Chunk],
+        *,
+        index_schema_version: int,
+        vector_generation: str,
+        expected_chunk_ids: Iterable[str],
+        before_commit: Callable[[int], None] | None = None,
+        on_rollback: Callable[[], None] | None = None,
+    ) -> ProjectRecord:
+        """Atomically apply one prepared file-level metadata delta."""
+        changed = tuple(sorted(changed_files, key=lambda item: item.relative_path))
+        deleted = tuple(sorted(set(deleted_paths)))
+        parsed = tuple(parse_results)
+        prepared_chunks = tuple(chunks)
+        expected = tuple(sorted(expected_chunk_ids))
+        connection = self._connect()
+        activation_started = False
+        try:
+            connection.execute("BEGIN IMMEDIATE")
+            self._require_project(connection, project_id)
+            for relative_path in deleted:
+                connection.execute(
+                    "DELETE FROM source_files WHERE project_id = ? AND relative_path = ?",
+                    (project_id, relative_path),
+                )
+            for source_file in changed:
+                existing = connection.execute(
+                    "SELECT id FROM source_files WHERE project_id = ? AND relative_path = ?",
+                    (project_id, source_file.relative_path),
+                ).fetchone()
+                if existing is None:
+                    connection.execute(
+                        """
+                        INSERT INTO source_files
+                            (project_id, relative_path, size_bytes, mtime_ns, sha256, status, last_error)
+                        VALUES (?, ?, ?, ?, ?, 'ok', NULL)
+                        """,
+                        (
+                            project_id,
+                            source_file.relative_path,
+                            source_file.size_bytes,
+                            source_file.mtime_ns,
+                            source_file.sha256,
+                        ),
+                    )
+                else:
+                    file_id = int(existing["id"])
+                    connection.execute("DELETE FROM chunks WHERE file_id = ?", (file_id,))
+                    connection.execute("DELETE FROM symbols WHERE file_id = ?", (file_id,))
+                    connection.execute(
+                        """
+                        UPDATE source_files
+                        SET size_bytes = ?, mtime_ns = ?, sha256 = ?, status = 'ok', last_error = NULL
+                        WHERE id = ?
+                        """,
+                        (source_file.size_bytes, source_file.mtime_ns, source_file.sha256, file_id),
+                    )
+            file_ids = self._file_ids(connection, project_id)
+            for parse_result in parsed:
+                file_id = file_ids.get(parse_result.source_file.relative_path)
+                if file_id is None:
+                    raise StorageError(f"Missing changed source file: {parse_result.source_file.relative_path}")
+                self._replace_symbols(connection, file_id, parse_result.symbols)
+            self._insert_chunks(connection, project_id, prepared_chunks)
+            actual = tuple(
+                row["chunk_id"]
+                for row in connection.execute(
+                    "SELECT chunk_id FROM chunks WHERE project_id = ? ORDER BY chunk_id",
+                    (project_id,),
+                ).fetchall()
+            )
+            if actual != expected:
+                raise StorageError("Incremental metadata chunk ids do not match candidate ids")
+            now = self._now()
+            connection.execute(
+                """
+                UPDATE projects
+                SET name = ?, updated_at = ?, index_schema_version = ?, vector_generation = ?
+                WHERE id = ?
+                """,
+                (name, now, index_schema_version, vector_generation, project_id),
+            )
+            if before_commit is not None:
+                activation_started = True
+                before_commit(project_id)
+            connection.commit()
+            row = connection.execute("SELECT * FROM projects WHERE id = ?", (project_id,)).fetchone()
+            if row is None:
+                raise StorageError("Failed to resolve incrementally indexed project")
+            return self._project(row)
+        except Exception as error:
+            connection.rollback()
+            if activation_started and on_rollback is not None:
+                try:
+                    on_rollback()
+                except Exception:
+                    pass
+            if isinstance(error, sqlite3.Error):
+                raise StorageError(f"Failed to apply incremental project index: {error}") from error
             raise
         finally:
             connection.close()
@@ -224,6 +367,24 @@ class SQLiteMetadataStore:
             raise StorageError(f"Failed to get project: {error}") from error
         return self._project(row) if row else None
 
+    def delete_empty_project(self, project_id: int) -> bool:
+        """Delete an uncommitted project identity that has no canonical index."""
+        try:
+            with self._connect() as connection:
+                cursor = connection.execute(
+                    """
+                    DELETE FROM projects
+                    WHERE id = ?
+                      AND index_schema_version IS NULL
+                      AND vector_generation IS NULL
+                      AND NOT EXISTS (SELECT 1 FROM source_files WHERE project_id = projects.id)
+                    """,
+                    (project_id,),
+                )
+                return cursor.rowcount == 1
+        except sqlite3.Error as error:
+            raise StorageError(f"Failed to remove empty project: {error}") from error
+
     def create_indexing_job(self, job_id: str, operation: str, project_id: int | None) -> IndexingJobRecord:
         """Create one running job without persisting its repository path."""
         now = self._now()
@@ -232,8 +393,8 @@ class SQLiteMetadataStore:
                 connection.execute(
                     """
                     INSERT INTO indexing_jobs
-                        (id, state, operation, project_id, counters_json, created_at, started_at, updated_at)
-                    VALUES (?, 'preflight', ?, ?, '{}', ?, ?, ?)
+                        (id, state, operation, project_id, counters_json, stages_json, created_at, started_at, updated_at)
+                    VALUES (?, 'scanning', ?, ?, '{}', '[\"scanning\"]', ?, ?, ?)
                     """,
                     (job_id, operation, project_id, now, now, now),
                 )
@@ -260,12 +421,22 @@ class SQLiteMetadataStore:
         completed_at = now if state in {"completed", "failed"} else None
         try:
             with self._connect() as connection:
+                existing = connection.execute(
+                    "SELECT stages_json FROM indexing_jobs WHERE id = ?",
+                    (job_id,),
+                ).fetchone()
+                if existing is None:
+                    raise StorageError("Unknown indexing job")
+                observed_stages = list(self._json_strings(existing["stages_json"]))
+                if state not in {"completed", "failed"} and state not in observed_stages:
+                    observed_stages.append(state)
                 cursor = connection.execute(
                     """
                     UPDATE indexing_jobs SET
                         state = ?,
                         project_id = COALESCE(?, project_id),
                         counters_json = ?,
+                        stages_json = ?,
                         result_json = ?,
                         error_json = ?,
                         previous_index_preserved = ?,
@@ -277,6 +448,7 @@ class SQLiteMetadataStore:
                         state,
                         project_id,
                         json.dumps(counters, sort_keys=True, separators=(",", ":")),
+                        json.dumps(observed_stages, separators=(",", ":")),
                         json.dumps(result, sort_keys=True, separators=(",", ":")) if result is not None else None,
                         json.dumps(error, sort_keys=True, separators=(",", ":")) if error is not None else None,
                         None if previous_index_preserved is None else int(previous_index_preserved),
@@ -542,8 +714,17 @@ class SQLiteMetadataStore:
         chunks: Iterable[Chunk],
     ) -> None:
         self._require_project(connection, project_id)
-        file_ids = self._file_ids(connection, project_id)
         connection.execute("DELETE FROM chunks WHERE project_id = ?", (project_id,))
+        self._insert_chunks(connection, project_id, chunks)
+
+    def _insert_chunks(
+        self,
+        connection: sqlite3.Connection,
+        project_id: int,
+        chunks: Iterable[Chunk],
+    ) -> None:
+        self._require_project(connection, project_id)
+        file_ids = self._file_ids(connection, project_id)
         for chunk in sorted(chunks, key=lambda item: (item.source_file.relative_path, item.start_line, item.chunk_type)):
             file_id = file_ids.get(chunk.source_file.relative_path)
             if file_id is None:
@@ -616,6 +797,8 @@ class SQLiteMetadataStore:
             root_path=Path(row["root_path"]),
             created_at=row["created_at"],
             updated_at=row["updated_at"],
+            index_schema_version=row["index_schema_version"],
+            vector_generation=row["vector_generation"],
         )
 
     def _source_file(self, row: sqlite3.Row) -> SourceFileRecord:
@@ -672,6 +855,7 @@ class SQLiteMetadataStore:
             operation=row["operation"],
             project_id=row["project_id"],
             counters=self._json_object(row["counters_json"]),
+            observed_stages=self._json_strings(row["stages_json"]),
             result=self._json_object(row["result_json"]) if row["result_json"] else None,
             error=self._json_object(row["error_json"]) if row["error_json"] else None,
             previous_index_preserved=(
@@ -690,6 +874,12 @@ class SQLiteMetadataStore:
         if not isinstance(decoded, dict):
             raise StorageError("Stored indexing job data is invalid")
         return decoded
+
+    def _json_strings(self, value: str) -> tuple[str, ...]:
+        decoded = json.loads(value)
+        if not isinstance(decoded, list) or not all(isinstance(item, str) for item in decoded):
+            raise StorageError("Stored indexing job stage history is invalid")
+        return tuple(decoded)
 
     def _json(self, values: tuple[str, ...]) -> str:
         return json.dumps(list(values), ensure_ascii=False, sort_keys=True, separators=(",", ":"))

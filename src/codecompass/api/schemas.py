@@ -154,6 +154,8 @@ class AskResponse(StrictModel):
 class IndexProjectResponse(StrictModel):
     project_id: int
     operation: Literal["indexed", "reindexed"]
+    strategy: Literal["full", "incremental"] | None = None
+    no_changes: bool | None = None
     complete: bool
     structural_stats: dict[str, Any]
     vector_stats: dict[str, Any]
@@ -186,6 +188,7 @@ class IndexJobResponse(StrictModel):
     operation: Literal["indexed", "reindexed"]
     project_id: int | None
     counters: dict[str, int]
+    observed_stages: list[IndexJobState] = Field(default_factory=list)
     started_at: str
     updated_at: str
     completed_at: str | None
