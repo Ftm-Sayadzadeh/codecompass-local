@@ -1,6 +1,6 @@
 """Models for retrieval evaluation."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Literal, Mapping
 
@@ -55,6 +55,13 @@ class RetrievalMetrics:
     top_1: float
     top_3: float
     mrr: float
+    top_5: float = 0.0
+    top_20: float = 0.0
+    recall_1: float = 0.0
+    recall_3: float = 0.0
+    recall_5: float = 0.0
+    recall_20: float = 0.0
+    target_rank_distribution: Mapping[str, int] = field(default_factory=lambda: MappingProxyType({}))
 
 
 @dataclass(frozen=True, slots=True)

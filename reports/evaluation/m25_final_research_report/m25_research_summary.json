@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "milestone": "M25",
+  "title": "Controlled Retrieval Improvement Study",
+  "status": "complete_mixed_result_not_promoted",
+  "research_question": "Do deterministic identifier-aware document representations and deterministic query normalization improve bilingual source-code retrieval while holding the remaining system fixed?",
+  "treatments": {
+    "M25-00": "baseline",
+    "M25-10": "identifier-aware document representation only",
+    "M25-01": "deterministic query normalization only",
+    "M25-11": "combined representation and normalization"
+  },
+  "controlled_benchmark": {
+    "repositories": ["Hospital-System", "CS-Bookstore", "CodeCompass"],
+    "cases": 18,
+    "languages": ["English", "Persian"],
+    "retrieval_methods": ["lexical", "semantic", "hybrid"],
+    "records_per_cell": 54,
+    "search_limit": 10,
+    "embedding_provider": "Ollama",
+    "embedding_model": "nomic-embed-text-local:latest",
+    "reranking": false
+  },
+  "baseline_parity": {
+    "status": "pass",
+    "provider_calls": 0,
+    "indexing_calls": 0,
+    "historical_top10_parity": true
+  },
+  "information_gain": {
+    "unique_chunks": 214,
+    "chunks_with_added_identifier_terms": 214,
+    "share_with_added_identifier_terms": 1.0,
+    "average_identifier_terms_added": 4.6495327103,
+    "average_identifier_term_overlap": 0.4586277884,
+    "causal_retrieval_improvement_measured_by_this_stage": false
+  },
+  "controlled_results": {
+    "M25-10": {
+      "semantic": {"baseline_hit_1": 8, "treatment_hit_1": 7, "baseline_hit_10": 8, "treatment_hit_10": 11, "baseline_mrr_10": 0.4444444444, "treatment_mrr_10": 0.4377204586},
+      "hybrid": {"baseline_hit_1": 8, "treatment_hit_1": 9, "baseline_hit_5": 14, "treatment_hit_5": 13, "baseline_hit_10": 14, "treatment_hit_10": 14, "baseline_mrr_10": 0.5509259259, "treatment_mrr_10": 0.5944444444}
+    },
+    "M25-01": {
+      "semantic": {"baseline_hit_1": 8, "treatment_hit_1": 7, "baseline_hit_10": 8, "treatment_hit_10": 11, "baseline_mrr_10": 0.4444444444, "treatment_mrr_10": 0.4486772487},
+      "hybrid": {"baseline_hit_1": 8, "treatment_hit_1": 9, "baseline_hit_5": 14, "treatment_hit_5": 12, "baseline_hit_10": 14, "treatment_hit_10": 15, "baseline_mrr_10": 0.5509259259, "treatment_mrr_10": 0.5746031746}
+    },
+    "M25-11": {
+      "lexical": {"baseline_hit_1": 12, "treatment_hit_1": 12, "baseline_hit_5": 13, "treatment_hit_5": 13, "baseline_hit_10": 13, "treatment_hit_10": 13, "baseline_mrr_10": 0.6944444444, "treatment_mrr_10": 0.6944444444},
+      "semantic": {"baseline_hit_1": 8, "treatment_hit_1": 7, "baseline_hit_3": 8, "treatment_hit_3": 11, "baseline_hit_5": 8, "treatment_hit_5": 13, "baseline_hit_10": 8, "treatment_hit_10": 14, "baseline_mrr_10": 0.4444444444, "treatment_mrr_10": 0.5311728395},
+      "hybrid": {"baseline_hit_1": 8, "treatment_hit_1": 11, "baseline_hit_3": 11, "treatment_hit_3": 12, "baseline_hit_5": 14, "treatment_hit_5": 14, "baseline_hit_10": 14, "treatment_hit_10": 16, "baseline_mrr_10": 0.5509259259, "treatment_mrr_10": 0.6810846561}
+    }
+  },
+  "case_transition_review": {
+    "improvement": 4,
+    "stable": 10,
+    "true_regression": 1,
+    "equivalent_relevant_result": 1,
+    "ground_truth_ambiguity": 2,
+    "initial_gate_decision": "promote_candidate_on_18_cases"
+  },
+  "independent_regression": {
+    "questions": 60,
+    "languages": ["English", "Persian"],
+    "retrieval_records": 180,
+    "errors": 0,
+    "repositories": ["Flask", "itsdangerous", "MarkupSafe"],
+    "lexical": {"baseline_top_1": 0.433333, "treatment_top_1": 0.433333, "baseline_top_3": 0.716667, "treatment_top_3": 0.716667, "baseline_mrr_10": 0.5808796, "treatment_mrr_10": 0.5808796, "baseline_evidence_recall_10": 0.816667, "treatment_evidence_recall_10": 0.816667},
+    "semantic": {"baseline_top_1": 0.35, "treatment_top_1": 0.433333, "baseline_top_3": 0.65, "treatment_top_3": 0.65, "baseline_mrr_10": 0.506131, "treatment_mrr_10": 0.555595, "baseline_evidence_recall_10": 0.716667, "treatment_evidence_recall_10": 0.741667},
+    "hybrid": {"baseline_top_1": 0.633333, "treatment_top_1": 0.6, "baseline_top_3": 0.783333, "treatment_top_3": 0.783333, "baseline_mrr_10": 0.732222, "treatment_mrr_10": 0.714167, "baseline_evidence_recall_10": 0.866667, "treatment_evidence_recall_10": 0.875},
+    "decision": "hold_production_promotion"
+  },
+  "conclusion": {
+    "finding": "Identifier-aware representation and normalization improve semantic candidate discovery, but the combined treatment is not regression-safe as the default hybrid production configuration.",
+    "production_status": "M24 retrieval behavior retained",
+    "scientific_status": "valid mixed ablation result",
+    "next_research_need": "Evaluate ranking or fusion on a separate development set before any future production proposal."
+  },
+  "source_artifacts_sha256": {
+    "baseline_parity.json": "e2a2c62ab3df46e9499ab6c2978a544c3c95ba9529427db81fa2735c1b39d792",
+    "identifier_information_gain.json": "96e7bca83826f78090999b3765e1b314faaaac47544cb49026eab6b97cb32713",
+    "m25_10_results.json": "e39571a01e4272d973a7ffe6d9461ab1c02dd6945b844c0d2826de79bee4039b",
+    "m25_01_results.json": "ef48ec268b8c1b2fae64922acd8743eeedbff4601a1b10420df5effaf408a1ad",
+    "m25_factorial_results.json": "bd16e33e1402620725d612229d02574a90c8049982c4a8b4e9178db215c7d559",
+    "m25_11_results.json": "06686166f7774613c97f5ff209d98f0c7c3aea64fbf725f3333ad604ca006891",
+    "m25_b_transition_analysis.json": "7ff408924aa8156fa7729e3815e3008355fe26c5bbac3017d2e261261b366623",
+    "production_regression_results.json": "2060d9a56ce4f14cd16fe243bf5adc1cd2e156bd4e0967efb4b18cb280b7bba2"
+  }
+}

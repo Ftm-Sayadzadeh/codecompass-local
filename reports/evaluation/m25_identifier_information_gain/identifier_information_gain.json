@@ -1,0 +1,31 @@
+{
+  "analysis": "M25-A identifier information gain inspection",
+  "status": "complete",
+  "purpose": "Read-only inspection of deterministic structural identifier terms against frozen M24 chunk text.",
+  "input": {
+    "artifact": "controlled_benchmark_v1_public/frozen_retrieval_evidence.json",
+    "artifact_sha256_at_checkout": "513651402bc7a28220a430caf7f7718cfeec44d26533c8fd533cefd2a372daba",
+    "retrieval_executions": 54,
+    "unique_chunks": 214
+  },
+  "method": {
+    "structural_fields": ["qualified_symbol", "symbol_name", "file_path"],
+    "term_extractor": "src/codecompass/retrieval/text.py::identifier_terms",
+    "comparison": "deterministic identifier terms absent from identifier terms extracted from chunk_text",
+    "llm_calls": 0,
+    "indexing_calls": 0,
+    "retrieval_calls": 0
+  },
+  "results": {
+    "chunks_with_added_identifier_terms": 214,
+    "share_with_added_identifier_terms": 1.0,
+    "average_identifier_terms_added": 4.6495327103,
+    "average_identifier_term_overlap": 0.4586277884,
+    "total_structural_identifier_terms": 1861
+  },
+  "interpretation": {
+    "conclusion": "Structural fields contain measurable information not present in the raw chunk text under this comparison.",
+    "causal_retrieval_improvement_measured": false,
+    "next_decision": "Proceed to a controlled representation-only ablation only after metric and baseline parity remain frozen."
+  }
+}

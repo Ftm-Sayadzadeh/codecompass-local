@@ -9,6 +9,7 @@ This file tracks the approved implementation plan. Codex should update milestone
 - `IN PROGRESS`
 - `BLOCKED`
 - `DONE`
+- `DONE_WITH_LIMITATIONS`
 - `DEFERRED`
 
 ## Milestones
@@ -38,8 +39,8 @@ This file tracks the approved implementation plan. Codex should update milestone
 | M21 | Stable MVP release | DONE | M17–M20 |
 | M22 | Post-release frontend UX hardening | DONE | M21 |
 | M23 | Indexing UX and reliability | DONE | M22 |
-| M24 | Incremental re-index | NOT STARTED | M23 |
-| M25 | Ask and Search improvements | NOT STARTED | M24 |
+| M24 | Incremental re-index | DONE | M23 |
+| M25 | Ask and Search improvements | DONE_WITH_LIMITATIONS | M24 |
 | M26 | Function Documentation improvements | NOT STARTED | M25 |
 | M27 | Explorer and Monaco improvements | NOT STARTED | M26 |
 | M28 | Provider UX and Ollama model discovery | NOT STARTED | M27 |
