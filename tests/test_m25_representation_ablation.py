@@ -1,7 +1,7 @@
 from codecompass.chunker import Chunk
 import pytest
 
-from codecompass.evaluation.m25_representation_ablation import _manifest, _representation_v2
+from codecompass.evaluation.m25_representation_ablation import _manifest, _representation_v2, _transition
 from codecompass.storage import StoredChunk
 from codecompass.scanner import SourceFile
 from codecompass.parser import Symbol
@@ -41,3 +41,9 @@ def test_manifest_requires_equal_canonical_indexes_and_different_provider_inputs
 
     with pytest.raises(ValueError, match="canonical identity mismatch"):
         _manifest((snapshot,), [{**base, "representation_version": 1, "provider_input_sha256": "v1"}, {**base, "representation_version": 2, "provider_input_sha256": "v2", "chunk_ids_sha256": "changed"}])
+
+
+def test_hit_at_five_transition_labels_recovery_and_regression() -> None:
+    assert _transition(None, 4) == "recovered_at_5"
+    assert _transition(5, 6) == "regressed_at_5"
+    assert _transition(4, 2) == "rank_improved"

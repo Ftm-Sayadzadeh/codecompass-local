@@ -234,24 +234,55 @@ def _manifest(snapshots: Any, indexes: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def _comparison(records: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
-    comparison: dict[str, Any] = {"records_per_version": {key: len(value) for key, value in records.items()}, "methods": {}}
+    comparison: dict[str, Any] = {
+        "records_per_version": {key: len(value) for key, value in records.items()},
+        "methods": {}, "by_language": {}, "by_repository": {}, "hit_at_5_transitions": {},
+    }
     for method in ("lexical", "semantic", "hybrid"):
-        comparison["methods"][method] = {}
-        for version in ("v1", "v2"):
-            ranks = [row["target_rank"] for row in records[version] if row["method"] == method]
-            comparison["methods"][method][version] = {
-                "hit_counts": {str(k): sum(rank is not None and rank <= k for rank in ranks) for k in (1, 3, 5, 10)},
-                "mrr_at_10": sum(1 / rank if rank and rank <= 10 else 0 for rank in ranks) / len(ranks),
+        comparison["methods"][method] = {version: _summarize([row["target_rank"] for row in records[version] if row["method"] == method]) for version in ("v1", "v2")}
+        v1 = {row["case_id"]: row["target_rank"] for row in records["v1"] if row["method"] == method}
+        v2 = {row["case_id"]: row["target_rank"] for row in records["v2"] if row["method"] == method}
+        comparison["hit_at_5_transitions"][method] = [
+            {"case_id": case_id, "v1_rank": v1[case_id], "v2_rank": v2[case_id], "outcome": _transition(v1[case_id], v2[case_id])}
+            for case_id in sorted(v1)
+        ]
+    for field, target in (("language", "by_language"), ("repository_id", "by_repository")):
+        values = sorted({row[field] for row in records["v1"]})
+        comparison[target] = {
+            value: {
+                method: {version: _summarize([row["target_rank"] for row in records[version] if row[field] == value and row["method"] == method]) for version in ("v1", "v2")}
+                for method in ("lexical", "semantic", "hybrid")
             }
+            for value in values
+        }
     return comparison
 
 
+def _summarize(ranks: list[int | None]) -> dict[str, Any]:
+    return {
+        "cases": len(ranks),
+        "hit_counts": {str(k): sum(rank is not None and rank <= k for rank in ranks) for k in (1, 3, 5, 10)},
+        "mrr_at_10": sum(1 / rank if rank and rank <= 10 else 0 for rank in ranks) / len(ranks),
+    }
+
+
+def _transition(v1: int | None, v2: int | None) -> str:
+    old_hit, new_hit = v1 is not None and v1 <= 5, v2 is not None and v2 <= 5
+    if not old_hit and new_hit:
+        return "recovered_at_5"
+    if old_hit and not new_hit:
+        return "regressed_at_5"
+    if v1 == v2:
+        return "unchanged"
+    return "rank_improved" if (v2 or 11) < (v1 or 11) else "rank_regressed"
+
+
 def _report(payload: dict[str, Any]) -> str:
-    lines = ["# M25-10 Representation-Only Ablation", "", "Status: **complete**", "", "| Method | v1 Hit@1 | v2 Hit@1 | v1 Hit@5 | v2 Hit@5 | v1 Hit@10 | v2 Hit@10 |", "|---|---:|---:|---:|---:|---:|---:|"]
+    lines = ["# M25-10 Representation-Only Ablation", "", "Status: **complete**", "", "## Global results", "", "| Method | v1 Hit@1 | v2 Hit@1 | v1 Hit@5 | v2 Hit@5 | v1 Hit@10 | v2 Hit@10 | v1 MRR@10 | v2 MRR@10 |", "|---|---:|---:|---:|---:|---:|---:|---:|---:|"]
     for method, data in payload["comparison"]["methods"].items():
         v1, v2 = data["v1"], data["v2"]
-        lines.append(f"| {method} | {v1['hit_counts']['1']}/18 | {v2['hit_counts']['1']}/18 | {v1['hit_counts']['5']}/18 | {v2['hit_counts']['5']}/18 | {v1['hit_counts']['10']}/18 | {v2['hit_counts']['10']}/18 |")
-    lines.extend(["", "- Exactly 18 query embeddings were frozen and reused across v1/v2.", "- Canonical SQLite text, source snapshots, chunk IDs, model, and retrieval settings were held fixed.", "- LLM calls: 0.", "- Results are descriptive; statistical significance is not claimed.", ""])
+        lines.append(f"| {method} | {v1['hit_counts']['1']}/18 | {v2['hit_counts']['1']}/18 | {v1['hit_counts']['5']}/18 | {v2['hit_counts']['5']}/18 | {v1['hit_counts']['10']}/18 | {v2['hit_counts']['10']}/18 | {v1['mrr_at_10']:.4f} | {v2['mrr_at_10']:.4f} |")
+    lines.extend(["", "## Decision", "", "Representation v2 produced mixed results. It improved semantic Hit@10 and hybrid MRR@10, but regressed semantic Hit@1 and hybrid Hit@5. It therefore does not satisfy the no-primary-metric-regression promotion criterion and should not replace v1 as-is.", "", "## Integrity", "", "- Exactly 18 query embeddings were frozen and reused across v1/v2.", "- Canonical SQLite text, source snapshots, chunk IDs, model, and retrieval settings were held fixed.", "- LLM calls: 0.", "- Results are descriptive; statistical significance is not claimed.", ""])
     return "\n".join(lines)
 
 
