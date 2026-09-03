@@ -233,24 +233,24 @@ def _manifest(snapshots: Any, indexes: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def _comparison(records: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
+def _comparison(records: dict[str, list[dict[str, Any]]], versions: tuple[str, str] = ("v1", "v2")) -> dict[str, Any]:
     comparison: dict[str, Any] = {
         "records_per_version": {key: len(value) for key, value in records.items()},
         "methods": {}, "by_language": {}, "by_repository": {}, "hit_at_5_transitions": {},
     }
     for method in ("lexical", "semantic", "hybrid"):
-        comparison["methods"][method] = {version: _summarize([row["target_rank"] for row in records[version] if row["method"] == method]) for version in ("v1", "v2")}
-        v1 = {row["case_id"]: row["target_rank"] for row in records["v1"] if row["method"] == method}
-        v2 = {row["case_id"]: row["target_rank"] for row in records["v2"] if row["method"] == method}
+        comparison["methods"][method] = {version: _summarize([row["target_rank"] for row in records[version] if row["method"] == method]) for version in versions}
+        old = {row["case_id"]: row["target_rank"] for row in records[versions[0]] if row["method"] == method}
+        new = {row["case_id"]: row["target_rank"] for row in records[versions[1]] if row["method"] == method}
         comparison["hit_at_5_transitions"][method] = [
-            {"case_id": case_id, "v1_rank": v1[case_id], "v2_rank": v2[case_id], "outcome": _transition(v1[case_id], v2[case_id])}
-            for case_id in sorted(v1)
+            {"case_id": case_id, f"{versions[0]}_rank": old[case_id], f"{versions[1]}_rank": new[case_id], "outcome": _transition(old[case_id], new[case_id])}
+            for case_id in sorted(old)
         ]
     for field, target in (("language", "by_language"), ("repository_id", "by_repository")):
-        values = sorted({row[field] for row in records["v1"]})
+        values = sorted({row[field] for row in records[versions[0]]})
         comparison[target] = {
             value: {
-                method: {version: _summarize([row["target_rank"] for row in records[version] if row[field] == value and row["method"] == method]) for version in ("v1", "v2")}
+                method: {version: _summarize([row["target_rank"] for row in records[version] if row[field] == value and row["method"] == method]) for version in versions}
                 for method in ("lexical", "semantic", "hybrid")
             }
             for value in values
