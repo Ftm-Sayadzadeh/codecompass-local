@@ -35,22 +35,7 @@ def run(*, output: Path = OUTPUT, runtime: Path = RUNTIME) -> dict[str, Any]:
         {**case, "original_query": case["query"], "query": normalize_retrieval_text(case["query"])}
         for case in _read_json(Path(__file__).resolve().parents[3] / "reports/evaluation/controlled_benchmark_v1_public/benchmark_cases.json")["search_cases"]
     ]
-    provider = _FrozenQueryProvider(_load_or_build_query_cache(effective_cases, runtime / "query_embeddings.json"))
-    normalized: list[dict[str, Any]] = []
-    for item in (row for row in baseline["indexes"] if row["representation_version"] == 1):
-        repo_id = item["repository_id"]
-        root = M10_RUNTIME / "index_v1" / repo_id
-        if _read_json(root / "identity.json") != item:
-            raise ValueError(f"M25-10 v1 index checkpoint changed: {repo_id}")
-        store = SQLiteMetadataStore(root / "metadata.sqlite")
-        vector = ChromaVectorIndex(root / "chroma", f"m25_{repo_id}_v1")
-        vector.initialize()
-        retrieval = RetrievalService(store, provider, vector)
-        for case in sorted((row for row in effective_cases if row["repository_id"] == repo_id), key=lambda row: row["id"]):
-            for record in _retrieve_case(retrieval, item["project_id"], case):
-                record["effective_query"] = record["query"]
-                record["query"] = case["original_query"]
-                normalized.append(record)
+    normalized = _normalized_records(baseline, effective_cases, 1, runtime / "query_embeddings.json")
     records = {"baseline": baseline["v1"]["records"], "normalized": normalized}
     payload = {
         "experiment": "M25-01", "status": "complete",
@@ -65,6 +50,26 @@ def run(*, output: Path = OUTPUT, runtime: Path = RUNTIME) -> dict[str, Any]:
     _write_json(output / "m25_01_results.json", payload)
     (output / "m25_01_report.md").write_text(_report(payload), encoding="utf-8")
     return payload
+
+
+def _normalized_records(baseline: dict[str, Any], cases: list[dict[str, Any]], version: int, cache_path: Path) -> list[dict[str, Any]]:
+    provider = _FrozenQueryProvider(_load_or_build_query_cache(cases, cache_path))
+    normalized: list[dict[str, Any]] = []
+    for item in (row for row in baseline["indexes"] if row["representation_version"] == version):
+        repo_id = item["repository_id"]
+        root = M10_RUNTIME / f"index_v{version}" / repo_id
+        if _read_json(root / "identity.json") != item:
+            raise ValueError(f"M25-10 v{version} index checkpoint changed: {repo_id}")
+        store = SQLiteMetadataStore(root / "metadata.sqlite")
+        vector = ChromaVectorIndex(root / "chroma", f"m25_{repo_id}_v{version}")
+        vector.initialize()
+        retrieval = RetrievalService(store, provider, vector)
+        for case in sorted((row for row in cases if row["repository_id"] == repo_id), key=lambda row: row["id"]):
+            for record in _retrieve_case(retrieval, item["project_id"], case):
+                record["effective_query"] = record["query"]
+                record["query"] = case["original_query"]
+                normalized.append(record)
+    return normalized
 
 
 def _report(payload: dict[str, Any]) -> str:

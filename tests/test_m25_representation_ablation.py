@@ -1,7 +1,7 @@
 from codecompass.chunker import Chunk
 import pytest
 
-from codecompass.evaluation.m25_representation_ablation import _manifest, _representation_v2, _transition
+from codecompass.evaluation.m25_representation_ablation import _comparison, _manifest, _representation_v2, _transition
 from codecompass.storage import StoredChunk
 from codecompass.scanner import SourceFile
 from codecompass.parser import Symbol
@@ -47,3 +47,13 @@ def test_hit_at_five_transition_labels_recovery_and_regression() -> None:
     assert _transition(None, 4) == "recovered_at_5"
     assert _transition(5, 6) == "regressed_at_5"
     assert _transition(4, 2) == "rank_improved"
+
+
+def test_comparison_accepts_factorial_cell_labels() -> None:
+    def records(rank: int) -> list[dict]:
+        return [{"case_id": "case", "repository_id": "repo", "language": "fa", "method": method, "target_rank": rank} for method in ("lexical", "semantic", "hybrid")]
+
+    result = _comparison({"baseline": records(6), "combined": records(2)}, ("baseline", "combined"))
+
+    assert result["methods"]["hybrid"]["combined"]["hit_counts"]["5"] == 1
+    assert result["hit_at_5_transitions"]["hybrid"][0]["outcome"] == "recovered_at_5"
