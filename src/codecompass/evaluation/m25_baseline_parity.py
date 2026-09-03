@@ -22,6 +22,13 @@ def portable_sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _matches_line_ending_variant(data: bytes, expected_hash: str) -> bool:
+    """Return whether LF/CRLF checkout normalization explains a hash."""
+    lf = data.replace(b"\r\n", b"\n")
+    variants = (lf, lf.replace(b"\n", b"\r\n"))
+    return any(hashlib.sha256(candidate).hexdigest() == expected_hash for candidate in variants)
+
+
 def run() -> dict[str, Any]:
     """Read frozen artifacts, validate identity, and write derived reports."""
     cases = _read("benchmark_cases.json")
@@ -98,7 +105,7 @@ def _validate_provenance(name: str, expected_hash: str, parsed: dict[str, Any]) 
         committed = subprocess.check_output(["git", "cat-file", "blob", f"HEAD:{relative_path.as_posix()}"], stderr=subprocess.STDOUT)
     except (OSError, subprocess.CalledProcessError) as error:
         raise ValueError(f"{name} hash mismatch and committed provenance is unavailable") from error
-    if json.loads(committed) != parsed or hashlib.sha256(committed).hexdigest() != expected_hash:
+    if json.loads(committed) != parsed or not _matches_line_ending_variant(committed, expected_hash):
         raise ValueError(f"{name} hash mismatch with non-equivalent committed content")
     return {
         "actual_sha256": actual_hash,
