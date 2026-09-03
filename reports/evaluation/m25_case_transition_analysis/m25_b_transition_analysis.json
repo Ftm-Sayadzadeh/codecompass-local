@@ -1,0 +1,148 @@
+{
+  "experiment": "M25-B",
+  "title": "Case Transition Analysis",
+  "status": "complete",
+  "scope": {
+    "retrieval_calls": 0,
+    "embedding_calls": 0,
+    "indexing_runs": 0,
+    "provider_calls": 0,
+    "production_code_changes": 0,
+    "benchmark_changes": 0,
+    "analysis_method": "read-only comparison of frozen M25-00 and M25-11 hybrid-search records"
+  },
+  "inputs": {
+    "benchmark_cases": {
+      "path": "reports/evaluation/controlled_benchmark_v1_public/benchmark_cases.json",
+      "sha256": "0f8feb04c7175f2b0068979cd31634fb05c174c2cb4db949070c1a4401a30d08"
+    },
+    "m25_00_source": {
+      "path": "reports/evaluation/m25_m11_combined/m25_11_results.json#baseline",
+      "container_sha256": "06686166f7774613c97f5ff209d98f0c7c3aea64fbf725f3333ad604ca006891"
+    },
+    "m25_11_source": {
+      "path": "reports/evaluation/m25_m11_combined/m25_11_results.json#combined",
+      "container_sha256": "06686166f7774613c97f5ff209d98f0c7c3aea64fbf725f3333ad604ca006891"
+    },
+    "representation_ablation_reference": {
+      "path": "reports/evaluation/m25_m10_representation_ablation/m25_10_results.json",
+      "sha256": "e39571a01e4272d973a7ffe6d9461ab1c02dd6945b844c0d2826de79bee4039b"
+    }
+  },
+  "metric_scope": "hybrid retrieval, target rank within the frozen top-10 result set",
+  "transition_definitions": {
+    "improvement": "target found in both runs and baseline_rank - combined_rank > 0",
+    "stable": "target ranks are equal, including absent in both runs",
+    "lower_rank": "target found in both runs and baseline_rank - combined_rank < 0",
+    "recovered_target": "target absent in M25-00 and present in M25-11",
+    "true_regression": "manual source/evidence review confirms that the lower target rank reduced answer quality",
+    "equivalent_relevant_result": "the expected target moved lower, but a newly ranked result supplies directly relevant implementation evidence",
+    "ground_truth_ambiguity": "the frozen expected target is defensible but not the most direct implementation location for the query"
+  },
+  "transitions": [
+    {"case_id":"CB-S-B-ARCH-EN","language":"EN","repository":"CS-Bookstore","baseline_rank":3,"combined_rank":1,"rank_delta":2,"baseline_found":true,"combined_found":true,"transition_type":"improvement","review_category":"improvement","failure_categories":["identifier_mismatch","low_rank"]},
+    {"case_id":"CB-S-B-ARCH-FA","language":"FA","repository":"CS-Bookstore","baseline_rank":3,"combined_rank":2,"rank_delta":1,"baseline_found":true,"combined_found":true,"transition_type":"improvement","review_category":"improvement","failure_categories":["bilingual_mismatch","low_rank"]},
+    {"case_id":"CB-S-B-CAP-EN","language":"EN","repository":"CS-Bookstore","baseline_rank":1,"combined_rank":1,"rank_delta":0,"baseline_found":true,"combined_found":true,"transition_type":"stable","review_category":"stable","failure_categories":[]},
+    {"case_id":"CB-S-B-CAP-FA","language":"FA","repository":"CS-Bookstore","baseline_rank":1,"combined_rank":1,"rank_delta":0,"baseline_found":true,"combined_found":true,"transition_type":"stable","review_category":"stable","failure_categories":[]},
+    {"case_id":"CB-S-B-IMPL-EN","language":"EN","repository":"CS-Bookstore","baseline_rank":1,"combined_rank":1,"rank_delta":0,"baseline_found":true,"combined_found":true,"transition_type":"stable","review_category":"stable","failure_categories":[]},
+    {"case_id":"CB-S-B-IMPL-FA","language":"FA","repository":"CS-Bookstore","baseline_rank":null,"combined_rank":null,"rank_delta":null,"baseline_found":false,"combined_found":false,"transition_type":"stable","review_category":"stable","failure_categories":["bilingual_mismatch","target_absent"]},
+    {"case_id":"CB-S-C-ARCH-EN","language":"EN","repository":"CodeCompass","baseline_rank":1,"combined_rank":1,"rank_delta":0,"baseline_found":true,"combined_found":true,"transition_type":"stable","review_category":"stable","failure_categories":[]},
+    {"case_id":"CB-S-C-ARCH-FA","language":"FA","repository":"CodeCompass","baseline_rank":4,"combined_rank":1,"rank_delta":3,"baseline_found":true,"combined_found":true,"transition_type":"improvement","review_category":"improvement","failure_categories":["identifier_mismatch","bilingual_mismatch","low_rank"]},
+    {"case_id":"CB-S-C-CAP-EN","language":"EN","repository":"CodeCompass","baseline_rank":1,"combined_rank":1,"rank_delta":0,"baseline_found":true,"combined_found":true,"transition_type":"stable","review_category":"stable","failure_categories":[]},
+    {"case_id":"CB-S-C-CAP-FA","language":"FA","repository":"CodeCompass","baseline_rank":1,"combined_rank":1,"rank_delta":0,"baseline_found":true,"combined_found":true,"transition_type":"stable","review_category":"stable","failure_categories":[]},
+    {"case_id":"CB-S-C-IMPL-EN","language":"EN","repository":"CodeCompass","baseline_rank":null,"combined_rank":5,"rank_delta":null,"baseline_found":false,"combined_found":true,"transition_type":"recovered_target","review_category":"ground_truth_ambiguity","failure_categories":["target_absent"]},
+    {"case_id":"CB-S-C-IMPL-FA","language":"FA","repository":"CodeCompass","baseline_rank":null,"combined_rank":4,"rank_delta":null,"baseline_found":false,"combined_found":true,"transition_type":"recovered_target","review_category":"ground_truth_ambiguity","failure_categories":["bilingual_mismatch","target_absent"]},
+    {"case_id":"CB-S-H-ARCH-EN","language":"EN","repository":"Hospital-System","baseline_rank":2,"combined_rank":1,"rank_delta":1,"baseline_found":true,"combined_found":true,"transition_type":"improvement","review_category":"improvement","failure_categories":["low_rank"]},
+    {"case_id":"CB-S-H-ARCH-FA","language":"FA","repository":"Hospital-System","baseline_rank":4,"combined_rank":7,"rank_delta":-3,"baseline_found":true,"combined_found":true,"transition_type":"lower_rank","review_category":"true_regression","failure_categories":["semantic_mismatch","bilingual_mismatch","low_rank"]},
+    {"case_id":"CB-S-H-CAP-EN","language":"EN","repository":"Hospital-System","baseline_rank":1,"combined_rank":1,"rank_delta":0,"baseline_found":true,"combined_found":true,"transition_type":"stable","review_category":"stable","failure_categories":[]},
+    {"case_id":"CB-S-H-CAP-FA","language":"FA","repository":"Hospital-System","baseline_rank":1,"combined_rank":1,"rank_delta":0,"baseline_found":true,"combined_found":true,"transition_type":"stable","review_category":"stable","failure_categories":[]},
+    {"case_id":"CB-S-H-IMPL-EN","language":"EN","repository":"Hospital-System","baseline_rank":4,"combined_rank":6,"rank_delta":-2,"baseline_found":true,"combined_found":true,"transition_type":"lower_rank","review_category":"equivalent_relevant_result","failure_categories":["semantic_mismatch","low_rank"]},
+    {"case_id":"CB-S-H-IMPL-FA","language":"FA","repository":"Hospital-System","baseline_rank":null,"combined_rank":null,"rank_delta":null,"baseline_found":false,"combined_found":false,"transition_type":"stable","review_category":"stable","failure_categories":["bilingual_mismatch","target_absent"]}
+  ],
+  "evidence_comparisons": [
+    {
+      "case_id":"CB-S-B-ARCH-EN",
+      "baseline_top":{"rank":1,"chunk_id":"eef6aa626beb1bed20976312aa406e1b00f35d6d7d26607475b37ba44c32ae40","symbol":"Migration","path":"users/migrations/0001_initial.py","line_start":9,"line_end":49},
+      "combined_top":{"rank":1,"chunk_id":"2fc2db0ab0373e4cc60c17372a02d577b919345806b2bb094487efc2cf1b2110","symbol":"Review","path":"store/models.py","line_start":95,"line_end":113},
+      "relatedness":"better","verdict":"The combined top result is the exact expected Review model; the baseline top result is a user migration."
+    },
+    {
+      "case_id":"CB-S-B-ARCH-FA",
+      "baseline_top":{"rank":1,"chunk_id":"0ef8f27d0496d4f8f7a1a70b0761883690f0ac7725bb6da5d381acbdb2ad0fed","symbol":"Migration","path":"store/migrations/0001_initial.py","line_start":8,"line_end":126},
+      "combined_top":{"rank":1,"chunk_id":"9b28a4ad93db07e8f65e6f869a7973b48dccd5759e316d2eea35cf2324297049","symbol":"Book","path":"store/models.py","line_start":40,"line_end":76},
+      "relatedness":"better","verdict":"Book is direct domain evidence for the requested Book-Review-user relationship, while the expected Review target also rises from rank 3 to 2."
+    },
+    {
+      "case_id":"CB-S-C-ARCH-FA",
+      "baseline_top":{"rank":1,"chunk_id":"7c7f75ca63142817751ac9b8f67ff9eef06c7ce79b865bd15617d3a52369eb8c","symbol":"FakeIndexingService.index_repository","path":"tests/test_performance_evaluation.py","line_start":73,"line_end":80},
+      "combined_top":{"rank":1,"chunk_id":"243fb40e484c15bba05f16851b25fff1f37e8d6dc3da260a1a2208021a0053d5","symbol":"RepositoryIndexCoordinator.index_repository","path":"src/codecompass/indexing/coordinator.py","line_start":163,"line_end":181},
+      "relatedness":"better","verdict":"The combined top result is the exact production method; the baseline top result is a test fake."
+    },
+    {
+      "case_id":"CB-S-C-IMPL-EN",
+      "baseline_top":{"rank":1,"chunk_id":"0b2a34c51f7cf07f99822f145ef27ae0f9d2d7ca2e786b2272f220205b2775b0","symbol":"OpenAICompatibleLLMProvider._response","path":"src/codecompass/llm/openai_compatible.py","line_start":76,"line_end":99},
+      "combined_top":{"rank":1,"chunk_id":"8d419bd2412848c569c881a38b88537a64ab0ea0bc37021a58d784208f67a3ee","symbol":"OpenAICompatibleLLMProvider.__init__","path":"src/codecompass/llm/openai_compatible.py","line_start":18,"line_end":33},
+      "relatedness":"worse","verdict":"The frozen target generate is recovered at rank 5, but _response is the method that actually extracts content and finish_reason. Baseline ranked that direct evidence first; combined ranks it second."
+    },
+    {
+      "case_id":"CB-S-C-IMPL-FA",
+      "baseline_top":{"rank":1,"chunk_id":"b0ca94df1e8d58e61d6c523505e1b6501a34c81a123e07c6fcb9184b2ba4bc5e","symbol":"test_generation_supports_persian_without_changing_trusted_metadata","path":"tests/test_function_documentation.py","line_start":195,"line_end":217},
+      "combined_top":{"rank":1,"chunk_id":"3876320c674ad5c313e740aec6c49c6a06de8d66774a230e1c8323c31dc2d108","symbol":"FunctionDocumentationService._prompt","path":"src/codecompass/documentation/service.py","line_start":253,"line_end":342},
+      "relatedness":"ambiguous","verdict":"The frozen generate target appears at rank 4, but neither top result is the direct _response extraction method. The apparent recovery cannot be counted as evidence-backed quality gain."
+    },
+    {
+      "case_id":"CB-S-H-ARCH-EN",
+      "baseline_top":{"rank":1,"chunk_id":"25a057cab8b547e0a85cb3d7143b5644c6de9ca788a214afa5a5a2ecc9b34e29","symbol":"DayManager.__init__","path":"logic/day_manager.py","line_start":14,"line_end":16},
+      "combined_top":{"rank":1,"chunk_id":"e5423fb10dff0fafa428a81cff245fca3072c81c2f53b611630c5e234355f617","symbol":"Manage.__init__","path":"logic/management.py","line_start":7,"line_end":12},
+      "relatedness":"better","verdict":"The combined top result is the exact constructor containing all requested stored collections and DayManager creation."
+    },
+    {
+      "case_id":"CB-S-H-ARCH-FA",
+      "baseline_top":{"rank":1,"chunk_id":"1c57c6bff2182bf97a69af76f17456f0f558b9f14f4e47d29b1c805828586a01","symbol":"ModifiedDynamicHash.search","path":"data_structures/hash_table.py","line_start":311,"line_end":321},
+      "combined_top":{"rank":1,"chunk_id":"e79c56aee0d940dad10fa861912f4687db256b144088e8c46296d3b8ee9d7211","symbol":"Manage.admin_search_id","path":"logic/management.py","line_start":20,"line_end":22},
+      "relatedness":"worse","verdict":"Combined results cluster around unrelated Manage admin methods and move the exact constructor from rank 4 to 7, outside top 5."
+    },
+    {
+      "case_id":"CB-S-H-IMPL-EN",
+      "baseline_top":{"rank":1,"chunk_id":"fe04e09a82bf32d670a2b63fbafc52ccb8f59fb56c35c154ed011a4e1f65d41e","symbol":"Schedule.find_nearest","path":"models/doctor.py","line_start":118,"line_end":125},
+      "combined_top":{"rank":1,"chunk_id":"fe04e09a82bf32d670a2b63fbafc52ccb8f59fb56c35c154ed011a4e1f65d41e","symbol":"Schedule.find_nearest","path":"models/doctor.py","line_start":118,"line_end":125},
+      "relatedness":"equal","verdict":"The same directly related top result is preserved, and Patients.find_nearest_appointment enters at rank 4. The expected orchestration method moves from rank 4 to 6, so this is not treated as a true quality regression."
+    }
+  ],
+  "breakdowns": {
+    "review_category": {"improvement":4,"stable":10,"true_regression":1,"equivalent_relevant_result":1,"ground_truth_ambiguity":2},
+    "language": {
+      "EN":{"cases":9,"improvement":2,"stable":5,"true_regression":0,"equivalent_relevant_result":1,"ground_truth_ambiguity":1},
+      "FA":{"cases":9,"improvement":2,"stable":5,"true_regression":1,"equivalent_relevant_result":0,"ground_truth_ambiguity":1}
+    },
+    "repository": {
+      "CS-Bookstore":{"cases":6,"improvement":2,"stable":4,"true_regression":0,"equivalent_relevant_result":0,"ground_truth_ambiguity":0},
+      "CodeCompass":{"cases":6,"improvement":1,"stable":3,"true_regression":0,"equivalent_relevant_result":0,"ground_truth_ambiguity":2},
+      "Hospital-System":{"cases":6,"improvement":1,"stable":3,"true_regression":1,"equivalent_relevant_result":1,"ground_truth_ambiguity":0}
+    },
+    "failure_categories_nonexclusive": {
+      "identifier_mismatch":2,
+      "lexical_mismatch":0,
+      "semantic_mismatch":2,
+      "bilingual_mismatch":6,
+      "target_absent":4,
+      "low_rank":6
+    },
+    "failure_category_note":"Counts are manual, non-exclusive labels over frozen cases. Zero lexical mismatch transitions is supported by identical M25-00/M25-11 lexical metrics and ranks; causal attribution for semantic and bilingual labels remains descriptive."
+  },
+  "promotion_gate": {
+    "hybrid_hit_at_5_no_decrease":{"status":"pass","baseline":"14/18","combined":"14/18"},
+    "hybrid_mrr_improves":{"status":"pass","baseline":0.5509259259259259,"combined":0.6810846560846561},
+    "true_regressions_limited":{"status":"pass","count":1,"cases":18},
+    "citation_identity_unchanged":{"status":"pass","basis":"shared canonical chunk IDs, paths, symbols, and line ranges are unchanged between frozen runs"},
+    "improvements_evidence_backed":{"status":"pass","clear_improvements":4,"ambiguous_metric_recoveries_excluded":2},
+    "decision":"PROMOTE_M25_11",
+    "decision_note":"Promote the combined treatment without tuning it on these 18 cases. Preserve a benchmark adjudication addendum for the two OpenAI-compatible implementation-location cases and record CB-S-H-ARCH-FA as the single true regression."
+  },
+  "limitations": [
+    "The benchmark has 18 cases; results are descriptive and do not establish statistical significance.",
+    "Failure taxonomy labels are human adjudications and may overlap.",
+    "The frozen CodeCompass OpenAI-compatible target names generate, while _response contains the direct extraction logic; frozen data was not modified.",
+    "No new rule, weighting change, or exception was derived from observed regressions."
+  ]
+}
