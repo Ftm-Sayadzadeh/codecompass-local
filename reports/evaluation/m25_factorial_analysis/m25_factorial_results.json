@@ -1,0 +1,169 @@
+{
+  "experiment": "M25 factorial analysis",
+  "status": "complete",
+  "population": 18,
+  "inputs": {
+    "m25_10_results_sha256": "e39571a01e4272d973a7ffe6d9461ab1c02dd6945b844c0d2826de79bee4039b",
+    "m25_01_results_sha256": "ef48ec268b8c1b2fae64922acd8743eeedbff4601a1b10420df5effaf408a1ad",
+    "m25_11_results_sha256": "06686166f7774613c97f5ff209d98f0c7c3aea64fbf725f3333ad604ca006891"
+  },
+  "cells": {
+    "M25-00": "baseline",
+    "M25-10": "representation only",
+    "M25-01": "normalization only",
+    "M25-11": "combined"
+  },
+  "methods": {
+    "lexical": {
+      "cells": {
+        "M25-00": {
+          "cases": 18,
+          "hit_counts": {
+            "1": 12,
+            "3": 13,
+            "5": 13,
+            "10": 13
+          },
+          "mrr_at_10": 0.6944444444444444
+        },
+        "M25-10": {
+          "cases": 18,
+          "hit_counts": {
+            "1": 12,
+            "3": 13,
+            "5": 13,
+            "10": 13
+          },
+          "mrr_at_10": 0.6944444444444444
+        },
+        "M25-01": {
+          "cases": 18,
+          "hit_counts": {
+            "1": 12,
+            "3": 13,
+            "5": 13,
+            "10": 13
+          },
+          "mrr_at_10": 0.6944444444444444
+        },
+        "M25-11": {
+          "cases": 18,
+          "hit_counts": {
+            "1": 12,
+            "3": 13,
+            "5": 13,
+            "10": 13
+          },
+          "mrr_at_10": 0.6944444444444444
+        }
+      },
+      "interaction": {
+        "hit_at_5_count": 0,
+        "mrr_at_10": 0.0
+      }
+    },
+    "semantic": {
+      "cells": {
+        "M25-00": {
+          "cases": 18,
+          "hit_counts": {
+            "1": 8,
+            "3": 8,
+            "5": 8,
+            "10": 8
+          },
+          "mrr_at_10": 0.4444444444444444
+        },
+        "M25-10": {
+          "cases": 18,
+          "hit_counts": {
+            "1": 7,
+            "3": 8,
+            "5": 8,
+            "10": 11
+          },
+          "mrr_at_10": 0.4377204585537919
+        },
+        "M25-01": {
+          "cases": 18,
+          "hit_counts": {
+            "1": 7,
+            "3": 9,
+            "5": 9,
+            "10": 11
+          },
+          "mrr_at_10": 0.4486772486772487
+        },
+        "M25-11": {
+          "cases": 18,
+          "hit_counts": {
+            "1": 7,
+            "3": 11,
+            "5": 13,
+            "10": 14
+          },
+          "mrr_at_10": 0.5311728395061729
+        }
+      },
+      "interaction": {
+        "hit_at_5_count": 4,
+        "mrr_at_10": 0.08921957671957675
+      }
+    },
+    "hybrid": {
+      "cells": {
+        "M25-00": {
+          "cases": 18,
+          "hit_counts": {
+            "1": 8,
+            "3": 11,
+            "5": 14,
+            "10": 14
+          },
+          "mrr_at_10": 0.550925925925926
+        },
+        "M25-10": {
+          "cases": 18,
+          "hit_counts": {
+            "1": 9,
+            "3": 12,
+            "5": 13,
+            "10": 14
+          },
+          "mrr_at_10": 0.5944444444444443
+        },
+        "M25-01": {
+          "cases": 18,
+          "hit_counts": {
+            "1": 9,
+            "3": 11,
+            "5": 12,
+            "10": 15
+          },
+          "mrr_at_10": 0.5746031746031746
+        },
+        "M25-11": {
+          "cases": 18,
+          "hit_counts": {
+            "1": 11,
+            "3": 12,
+            "5": 14,
+            "10": 16
+          },
+          "mrr_at_10": 0.681084656084656
+        }
+      },
+      "interaction": {
+        "hit_at_5_count": 3,
+        "mrr_at_10": 0.06296296296296311
+      }
+    }
+  },
+  "conclusion": "M25-11 is the strongest candidate. Its positive interaction recovers the individual Hit@5 regressions while improving hybrid Hit@1, Hit@10, and MRR@10. Results remain descriptive because n=18.",
+  "runtime_calls": {
+    "indexing": 0,
+    "embedding_provider": 0,
+    "retrieval": 0,
+    "llm": 0
+  }
+}
