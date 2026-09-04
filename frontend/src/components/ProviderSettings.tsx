@@ -1,5 +1,5 @@
 import { Eye, EyeOff, KeyRound, Settings2, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import type { EmbeddingState, ProviderState } from "../api/types";
 
@@ -109,27 +109,44 @@ function ProviderFields<T extends ProviderState>({
           ) : null}
         </details>
       </fieldset>
-      <button className="forget-key" type="button" onClick={onReset}>Reset to backend defaults</button>
+      <button className="reset-provider" type="button" onClick={onReset}>Reset to backend defaults</button>
     </section>
   );
 }
 
 export function ProviderSettings(props: Props) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    if (!props.open || !dialog.current) return;
+    if (typeof dialog.current.showModal === "function") dialog.current.showModal();
+    else dialog.current.setAttribute("open", "");
+  }, [props.open]);
   if (!props.open) return null;
   return (
-    <aside className="settings-drawer" aria-label="Provider settings">
+    <dialog
+      className="settings-dialog"
+      ref={dialog}
+      aria-labelledby="provider-settings-title"
+      onCancel={(event) => { event.preventDefault(); props.onClose(); }}
+      onClick={(event) => { if (event.target === event.currentTarget) props.onClose(); }}
+    >
       <header>
-        <div>
-          <span className="eyebrow">Runtime configuration</span>
-          <h2>Provider settings</h2>
+        <div className="settings-title">
+          <Settings2 size={20} aria-hidden="true" />
+          <div><span className="eyebrow">Runtime configuration</span><h2 id="provider-settings-title">Provider settings</h2></div>
         </div>
         <button className="icon-button" type="button" onClick={props.onClose} aria-label="Close provider settings" title="Close">
           <X size={19} />
         </button>
       </header>
-      <ProviderFields id="embedding" title="Embedding provider" value={props.embedding} onChange={props.onEmbeddingChange} onReset={props.onResetEmbedding} dimensions />
-      <ProviderFields id="llm" title="LLM provider" value={props.llm} onChange={props.onLlmChange} onReset={props.onResetLlm} />
-      <p className="privacy-note"><KeyRound size={15} /> Non-sensitive settings persist in this browser. API keys stay in memory and are forgotten on refresh.</p>
-    </aside>
+      <div className="settings-grid">
+        <ProviderFields id="embedding" title="Embedding provider" value={props.embedding} onChange={props.onEmbeddingChange} onReset={props.onResetEmbedding} dimensions />
+        <ProviderFields id="llm" title="LLM provider" value={props.llm} onChange={props.onLlmChange} onReset={props.onResetLlm} />
+      </div>
+      <footer>
+        <p className="privacy-note"><KeyRound size={15} /> Non-sensitive settings persist in this browser. API keys stay in memory and are forgotten on refresh.</p>
+        <button className="primary-button" type="button" onClick={props.onClose}>Done</button>
+      </footer>
+    </dialog>
   );
 }

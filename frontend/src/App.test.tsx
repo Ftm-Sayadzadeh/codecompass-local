@@ -23,6 +23,12 @@ const evaluation = {
       { slice: { kind: "global_micro", value: "all" }, method: "lexical", questions: 60, top_1: 0.43, top_3: 0.71, mrr_at_10: 0.58 },
       { slice: { kind: "global_micro", value: "all" }, method: "semantic", questions: 60, top_1: 0.35, top_3: 0.65, mrr_at_10: 0.5 },
       { slice: { kind: "global_micro", value: "all" }, method: "hybrid", questions: 60, top_1: 0.633, top_3: 0.783, mrr_at_10: 0.732 },
+      { slice: { kind: "language", value: "fa" }, method: "lexical", questions: 30, top_1: 0.5, top_3: 0.733, mrr_at_10: 0.631 },
+      { slice: { kind: "language", value: "fa" }, method: "semantic", questions: 30, top_1: 0.2, top_3: 0.533, mrr_at_10: 0.377 },
+      { slice: { kind: "language", value: "fa" }, method: "hybrid", questions: 30, top_1: 0.567, top_3: 0.767, mrr_at_10: 0.678 },
+      { slice: { kind: "language", value: "en" }, method: "lexical", questions: 30, top_1: 0.367, top_3: 0.7, mrr_at_10: 0.53 },
+      { slice: { kind: "language", value: "en" }, method: "semantic", questions: 30, top_1: 0.5, top_3: 0.767, mrr_at_10: 0.636 },
+      { slice: { kind: "language", value: "en" }, method: "hybrid", questions: 30, top_1: 0.7, top_3: 0.8, mrr_at_10: 0.787 },
     ],
   },
 };
@@ -65,10 +71,38 @@ function installApi(handler?: (path: string, init?: RequestInit) => Promise<Resp
 
 async function ready() {
   expect(await screen.findByText("MarkupSafe")).toBeInTheDocument();
-  expect(await screen.findByText("63.3%")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Show results" }));
+  expect((await screen.findAllByText("63.3%")).length).toBeGreaterThan(0);
 }
 
 describe("CodeCompass SPA", () => {
+  it("opens the styled project menu and closes it after selection", async () => {
+    installApi();
+    render(<App />);
+    await ready();
+
+    const question = screen.getByLabelText("Ask about this codebase");
+    expect(question).toHaveAttribute("rows", "2");
+    expect(question.closest(".workspace-panel")).toHaveClass("empty");
+    expect(screen.getByText("Advanced").closest("details")?.parentElement).toHaveClass("ask-controls");
+    expect(screen.queryByText("PY")).not.toBeInTheDocument();
+    expect(screen.queryByText("Where is input validation handled?")).not.toBeInTheDocument();
+    expect(screen.queryByText("منطق اصلی پروژه کجاست؟")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("tab", { name: "Search" }));
+    expect(screen.getByLabelText("Search indexed code").closest(".workspace-panel")).toHaveClass("empty");
+    fireEvent.click(screen.getByRole("tab", { name: "Documentation" }));
+    expect(screen.getByLabelText("Function or method").closest(".workspace-panel")).toHaveClass("empty");
+
+    fireEvent.click(screen.getByRole("button", { name: "Current project: MarkupSafe" }));
+    expect(screen.getByRole("menu", { name: "Projects" })).toBeInTheDocument();
+    expect(screen.getByRole("menuitemradio", { name: "MarkupSafe" })).toHaveTextContent("MarkupSafe");
+    expect(screen.getByRole("menuitemradio", { name: "MarkupSafe" })).not.toHaveTextContent(/files|symbols/i);
+    expect(screen.getByRole("menuitemradio", { name: /MarkupSafe/ })).toHaveAttribute("aria-checked", "true");
+    fireEvent.click(screen.getByRole("menuitemradio", { name: /MarkupSafe/ }));
+    expect(screen.queryByRole("menu", { name: "Projects" })).not.toBeInTheDocument();
+  });
+
   let stored: Map<string, string>;
 
   beforeEach(() => {
@@ -88,8 +122,18 @@ describe("CodeCompass SPA", () => {
     await ready();
 
     expect(screen.getByText("Benchmark evaluation results — not per-answer confidence.")).toBeInTheDocument();
+    expect(screen.getByText("Scientific evaluation")).toBeInTheDocument();
+    expect(screen.queryByText("Frozen scientific evidence")).not.toBeInTheDocument();
+    expect(screen.getByText("Best measured").closest(".method-label")).toHaveTextContent("hybrid");
     expect(screen.getByText("283.1 ms")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Show Persian evaluation" }));
+    expect(screen.getAllByText("56.7%").length).toBeGreaterThan(0);
+    expect(screen.getByText("Persian Top-3").nextSibling).toHaveTextContent("76.7%");
+    fireEvent.click(screen.getByRole("button", { name: "Compare Persian and English evaluation" }));
+    expect(screen.getByRole("region", { name: "Persian retrieval results" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "English retrieval results" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Provider settings" }));
+    expect(screen.getByRole("dialog", { name: "Provider settings" })).toBeInTheDocument();
     const defaults = screen.getAllByLabelText("Use backend defaults");
     fireEvent.click(defaults[1]);
     const providers = screen.getAllByLabelText("Provider");
@@ -101,6 +145,8 @@ describe("CodeCompass SPA", () => {
     expect(sessionStorage.setItem).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "Clear key" }));
     expect(key).toHaveValue("");
+    fireEvent.click(screen.getByRole("button", { name: "Done" }));
+    expect(screen.queryByRole("dialog", { name: "Provider settings" })).not.toBeInTheDocument();
   });
 
   it("restores non-sensitive provider preferences and resets each provider independently", async () => {
@@ -196,12 +242,25 @@ describe("CodeCompass SPA", () => {
 
     fireEvent.change(screen.getByLabelText("Ask about this codebase"), { target: { value: "How does escape_silent handle None?" } });
     fireEvent.click(screen.getByRole("button", { name: "Ask CodeCompass" }));
+    expect(screen.getByRole("status")).toHaveTextContent("Retrieving evidence and generating answer...");
     expect(await screen.findByText("It returns an empty Markup instance.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Edit question" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "New question" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Copy answer" })).toBeInTheDocument();
     expect(screen.getByText("L48–61")).toBeInTheDocument();
+    expect(screen.getByText("escape_silent").closest(".citation-row")).toHaveClass("primary");
     fireEvent.click(screen.getByRole("button", { name: /Open code/i }));
     expect(await screen.findByTestId("monaco")).toHaveTextContent("def escape_silent");
     expect(screen.getByText("Lines 48–61")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: file.relative_path })).toHaveClass("selected");
     expect(fetchMock).toHaveBeenCalledWith("/api/projects/1/files/4/content", expect.anything());
+    fireEvent.click(screen.getByRole("button", { name: "Edit question" }));
+    expect(screen.getByLabelText("Ask about this codebase")).toHaveValue("How does escape_silent handle None?");
+    fireEvent.click(screen.getByRole("button", { name: "Ask CodeCompass" }));
+    expect(await screen.findByRole("button", { name: "New question" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "New question" }));
+    expect(screen.getByLabelText("Ask about this codebase")).toHaveValue("");
+    expect(screen.queryByText("It returns an empty Markup instance.")).not.toBeInTheDocument();
   });
 
   it("renders safe grounded Markdown without interpreting raw HTML", async () => {
@@ -246,8 +305,10 @@ describe("CodeCompass SPA", () => {
     expect(screen.queryByText("The answer reached its token limit.")).not.toBeInTheDocument();
 
     truncated = true;
+    fireEvent.click(screen.getByRole("button", { name: "Edit question" }));
     fireEvent.click(screen.getByRole("button", { name: "Ask CodeCompass" }));
     expect(await screen.findByText("The answer reached its token limit.")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Edit question" }));
     expect(screen.getByLabelText("Answer token budget")).toBeVisible();
   });
 
@@ -266,6 +327,7 @@ describe("CodeCompass SPA", () => {
     await waitFor(() => expect(askBodies).toHaveLength(1));
     expect(askBodies[0]).not.toHaveProperty("max_tokens");
 
+    fireEvent.click(screen.getByRole("button", { name: "Edit question" }));
     fireEvent.click(screen.getByText("Advanced"));
     const budget = screen.getByLabelText("Answer token budget");
     fireEvent.change(budget, { target: { value: "1024" } });
@@ -277,8 +339,12 @@ describe("CodeCompass SPA", () => {
     await waitFor(() => expect(askBodies).toHaveLength(2));
     expect(askBodies[1]).toHaveProperty("max_tokens", 1024);
 
+    fireEvent.click(screen.getByRole("button", { name: "Edit question" }));
+    const updatedBudget = screen.getByLabelText("Answer token budget");
+    const askAdvanced = updatedBudget.closest("details");
+    if (!askAdvanced?.open) fireEvent.click(within(askAdvanced!).getByText("Advanced"));
     for (const invalid of ["0", "-1", "8001", "1.5"]) {
-      fireEvent.change(budget, { target: { value: invalid } });
+      fireEvent.change(updatedBudget, { target: { value: invalid } });
       expect(screen.getByRole("alert")).toHaveTextContent("Enter an integer from 1 to 8000.");
       expect(screen.getByRole("button", { name: "Ask CodeCompass" })).toBeDisabled();
     }
@@ -314,8 +380,10 @@ describe("CodeCompass SPA", () => {
     expect(screen.getByText("No project")).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Repository path"), { target: { value: "<temporary-repository>" } });
     fireEvent.click(screen.getByRole("button", { name: "Index repository" }));
-    expect(await screen.findByRole("button", { name: "Indexing repository..." })).toBeDisabled();
+    expect(await screen.findByRole("button", { name: "Working..." })).toBeDisabled();
     expect(await screen.findByText("Check source changes")).toBeInTheDocument();
+    expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+    expect(screen.getByText("Technical details").closest("details")).not.toHaveAttribute("open");
     expect(screen.getByText(/Files discovered:/)).toHaveTextContent("3");
     expect(screen.queryByText("100%")).not.toBeInTheDocument();
     expect([...stored.values()].join("\n")).not.toContain("<temporary-repository>");
@@ -355,12 +423,17 @@ describe("CodeCompass SPA", () => {
     fireEvent.click(screen.getByRole("button", { name: "Repository" }));
     fireEvent.click(screen.getByRole("button", { name: "Index / Re-index" }));
 
-    expect(await screen.findByText("Repository is already up to date", {}, { timeout: 2500 })).toBeInTheDocument();
+    expect(await screen.findByText("Repository already up to date", {}, { timeout: 2500 })).toBeInTheDocument();
+    expect(screen.getByText("Existing verified index retained")).toBeInTheDocument();
     expect(screen.getByText(/Files unchanged:/)).toHaveTextContent("1");
-    expect(screen.queryByText("100%")).not.toBeInTheDocument();
+    const summary = screen.getByLabelText("Indexing counters");
+    expect(summary).toHaveTextContent("Files1");
+    expect(summary).toHaveTextContent("Symbols1");
+    expect(summary).toHaveTextContent("Chunks1");
+    expect(screen.queryByRole("progressbar", { name: "Observed indexing stages" })).not.toBeInTheDocument();
     expect(screen.getByText("Check source changes").closest("li")).toHaveClass("complete");
     for (const label of ["Parse symbols", "Build chunks", "Provider preflight", "Generate embeddings", "Verify vectors", "Activate index"]) {
-      expect(screen.getByText(label).closest("li")).toHaveClass("pending");
+      expect(screen.queryByText(label)).not.toBeInTheDocument();
     }
     await new Promise((resolve) => setTimeout(resolve, 1100));
     expect(polls).toBe(1);
@@ -406,14 +479,14 @@ describe("CodeCompass SPA", () => {
         return response({
           id: "job-resume", state: "embedding", operation: "reindexed", project_id: 1,
           observed_stages: ["scanning", "parsing", "chunking", "preflight", "embedding"],
-          counters: { chunks_generated: 8, embeddings_completed: 5 }, started_at: "2026-01-01", updated_at: "2026-01-01",
+          counters: { chunks_generated: 8, chunks_expected: 8, embeddings_completed: 5 }, started_at: "2026-01-01", updated_at: "2026-01-01",
           completed_at: null, elapsed_seconds: 4.2, previous_index_preserved: null, result: null, error: null,
         });
       }
       if (path === "/projects/index-jobs/job-resume") return response({
         id: "job-resume", state: "failed", operation: "reindexed", project_id: 1,
         observed_stages: ["scanning", "parsing", "chunking", "preflight", "embedding"],
-        counters: { chunks_generated: 8, embeddings_completed: 5 }, started_at: "2026-01-01", updated_at: "2026-01-01",
+        counters: { chunks_generated: 8, chunks_expected: 8, embeddings_completed: 5 }, started_at: "2026-01-01", updated_at: "2026-01-01",
         completed_at: "2026-01-01", elapsed_seconds: 5.1, previous_index_preserved: true, result: null,
         error: { code: "embedding_provider_unavailable", message: "Embedding provider is unavailable.", stage: "embedding", error_type: "connection" },
       });
@@ -432,6 +505,12 @@ describe("CodeCompass SPA", () => {
     await ready();
 
     expect(await screen.findByText("Generate embeddings")).toBeInTheDocument();
+    expect(screen.getByText("Updating index")).toHaveAttribute("title", "Current verified index remains available");
+    expect(screen.getByText(/Generate embeddings · Stage 5 of 7/)).toBeInTheDocument();
+    expect(screen.getByText("5 / 8")).toBeInTheDocument();
+    expect(screen.getByRole("progressbar", { name: "Embedding progress" })).toHaveAttribute("aria-valuenow", "5");
+    expect(screen.getByRole("progressbar", { name: "Embedding progress" })).toHaveAttribute("aria-valuemax", "8");
+    expect(screen.getByRole("progressbar", { name: "Embedding progress" }).querySelector("i")).toHaveStyle({ width: "62.5%" });
     expect(screen.getByText(/Embeddings completed:/)).toHaveTextContent("5");
     expect(await screen.findByText("Previous index remains available.", {}, { timeout: 2500 })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: file.relative_path })).toBeEnabled();
@@ -474,8 +553,10 @@ describe("CodeCompass SPA", () => {
 
   it("preserves ordered Search results and explains embedding mismatch safely", async () => {
     let mismatch = false;
-    installApi((path) => {
+    let searchBody: Record<string, unknown> = {};
+    installApi((path, init) => {
       if (path !== "/projects/1/search") return undefined;
+      searchBody = JSON.parse(String(init?.body));
       if (mismatch) return response({ error: { code: "embedding_configuration_mismatch", message: "raw", details: { internal_path: "PRIVATE_BACKEND_PATH" } } }, 409);
       return response({ query: "escape", method: "lexical", results: [
         { ...citation, score: 4.2, code: "def escape_silent(): pass", retrieval_method: "lexical" },
@@ -485,10 +566,16 @@ describe("CodeCompass SPA", () => {
     render(<App />);
     await ready();
     fireEvent.click(screen.getByRole("tab", { name: "Search" }));
-    fireEvent.change(screen.getByLabelText("Search indexed code"), { target: { value: "escape" } });
+    const searchQuery = screen.getByLabelText("Search indexed code");
+    const searchRow = searchQuery.closest<HTMLElement>(".search-input-row")!;
+    expect(within(searchRow).getByRole("button", { name: "Hybrid" })).toBeInTheDocument();
+    expect(within(searchRow).getByLabelText("Result limit")).toHaveValue(10);
+    fireEvent.change(searchQuery, { target: { value: "escape" } });
+    fireEvent.change(screen.getByLabelText("Result limit"), { target: { value: "20" } });
     fireEvent.click(screen.getByRole("button", { name: "Lexical" }));
     fireEvent.click(screen.getByRole("button", { name: /^Search$/ }));
     await screen.findByText("2 results");
+    expect(searchBody).toMatchObject({ method: "lexical", limit: 20 });
     const results = screen.getAllByRole("article");
     expect(within(results[0]).getByText("escape_silent")).toBeInTheDocument();
     expect(within(results[1]).getByText("escape")).toBeInTheDocument();

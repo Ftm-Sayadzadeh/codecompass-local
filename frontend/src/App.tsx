@@ -1,5 +1,5 @@
-import { Compass, Database, FolderCog, Menu, PanelLeftClose, Settings, ShieldCheck } from "lucide-react";
-import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import { Check, ChevronDown, Compass, Database, FolderCog, Menu, PanelLeftClose, Settings, ShieldCheck } from "lucide-react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 
 import { api, embeddingOverride, providerOverride } from "./api/client";
 import type {
@@ -32,6 +32,65 @@ interface RequestState<T> {
 }
 
 const idle = <T,>(): RequestState<T> => ({ result: null, loading: false, error: null });
+
+function ProjectSwitcher({ projects, project, loading, onSelect }: {
+  projects: Project[];
+  project: Project | null;
+  loading: boolean;
+  onSelect: (projectId: number) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const close = (event: PointerEvent | KeyboardEvent) => {
+      if (event.type === "keydown" && (event as KeyboardEvent).key !== "Escape") return;
+      if (event.type === "pointerdown" && root.current?.contains(event.target as Node)) return;
+      setOpen(false);
+    };
+    document.addEventListener("pointerdown", close);
+    document.addEventListener("keydown", close);
+    return () => {
+      document.removeEventListener("pointerdown", close);
+      document.removeEventListener("keydown", close);
+    };
+  }, [open]);
+
+  return (
+    <div className={`project-switcher${open ? " open" : ""}`} ref={root}>
+      <Database size={16} aria-hidden="true" />
+      <button
+        className="project-switcher-trigger"
+        type="button"
+        aria-label={`Current project: ${project?.name ?? "No indexed projects"}`}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        disabled={!projects.length || loading}
+        onClick={() => setOpen((value) => !value)}
+      >
+        <span>{project?.name ?? "No indexed projects"}</span><ChevronDown size={15} />
+      </button>
+      {open ? (
+        <div className="project-menu" role="menu" aria-label="Projects">
+          <span className="project-menu-label">Indexed repositories</span>
+          {projects.map((item) => (
+            <button
+              type="button"
+              role="menuitemradio"
+              aria-checked={item.id === project?.id}
+              key={item.id}
+              onClick={() => { setOpen(false); if (item.id !== project?.id) onSelect(item.id); }}
+            >
+              <strong>{item.name}</strong>
+              {item.id === project?.id ? <Check size={16} aria-hidden="true" /> : null}
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 export default function App() {
   const [savedPreferences] = useState(loadPreferences);
@@ -231,37 +290,34 @@ export default function App() {
   };
 
   const indexing = Boolean(indexJob && indexJob.state !== "completed" && indexJob.state !== "failed");
-  const projectStatus = indexing ? "Indexing" : projectLoading ? "Loading" : projectError ? "Project status unavailable" : project?.vector_complete ? "Ready" : project ? "Vector index incomplete" : "No project";
+  const workspaceHasResult = Boolean(askState.result || searchState.result || documentationState.result);
+  const projectStatus = indexing && project ? "Updating index" : indexing ? "Indexing" : projectLoading ? "Loading" : projectError ? "Project status unavailable" : project?.vector_complete ? "Ready" : project ? "Vector index incomplete" : "No project";
 
   return (
     <div className="app-shell">
       <header className="topbar">
-        <a className="brand" href="#workspace" aria-label="CodeCompass workspace"><Compass size={25} /><strong>CodeCompass</strong></a>
-        <div className="project-switcher">
-          <Database size={16} aria-hidden="true" />
-          <label className="sr-only" htmlFor="project-select">Current project</label>
-          <select id="project-select" value={project?.id ?? ""} disabled={!projects.length || projectLoading} onChange={(event) => void loadProject(Number(event.target.value))}>
-            {!projects.length ? <option value="">No indexed projects</option> : null}
-            {projects.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}
-          </select>
-        </div>
+        <a className="brand" href="#workspace" aria-label="CodeCompass workspace">
+          <Compass size={25} />
+          <span><strong>CodeCompass</strong><small>Local code intelligence</small></span>
+        </a>
+        <ProjectSwitcher projects={projects} project={project} loading={projectLoading} onSelect={(projectId) => void loadProject(projectId)} />
         {project && !projectLoading && !project.vector_complete ? (
           <button className="status-badge status-action" type="button" onClick={reindex} title="Re-index repository"><i />{projectStatus}</button>
         ) : (
-          <span className={`status-badge ${projectStatus === "Ready" ? "ready" : "idle"}`}><i />{projectStatus}</span>
+          <span className={`status-badge ${projectStatus === "Ready" ? "ready" : indexing ? "updating" : "idle"}`} title={indexing && project?.vector_complete ? "Current verified index remains available" : undefined}><i />{projectStatus}</span>
         )}
         <div className="top-actions">
           <button className="secondary-button mobile-explorer-toggle" type="button" onClick={() => setExplorerOpen((current) => !current)}><Menu size={17} /> Explorer</button>
           <button className="secondary-button" type="button" onClick={() => setSetupOpen((current) => !current)}><FolderCog size={17} /> Repository</button>
-          <button className="secondary-button" type="button" onClick={() => setSettingsOpen(true)}><Settings size={17} /> Provider settings</button>
+          <button className="secondary-button" type="button" aria-label="Provider settings" onClick={() => setSettingsOpen(true)}><Settings size={17} /> Settings</button>
         </div>
       </header>
 
       {setupOpen ? <ProjectSetup path={repositoryPath} setPath={setRepositoryPath} currentProject={project} job={indexJob} error={indexError} onSubmit={indexRepository} /> : null}
       {projectError ? <div className="global-error"><ErrorMessage error={projectError} onReindex={reindex} /></div> : null}
 
-      <div className={`main-layout ${source || sourceLoading || sourceError ? "with-code" : ""} ${explorerOpen ? "" : "explorer-closed"}`} id="workspace">
-        {project && explorerOpen ? <ProjectExplorer files={files} symbols={symbols} onOpenFile={(file) => void openSource(file.id)} onOpenSymbol={(symbol) => void openSource(symbol.file_id, symbol.start_line, symbol.end_line)} onDocumentSymbol={chooseDocumentation} /> : null}
+      <div className={`main-layout ${source || sourceLoading || sourceError ? "with-code" : ""} ${explorerOpen ? "" : "explorer-closed"} ${workspaceHasResult ? "has-results" : ""} ${setupOpen ? "setup-visible" : ""}`} id="workspace">
+        {project && explorerOpen ? <ProjectExplorer files={files} symbols={symbols} selectedFileId={source?.content.id ?? null} onOpenFile={(file) => void openSource(file.id)} onOpenSymbol={(symbol) => void openSource(symbol.file_id, symbol.start_line, symbol.end_line)} onDocumentSymbol={chooseDocumentation} /> : null}
         {project ? (
           <Workspace
             tab={workspaceTab}
@@ -270,6 +326,7 @@ export default function App() {
             search={searchState}
             documentation={{ ...documentationState, preset: documentationPreset }}
             onAsk={ask}
+            onNewQuestion={() => setAskState(idle())}
             onSearch={search}
             onDocument={documentSymbol}
             onOpenCitation={openCitation}
