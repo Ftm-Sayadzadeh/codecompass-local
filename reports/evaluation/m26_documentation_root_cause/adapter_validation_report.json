@@ -1,0 +1,235 @@
+{
+  "report_id": "m26_documentation_adapter_validation",
+  "date": "2026-09-03",
+  "scope": {
+    "mode": "offline_read_only",
+    "network_calls": 0,
+    "provider_calls": 0,
+    "llm_calls": 0,
+    "indexing_calls": 0,
+    "retrieval_calls": 0,
+    "production_files_modified": false,
+    "benchmark_artifacts_modified": false
+  },
+  "inputs": [
+    {
+      "path": "reports/evaluation/controlled_benchmark_v1/qwen_results.json",
+      "sha256": "f0ed5404b5a7b86f33147ac002841f42624c173807325abfc32faa62f00d4f86"
+    },
+    {
+      "path": "reports/evaluation/controlled_benchmark_v1/glm_results.json",
+      "sha256": "a2802c6f598c36baf9496cf915491d977b8abb1f39811de7f7e8f2435c43aaa2"
+    },
+    {
+      "path": "reports/evaluation/function_documentation_persian_provider_diagnostic_v1.json",
+      "sha256": "a603ad310acabde2e9191f803e1749545c2dd4c38fd7be835ff2814f4cd9f5e6"
+    }
+  ],
+  "code_paths": [
+    {
+      "path": "src/codecompass/llm/openai_compatible.py",
+      "lines": "35-45",
+      "finding": "generate passes the decoded response to _response and returns only extracted text, model, provider, and finish_reason."
+    },
+    {
+      "path": "src/codecompass/llm/openai_compatible.py",
+      "lines": "48-62",
+      "finding": "Documentation JSON mode maps to response_format={type: json_object}."
+    },
+    {
+      "path": "src/codecompass/llm/openai_compatible.py",
+      "lines": "76-99",
+      "finding": "The adapter reads only choices[0].message.content; reasoning_content and other alternate fields are ignored. Missing, non-string, or blank content fails before documentation parsing."
+    },
+    {
+      "path": "src/codecompass/_openai_compatible_http.py",
+      "lines": "35-84",
+      "finding": "The HTTP layer decodes the top-level JSON object but does not persist the raw response envelope."
+    },
+    {
+      "path": "src/codecompass/documentation/service.py",
+      "lines": "199-230",
+      "finding": "Documentation requests structured JSON; finish_reason=length is converted to output_truncated before parser validation. Persian retry occurs only after a parsed result fails the script check."
+    },
+    {
+      "path": "src/codecompass/documentation/service.py",
+      "lines": "377-430",
+      "finding": "The parser requires valid JSON, exactly eight top-level fields, and an exact ordered parameter-name list."
+    }
+  ],
+  "adapter_replay": {
+    "saved_nonempty_message_content": {
+      "result": "accepted",
+      "finish_reason_preserved": true
+    },
+    "blank_message_content": {
+      "result": "rejected",
+      "error_type": "invalid_response_empty_content"
+    },
+    "missing_message_content_with_reasoning_content": {
+      "result": "rejected",
+      "error_type": "invalid_response_content"
+    },
+    "blank_message_content_with_reasoning_content": {
+      "result": "rejected",
+      "error_type": "invalid_response_empty_content"
+    },
+    "interpretation": "This proves adapter capability, not the shape of the historical GLM responses. The historical raw envelopes were not saved."
+  },
+  "documentation_parser_replay": [
+    {
+      "provider": "qwen_ollama",
+      "case_id": "CB-DOC-H-EN",
+      "saved_output": true,
+      "finish_reason": "stop",
+      "parser_result": "accepted"
+    },
+    {
+      "provider": "qwen_ollama",
+      "case_id": "CB-DOC-H-FA",
+      "saved_output": true,
+      "finish_reason": "stop",
+      "parser_result": "accepted",
+      "persian_check": "accepted"
+    },
+    {
+      "provider": "qwen_ollama",
+      "case_id": "CB-DOC-B-EN",
+      "saved_output": true,
+      "finish_reason": "stop",
+      "parser_result": "accepted"
+    },
+    {
+      "provider": "qwen_ollama",
+      "case_id": "CB-DOC-B-FA",
+      "saved_output": true,
+      "finish_reason": "stop",
+      "parser_result": "accepted",
+      "persian_check": "accepted"
+    },
+    {
+      "provider": "qwen_ollama",
+      "case_id": "CB-DOC-C-EN",
+      "saved_output": true,
+      "finish_reason": "stop",
+      "parser_result": "accepted"
+    },
+    {
+      "provider": "qwen_ollama",
+      "case_id": "CB-DOC-C-FA",
+      "saved_output": true,
+      "finish_reason": "unavailable",
+      "parser_result": "rejected",
+      "error_code": "invalid_output",
+      "reason": "saved output is incomplete JSON"
+    },
+    {
+      "provider": "glm_openai_compatible",
+      "case_id": "CB-DOC-H-EN",
+      "saved_output": false,
+      "finish_reason": "unavailable",
+      "parser_result": "not_replayable",
+      "recorded_error": "invalid_response_empty_content"
+    },
+    {
+      "provider": "glm_openai_compatible",
+      "case_id": "CB-DOC-H-FA",
+      "saved_output": true,
+      "finish_reason": "length",
+      "output_characters": 816,
+      "parser_result": "rejected",
+      "error_code": "invalid_output",
+      "reason": "saved JSON ends at notes without a value or closing object; production flow would classify output_truncated before parsing"
+    },
+    {
+      "provider": "glm_openai_compatible",
+      "case_id": "CB-DOC-B-EN",
+      "saved_output": false,
+      "finish_reason": "unavailable",
+      "parser_result": "not_replayable",
+      "recorded_error": "invalid_response_empty_content"
+    },
+    {
+      "provider": "glm_openai_compatible",
+      "case_id": "CB-DOC-B-FA",
+      "saved_output": true,
+      "finish_reason": "length",
+      "output_characters": 398,
+      "parser_result": "rejected",
+      "error_code": "invalid_output",
+      "reason": "saved JSON ends inside a string; production flow would classify output_truncated before parsing"
+    },
+    {
+      "provider": "glm_openai_compatible",
+      "case_id": "CB-DOC-C-EN",
+      "saved_output": false,
+      "finish_reason": "unavailable",
+      "parser_result": "not_replayable",
+      "recorded_error": "invalid_response_empty_content"
+    },
+    {
+      "provider": "glm_openai_compatible",
+      "case_id": "CB-DOC-C-FA",
+      "saved_output": false,
+      "finish_reason": "unavailable",
+      "parser_result": "not_replayable",
+      "recorded_error": "invalid_response_empty_content"
+    }
+  ],
+  "qa_documentation_contrast": {
+    "glm_qa": {
+      "nonempty_outputs": "6/6",
+      "finish_reason_stop": "5/6",
+      "finish_reason_length": "1/6",
+      "response_format": null
+    },
+    "glm_documentation": {
+      "nonempty_outputs": "2/6",
+      "complete_valid_json": "0/6",
+      "recorded_empty_content_errors": "4/6",
+      "finish_reason_length": "2/6",
+      "response_format": "json"
+    },
+    "interpretation": "The failure is concentrated in structured Documentation rather than a uniform provider outage. The artifacts do not isolate model, provider JSON mode, or alternate-field extraction as the sole cause."
+  },
+  "findings": {
+    "provider_truly_empty": {
+      "verdict": "not_proven",
+      "evidence": "Four GLM records contain invalid_response_empty_content, but no raw choices/message envelope was retained."
+    },
+    "adapter_can_discard_reasoning_content": {
+      "verdict": "confirmed_capability_not_confirmed_historical_cause",
+      "evidence": "The adapter reads message.content only. Offline replay rejects reasoning-only envelopes, but historical envelopes are unavailable."
+    },
+    "validator_rejected_valid_output": {
+      "verdict": "not_observed",
+      "evidence": "The current parser accepted all five complete Qwen JSON outputs and rejected only three visibly incomplete JSON outputs. Four GLM cases had no text to validate."
+    },
+    "truncation": {
+      "verdict": "confirmed_for_two_glm_documentation_cases",
+      "evidence": "CB-DOC-H-FA and CB-DOC-B-FA record finish_reason=length and end with incomplete JSON."
+    },
+    "schema_contract_pressure": {
+      "verdict": "supported_not_exclusively_proven",
+      "evidence": "Documentation uses an eight-field exact JSON contract and JSON response mode. GLM QA succeeded 6/6 while GLM Documentation produced no complete JSON; Qwen produced one incomplete complex Persian Documentation output."
+    },
+    "missing_deterministic_facts": {
+      "verdict": "not_a_transport_failure_explanation",
+      "evidence": "Fact coverage may affect semantic quality, but cannot explain empty message content or length-truncated JSON."
+    }
+  },
+  "decision_gate": {
+    "integration_bug_confirmed": false,
+    "validator_bug_confirmed": false,
+    "provider_limitation_confirmed": false,
+    "compact_contract_evidence": "present_but_not_causal_proof",
+    "result": "MINIMAL_DIAGNOSTIC_REQUIRED_TO_DISTINGUISH_PROVIDER_FROM_ADAPTER_FIELD_SHAPE",
+    "next_step": "If approved, capture sanitized raw response field presence for the fixed 2-model x 2-language x 2-symbol diagnostic without changing prompts or scoring. Contract redesign should remain deferred until that diagnostic."
+  },
+  "limitations": [
+    "Raw OpenAI-compatible response envelopes were not stored.",
+    "Token usage is unavailable for all Qwen and GLM cases.",
+    "GLM result records do not include the exact input object; frozen Qwen inputs and matching benchmark/evidence hashes were used only to recover expected parameter names for offline parser replay.",
+    "The recorded glm_results generation metadata says external_provider_called=false despite containing GLM outputs; this provenance inconsistency does not change the per-case replay findings but should not be used as proof of call history."
+  ]
+}

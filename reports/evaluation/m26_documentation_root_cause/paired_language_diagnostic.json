@@ -1,0 +1,292 @@
+{
+  "diagnostic_id": "m26_paired_language_two_model_two_symbol_v1",
+  "purpose": "non-scoring root-cause diagnostic",
+  "started_at_utc": "2026-09-03T17:27:37.713352+00:00",
+  "input_artifact": "reports/evaluation/controlled_benchmark_v1/qwen_results.json",
+  "input_artifact_sha256": "f0ed5404b5a7b86f33147ac002841f42624c173807325abfc32faa62f00d4f86",
+  "controls": {
+    "temperature": 0.0,
+    "max_tokens": 1200,
+    "response_format": "json",
+    "retries": 0
+  },
+  "models": {
+    "qwen": "qwen2.5-coder-3b-codecompass:latest",
+    "glm": "glm-5.3-flash"
+  },
+  "executions": [
+    {
+      "cell": "qwen_en_simple",
+      "provider": "ollama",
+      "model": "qwen2.5-coder-3b-codecompass:latest",
+      "language": "en",
+      "symbol_complexity": "simple",
+      "source_case_id": "CB-DOC-H-EN",
+      "qualified_symbol": "Doctors.login",
+      "system_prompt_sha256": "7515231a7844dff69ac52c0419f67f6b558ebdf4e5d63ff52bd23b872a4e12db",
+      "user_prompt_sha256": "64a8c77bf2499ce0103bedd88222729cd3dfeac091b6374c4e8340f4c1a95443",
+      "source_code_sha256": "6cd157b4ed1696b85badcc7973d9dfdcb2cef37c7bef649eb047c68c89dafc16",
+      "latency_seconds": 2.157145,
+      "execution_status": "failed",
+      "error_type": "HTTPError"
+    },
+    {
+      "cell": "glm_en_simple",
+      "provider": "openai_compatible",
+      "model": "glm-5.3-flash",
+      "language": "en",
+      "symbol_complexity": "simple",
+      "source_case_id": "CB-DOC-H-EN",
+      "qualified_symbol": "Doctors.login",
+      "system_prompt_sha256": "7515231a7844dff69ac52c0419f67f6b558ebdf4e5d63ff52bd23b872a4e12db",
+      "user_prompt_sha256": "64a8c77bf2499ce0103bedd88222729cd3dfeac091b6374c4e8340f4c1a95443",
+      "source_code_sha256": "6cd157b4ed1696b85badcc7973d9dfdcb2cef37c7bef649eb047c68c89dafc16",
+      "latency_seconds": 16.812165,
+      "finish_reason": "stop",
+      "response_shape": {
+        "top_level_keys": [
+          "choices",
+          "created",
+          "estimated_cost",
+          "id",
+          "model",
+          "object",
+          "service_tier",
+          "system_fingerprint",
+          "usage"
+        ],
+        "choice_keys": [
+          "finish_reason",
+          "index",
+          "message"
+        ],
+        "message_keys": [
+          "annotations",
+          "content",
+          "reasoning_content",
+          "role",
+          "tools"
+        ],
+        "content_field": "choices[0].message.content"
+      },
+      "content_type": "str",
+      "content_length": 1313,
+      "content_nonempty": true,
+      "reasoning_content_length": 4063,
+      "reasoning_content_nonempty": true,
+      "token_usage": {
+        "completion_tokens": 1147,
+        "prompt_tokens": 447,
+        "total_tokens": 1594
+      },
+      "generated_output": "{\n\"summary\": \"Authenticates a doctor by checking whether the given phone number matches the doctor record associated with the supplied password.\",\n\"detailed_description\": \"The method uses password as a key to look up a national identifier in self.signed_in. If an identifier is found, the corresponding doctor is retrieved from self.doctors and the provided phone_num is compared against that doctor's phone_num. The method returns True on a match and False when the identifier is absent or the phone numbers differ.\",\n\"parameters\": [\n{\"name\": \"self\", \"description\": \"The Doctors instance whose signed_in and doctors mappings are used for the lookup.\"},\n{\"name\": \"phone_num\", \"description\": \"The phone number to compare against the phone number of the doctor found via the password lookup.\"},\n{\"name\": \"password\", \"description\": \"The key used to retrieve the doctor's national identifier from self.signed_in.\"}\n],\n\"return_value\": \"True if phone_num equals the phone number of the doctor associated with the given password; False if the lookup yields None or the phone numbers do not match.\",\n\"raises\": [],\n\"side_effects\": [],\n\"dependencies\": [\"self.signed_in\", \"self.doctors\"],\n\"notes\": [\"The password is used directly as a lookup key into signed_in rather than being compared against a stored password value.\"]\n}",
+      "generated_output_sha256": "8af996b1de9152fc8ad9f37ae3673c7e2b3f685dc5ac01892b4b3973cb71b656",
+      "parser_status": "accepted",
+      "persian_validation": "not_applicable"
+    },
+    {
+      "cell": "qwen_fa_simple",
+      "provider": "ollama",
+      "model": "qwen2.5-coder-3b-codecompass:latest",
+      "language": "fa",
+      "symbol_complexity": "simple",
+      "source_case_id": "CB-DOC-H-EN",
+      "qualified_symbol": "Doctors.login",
+      "system_prompt_sha256": "6aae103231e65ffb0f58c93e93eafc8fa41e645176885661e7adcce43f1eadf3",
+      "user_prompt_sha256": "baf291726cc33c72660f13f10153cf39ccc18b36b29cad534fc81097124c3e18",
+      "source_code_sha256": "6cd157b4ed1696b85badcc7973d9dfdcb2cef37c7bef649eb047c68c89dafc16",
+      "latency_seconds": 2.294933,
+      "execution_status": "failed",
+      "error_type": "HTTPError"
+    },
+    {
+      "cell": "glm_fa_simple",
+      "provider": "openai_compatible",
+      "model": "glm-5.3-flash",
+      "language": "fa",
+      "symbol_complexity": "simple",
+      "source_case_id": "CB-DOC-H-EN",
+      "qualified_symbol": "Doctors.login",
+      "system_prompt_sha256": "6aae103231e65ffb0f58c93e93eafc8fa41e645176885661e7adcce43f1eadf3",
+      "user_prompt_sha256": "baf291726cc33c72660f13f10153cf39ccc18b36b29cad534fc81097124c3e18",
+      "source_code_sha256": "6cd157b4ed1696b85badcc7973d9dfdcb2cef37c7bef649eb047c68c89dafc16",
+      "latency_seconds": 11.868421,
+      "finish_reason": "stop",
+      "response_shape": {
+        "top_level_keys": [
+          "choices",
+          "created",
+          "estimated_cost",
+          "id",
+          "model",
+          "object",
+          "service_tier",
+          "system_fingerprint",
+          "usage"
+        ],
+        "choice_keys": [
+          "finish_reason",
+          "index",
+          "message"
+        ],
+        "message_keys": [
+          "annotations",
+          "content",
+          "reasoning_content",
+          "role",
+          "tools"
+        ],
+        "content_field": "choices[0].message.content"
+      },
+      "content_type": "str",
+      "content_length": 857,
+      "content_nonempty": true,
+      "reasoning_content_length": 3799,
+      "reasoning_content_nonempty": true,
+      "token_usage": {
+        "completion_tokens": 1175,
+        "prompt_tokens": 545,
+        "total_tokens": 1720
+      },
+      "generated_output": "{\n\"summary\": \"بررسی می‌کند که phone_num داده‌شده با شماره تلفن پزشکِ متناظر با password مطابقت دارد یا نه.\",\n\"detailed_description\": \"ابتدا با کلید password در self.signed_in مقدار national_id خوانده می‌شود؛ اگر None نباشد، پزشک متناظر از self.doctors گرفته می‌شود. در صورت برابری phone_num با شماره تلفن آن پزشک، True و در غیر این صورت False برگردانده می‌شود. اگر national_id برابر None باشد، False برگردانده می‌شود.\",\n\"parameters\": [\n{\"name\": \"self\", \"description\": null},\n{\"name\": \"phone_num\", \"description\": \"شماره تلفنی که با شماره تلفن پزشک مقایسه می‌شود.\"},\n{\"name\": \"password\", \"description\": \"کلیدی که در self.signed_in جستجو می‌شود تا national_id به دست آید.\"}\n],\n\"return_value\": \"در صورت تطابق phone_num با شماره تلفن پزشکِ متناظر با password مقدار True و در سایر موارد False.\",\n\"raises\": [],\n\"side_effects\": [],\n\"dependencies\": [],\n\"notes\": []\n}",
+      "generated_output_sha256": "e8da8df49d2929691ea2ad822765b1ba440cf2e397bf3cced96a3570ff8fb01f",
+      "parser_status": "accepted",
+      "persian_validation": true
+    },
+    {
+      "cell": "qwen_en_complex",
+      "provider": "ollama",
+      "model": "qwen2.5-coder-3b-codecompass:latest",
+      "language": "en",
+      "symbol_complexity": "complex",
+      "source_case_id": "CB-DOC-C-FA",
+      "qualified_symbol": "GroundedQAService.answer",
+      "system_prompt_sha256": "7515231a7844dff69ac52c0419f67f6b558ebdf4e5d63ff52bd23b872a4e12db",
+      "user_prompt_sha256": "d0faa506ce6d5effea16711582501306ff44fcff2275ae0d202603f98c2b3764",
+      "source_code_sha256": "2705dee37d85d4f02cad20276e880afdcb4a89bad12af39bd419b7d02503cafa",
+      "latency_seconds": 2.334492,
+      "execution_status": "failed",
+      "error_type": "HTTPError"
+    },
+    {
+      "cell": "glm_en_complex",
+      "provider": "openai_compatible",
+      "model": "glm-5.3-flash",
+      "language": "en",
+      "symbol_complexity": "complex",
+      "source_case_id": "CB-DOC-C-FA",
+      "qualified_symbol": "GroundedQAService.answer",
+      "system_prompt_sha256": "7515231a7844dff69ac52c0419f67f6b558ebdf4e5d63ff52bd23b872a4e12db",
+      "user_prompt_sha256": "d0faa506ce6d5effea16711582501306ff44fcff2275ae0d202603f98c2b3764",
+      "source_code_sha256": "2705dee37d85d4f02cad20276e880afdcb4a89bad12af39bd419b7d02503cafa",
+      "latency_seconds": 13.331452,
+      "finish_reason": "length",
+      "response_shape": {
+        "top_level_keys": [
+          "choices",
+          "created",
+          "estimated_cost",
+          "id",
+          "model",
+          "object",
+          "service_tier",
+          "system_fingerprint",
+          "usage"
+        ],
+        "choice_keys": [
+          "finish_reason",
+          "index",
+          "message"
+        ],
+        "message_keys": [
+          "annotations",
+          "content",
+          "reasoning_content",
+          "role",
+          "tools"
+        ],
+        "content_field": "choices[0].message.content"
+      },
+      "content_type": "str",
+      "content_length": 47,
+      "content_nonempty": true,
+      "reasoning_content_length": 5473,
+      "reasoning_content_nonempty": true,
+      "token_usage": {
+        "completion_tokens": 1200,
+        "prompt_tokens": 671,
+        "total_tokens": 1871
+      },
+      "generated_output": "{\n\"summary\": \"Answers a QARequest by validating",
+      "generated_output_sha256": "71eb745d6a8adb6cc966e23dffa593e6ea67b75089943ec1e1daef19fe4f565d",
+      "parser_status": "not_run_output_truncated"
+    },
+    {
+      "cell": "qwen_fa_complex",
+      "provider": "ollama",
+      "model": "qwen2.5-coder-3b-codecompass:latest",
+      "language": "fa",
+      "symbol_complexity": "complex",
+      "source_case_id": "CB-DOC-C-FA",
+      "qualified_symbol": "GroundedQAService.answer",
+      "system_prompt_sha256": "6aae103231e65ffb0f58c93e93eafc8fa41e645176885661e7adcce43f1eadf3",
+      "user_prompt_sha256": "7d27cd7e9c84fc2cf8900115802ef6c73b241d64d3a6ed679d7e61d6c1661d37",
+      "source_code_sha256": "2705dee37d85d4f02cad20276e880afdcb4a89bad12af39bd419b7d02503cafa",
+      "latency_seconds": 2.045084,
+      "execution_status": "failed",
+      "error_type": "HTTPError"
+    },
+    {
+      "cell": "glm_fa_complex",
+      "provider": "openai_compatible",
+      "model": "glm-5.3-flash",
+      "language": "fa",
+      "symbol_complexity": "complex",
+      "source_case_id": "CB-DOC-C-FA",
+      "qualified_symbol": "GroundedQAService.answer",
+      "system_prompt_sha256": "6aae103231e65ffb0f58c93e93eafc8fa41e645176885661e7adcce43f1eadf3",
+      "user_prompt_sha256": "7d27cd7e9c84fc2cf8900115802ef6c73b241d64d3a6ed679d7e61d6c1661d37",
+      "source_code_sha256": "2705dee37d85d4f02cad20276e880afdcb4a89bad12af39bd419b7d02503cafa",
+      "latency_seconds": 13.599976,
+      "finish_reason": "length",
+      "response_shape": {
+        "top_level_keys": [
+          "choices",
+          "created",
+          "estimated_cost",
+          "id",
+          "model",
+          "object",
+          "service_tier",
+          "system_fingerprint",
+          "usage"
+        ],
+        "choice_keys": [
+          "finish_reason",
+          "index",
+          "message"
+        ],
+        "message_keys": [
+          "annotations",
+          "content",
+          "reasoning_content",
+          "role",
+          "tools"
+        ],
+        "content_field": "choices[0].message.content"
+      },
+      "content_type": "str",
+      "content_length": 0,
+      "content_nonempty": false,
+      "reasoning_content_length": 4817,
+      "reasoning_content_nonempty": true,
+      "token_usage": {
+        "completion_tokens": 1200,
+        "prompt_tokens": 769,
+        "total_tokens": 1969
+      },
+      "parser_status": "not_run_empty_content"
+    }
+  ],
+  "completed_at_utc": "2026-09-03T17:28:42.186004+00:00"
+}

@@ -1,0 +1,207 @@
+{
+  "review_id": "m26-documentation-root-cause-independent-review",
+  "review_date": "2026-09-03",
+  "mode": "offline_read_only",
+  "source_revision": "b94c6dd5f02cfe69fa11bd4e105ae044cd56ba9d",
+  "scope": {
+    "provider_calls": 0,
+    "llm_calls": 0,
+    "indexing_calls": 0,
+    "retrieval_calls": 0,
+    "production_changes": 0,
+    "benchmark_changes": 0
+  },
+  "artifact_hashes_sha256": {
+    "benchmark_cases.json": "5fbec49e1ad4c70af6a8aabf028f473afbdeb807d189070914b778ed3e9699af",
+    "frozen_retrieval_evidence.json": "2359b07c36f19d47faf0171de0ab5e48ebc8b2f4620b6a8a8a6865cf75cc4c83",
+    "qwen_results.json": "f0ed5404b5a7b86f33147ac002841f42624c173807325abfc32faa62f00d4f86",
+    "qwen_quality_evaluation.json": "e048e00fa3f1c38aebd261a9914fc1bce2987eba0d8b83a82c1fda7c8fddeccd",
+    "glm_results.json": "a2802c6f598c36baf9496cf915491d977b8abb1f39811de7f7e8f2435c43aaa2",
+    "glm_quality_evaluation.json": "9966990408e7cd503ef34fc0078ec786fea386caee538dcef17dc5b66cf727bf"
+  },
+  "proposal_requirements": [
+    "Generate targeted explanations or initial documentation for code sections related to a user's question.",
+    "Support natural-language questions including Persian in the experimental scope.",
+    "Ground generated output in actual repository content and avoid speculative or irrelevant explanations.",
+    "Include useful items such as purpose, inputs, outputs, and related files or functions.",
+    "Evaluate consistency with code, understandability, and usefulness to developers.",
+    "Whole-repository automatic documentation and fully local execution are not mandatory commitments."
+  ],
+  "observations": {
+    "qwen": {
+      "model": "qwen2.5-coder-3b-codecompass:latest",
+      "documentation_cases": 6,
+      "complete_schema_valid_outputs": 5,
+      "incomplete_outputs": 1,
+      "average_documentation_score": 6.5,
+      "english_average_score": 7.6666666667,
+      "persian_average_score_including_incomplete": 5.3333333333,
+      "persian_average_score_reviewable_only": 8.0,
+      "notable_failures": [
+        "One English case invented a state-mutating side effect not supported by source.",
+        "Two reviewable cases omitted source-supported details.",
+        "The longest Persian CodeCompass case ended mid-string and was invalid JSON."
+      ],
+      "execution_history": "The original six documentation attempts failed at the local provider boundary; all six were replayed from identical frozen inputs. Five replay outputs were complete and one was incomplete."
+    },
+    "glm": {
+      "model": "glm-5.3-flash",
+      "documentation_cases": 6,
+      "reviewable_quality_cases": 0,
+      "empty_content_failures": 4,
+      "length_terminated_outputs": 2,
+      "complete_schema_valid_outputs": 0,
+      "qa_cases_with_complete_reviewable_output": 5,
+      "qa_reviewable_average_correctness": 10.0,
+      "notable_failures": [
+        "All three English documentation calls ended as invalid_response_empty_content.",
+        "One Persian documentation call ended as invalid_response_empty_content.",
+        "Two Persian documentation calls returned partial JSON with finish_reason=length.",
+        "One partial Persian output had already started a raises object shape that conflicts with the required list-of-strings schema."
+      ]
+    },
+    "offline_replay": {
+      "qwen_complete_outputs_accepted_by_current_parser": 5,
+      "qwen_incomplete_outputs_rejected_as_invalid_json": 1,
+      "glm_partial_outputs_rejected_as_invalid_json": 2,
+      "glm_empty_outputs_available_for_replay": 0,
+      "conclusion": "No stored complete output was incorrectly rejected by the documentation parser. The four GLM empty-content failures occurred before schema validation."
+    },
+    "architecture": {
+      "trusted": [
+        "Symbol resolution, source path, line range, chunk identity, and citations come from SQLite metadata.",
+        "Exact parameter names, signature, return annotation, async status, and source code are supplied as trusted evidence."
+      ],
+      "model_owned": [
+        "summary",
+        "detailed_description",
+        "parameter descriptions",
+        "return explanation",
+        "raises",
+        "side effects",
+        "dependencies",
+        "notes"
+      ],
+      "adapter_constraints": [
+        "The OpenAI-compatible adapter reads only choices[0].message.content.",
+        "Blank content is converted to invalid_response_empty_content before documentation validation.",
+        "The provider-neutral response preserves text, model, provider, and finish_reason, but not token usage or a sanitized response-envelope shape.",
+        "Non-standard reasoning_content is neither consumed nor recorded."
+      ]
+    }
+  },
+  "hypotheses": [
+    {
+      "name": "provider_issue",
+      "classification": "supported_not_confirmed",
+      "weight": "high",
+      "evidence_for": [
+        "Four GLM documentation executions reached the adapter with blank canonical message.content and were classified invalid_response_empty_content.",
+        "The same GLM route produced usable content for five QA cases, so failure is specific to the documentation request shape or provider handling rather than total connectivity."
+      ],
+      "evidence_against_or_limits": [
+        "Raw response envelopes were not retained, so it is unknown whether text existed in a non-standard field such as reasoning_content.",
+        "A blank canonical content field can originate from provider behavior, model serving behavior, or adapter incompatibility."
+      ],
+      "conclusion": "A provider-boundary failure is confirmed; attribution to the external provider alone is not."
+    },
+    {
+      "name": "adapter_bug",
+      "classification": "possible_not_demonstrated",
+      "weight": "medium",
+      "evidence_for": [
+        "The adapter accepts only message.content and has no compatibility path for non-standard reasoning_content.",
+        "No raw envelope or field-presence metadata was stored for the empty responses."
+      ],
+      "evidence_against_or_limits": [
+        "Every stored non-empty output reached the result artifact; five complete Qwen outputs pass the current parser.",
+        "OpenAI-compatible canonical output is message.content, so ignoring an unproven provider extension is not itself proof of a defect.",
+        "The empty GLM envelopes are unavailable for offline replay."
+      ],
+      "conclusion": "No integration fix is justified from existing evidence. A raw-envelope diagnostic is required before changing the adapter."
+    },
+    {
+      "name": "schema_contract_pressure",
+      "classification": "strongly_supported",
+      "weight": "high",
+      "evidence_for": [
+        "Documentation requires one strict eight-field JSON object while QA accepts ordinary text.",
+        "Both non-empty GLM documentation outputs terminated with finish_reason=length and incomplete JSON.",
+        "The most complex Persian Qwen documentation case also ended mid-string.",
+        "A partial GLM output was already diverging from the requested raises list-of-strings shape.",
+        "Prompt sizes ranged from 1474 to 4789 characters and place inference of raises, side effects, and dependencies on the model."
+      ],
+      "evidence_against_or_limits": [
+        "Five Qwen documentation outputs completed under the same 1200-token setting.",
+        "The artifacts contain no token usage, so hidden reasoning-token consumption and output-token pressure cannot be separated."
+      ],
+      "conclusion": "The current contract materially contributes to reliability risk, especially for longer symbols; it does not explain every empty GLM response by itself."
+    },
+    {
+      "name": "model_limitation",
+      "classification": "supported_for_qwen_not_measurable_for_glm_documentation",
+      "weight": "medium",
+      "evidence_for": [
+        "Qwen produced one unsupported side-effect claim, omitted source-supported behavior in two cases, and failed to complete one complex Persian output.",
+        "Qwen documentation quality averaged 6.5/10 despite trusted source evidence."
+      ],
+      "evidence_against_or_limits": [
+        "Five of six Qwen outputs were schema-valid and reviewable.",
+        "GLM documentation quality cannot be scored because no execution produced a complete reviewable document.",
+        "Five reviewable GLM QA cases scored 10/10, arguing against a general GLM code-understanding failure."
+      ],
+      "conclusion": "Qwen generation limitations are supported but entangled with contract complexity. GLM documentation capability is not measurable from this run."
+    },
+    {
+      "name": "persian_language_weakness",
+      "classification": "not_measurable_causally",
+      "weight": "low",
+      "evidence_for": [
+        "The Qwen Persian mean including the incomplete case was 5.33/10 versus 7.67/10 for English.",
+        "The incomplete Qwen documentation and both length-terminated GLM documentation outputs were Persian."
+      ],
+      "evidence_against_or_limits": [
+        "English and Persian documentation cases target different symbols and have materially different source and prompt lengths.",
+        "The two reviewable Persian Qwen cases averaged 8.0/10, slightly above the English mean.",
+        "All three GLM English documentation cases returned empty content, while two Persian cases at least returned substantive partial content.",
+        "The benchmark is not a paired same-symbol language experiment."
+      ],
+      "conclusion": "The current data do not establish a Persian-specific model weakness. They establish a completion/reliability problem that affected several Persian cases."
+    },
+    {
+      "name": "missing_deterministic_facts",
+      "classification": "supported_architectural_gap",
+      "weight": "high",
+      "evidence_for": [
+        "The service deterministically owns identity, parameter names, signature, return annotation, and citation, but asks the model to infer raises, direct dependencies, side effects, and behavior from raw source.",
+        "Observed Qwen failures include an invented side effect and omitted commit, callback, transaction, and control-flow details.",
+        "The proposal requires grounded purpose, inputs, outputs, and related functions; syntax-visible facts can satisfy part of that requirement without model inference."
+      ],
+      "evidence_against_or_limits": [
+        "Deterministic syntax facts cannot fully determine purpose or runtime semantics.",
+        "The complete source chunk is already present, so this is not missing evidence in the literal sense; it is missing deterministic ownership of facts."
+      ],
+      "conclusion": "Moving syntax-visible facts out of model ownership is justified independently of provider choice."
+    }
+  ],
+  "decision_gate": {
+    "integration_bug_confirmed": false,
+    "provider_limitation_confirmed": false,
+    "contract_pressure_supported": true,
+    "deterministic_fact_gap_supported": true,
+    "persian_specific_weakness_confirmed": false,
+    "recommended_next_step": "Run one approved, non-scoring GLM documentation transport diagnostic on a simple frozen case using the unchanged request. Capture only a secret-safe response-envelope schema: choice keys, message keys, content length, reasoning_content length if present, finish_reason, and usage counts. Do not alter the adapter or benchmark first.",
+    "outcomes": {
+      "content_empty_reasoning_present": "Classify as provider compatibility/adapter gap; make the smallest explicit compatibility decision before model-quality testing.",
+      "content_and_reasoning_empty": "Record provider/model-serving limitation; do not change the validator.",
+      "canonical_content_complete": "Treat prior empty responses as transient and proceed to the paired language diagnostic.",
+      "canonical_content_truncated": "Treat contract/output-budget pressure as confirmed and begin M26 with deterministic facts plus a smaller narrative contract."
+    },
+    "full_2_models_x_2_languages_x_2_symbols_diagnostic": {
+      "needed_now": false,
+      "needed_after_transport_gate": true,
+      "reason": "It is required only to make a causal Persian-versus-English claim, because the existing language cases use different symbols. Running all eight calls before resolving the GLM envelope ambiguity would spend calls without isolating the first failure boundary."
+    }
+  },
+  "overall_conclusion": "The strongest current explanation is a combination of strict structured-output pressure and excessive model ownership of syntax-visible facts. A GLM provider/adapter boundary problem is also real, but the stored artifacts cannot assign it to provider or adapter. A Persian-specific weakness is not established."
+}
