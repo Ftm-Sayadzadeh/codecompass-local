@@ -1,0 +1,106 @@
+{
+  "dataset_id": "m26.1-persian-documentation-development-v1",
+  "status": "frozen_before_prompt_change",
+  "purpose": "Development-only cases for improving Persian Function Documentation rendering",
+  "controls": {
+    "language": "fa",
+    "case_count": 6,
+    "source_store": "controlled_benchmark_v1/storage/metadata.sqlite",
+    "temperature": 0.0,
+    "max_tokens": 1200,
+    "excluded_holdout": "m26-documentation-baseline-v1",
+    "rules": [
+      "Do not use these cases as final M26.1 evidence",
+      "Do not change AST facts, citations, QA, retrieval, indexing, or provider configuration",
+      "Run the frozen ten-case holdout once after development is complete"
+    ]
+  },
+  "cases": [
+    {
+      "case_id": "M26D-H-TRIE-SEARCH-FA",
+      "project_id": 1,
+      "repository": "Hospital-System",
+      "identifier": "Trie.search",
+      "target": {"relative_path": "data_structures/trie.py", "start_line": 23, "end_line": 29},
+      "expected_behavior": [
+        "starts at the trie root",
+        "returns false when a character edge is absent",
+        "otherwise follows each character edge",
+        "returns whether the final node marks the end of a word"
+      ],
+      "technical_terms_to_preserve": ["trie", "root", "is_end_of_word"]
+    },
+    {
+      "case_id": "M26D-H-PATIENT-LOGIN-FA",
+      "project_id": 1,
+      "repository": "Hospital-System",
+      "identifier": "Patients.login",
+      "target": {"relative_path": "data_access/patients.py", "start_line": 54, "end_line": 62},
+      "expected_behavior": [
+        "looks up a national id using the supplied password",
+        "loads the associated patient when an id exists",
+        "returns true only when the stored phone number matches",
+        "returns false otherwise"
+      ],
+      "technical_terms_to_preserve": ["phone_num", "password", "national_id"]
+    },
+    {
+      "case_id": "M26D-B-PHONE-AUTH-FA",
+      "project_id": 2,
+      "repository": "CS-Bookstore",
+      "identifier": "PhoneAuthBackend.authenticate",
+      "target": {"relative_path": "users/authentication.py", "start_line": 5, "end_line": 13},
+      "expected_behavior": [
+        "loads a user whose phone equals username",
+        "returns the user when the password check succeeds",
+        "returns null for a wrong password",
+        "returns null when the user is absent or multiple users match"
+      ],
+      "technical_terms_to_preserve": ["username", "password", "User.DoesNotExist", "User.MultipleObjectsReturned"]
+    },
+    {
+      "case_id": "M26D-B-BOOK-DETAIL-FA",
+      "project_id": 2,
+      "repository": "CS-Bookstore",
+      "identifier": "book_detail",
+      "target": {"relative_path": "store/views.py", "start_line": 40, "end_line": 49},
+      "expected_behavior": [
+        "loads a book by id and slug",
+        "loads active reviews ordered by newest creation time",
+        "includes a review form only for an authenticated user",
+        "renders store/detail.html with the context"
+      ],
+      "technical_terms_to_preserve": ["ReviewForm", "store/detail.html", "context"]
+    },
+    {
+      "case_id": "M26D-C-BASE-URL-FA",
+      "project_id": 3,
+      "repository": "CodeCompass",
+      "identifier": "validate_base_url",
+      "target": {"relative_path": "src/codecompass/_openai_compatible_http.py", "start_line": 22, "end_line": 32},
+      "expected_behavior": [
+        "requires a non-empty string",
+        "removes surrounding whitespace and trailing slashes",
+        "requires an absolute HTTP or HTTPS URL",
+        "rejects credentials, query data, and fragments",
+        "returns the normalized URL"
+      ],
+      "technical_terms_to_preserve": ["base_url", "HTTP", "HTTPS", "URL"]
+    },
+    {
+      "case_id": "M26D-C-JSON-TEXT-FA",
+      "project_id": 3,
+      "repository": "CodeCompass",
+      "identifier": "FunctionDocumentationService._json_text",
+      "target": {"relative_path": "src/codecompass/documentation/service.py", "start_line": 402, "end_line": 416},
+      "expected_behavior": [
+        "rejects empty or non-string model output",
+        "returns plain text after trimming whitespace",
+        "accepts one complete unlabeled or JSON Markdown fence",
+        "rejects malformed fences",
+        "returns the trimmed content inside a valid fence"
+      ],
+      "technical_terms_to_preserve": ["JSON", "Markdown", "DocumentationError"]
+    }
+  ]
+}
