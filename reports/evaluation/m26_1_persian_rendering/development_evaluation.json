@@ -1,0 +1,55 @@
+{
+  "evaluation_id": "m26.1-persian-rendering-development-evaluation-v1",
+  "status": "complete",
+  "development_cases_sha256": "4525cf4cd70b393a00a367a480baf9aeb77b5c84464908ef01e6be9052f8cd57",
+  "method": "AI-assisted qualitative review against the frozen development ground truth; no holdout cases were executed.",
+  "iterations": [
+    {
+      "name": "production_baseline",
+      "artifact": "development_baseline_results.json",
+      "artifact_sha256": "a4ebd13929feca1a1aaf98dc7849f78e5d02afea511b65ffe472be9dad4555ac",
+      "complete": 6,
+      "total": 6,
+      "average_latency_seconds": 61.923,
+      "finding": "Structurally reliable, but Persian prose contains literal translations, vague behavior, omitted branches, and unnatural terminology."
+    },
+    {
+      "name": "candidate_1_english_style_rules",
+      "artifact": "development_candidate_results.json",
+      "artifact_sha256": "4ca009c3ce2aeffe362d2f33e4c1b9f709128895b9bc6410953f72bbd6ca2064",
+      "complete": 6,
+      "total": 6,
+      "average_latency_seconds": 51.987,
+      "trusted_facts_and_citations_equal": "6/6",
+      "finding": "No consistent prose improvement. New malformed technical translations appeared and important control paths remained omitted."
+    },
+    {
+      "name": "candidate_2_final_persian_rules",
+      "artifact": "development_candidate_v2_results.json",
+      "artifact_sha256": "efeb992e539268d1eb57bfe9054b75d8fefd0145106224e26c226dab0d2b5738",
+      "complete": 5,
+      "total": 6,
+      "average_latency_seconds": 50.309,
+      "trusted_facts_and_citations_equal": "5/5 successful cases",
+      "finding": "Still produced unnatural terminology and incomplete behavior, violated the no-numbered-list instruction, and introduced one invalid-JSON failure."
+    }
+  ],
+  "case_findings": [
+    {"case_id": "M26D-H-TRIE-SEARCH-FA", "result": "not_improved", "evidence": "Both candidates used malformed Persian terminology for trie and reduced the traversal behavior to a generic boolean lookup."},
+    {"case_id": "M26D-H-PATIENT-LOGIN-FA", "result": "not_improved", "evidence": "Both candidates remained title-like or grammatically broken and did not clearly explain the password-to-id lookup and phone comparison."},
+    {"case_id": "M26D-B-PHONE-AUTH-FA", "result": "mixed", "evidence": "The final candidate was clearer, but exception branches and return wording were still incomplete."},
+    {"case_id": "M26D-B-BOOK-DETAIL-FA", "result": "regressed", "evidence": "Both candidates omitted or distorted review ordering, authenticated-form creation, and template rendering details."},
+    {"case_id": "M26D-C-BASE-URL-FA", "result": "not_improved", "evidence": "Technical vocabulary and error semantics remained unnatural; raising ValueError was incorrectly described as returning it."},
+    {"case_id": "M26D-C-JSON-TEXT-FA", "result": "regressed", "evidence": "The first candidate used a numbered list despite the style rule and the final candidate failed JSON validation."}
+  ],
+  "controls": {
+    "indexing_calls": 0,
+    "retrieval_calls": 0,
+    "external_provider_calls": 0,
+    "source_sqlite_unchanged": true,
+    "production_prompt_promoted": false,
+    "frozen_m26_holdout_executed": false
+  },
+  "decision": "DO_NOT_PROMOTE_PROMPT_ONLY_M26_1",
+  "interpretation": "The remaining Persian prose weakness is primarily a local Qwen generation limitation under this contract, not a failure of deterministic facts or citation composition. More tuning on six cases would risk overfitting without evidence of general improvement."
+}
