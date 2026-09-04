@@ -1,0 +1,318 @@
+{
+  "status": "complete",
+  "decision": {
+    "strict_superiority_gate_passed": false,
+    "official_ranking_preference": "gemini-embedding-2",
+    "strict_rule": "Strict superiority requires both official Hybrid Top-3 and MRR@10 to increase.",
+    "descriptive_rule": "A ranking preference requires Top-3 and evidence recall not to regress while Top-1 and MRR@10 improve.",
+    "hybrid_top_1_delta": 0.08333333333333337,
+    "hybrid_top_3_delta": 0.0,
+    "hybrid_mrr_at_10_delta": 0.03710317460317469,
+    "hybrid_evidence_recall_at_10_delta": 0.04166666666666674
+  },
+  "official_metrics": {
+    "nomic": {
+      "global_micro:all:lexical": {
+        "questions": 60,
+        "top_1": 0.43333333333333335,
+        "top_3": 0.7166666666666667,
+        "mrr_at_10": 0.5808796296296297,
+        "evidence_recall_at_10": 0.8166666666666667
+      },
+      "global_micro:all:semantic": {
+        "questions": 60,
+        "top_1": 0.35,
+        "top_3": 0.65,
+        "mrr_at_10": 0.5061309523809523,
+        "evidence_recall_at_10": 0.7166666666666667
+      },
+      "global_micro:all:hybrid": {
+        "questions": 60,
+        "top_1": 0.6333333333333333,
+        "top_3": 0.7833333333333333,
+        "mrr_at_10": 0.7322222222222223,
+        "evidence_recall_at_10": 0.8666666666666667
+      },
+      "language:en:lexical": {
+        "questions": 30,
+        "top_1": 0.36666666666666664,
+        "top_3": 0.7,
+        "mrr_at_10": 0.5302777777777777,
+        "evidence_recall_at_10": 0.8
+      },
+      "language:en:semantic": {
+        "questions": 30,
+        "top_1": 0.5,
+        "top_3": 0.7666666666666667,
+        "mrr_at_10": 0.6355555555555554,
+        "evidence_recall_at_10": 0.8833333333333333
+      },
+      "language:en:hybrid": {
+        "questions": 30,
+        "top_1": 0.7,
+        "top_3": 0.8,
+        "mrr_at_10": 0.7866666666666666,
+        "evidence_recall_at_10": 0.9166666666666666
+      },
+      "language:fa:lexical": {
+        "questions": 30,
+        "top_1": 0.5,
+        "top_3": 0.7333333333333333,
+        "mrr_at_10": 0.6314814814814814,
+        "evidence_recall_at_10": 0.8333333333333334
+      },
+      "language:fa:semantic": {
+        "questions": 30,
+        "top_1": 0.2,
+        "top_3": 0.5333333333333333,
+        "mrr_at_10": 0.37670634920634927,
+        "evidence_recall_at_10": 0.55
+      },
+      "language:fa:hybrid": {
+        "questions": 30,
+        "top_1": 0.5666666666666667,
+        "top_3": 0.7666666666666667,
+        "mrr_at_10": 0.6777777777777777,
+        "evidence_recall_at_10": 0.8166666666666667
+      }
+    },
+    "gemini_001": {
+      "global_micro:all:lexical": {
+        "questions": 60,
+        "top_1": 0.43333333333333335,
+        "top_3": 0.7166666666666667,
+        "mrr_at_10": 0.5808796296296297,
+        "evidence_recall_at_10": 0.8166666666666667
+      },
+      "global_micro:all:semantic": {
+        "questions": 60,
+        "top_1": 0.7166666666666667,
+        "top_3": 0.9333333333333333,
+        "mrr_at_10": 0.826388888888889,
+        "evidence_recall_at_10": 0.95
+      },
+      "global_micro:all:hybrid": {
+        "questions": 60,
+        "top_1": 0.7166666666666667,
+        "top_3": 0.95,
+        "mrr_at_10": 0.8305555555555556,
+        "evidence_recall_at_10": 0.95
+      },
+      "language:en:lexical": {
+        "questions": 30,
+        "top_1": 0.36666666666666664,
+        "top_3": 0.7,
+        "mrr_at_10": 0.5302777777777777,
+        "evidence_recall_at_10": 0.8
+      },
+      "language:en:semantic": {
+        "questions": 30,
+        "top_1": 0.7333333333333333,
+        "top_3": 0.9333333333333333,
+        "mrr_at_10": 0.8444444444444444,
+        "evidence_recall_at_10": 0.9666666666666667
+      },
+      "language:en:hybrid": {
+        "questions": 30,
+        "top_1": 0.7333333333333333,
+        "top_3": 0.9333333333333333,
+        "mrr_at_10": 0.8388888888888889,
+        "evidence_recall_at_10": 0.9666666666666667
+      },
+      "language:fa:lexical": {
+        "questions": 30,
+        "top_1": 0.5,
+        "top_3": 0.7333333333333333,
+        "mrr_at_10": 0.6314814814814814,
+        "evidence_recall_at_10": 0.8333333333333334
+      },
+      "language:fa:semantic": {
+        "questions": 30,
+        "top_1": 0.7,
+        "top_3": 0.9333333333333333,
+        "mrr_at_10": 0.8083333333333333,
+        "evidence_recall_at_10": 0.9333333333333333
+      },
+      "language:fa:hybrid": {
+        "questions": 30,
+        "top_1": 0.7,
+        "top_3": 0.9666666666666667,
+        "mrr_at_10": 0.8222222222222222,
+        "evidence_recall_at_10": 0.9333333333333333
+      }
+    },
+    "gemini_2": {
+      "global_micro:all:lexical": {
+        "questions": 60,
+        "top_1": 0.43333333333333335,
+        "top_3": 0.7166666666666667,
+        "mrr_at_10": 0.5808796296296297,
+        "evidence_recall_at_10": 0.8166666666666667
+      },
+      "global_micro:all:semantic": {
+        "questions": 60,
+        "top_1": 0.85,
+        "top_3": 1.0,
+        "mrr_at_10": 0.9166666666666666,
+        "evidence_recall_at_10": 0.9666666666666667
+      },
+      "global_micro:all:hybrid": {
+        "questions": 60,
+        "top_1": 0.8,
+        "top_3": 0.95,
+        "mrr_at_10": 0.8676587301587303,
+        "evidence_recall_at_10": 0.9916666666666667
+      },
+      "language:en:lexical": {
+        "questions": 30,
+        "top_1": 0.36666666666666664,
+        "top_3": 0.7,
+        "mrr_at_10": 0.5302777777777777,
+        "evidence_recall_at_10": 0.8
+      },
+      "language:en:semantic": {
+        "questions": 30,
+        "top_1": 0.9,
+        "top_3": 1.0,
+        "mrr_at_10": 0.9444444444444445,
+        "evidence_recall_at_10": 0.9666666666666667
+      },
+      "language:en:hybrid": {
+        "questions": 30,
+        "top_1": 0.8333333333333334,
+        "top_3": 0.9333333333333333,
+        "mrr_at_10": 0.8797619047619046,
+        "evidence_recall_at_10": 1.0
+      },
+      "language:fa:lexical": {
+        "questions": 30,
+        "top_1": 0.5,
+        "top_3": 0.7333333333333333,
+        "mrr_at_10": 0.6314814814814814,
+        "evidence_recall_at_10": 0.8333333333333334
+      },
+      "language:fa:semantic": {
+        "questions": 30,
+        "top_1": 0.8,
+        "top_3": 1.0,
+        "mrr_at_10": 0.888888888888889,
+        "evidence_recall_at_10": 0.9666666666666667
+      },
+      "language:fa:hybrid": {
+        "questions": 30,
+        "top_1": 0.7666666666666667,
+        "top_3": 0.9666666666666667,
+        "mrr_at_10": 0.8555555555555555,
+        "evidence_recall_at_10": 0.9833333333333333
+      }
+    }
+  },
+  "controlled_metrics": {
+    "lexical": {
+      "nomic": {
+        "cases": 18,
+        "hit_1": 0.6666666666666666,
+        "hit_3": 0.7222222222222222,
+        "hit_10": 0.7222222222222222,
+        "mrr_at_10": 0.6944444444444444
+      },
+      "gemini_001": {
+        "cases": 18,
+        "hit_1": 0.6666666666666666,
+        "hit_3": 0.7222222222222222,
+        "hit_10": 0.7222222222222222,
+        "mrr_at_10": 0.6944444444444444
+      },
+      "gemini_2": {
+        "cases": 18,
+        "hit_1": 0.6666666666666666,
+        "hit_3": 0.7222222222222222,
+        "hit_10": 0.7222222222222222,
+        "mrr_at_10": 0.6944444444444444
+      }
+    },
+    "semantic": {
+      "nomic": {
+        "cases": 18,
+        "hit_1": 0.4444444444444444,
+        "hit_3": 0.4444444444444444,
+        "hit_10": 0.4444444444444444,
+        "mrr_at_10": 0.4444444444444444
+      },
+      "gemini_001": {
+        "cases": 18,
+        "hit_1": 0.5555555555555556,
+        "hit_3": 0.9444444444444444,
+        "hit_10": 1.0,
+        "mrr_at_10": 0.7222222222222223
+      },
+      "gemini_2": {
+        "cases": 18,
+        "hit_1": 0.5555555555555556,
+        "hit_3": 0.9444444444444444,
+        "hit_10": 1.0,
+        "mrr_at_10": 0.7314814814814815
+      }
+    },
+    "hybrid": {
+      "nomic": {
+        "cases": 18,
+        "hit_1": 0.4444444444444444,
+        "hit_3": 0.6111111111111112,
+        "hit_10": 0.7777777777777778,
+        "mrr_at_10": 0.550925925925926
+      },
+      "gemini_001": {
+        "cases": 18,
+        "hit_1": 0.6666666666666666,
+        "hit_3": 0.8333333333333334,
+        "hit_10": 1.0,
+        "mrr_at_10": 0.7677248677248678
+      },
+      "gemini_2": {
+        "cases": 18,
+        "hit_1": 0.6111111111111112,
+        "hit_3": 0.8333333333333334,
+        "hit_10": 1.0,
+        "mrr_at_10": 0.7395061728395063
+      }
+    }
+  },
+  "qa": {
+    "nomic": {
+      "cases": 6,
+      "complete": 6,
+      "failed": 0,
+      "finish_reasons": {
+        "stop": 5,
+        "length": 1
+      },
+      "mean_latency_seconds": 6.833979666666667
+    },
+    "gemini_001": {
+      "cases": 6,
+      "complete": 6,
+      "failed": 0,
+      "finish_reasons": {
+        "stop": 5,
+        "length": 1
+      },
+      "mean_latency_seconds": 7.101830666666666
+    },
+    "gemini_2": {
+      "cases": 6,
+      "complete": 6,
+      "failed": 0,
+      "finish_reasons": {
+        "stop": 5,
+        "length": 1
+      },
+      "mean_latency_seconds": 7.351322833333334
+    },
+    "prompt_identity": {
+      "gemini_2_vs_nomic": 6,
+      "gemini_2_vs_gemini_001": 6,
+      "cases": 6
+    }
+  }
+}

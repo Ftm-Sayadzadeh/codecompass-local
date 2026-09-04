@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "validation_id": "official_embedding_comparison_v1_final_validation",
+  "status": "pass",
+  "checks": {
+    "benchmark_canonical_sha256": true,
+    "baseline_canonical_sha256": true,
+    "snapshot_provenance": true,
+    "local_records": true,
+    "gemini_records": true,
+    "paired_transitions": true,
+    "lexical_rankings_identical": true,
+    "gemini_vector_completeness": true,
+    "secret_scan": true,
+    "absolute_machine_path_scan": true,
+    "report_hashes": true,
+    "llm_calls": true
+  },
+  "production_behavior_changed": false,
+  "benchmark_modified": false,
+  "notes": [
+    "Checkout hashes may differ from canonical hashes only because Git normalized line endings on Windows.",
+    "The experiment adds evaluation-only tooling and isolated artifacts; it does not alter runtime retrieval defaults."
+  ]
+}

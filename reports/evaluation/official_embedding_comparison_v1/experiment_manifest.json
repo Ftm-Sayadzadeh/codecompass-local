@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "experiment_id": "official_embedding_comparison_v1",
+  "created_at": "2026-09-04T18:52:39.158197+00:00",
+  "status": "indexes_complete",
+  "benchmark": {
+    "path": "data/evaluation/bilingual_benchmark_v1.json",
+    "canonical_sha256": "2a04a4f1b707481126c31673840670b4b72d3877c34b1990f12b2245688d69aa",
+    "checkout_sha256": "8658342c774723078d92898a8fa97a4637b8a3c37fb9f24d468f79a7b4df0aa7"
+  },
+  "baseline": {
+    "path": "data/evaluation/results/official_baseline_v1.json",
+    "canonical_sha256": "45c0b3fb1adb91224e24cf8a9f42611e632afcfb5cf4d492518492ffbe700edc",
+    "checkout_sha256": "3e190f883feac45d0a8791bc31e49ca987486678c94453af5c86410b8a6699f3"
+  },
+  "snapshot": {
+    "path": "data/evaluation/index_snapshots/official_baseline_v1",
+    "sha256": "31ddf2c8c9de4649662ed9a4ada04c06d8473b733d23aa2ce29419301e3090b0"
+  },
+  "fixed": {
+    "questions": 60,
+    "concepts": 30,
+    "retrieval_methods": [
+      "lexical",
+      "semantic",
+      "hybrid"
+    ],
+    "retrieval_limit": 10,
+    "canonical_chunks": true,
+    "chunk_ids": true,
+    "lexical_ranking": true
+  },
+  "only_changed_variable": "embedding provider/model: Ollama nomic-embed-text-local:latest -> AvalAI gemini-embedding-001",
+  "local_embedding": {
+    "provider": "ollama",
+    "model": "nomic-embed-text-local:latest",
+    "digest": "8514df7f98ca618f7b4d4dcf3735492449d29a4020dc5da574d4056d6136047a",
+    "dimensions": 768
+  },
+  "gemini_indexes": [
+    {
+      "repository_name": "pallets/flask",
+      "repository_commit": "d318b683471101618febed18996405ad26462110",
+      "slug": "flask",
+      "project_id": 1,
+      "files": 83,
+      "symbols": 1611,
+      "chunks": 1611,
+      "vectors": 1611,
+      "chunk_ids_sha256": "88fcccc1cf5cf9bf3275e06d924092a7c93e43adde9203e920f6b6695b8b7ca4",
+      "canonical_embedding_text_sha256": "462b403125e376c97d9e1c25e85ae899863f2c969c216b1b54f39a38e5b90262",
+      "embedding_provider": "openai_compatible",
+      "embedding_model": "gemini-embedding-001",
+      "dimensions": 3072,
+      "elapsed_seconds": 174.618
+    },
+    {
+      "repository_name": "pallets/itsdangerous",
+      "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+      "slug": "itsdangerous",
+      "project_id": 1,
+      "files": 15,
+      "symbols": 144,
+      "chunks": 144,
+      "vectors": 144,
+      "chunk_ids_sha256": "ed595a34d1d18439750098926213259b1da4d6808beed12d2d1a4f199cf13a7d",
+      "canonical_embedding_text_sha256": "e2855a773dff2e62fec317f9999040ed3f0ce9ad8e6dbdc1ef63e33b97a695c7",
+      "embedding_provider": "openai_compatible",
+      "embedding_model": "gemini-embedding-001",
+      "dimensions": 3072,
+      "elapsed_seconds": 13.532
+    },
+    {
+      "repository_name": "pallets/markupsafe",
+      "repository_commit": "b2e4d9c7687be25695fffbe93a37622302b24fb1",
+      "slug": "markupsafe",
+      "project_id": 1,
+      "files": 12,
+      "symbols": 116,
+      "chunks": 116,
+      "vectors": 116,
+      "chunk_ids_sha256": "4b6f4761f73a19b656bad5e9ce1256d5eeebb3ba0f140d16f8fca4a697e31e4b",
+      "canonical_embedding_text_sha256": "934e4bcf1ae6b2de9aefd38e1476ce9c7006c08c23f9b1bbcd709e67777a424a",
+      "embedding_provider": "openai_compatible",
+      "embedding_model": "gemini-embedding-001",
+      "dimensions": 3072,
+      "elapsed_seconds": 10.504
+    }
+  ]
+}

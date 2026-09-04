@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "report_id": "official_embedding_comparison_report_v1",
+  "inputs": {
+    "experiment_manifest_sha256": "9d882f845a814c4a8019c9458bbf6fc63680cd85cba02641f0fbd32b8c88b82b",
+    "retrieval_results_sha256": "3a1bfc94c0dcbad8f8cf4d940fd2ca8c7fe2e2318131e1e92c7f7ad72e6914fe",
+    "comparison_summary_sha256": "5e8537f49330b4ac0f57ee4caf0bdee76b637a0d708ad598cc3b229facaea24d"
+  },
+  "outputs": {
+    "markdown": {
+      "path": "official_embedding_comparison_report.md",
+      "sha256": "3da232a4995b5c198acd5805cbc61d0d0d730ff92a9173cc7ee3236681b93868"
+    },
+    "pdf": {
+      "path": "official_embedding_comparison_report.pdf",
+      "sha256": "85779a9153424e81d97af003c9b30cc45d279e4eac9c503972a827c1d5a9da80"
+    }
+  },
+  "language": "English",
+  "evaluation_scope": "retrieval only; no LLM generation"
+}

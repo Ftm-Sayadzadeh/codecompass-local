@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "experiment_id": "gemini2_embedding_comparison_v1",
+  "created_at": "2026-09-04T20:40:24.849376+00:00",
+  "status": "indexes_complete",
+  "new_execution": "Gemini Embedding 2 only",
+  "reused_arms": [
+    "nomic-embed-text-local:latest",
+    "gemini-embedding-001"
+  ],
+  "embedding_model": "gemini-embedding-2",
+  "embedding_dimensions": 3072,
+  "llm_model": "glm-5.3-flash",
+  "official_indexes": [
+    {
+      "repository_name": "pallets/flask",
+      "repository_commit": "d318b683471101618febed18996405ad26462110",
+      "slug": "flask",
+      "project_id": 1,
+      "files": 83,
+      "symbols": 1611,
+      "chunks": 1611,
+      "vectors": 1611,
+      "chunk_ids_sha256": "88fcccc1cf5cf9bf3275e06d924092a7c93e43adde9203e920f6b6695b8b7ca4",
+      "canonical_embedding_text_sha256": "462b403125e376c97d9e1c25e85ae899863f2c969c216b1b54f39a38e5b90262",
+      "embedding_model": "gemini-embedding-2",
+      "dimensions": 3072,
+      "elapsed_seconds": 237.751
+    },
+    {
+      "repository_name": "pallets/itsdangerous",
+      "repository_commit": "672971d66a2ef9f85151e53283113f33d642dabd",
+      "slug": "itsdangerous",
+      "project_id": 1,
+      "files": 15,
+      "symbols": 144,
+      "chunks": 144,
+      "vectors": 144,
+      "chunk_ids_sha256": "ed595a34d1d18439750098926213259b1da4d6808beed12d2d1a4f199cf13a7d",
+      "canonical_embedding_text_sha256": "e2855a773dff2e62fec317f9999040ed3f0ce9ad8e6dbdc1ef63e33b97a695c7",
+      "embedding_model": "gemini-embedding-2",
+      "dimensions": 3072,
+      "elapsed_seconds": 16.063
+    },
+    {
+      "repository_name": "pallets/markupsafe",
+      "repository_commit": "b2e4d9c7687be25695fffbe93a37622302b24fb1",
+      "slug": "markupsafe",
+      "project_id": 1,
+      "files": 12,
+      "symbols": 116,
+      "chunks": 116,
+      "vectors": 116,
+      "chunk_ids_sha256": "4b6f4761f73a19b656bad5e9ce1256d5eeebb3ba0f140d16f8fca4a697e31e4b",
+      "canonical_embedding_text_sha256": "934e4bcf1ae6b2de9aefd38e1476ce9c7006c08c23f9b1bbcd709e67777a424a",
+      "embedding_model": "gemini-embedding-2",
+      "dimensions": 3072,
+      "elapsed_seconds": 17.742
+    }
+  ],
+  "controlled_indexes": [
+    {
+      "repository_id": "codecompass",
+      "project_id": 1,
+      "source_snapshot": {
+        "repository_id": "codecompass",
+        "commit": "4b9eba4df4cc7a5afca27ee3d4c60d578caec0f7",
+        "files": 100,
+        "source_manifest_sha256": "fc75e63befc5a6d6c3d0cf79ad3ba4ba06a2d1416da04c8e7b317a9a467b1aa2"
+      },
+      "files": 100,
+      "symbols": 1236,
+      "chunks": 1236,
+      "vectors": 1236,
+      "chunk_ids_sha256": "956fb0c2d29db713fe02846e5dab16c568cdedcf18968c4ddc8177eb55ccc3af",
+      "canonical_embedding_text_sha256": "5bd993718301484ba930339b909619de258df0f04b247eb355228ddd27cc6ead",
+      "embedding_model": "gemini-embedding-2",
+      "dimensions": 3072,
+      "elapsed_seconds": 186.328
+    },
+    {
+      "repository_id": "cs_bookstore",
+      "project_id": 1,
+      "source_snapshot": {
+        "repository_id": "cs_bookstore",
+        "commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+        "files": 56,
+        "source_manifest_sha256": "2e2f647f35f9c752341c15eaf20a91af31b65dd245524b4a3ac6ada8af0fa05c"
+      },
+      "files": 56,
+      "symbols": 144,
+      "chunks": 144,
+      "vectors": 144,
+      "chunk_ids_sha256": "25a2d215e2ae4c6cd6be8b67445b59c3a21f6d3b489d5ea48849807e711f36a5",
+      "canonical_embedding_text_sha256": "ba6be212e7c5ff321bf6f18c36c5d1ab103dbdb10c736f1e88b0331dcb22decc",
+      "embedding_model": "gemini-embedding-2",
+      "dimensions": 3072,
+      "elapsed_seconds": 20.455
+    },
+    {
+      "repository_id": "hospital_system",
+      "project_id": 1,
+      "source_snapshot": {
+        "repository_id": "hospital_system",
+        "commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633",
+        "files": 33,
+        "source_manifest_sha256": "bd91675f2ca42e57b9b12fa1b64c1e272c5e54e1cb0f5f149c6dce618eb4959c"
+      },
+      "files": 33,
+      "symbols": 409,
+      "chunks": 409,
+      "vectors": 409,
+      "chunk_ids_sha256": "f47a8c1a0230dded95b74c073defd29201a10b9cf9671acd2593e497653155f8",
+      "canonical_embedding_text_sha256": "72e705260d6a9c8b04d95e0be1f63168f162eebe20d010833fb31b2aa51a05bf",
+      "embedding_model": "gemini-embedding-2",
+      "dimensions": 3072,
+      "elapsed_seconds": 49.598
+    }
+  ],
+  "frozen_inputs": {
+    "official_benchmark": "2a04a4f1b707481126c31673840670b4b72d3877c34b1990f12b2245688d69aa",
+    "official_baseline": "45c0b3fb1adb91224e24cf8a9f42611e632afcfb5cf4d492518492ffbe700edc",
+    "official_gemini001_retrieval": "a1639915fc702dc13f45ad190221fd45aeea01b37c94a1d84bd8fd894e665079",
+    "controlled_benchmark": "5fbec49e1ad4c70af6a8aabf028f473afbdeb807d189070914b778ed3e9699af",
+    "controlled_gemini001_retrieval": "43877ef16be8f52a8cf40ee678243ec97b63164a1ce923cbaee7864aa8eff86e",
+    "controlled_gemini001_qa": "cac080581cabaf5004720bb1b8eac97ed5e674afd4872fcd8d3de127e90992ea"
+  }
+}
