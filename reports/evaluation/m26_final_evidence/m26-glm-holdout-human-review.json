@@ -1,0 +1,100 @@
+{
+  "review_id": "m26-glm-holdout-human-review-v1",
+  "status": "completed",
+  "review_type": "human evaluation",
+  "source_results": "reports/evaluation/m26_1_persian_rendering/glm_holdout_results.json",
+  "ground_truth": "reports/evaluation/m26_documentation_baseline/m26_documentation_cases.json",
+  "reviewer": "human_reviewer",
+  "reviewed_at": "2026-09-04",
+
+  "cases": [
+    {
+      "case_id": "M26-DOC-H-LOGIN-FA",
+      "language": "fa",
+      "persian_readability": 9,
+      "factual_correctness": 9,
+      "usefulness": 9,
+      "notes": "توضیح مسیر ورود، نحوه استفاده از password برای یافتن شناسه و مقایسه شماره تلفن دقیق است. identifierهای فنی بدون ترجمه یا تغییر حفظ شده‌اند. تنها محدودیت، اشاره نکردن به خطای ضمنی احتمالی در دسترسی به dictionary مانند KeyError است."
+    },
+    {
+      "case_id": "M26-DOC-H-LOGIN-EN",
+      "language": "en",
+      "persian_readability": "not_applicable",
+      "factual_correctness": 9,
+      "usefulness": 9,
+      "notes": "خروجی انگلیسی ساختار واضحی دارد و رفتار تابع را به‌درستی توضیح می‌دهد. نام متغیرها و ساختار کد حفظ شده‌اند، اما احتمال خطای runtime ناشی از دسترسی به dictionary ذکر نشده است."
+    },
+    {
+      "case_id": "M26-DOC-H-FIND-FA",
+      "language": "fa",
+      "persian_readability": 9,
+      "factual_correctness": 9,
+      "usefulness": 8,
+      "notes": "توضیح delegation به self.find_ دقیق است و هیچ ادعای اضافه‌ای ندارد. با توجه به ساده بودن تابع، ارزش افزوده مستند محدود است."
+    },
+    {
+      "case_id": "M26-DOC-C-PROVIDER-FA",
+      "language": "fa",
+      "persian_readability": 9,
+      "factual_correctness": 10,
+      "usefulness": 9,
+      "notes": "منطق تبدیل خطاها به برچسب‌های استاندارد به‌درستی توضیح داده شده است. branchهای اصلی mapping بدون اضافه کردن رفتار جدید منتقل شده‌اند."
+    },
+    {
+      "case_id": "M26-DOC-H-HEAP-FA",
+      "language": "fa",
+      "persian_readability": 9,
+      "factual_correctness": 9,
+      "usefulness": 9,
+      "notes": "ترتیب عملیات حذف عنصر از heap، بررسی حالت خالی، جایگزینی root، کاهش useful_data و فراخوانی heapify_down دقیق توضیح داده شده است."
+    },
+    {
+      "case_id": "M26-DOC-B-PASSWORD-FA",
+      "language": "fa",
+      "persian_readability": 8,
+      "factual_correctness": 9,
+      "usefulness": 8,
+      "notes": "رفتار اصلی تابع شامل بررسی رمز، ایجاد ValidationError و بازگرداندن مقدار password_2 درست بیان شده است. به دلیل سادگی تابع، کاربرد مستند محدود است."
+    },
+    {
+      "case_id": "M26-DOC-B-REGISTER-FA",
+      "language": "fa",
+      "persian_readability": 9,
+      "factual_correctness": 10,
+      "usefulness": 10,
+      "notes": "مسیرهای مختلف اجرای view شامل POST معتبر، POST نامعتبر و درخواست GET به‌درستی توضیح داده شده‌اند. تنها نکته قابل بهبود، طولانی بودن برخی جملات است."
+    },
+    {
+      "case_id": "M26-DOC-B-REVIEW-FA",
+      "language": "fa",
+      "persian_readability": 9,
+      "factual_correctness": 9,
+      "usefulness": 9,
+      "notes": "رفتار redirect و مسیرهای اصلی کنترل flow دقیق توضیح داده شده است. خروجی توانسته رفتار غیر بدیهی تابع را برجسته کند."
+    },
+    {
+      "case_id": "M26-DOC-C-QA-FA",
+      "language": "fa",
+      "persian_readability": 9,
+      "factual_correctness": 9,
+      "usefulness": 9,
+      "notes": "دو مسیر اصلی شامل نبود evidence و تولید پاسخ توسط LLM به‌درستی جدا شده‌اند. مدیریت خطا و ارتباط آن با QAError درست بیان شده است."
+    },
+    {
+      "case_id": "M26-DOC-C-QA-EN",
+      "language": "en",
+      "persian_readability": "not_applicable",
+      "factual_correctness": 9,
+      "usefulness": 9,
+      "notes": "توضیح انگلیسی کامل و ساختاریافته است. مسیرهای مختلف بازگشت QAAnswer و تبدیل خطاهای provider به QAError به‌صورت دقیق بیان شده‌اند."
+    }
+  ],
+
+  "aggregates": {
+    "persian_readability": 8.9,
+    "factual_correctness": 9.2,
+    "usefulness": 8.9
+  },
+
+  "human_sign_off": "Approved"
+}

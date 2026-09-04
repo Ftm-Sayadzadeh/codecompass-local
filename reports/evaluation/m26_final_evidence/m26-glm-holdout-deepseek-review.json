@@ -1,0 +1,99 @@
+{
+  "review_id": "m26-glm-holdout-deepseek-review-v1",
+  "status": "completed_ai_assisted",
+  "review_type": "AI-assisted evaluation",
+  "reviewer": "DeepSeek",
+  "source_results": "reports/evaluation/m26_1_persian_rendering/glm_holdout_results.json",
+  "ground_truth": "reports/evaluation/m26_documentation_baseline/m26_documentation_cases.json",
+
+  "cases": [
+    {
+      "case_id": "M26-DOC-H-LOGIN-FA",
+      "language": "fa",
+      "persian_readability": 9,
+      "factual_correctness": 9,
+      "usefulness": 8,
+      "notes": "توضیح منطق ورود دقیق و روان است. تنها نقص، اشاره نکردن به احتمال KeyError در صورت نبود password در signed_in است."
+    },
+    {
+      "case_id": "M26-DOC-H-LOGIN-EN",
+      "language": "en",
+      "persian_readability": "not_applicable",
+      "factual_correctness": 9,
+      "usefulness": 8,
+      "notes": "خروجی انگلیسی واضح و دقیق است. ارتباط password، national_id و doctor به خوبی توضیح داده شده است."
+    },
+    {
+      "case_id": "M26-DOC-H-FIND-FA",
+      "language": "fa",
+      "persian_readability": 10,
+      "factual_correctness": 10,
+      "usefulness": 9,
+      "notes": "توضیح دقیق wrapper function و delegation به self.find_ بدون ادعای اضافی."
+    },
+    {
+      "case_id": "M26-DOC-C-PROVIDER-FA",
+      "language": "fa",
+      "persian_readability": 9,
+      "factual_correctness": 10,
+      "usefulness": 9,
+      "notes": "قواعد تبدیل خطاها و mapping خروجی‌ها دقیق و کامل توضیح داده شده است."
+    },
+    {
+      "case_id": "M26-DOC-H-HEAP-FA",
+      "language": "fa",
+      "persian_readability": 9,
+      "factual_correctness": 10,
+      "usefulness": 9,
+      "notes": "تمام مراحل استخراج min، تغییر root، کاهش useful_data و heapify_down درست بیان شده‌اند."
+    },
+    {
+      "case_id": "M26-DOC-B-PASSWORD-FA",
+      "language": "fa",
+      "persian_readability": 9,
+      "factual_correctness": 10,
+      "usefulness": 9,
+      "notes": "رفتار validation فرم Django و exception دقیقاً مطابق source توضیح داده شده است."
+    },
+    {
+      "case_id": "M26-DOC-B-REGISTER-FA",
+      "language": "fa",
+      "persian_readability": 8,
+      "factual_correctness": 10,
+      "usefulness": 9,
+      "notes": "مسیرهای POST، invalid form و GET دقیق پوشش داده شده‌اند، اما جملات کمی طولانی هستند."
+    },
+    {
+      "case_id": "M26-DOC-B-REVIEW-FA",
+      "language": "fa",
+      "persian_readability": 9,
+      "factual_correctness": 10,
+      "usefulness": 10,
+      "notes": "رفتار redirect، ساخت review و get_object_or_404 بسیار خوب توضیح داده شده است."
+    },
+    {
+      "case_id": "M26-DOC-C-QA-FA",
+      "language": "fa",
+      "persian_readability": 8,
+      "factual_correctness": 10,
+      "usefulness": 10,
+      "notes": "مسیرهای no-evidence و موفقیت، citation و خطای LLMProviderError به خوبی پوشش داده شده‌اند. برخی اصطلاحات کمی تحت‌اللفظی هستند."
+    },
+    {
+      "case_id": "M26-DOC-C-QA-EN",
+      "language": "en",
+      "persian_readability": "not_applicable",
+      "factual_correctness": 10,
+      "usefulness": 10,
+      "notes": "توضیح کامل جریان QA، citation، تولید پاسخ و مدیریت خطا."
+    }
+  ],
+
+  "aggregates": {
+    "persian_readability": 9.0,
+    "factual_correctness": 9.8,
+    "usefulness": 9.1
+  },
+
+  "human_sign_off": "not_applicable"
+}

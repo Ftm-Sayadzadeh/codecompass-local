@@ -1,0 +1,43 @@
+{
+  "manifest_id": "m26-final-report-v1",
+  "created_at": "2026-09-04",
+  "status": "complete_human_review_approved",
+  "source_evidence_manifest": {
+    "path": "reports/evaluation/m26_final_evidence/freeze_manifest.json",
+    "sha256": "0c211adeaa723b10f261103e63bffe8061ce1f58f8843832f7d3ad44c42fc315",
+    "artifact_count": 32
+  },
+  "reports": [
+    {
+      "path": "docs/milestones/M26-final-report.md",
+      "sha256": "11083f024a5d217c49c3644b68c3afbad7683f15facb904b421a4a9db707c66c",
+      "bytes": 25201
+    },
+    {
+      "path": "reports/evaluation/m26_final_evidence/m26_final_evaluation_report.md",
+      "sha256": "11083f024a5d217c49c3644b68c3afbad7683f15facb904b421a4a9db707c66c",
+      "bytes": 25201
+    },
+    {
+      "path": "reports/evaluation/m26_final_evidence/m26_final_evaluation_report.pdf",
+      "sha256": "c05702d2b37cb9cd39a1626db4218518df1cbb417e0f9796c6852ab46f1fbd60",
+      "bytes": 107669,
+      "pages": 13
+    }
+  ],
+  "evaluation_roles": {
+    "primary": "human",
+    "secondary_consistency_reviews": [
+      "Claude",
+      "DeepSeek"
+    ]
+  },
+  "validation": {
+    "markdown_mirror_byte_identical": true,
+    "pdf_render_inspected": true,
+    "pdf_text_extractable": true,
+    "json_valid": true,
+    "secrets_stored": false,
+    "absolute_machine_paths_stored": false
+  }
+}
