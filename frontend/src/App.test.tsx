@@ -133,6 +133,7 @@ describe("CodeCompass SPA", () => {
     expect(screen.getByRole("region", { name: "Persian retrieval results" })).toBeInTheDocument();
     expect(screen.getByRole("region", { name: "English retrieval results" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Provider settings" }));
+    expect(screen.getByRole("dialog", { name: "Provider settings" })).toBeInTheDocument();
     const defaults = screen.getAllByLabelText("Use backend defaults");
     fireEvent.click(defaults[1]);
     const providers = screen.getAllByLabelText("Provider");
@@ -144,6 +145,8 @@ describe("CodeCompass SPA", () => {
     expect(sessionStorage.setItem).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "Clear key" }));
     expect(key).toHaveValue("");
+    fireEvent.click(screen.getByRole("button", { name: "Done" }));
+    expect(screen.queryByRole("dialog", { name: "Provider settings" })).not.toBeInTheDocument();
   });
 
   it("restores non-sensitive provider preferences and resets each provider independently", async () => {
