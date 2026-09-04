@@ -1,0 +1,16 @@
+{
+  "status": "pass",
+  "checks": {
+    "frozen_hashes": true,
+    "official_counts": true,
+    "controlled_counts": true,
+    "qa_new_count": true,
+    "vector_completeness": true,
+    "dimensions": true,
+    "report_hashes": true,
+    "secret_free": true,
+    "absolute_path_free": true
+  },
+  "production_changed": false,
+  "prior_arms_rerun": false
+}
