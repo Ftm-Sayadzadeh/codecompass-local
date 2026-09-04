@@ -531,6 +531,6 @@ describe("CodeCompass SPA", () => {
     for (const identifier of screen.getAllByText("escape()", { selector: "bdi" })) {
       expect(identifier).toHaveAttribute("dir", "ltr");
     }
-    expect(documentationRequest).toMatchObject({ language: "fa", max_tokens: 500 });
+    expect(documentationRequest).toMatchObject({ language: "fa", max_tokens: 2400 });
   });
 });
