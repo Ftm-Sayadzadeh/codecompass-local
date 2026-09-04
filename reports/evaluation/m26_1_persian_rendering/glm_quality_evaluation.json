@@ -1,0 +1,56 @@
+{
+  "evaluation_id": "m26.1-qwen-vs-glm-persian-development-v1",
+  "status": "complete_with_one_glm_failure",
+  "method": "AI-assisted evidence review against the frozen development ground truth. Failed executions receive no quality score.",
+  "controls": {
+    "development_cases_sha256": "4525cf4cd70b393a00a367a480baf9aeb77b5c84464908ef01e6be9052f8cd57",
+    "identical_request_hashes": "6/6",
+    "identical_generation_parameters": "6/6",
+    "source_sqlite_unchanged": true,
+    "indexing_calls": 0,
+    "retrieval_calls": 0,
+    "prompt_changes": 0,
+    "production_changes": 0,
+    "frozen_m26_holdout_executed": false
+  },
+  "models": {
+    "qwen": {"provider": "ollama", "model": "qwen2.5-coder-3b-codecompass:latest"},
+    "glm": {"provider": "openai_compatible", "model": "glm-5.3-flash"}
+  },
+  "execution": {
+    "qwen": {"json_valid": "6/6", "complete": "6/6", "average_latency_seconds": 61.923, "median_latency_seconds": 53.413, "token_usage": "unavailable"},
+    "glm": {"json_valid": "5/6", "complete": "5/6", "average_latency_seconds": 15.222, "median_latency_seconds": 16.007, "prompt_tokens": 3622, "completion_tokens": 5445, "total_tokens": 9067}
+  },
+  "quality_aggregates": {
+    "qwen_all_six": {"persian_readability": 4.5, "factual_correctness": 6.5, "behavior_coverage": 5.83},
+    "glm_five_successful": {"persian_readability": 9.0, "factual_correctness": 9.6, "behavior_coverage": 9.8},
+    "material_unsupported_claim_cases": {"qwen": 3, "glm": 0},
+    "hallucinated_structured_identifiers": {"qwen": 0, "glm": 0}
+  },
+  "cases": [
+    {"case_id": "M26D-H-TRIE-SEARCH-FA", "qwen": {"readability": 4, "factual": 7, "coverage": 7}, "glm": {"readability": 9, "factual": 10, "coverage": 10}, "finding": "GLM clearly explains character traversal, the early False return, and the final is_end_of_word check."},
+    {"case_id": "M26D-H-PATIENT-LOGIN-FA", "qwen": {"readability": 6, "factual": 7, "coverage": 6}, "glm": {"readability": 9, "factual": 10, "coverage": 10}, "finding": "GLM preserves the password-to-national-id lookup, patient lookup, phone comparison, and both False paths."},
+    {"case_id": "M26D-B-PHONE-AUTH-FA", "qwen": {"readability": 5, "factual": 7, "coverage": 7}, "glm": {"readability": 9, "factual": 9, "coverage": 10}, "finding": "GLM correctly describes the user-object result, password failure, and both caught lookup exceptions."},
+    {"case_id": "M26D-B-BOOK-DETAIL-FA", "qwen": {"readability": 5, "factual": 6, "coverage": 4}, "glm": {"readability": 9, "factual": 9, "coverage": 9}, "finding": "GLM covers book lookup, active review ordering, conditional form creation, and template rendering."},
+    {"case_id": "M26D-C-BASE-URL-FA", "qwen": {"readability": 3, "factual": 7, "coverage": 5}, "glm": null, "finding": "GLM reached the unchanged 1200-token limit; no quality score was assigned."},
+    {"case_id": "M26D-C-JSON-TEXT-FA", "qwen": {"readability": 4, "factual": 5, "coverage": 6}, "glm": {"readability": 9, "factual": 10, "coverage": 10}, "finding": "GLM accurately explains plain text, valid fences, malformed-fence errors, and extraction of inner lines."}
+  ],
+  "glm_failure": {
+    "case_id": "M26D-C-BASE-URL-FA",
+    "category": "model_output_budget_contract",
+    "provider_connectivity": "successful",
+    "finish_reason": "length",
+    "completion_tokens": 1200,
+    "reasoning_tokens": 1135,
+    "visible_content_length": 169,
+    "parse_status": "rejected",
+    "validation_status": "not_run",
+    "interpretation": "The provider returned normally, but model reasoning consumed most of the unchanged completion budget and left truncated visible JSON. This is not an adapter or connectivity failure."
+  },
+  "conclusion": {
+    "primary": "The large quality gain on five identical inputs shows that weak Persian rendering is primarily a Qwen 3B model limitation, not a general limitation of deterministic Documentation facts and citation composition.",
+    "limitation": "GLM is not yet production-reliable under the unchanged 1200-token contract because one of six cases truncated.",
+    "decision": "GLM_QUALITY_BETTER_RELIABILITY_NOT_YET_SUFFICIENT",
+    "holdout_decision": "DO_NOT_RUN_FROZEN_HOLDOUT_YET"
+  }
+}
