@@ -54,14 +54,11 @@ def valid_output(
     return json.dumps(
         {
             "summary": summary,
-            "detailed_description": details,
-            "parameters": [
-                {"name": name, "description": f"Description for {name}."} for name in parameters
-            ],
-            "return_value": "A greeting string.",
-            "raises": [],
-            "side_effects": [],
-            "dependencies": [],
+            "behavior": details,
+            "parameter_descriptions": {
+                name: f"Description for {name}." for name in parameters
+            },
+            "return_description": "A greeting string.",
             "notes": [],
         },
         ensure_ascii=False,
@@ -150,6 +147,12 @@ def test_generation_returns_trusted_facts_and_citation(indexed_store) -> None:
     assert result.extracted.signature == "def greet(name) -> str"
     assert result.extracted.parameters == ("name",)
     assert result.extracted.return_annotation == "str"
+    assert result.extracted.parameter_details[0].name == "name"
+    assert result.extracted.parameter_details[0].annotation is None
+    assert result.extracted.parameter_details[0].default is None
+    assert result.extracted.explicit_raises == ()
+    assert result.extracted.direct_calls == ()
+    assert result.extracted.has_explicit_return is True
     assert result.generated.parameters[0].name == "name"
     assert citation == result.citations[0]
     assert citation.relative_source_path == "a.py"
@@ -168,28 +171,53 @@ def test_generation_returns_trusted_facts_and_citation(indexed_store) -> None:
     assert "Citations" not in llm.requests[0].prompt
 
 
-def test_generation_parses_return_errors_effects_dependencies_and_notes(indexed_store) -> None:
-    store, project_id, _ = indexed_store
-    payload = json.loads(valid_output())
+def test_generation_composes_model_narrative_with_deterministic_facts(tmp_path: Path) -> None:
+    repository = tmp_path / "repository"
+    repository.mkdir()
+    (repository / "a.py").write_text(
+        "def transform(value: str = 'x') -> str:\n"
+        "    if not value:\n"
+        "        raise ValueError('empty')\n"
+        "    return normalize(value)\n",
+        encoding="utf-8",
+    )
+    store = SQLiteMetadataStore(tmp_path / "metadata.sqlite")
+    indexed = IndexingService(store).index_repository(repository, project_name="Example")
+    assert indexed.project_id is not None
+    payload = json.loads(valid_output(parameters=("value",)))
     payload.update(
         {
-            "return_value": None,
-            "raises": ["ValueError when the source value is invalid."],
-            "side_effects": ["Writes to the supplied stream."],
-            "dependencies": ["Uses normalize_name."],
+            "return_description": None,
             "notes": ["The operation is synchronous."],
         }
     )
 
     result = FunctionDocumentationService(store, FakeLLMProvider(json.dumps(payload))).document_symbol(
-        project_id, "greet"
+        indexed.project_id, "transform"
     )
 
     assert result.generated.return_value is None
-    assert result.generated.raises == ("ValueError when the source value is invalid.",)
-    assert result.generated.side_effects == ("Writes to the supplied stream.",)
-    assert result.generated.dependencies == ("Uses normalize_name.",)
+    assert result.extracted.parameter_details[0].annotation == "str"
+    assert result.extracted.parameter_details[0].default == "'x'"
+    assert result.extracted.return_annotation == "str"
+    assert result.generated.raises == ("ValueError",)
+    assert result.generated.side_effects == ()
+    assert result.generated.dependencies == ("ValueError", "normalize")
     assert result.generated.notes == ("The operation is synchronous.",)
+
+
+def test_invalid_selected_source_fails_before_provider(indexed_store) -> None:
+    store, project_id, _ = indexed_store
+    greet = next(chunk for chunk in store.list_chunks(project_id) if chunk.qualified_name == "greet")
+    with sqlite3.connect(store.db_path) as connection:
+        connection.execute("UPDATE chunks SET code = ? WHERE id = ?", ("not python", greet.id))
+    llm = FakeLLMProvider()
+
+    with pytest.raises(DocumentationError) as raised:
+        FunctionDocumentationService(store, llm).document_symbol(project_id, "greet")
+
+    assert raised.value.code == "insufficient_evidence"
+    assert llm.requests == []
 
 
 def test_generation_supports_persian_without_changing_trusted_metadata(indexed_store) -> None:
@@ -197,9 +225,8 @@ def test_generation_supports_persian_without_changing_trusted_metadata(indexed_s
     payload = json.loads(
         valid_output(summary="یک پیام خوشامد می‌سازد.", details="نام را در پیام قرار می‌دهد.")
     )
-    payload["parameters"][0]["description"] = "نامی که در پیام قرار می‌گیرد."
-    payload["return_value"] = "رشته پیام خوشامدگویی."
-    payload["dependencies"] = ["normalize_name", "str"]
+    payload["parameter_descriptions"]["name"] = "نامی که در پیام قرار می‌گیرد."
+    payload["return_description"] = "رشته پیام خوشامدگویی."
     llm = FakeLLMProvider(json.dumps(payload, ensure_ascii=False))
 
     result = FunctionDocumentationService(store, llm).document_symbol(
@@ -222,8 +249,8 @@ def test_persian_generation_retries_one_wrong_language_response(indexed_store) -
     payload = json.loads(
         valid_output(summary="یک پیام خوشامد می‌سازد.", details="نام را در پیام قرار می‌دهد.")
     )
-    payload["parameters"][0]["description"] = "نامی که در پیام قرار می‌گیرد."
-    payload["return_value"] = "رشته پیام خوشامدگویی."
+    payload["parameter_descriptions"]["name"] = "نامی که در پیام قرار می‌گیرد."
+    payload["return_description"] = "رشته پیام خوشامدگویی."
     llm = FakeLLMProvider(texts=(valid_output(), json.dumps(payload, ensure_ascii=False)))
 
     result = FunctionDocumentationService(store, llm).document_symbol(
@@ -343,6 +370,9 @@ def test_prompt_forbids_markdown_commentary_and_repetition(indexed_store) -> Non
     assert "Do not use Markdown, code fences, or commentary." in llm.requests[0].prompt
     assert "Generate the object once and stop immediately after }." in llm.requests[0].prompt
     assert "Keep the summary to one sentence" in llm.requests[0].prompt
+    assert '"behavior": "non-empty string"' in llm.requests[0].prompt
+    assert '"parameter_descriptions"' in llm.requests[0].prompt
+    assert '"raises"' not in llm.requests[0].prompt.split("JSON shape:", 1)[1].split("Trusted syntax facts", 1)[0]
 
 
 def test_prompt_describes_test_role_without_calling_assertion_a_side_effect(indexed_store) -> None:
@@ -363,7 +393,7 @@ def test_prompt_describes_test_role_without_calling_assertion_a_side_effect(inde
 def test_rejects_wrong_types_and_oversized_fields(indexed_store) -> None:
     store, project_id, _ = indexed_store
     wrong_type = json.loads(valid_output())
-    wrong_type["raises"] = "ValueError"
+    wrong_type["notes"] = "not a list"
     oversized = json.loads(valid_output())
     oversized["summary"] = "x" * 8_001
 

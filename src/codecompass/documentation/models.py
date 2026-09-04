@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal
 
-DOCUMENTATION_SCHEMA_VERSION = "1"
+DOCUMENTATION_SCHEMA_VERSION = "2"
 
 ResolutionStatus = Literal["resolved", "not_found", "ambiguous"]
 DocumentationLanguage = Literal["en", "fa"]
@@ -74,6 +74,15 @@ class SymbolResolution:
 
 
 @dataclass(frozen=True, slots=True)
+class ParameterFact:
+    """A parameter identity and syntax copied directly from the AST."""
+
+    name: str
+    annotation: str | None
+    default: str | None
+
+
+@dataclass(frozen=True, slots=True)
 class ExtractedDocumentationFacts:
     """Facts copied from parser, chunk, and project metadata."""
 
@@ -84,6 +93,10 @@ class ExtractedDocumentationFacts:
     return_annotation: str | None
     is_async: bool
     source_file_hash: str
+    parameter_details: tuple[ParameterFact, ...]
+    explicit_raises: tuple[str, ...]
+    direct_calls: tuple[str, ...]
+    has_explicit_return: bool
 
 
 @dataclass(frozen=True, slots=True)
