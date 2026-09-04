@@ -136,7 +136,7 @@ export const api = {
   ) =>
     request<DocumentationResponse>(`/projects/${projectId}/documentation`, {
       method: "POST",
-      body: JSON.stringify(compact({ identifier, language, max_tokens: 500, llm })),
+      body: JSON.stringify(compact({ identifier, language, max_tokens: 2400, llm })),
     }),
   evaluation: () => request<EvaluationResponse>("/evaluation/summary"),
   performance: () => request<EvaluationResponse>("/evaluation/performance"),
