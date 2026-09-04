@@ -67,6 +67,8 @@ def run(
     *,
     env_path: Path,
     timeout_seconds: float = 300.0,
+    max_tokens: int = 1200,
+    case_id: str | None = None,
 ) -> dict[str, Any]:
     config = _compare_config(env_path)
     cases_bytes = cases_path.read_bytes()
@@ -76,7 +78,13 @@ def run(
     results = []
     started_at = datetime.now(timezone.utc).isoformat()
 
-    for case in cases["cases"]:
+    selected_cases = [
+        case for case in cases["cases"] if case_id is None or case["case_id"] == case_id
+    ]
+    if not selected_cases:
+        raise ValueError("Requested development case was not found")
+    for case in selected_cases:
+        language = case.get("language", "fa")
         provider = _RecordingGLMProvider(
             config["model"], config["base_url"], config["api_key"], timeout_seconds
         )
@@ -87,7 +95,7 @@ def run(
         error_record = None
         try:
             result = FunctionDocumentationService(store, provider).document_symbol(
-                case["project_id"], case["identifier"], language="fa", max_tokens=1200
+                case["project_id"], case["identifier"], language=language, max_tokens=max_tokens
             )
             documentation = asdict(result)
             status = "complete"
@@ -103,9 +111,9 @@ def run(
         results.append(
             {
                 "case_id": case["case_id"],
-                "repository": case["repository"],
+                "repository": case.get("repository", case.get("repository_id")),
                 "identifier": case["identifier"],
-                "language": "fa",
+                "language": language,
                 "target": target,
                 "execution_status": status,
                 "parse_status": parse_status,
@@ -127,7 +135,8 @@ def run(
         "source_sqlite_unchanged": database_hash == _file_hash(database_path),
         "provider": "openai_compatible",
         "model": config["model"],
-        "generation": {"temperature": 0.0, "max_tokens": 1200, "response_format": "json"},
+        "selected_case_ids": [case["case_id"] for case in selected_cases],
+        "generation": {"temperature": 0.0, "max_tokens": max_tokens, "response_format": "json"},
         "counts": {
             "complete": sum(item["execution_status"] == "complete" for item in results),
             "failed": sum(item["execution_status"] == "failed" for item in results),
@@ -230,6 +239,8 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--env", type=Path, default=Path(".env"))
     parser.add_argument("--timeout-seconds", type=float, default=300.0)
+    parser.add_argument("--max-tokens", type=int, default=1200)
+    parser.add_argument("--case-id")
     args = parser.parse_args()
     config = _compare_config(args.env)
     print(json.dumps({"provider": "openai_compatible", "model": config["model"]}))
@@ -239,6 +250,8 @@ def main() -> None:
         args.output,
         env_path=args.env,
         timeout_seconds=args.timeout_seconds,
+        max_tokens=args.max_tokens,
+        case_id=args.case_id,
     )
     print(json.dumps(result["counts"], sort_keys=True))
 
