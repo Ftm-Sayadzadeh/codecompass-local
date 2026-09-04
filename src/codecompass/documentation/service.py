@@ -8,6 +8,7 @@ import textwrap
 from pathlib import PurePosixPath, PureWindowsPath
 from typing import Any
 
+from codecompass.documentation.facts import FactExtractionError, SyntaxFacts, extract_syntax_facts
 from codecompass.documentation.models import (
     DOCUMENTATION_SCHEMA_VERSION,
     DocumentationCitation,
@@ -27,15 +28,11 @@ from codecompass.storage import SQLiteMetadataStore
 
 _OUTPUT_FIELDS = {
     "summary",
-    "detailed_description",
-    "parameters",
-    "return_value",
-    "raises",
-    "side_effects",
-    "dependencies",
+    "behavior",
+    "parameter_descriptions",
+    "return_description",
     "notes",
 }
-_LIST_FIELDS = ("raises", "side_effects", "dependencies", "notes")
 _MAX_TEXT = 8_000
 _MAX_ITEMS = 50
 
@@ -195,6 +192,20 @@ class FunctionDocumentationService:
         target = resolution.target
         if target is None or not target.source_code.strip():
             raise DocumentationError("insufficient_evidence", "Target symbol has no indexed source evidence")
+        try:
+            facts = extract_syntax_facts(target.source_code, target.name)
+        except FactExtractionError:
+            raise DocumentationError(
+                "insufficient_evidence", "Target symbol syntax facts are unavailable"
+            ) from None
+        if (
+            tuple(item.name for item in facts.parameters) != target.parameters
+            or facts.return_annotation != target.return_annotation
+            or facts.is_async != target.is_async
+        ):
+            raise DocumentationError(
+                "insufficient_evidence", "Target symbol metadata does not match source evidence"
+            )
 
         attempts = 2 if language == "fa" else 1
         for attempt in range(attempts):
@@ -207,7 +218,7 @@ class FunctionDocumentationService:
                             else _SYSTEM_PROMPT
                             + "\nتمام متن‌های توضیحی در پاسخ باید فقط به زبان فارسی و با خط فارسی باشند."
                         ),
-                        prompt=self._prompt(target, language, retry=attempt > 0),
+                        prompt=self._prompt(target, facts, language, retry=attempt > 0),
                         temperature=0.0,
                         max_tokens=max_tokens,
                         response_format="json",
@@ -224,7 +235,7 @@ class FunctionDocumentationService:
 
             if response.finish_reason == "length":
                 raise DocumentationError("output_truncated", "Documentation output was truncated")
-            generated = self._parse(response.text, target.parameters)
+            generated = self._parse(response.text, facts)
             if language != "fa" or self._is_persian(generated):
                 break
         else:
@@ -237,6 +248,10 @@ class FunctionDocumentationService:
             return_annotation=target.return_annotation,
             is_async=target.is_async,
             source_file_hash=target.source_file_hash,
+            parameter_details=facts.parameters,
+            explicit_raises=facts.explicit_raises,
+            direct_calls=facts.direct_calls,
+            has_explicit_return=facts.has_explicit_return,
         )
         return FunctionDocumentation(
             extracted=extracted,
@@ -250,7 +265,14 @@ class FunctionDocumentationService:
             ),
         )
 
-    def _prompt(self, target: ResolvedSymbol, language: DocumentationLanguage, *, retry: bool = False) -> str:
+    def _prompt(
+        self,
+        target: ResolvedSymbol,
+        facts: SyntaxFacts,
+        language: DocumentationLanguage,
+        *,
+        retry: bool = False,
+    ) -> str:
         language_name = "Persian" if language == "fa" else "English"
         documentation_role = (
             "test function"
@@ -260,7 +282,7 @@ class FunctionDocumentationService:
         assertion_hint = self._assertion_hint(target.source_code, language) if documentation_role == "test function" else ()
         language_rules = (
             "- Write every natural-language JSON string value in Persian script.",
-            "- Keep Python identifiers and parameters[].name unchanged inside Persian text.",
+            "- Keep Python identifiers and parameter_descriptions keys unchanged inside Persian text.",
             "- Use concise, natural Persian; avoid literal translation and repeated phrases.",
         ) if language == "fa" else ()
         role_rules = (
@@ -290,8 +312,12 @@ class FunctionDocumentationService:
             "- The previous response used the wrong language; Persian text is mandatory.",
         ) if retry else ()
         parameter_template = ", ".join(
-            f'{{"name": {json.dumps(name)}, "description": null}}' for name in target.parameters
+            f"{json.dumps(item.name)}: null" for item in facts.parameters
         )
+        parameter_facts = [
+            {"name": item.name, "annotation": item.annotation, "default": item.default}
+            for item in facts.parameters
+        ]
         return "\n".join(
             (
                 f"Write the documentation in {language_name}.",
@@ -300,7 +326,7 @@ class FunctionDocumentationService:
                 "- The first response character must be { and the last response character must be }.",
                 "- Do not use Markdown, code fences, or commentary.",
                 "- Generate the object once and stop immediately after }.",
-                "- Keep the summary to one sentence and the detailed description to at most three sentences.",
+                "- Keep the summary to one sentence and behavior to at most three sentences.",
                 "- State behavior directly and do not repeat the summary.",
                 "- Use only the supplied source evidence; do not invent a purpose or behavior.",
                 "- Use null or an empty list when evidence does not support a generated field.",
@@ -310,22 +336,21 @@ class FunctionDocumentationService:
                 "JSON shape:",
                 "{",
                 '  "summary": "non-empty string",',
-                '  "detailed_description": "non-empty string",',
-                f'  "parameters": [{parameter_template}],',
-                '  "return_value": null,',
-                '  "raises": [],',
-                '  "side_effects": [],',
-                '  "dependencies": [],',
+                '  "behavior": "non-empty string",',
+                f'  "parameter_descriptions": {{{parameter_template}}},',
+                '  "return_description": null,',
                 '  "notes": []',
                 "}",
-                "Trusted extracted facts:",
+                "Trusted syntax facts (do not rename or reproduce their identity):",
                 f"documentation_role: {documentation_role}",
                 f"symbol_type: {target.symbol_type}",
                 f"qualified_name: {target.citation.qualified_name}",
                 f"signature: {target.signature}",
-                f"return_annotation: {target.return_annotation or ''}",
-                f"source_file: {target.citation.relative_source_path}",
-                f"lines: {target.citation.start_line}-{target.citation.end_line}",
+                f"parameters: {json.dumps(parameter_facts, ensure_ascii=False)}",
+                f"return_annotation: {json.dumps(facts.return_annotation)}",
+                f"explicit_raises: {json.dumps(facts.explicit_raises)}",
+                f"direct_calls: {json.dumps(facts.direct_calls)}",
+                f"has_explicit_return: {json.dumps(facts.has_explicit_return)}",
                 "Source evidence:",
                 target.source_code,
                 *assertion_hint,
@@ -371,10 +396,12 @@ class FunctionDocumentationService:
             generated.summary,
             generated.detailed_description,
             *(item.description for item in generated.parameters if item.description),
+            *([generated.return_value] if generated.return_value else []),
+            *generated.notes,
         ]
         return all(any("\u0600" <= char <= "\u06ff" and char.isalpha() for char in text) for text in texts)
 
-    def _parse(self, text: str, expected_parameters: tuple[str, ...]) -> GeneratedDocumentation:
+    def _parse(self, text: str, facts: SyntaxFacts) -> GeneratedDocumentation:
         raw = self._json_text(text)
         try:
             value = json.loads(raw)
@@ -384,19 +411,21 @@ class FunctionDocumentationService:
             raise DocumentationError("invalid_output", "Model output fields do not match the documentation schema")
 
         summary = self._required_text(value["summary"], "summary")
-        details = self._required_text(value["detailed_description"], "detailed_description")
-        parameters = self._parameters(value["parameters"], expected_parameters)
-        return_value = self._optional_text(value["return_value"], "return_value")
-        lists = {field: self._string_list(value[field], field) for field in _LIST_FIELDS}
+        details = self._required_text(value["behavior"], "behavior")
+        parameters = self._parameters(
+            value["parameter_descriptions"], tuple(item.name for item in facts.parameters)
+        )
+        return_value = self._optional_text(value["return_description"], "return_description")
+        notes = self._string_list(value["notes"], "notes")
         return GeneratedDocumentation(
             summary=summary,
             detailed_description=details,
             parameters=parameters,
             return_value=return_value,
-            raises=lists["raises"],
-            side_effects=lists["side_effects"],
-            dependencies=lists["dependencies"],
-            notes=lists["notes"],
+            raises=facts.explicit_raises,
+            side_effects=(),
+            dependencies=facts.direct_calls,
+            notes=notes,
         )
 
     def _json_text(self, text: str) -> str:
@@ -416,19 +445,15 @@ class FunctionDocumentationService:
         return "\n".join(lines[1:-1]).strip()
 
     def _parameters(self, value: Any, expected: tuple[str, ...]) -> tuple[ParameterDocumentation, ...]:
-        if not isinstance(value, list) or len(value) != len(expected):
+        if not isinstance(value, dict) or set(value) != set(expected):
             raise DocumentationError("invalid_output", "Generated parameters do not match extracted parameters")
-        result = []
-        for item, expected_name in zip(value, expected):
-            if not isinstance(item, dict) or set(item) != {"name", "description"} or item.get("name") != expected_name:
-                raise DocumentationError("invalid_output", "Generated parameters do not match extracted parameters")
-            result.append(
-                ParameterDocumentation(
-                    name=expected_name,
-                    description=self._optional_text(item.get("description"), f"parameter {expected_name}"),
-                )
+        return tuple(
+            ParameterDocumentation(
+                name=name,
+                description=self._optional_text(value[name], f"parameter {name}"),
             )
-        return tuple(result)
+            for name in expected
+        )
 
     def _required_text(self, value: Any, field: str) -> str:
         if not isinstance(value, str) or not value.strip() or len(value) > _MAX_TEXT:

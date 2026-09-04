@@ -1,0 +1,200 @@
+{
+  "benchmark_id": "m26-documentation-baseline-v1",
+  "status": "frozen_before_implementation",
+  "purpose": "Paired before/after evaluation of M26 Function Documentation reliability",
+  "design": {
+    "case_count": 10,
+    "languages": {"fa": 8, "en": 2},
+    "complexity": {"simple": 4, "medium": 4, "complex": 2},
+    "paired_symbols": ["Doctors.login", "GroundedQAService.answer"],
+    "controls": [
+      "same SQLite source snapshot before and after M26",
+      "same local Qwen model and generation settings",
+      "no retrieval or indexing",
+      "temperature 0 and max_tokens 1200",
+      "all failed and incomplete executions retained"
+    ]
+  },
+  "repositories": [
+    {"repository_id": "hospital_system", "project_id": 1, "name": "Hospital-System", "commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633"},
+    {"repository_id": "cs_bookstore", "project_id": 2, "name": "CS-Bookstore", "commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a"},
+    {"repository_id": "codecompass", "project_id": 3, "name": "CodeCompass", "commit": "9e6ed02bf5edc4eb14341bfa838e4bfd10c92f1d"}
+  ],
+  "source_store": {
+    "artifact": "controlled_benchmark_v1/storage/metadata.sqlite",
+    "mode": "read_only",
+    "note": "The path is artifact-relative; repository roots are not required for this evaluation."
+  },
+  "cases": [
+    {
+      "case_id": "M26-DOC-H-LOGIN-FA",
+      "repository_id": "hospital_system",
+      "project_id": 1,
+      "language": "fa",
+      "complexity": "simple",
+      "identifier": "Doctors.login",
+      "target": {"relative_path": "data_access/doctors.py", "start_line": 126, "end_line": 134},
+      "ground_truth": {
+        "parameters": ["self", "phone_num", "password"],
+        "return_annotation": null,
+        "explicit_raises": [],
+        "direct_calls": [],
+        "behavior": ["looks up a national id using the password", "checks the associated doctor's phone number", "returns true only for a matching phone number and otherwise false"],
+        "forbidden_claims": ["password hashing", "exception handling", "database access"]
+      }
+    },
+    {
+      "case_id": "M26-DOC-H-LOGIN-EN",
+      "repository_id": "hospital_system",
+      "project_id": 1,
+      "language": "en",
+      "complexity": "simple",
+      "identifier": "Doctors.login",
+      "target": {"relative_path": "data_access/doctors.py", "start_line": 126, "end_line": 134},
+      "ground_truth": {
+        "parameters": ["self", "phone_num", "password"],
+        "return_annotation": null,
+        "explicit_raises": [],
+        "direct_calls": [],
+        "behavior": ["looks up a national id using the password", "checks the associated doctor's phone number", "returns true only for a matching phone number and otherwise false"],
+        "forbidden_claims": ["password hashing", "exception handling", "database access"]
+      }
+    },
+    {
+      "case_id": "M26-DOC-H-FIND-FA",
+      "repository_id": "hospital_system",
+      "project_id": 1,
+      "language": "fa",
+      "complexity": "simple",
+      "identifier": "BST.find",
+      "target": {"relative_path": "data_structures/tree.py", "start_line": 66, "end_line": 67},
+      "ground_truth": {
+        "parameters": ["self", "key"],
+        "return_annotation": null,
+        "explicit_raises": [],
+        "direct_calls": ["self.find_"],
+        "behavior": ["delegates lookup from the tree root to self.find_", "returns the delegated result"],
+        "forbidden_claims": ["insertion", "deletion", "tree mutation"]
+      }
+    },
+    {
+      "case_id": "M26-DOC-C-PROVIDER-FA",
+      "repository_id": "codecompass",
+      "project_id": 3,
+      "language": "fa",
+      "complexity": "simple",
+      "identifier": "_safe_provider_error_type",
+      "target": {"relative_path": "src/codecompass/documentation/service.py", "start_line": 453, "end_line": 475},
+      "ground_truth": {
+        "parameters": ["error_type"],
+        "return_annotation": "str",
+        "explicit_raises": [],
+        "direct_calls": ["error_type.lower"],
+        "behavior": ["normalizes the supplied type to lowercase", "preserves recognized invalid-response subtypes", "maps timeout, HTTP, connection, invalid-response, and invalid-input variants", "falls back to provider_error"],
+        "forbidden_claims": ["logs provider responses", "retries requests", "exposes credentials"]
+      }
+    },
+    {
+      "case_id": "M26-DOC-H-HEAP-FA",
+      "repository_id": "hospital_system",
+      "project_id": 1,
+      "language": "fa",
+      "complexity": "medium",
+      "identifier": "MinHeap.extract_min",
+      "target": {"relative_path": "data_structures/heap.py", "start_line": 101, "end_line": 108},
+      "ground_truth": {
+        "parameters": ["self"],
+        "return_annotation": null,
+        "explicit_raises": ["IndexError"],
+        "direct_calls": ["len", "IndexError", "self.heapify_down"],
+        "behavior": ["rejects an empty heap", "stores the root minimum", "moves the last item to the root", "decrements useful_data", "heapifies down from index zero", "returns the stored minimum"],
+        "forbidden_claims": ["returns null for an empty heap", "sorts the complete heap"]
+      }
+    },
+    {
+      "case_id": "M26-DOC-B-PASSWORD-FA",
+      "repository_id": "cs_bookstore",
+      "project_id": 2,
+      "language": "fa",
+      "complexity": "medium",
+      "identifier": "UserRegisterForm.clean_password_2",
+      "target": {"relative_path": "users/forms.py", "start_line": 22, "end_line": 25},
+      "ground_truth": {
+        "parameters": ["self"],
+        "return_annotation": null,
+        "explicit_raises": ["forms.ValidationError"],
+        "direct_calls": ["forms.ValidationError"],
+        "behavior": ["compares password and password_2 from cleaned_data", "raises a validation error when they differ", "returns password_2 when they match"],
+        "forbidden_claims": ["hashes the password", "saves the user", "queries the database"]
+      }
+    },
+    {
+      "case_id": "M26-DOC-B-REGISTER-FA",
+      "repository_id": "cs_bookstore",
+      "project_id": 2,
+      "language": "fa",
+      "complexity": "medium",
+      "identifier": "register",
+      "target": {"relative_path": "users/views.py", "start_line": 35, "end_line": 45},
+      "ground_truth": {
+        "parameters": ["request"],
+        "return_annotation": null,
+        "explicit_raises": [],
+        "direct_calls": ["UserRegisterForm", "form.is_valid", "form.save", "user.set_password", "user.save", "render"],
+        "behavior": ["builds a registration form from POST data", "saves a valid user with a protected password", "renders the completion page after success", "renders the registration form otherwise"],
+        "forbidden_claims": ["logs the user in", "sends an email", "creates an authentication token"]
+      }
+    },
+    {
+      "case_id": "M26-DOC-B-REVIEW-FA",
+      "repository_id": "cs_bookstore",
+      "project_id": 2,
+      "language": "fa",
+      "complexity": "medium",
+      "identifier": "review_book",
+      "target": {"relative_path": "store/views.py", "start_line": 95, "end_line": 107},
+      "ground_truth": {
+        "parameters": ["request", "pk", "slug"],
+        "return_annotation": null,
+        "explicit_raises": [],
+        "direct_calls": ["get_object_or_404", "ReviewForm", "review_form.is_valid", "review_form.save", "review.save", "book.get_absolute_url", "redirect"],
+        "behavior": ["loads a book by id and slug", "validates a submitted review", "binds the review to the book and request user", "saves it", "redirects to the book URL"],
+        "forbidden_claims": ["allows anonymous review by design", "updates the book", "sends a notification"]
+      }
+    },
+    {
+      "case_id": "M26-DOC-C-QA-FA",
+      "repository_id": "codecompass",
+      "project_id": 3,
+      "language": "fa",
+      "complexity": "complex",
+      "identifier": "GroundedQAService.answer",
+      "target": {"relative_path": "src/codecompass/qa/service.py", "start_line": 43, "end_line": 84},
+      "ground_truth": {
+        "parameters": ["self", "request"],
+        "return_annotation": "QAAnswer",
+        "explicit_raises": ["QAError"],
+        "direct_calls": ["self._validate", "self._retrieve", "self._focus_on_named_symbol", "self._context", "self._citations", "QAAnswer", "self.prompt_builder.build", "self.llm_provider.generate", "LLMRequest", "QAError"],
+        "behavior": ["validates the request", "retrieves and focuses evidence", "builds context and trusted citations", "returns a no-evidence answer without calling the model when context is empty", "otherwise builds prompts and calls the provider", "maps provider errors to QAError", "returns QAAnswer with provider metadata"],
+        "forbidden_claims": ["persists the answer", "changes retrieval ranking", "allows the model to author citations"]
+      }
+    },
+    {
+      "case_id": "M26-DOC-C-QA-EN",
+      "repository_id": "codecompass",
+      "project_id": 3,
+      "language": "en",
+      "complexity": "complex",
+      "identifier": "GroundedQAService.answer",
+      "target": {"relative_path": "src/codecompass/qa/service.py", "start_line": 43, "end_line": 84},
+      "ground_truth": {
+        "parameters": ["self", "request"],
+        "return_annotation": "QAAnswer",
+        "explicit_raises": ["QAError"],
+        "direct_calls": ["self._validate", "self._retrieve", "self._focus_on_named_symbol", "self._context", "self._citations", "QAAnswer", "self.prompt_builder.build", "self.llm_provider.generate", "LLMRequest", "QAError"],
+        "behavior": ["validates the request", "retrieves and focuses evidence", "builds context and trusted citations", "returns a no-evidence answer without calling the model when context is empty", "otherwise builds prompts and calls the provider", "maps provider errors to QAError", "returns QAAnswer with provider metadata"],
+        "forbidden_claims": ["persists the answer", "changes retrieval ranking", "allows the model to author citations"]
+      }
+    }
+  ]
+}

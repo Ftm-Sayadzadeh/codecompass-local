@@ -1,0 +1,112 @@
+{
+  "investigation_id": "m26-documentation-root-cause",
+  "status": "complete",
+  "scope": "Documentation reliability investigation before M26",
+  "controls": {
+    "production_code_changes": 0,
+    "indexing_calls": 0,
+    "retrieval_calls": 0,
+    "benchmark_overwrites": 0,
+    "prompt_tuning": 0,
+    "glm_transport_probe_calls": 1,
+    "paired_glm_calls": 4,
+    "paired_local_qwen_attempts": 4,
+    "automatic_retries": 0
+  },
+  "frozen_artifact_hashes_sha256": {
+    "benchmark_cases.json": "5fbec49e1ad4c70af6a8aabf028f473afbdeb807d189070914b778ed3e9699af",
+    "frozen_retrieval_evidence.json": "2359b07c36f19d47faf0171de0ab5e48ebc8b2f4620b6a8a8a6865cf75cc4c83",
+    "qwen_results.json": "f0ed5404b5a7b86f33147ac002841f42624c173807325abfc32faa62f00d4f86",
+    "qwen_quality_evaluation.json": "e048e00fa3f1c38aebd261a9914fc1bce2987eba0d8b83a82c1fda7c8fddeccd",
+    "glm_results.json": "a2802c6f598c36baf9496cf915491d977b8abb1f39811de7f7e8f2435c43aaa2",
+    "glm_quality_evaluation.json": "9966990408e7cd503ef34fc0078ec786fea386caee538dcef17dc5b66cf727bf"
+  },
+  "offline_findings": {
+    "qwen_documentation": {
+      "cases": 6,
+      "complete_schema_valid": 5,
+      "incomplete": 1,
+      "finding": "The complex Persian CodeCompass case was truncated; complete stored outputs were accepted by the current parser."
+    },
+    "glm_documentation": {
+      "cases": 6,
+      "complete_schema_valid": 0,
+      "empty_content_failures": 4,
+      "length_terminated": 2,
+      "finding": "Historical raw response envelopes were not retained, so the four empty-content failures cannot be attributed exclusively to provider or adapter."
+    },
+    "adapter_replay": {
+      "complete_outputs_incorrectly_rejected": 0,
+      "finding": "No validator defect was reproduced. A reasoning-only envelope would be rejected, but no historical reasoning-only envelope exists to prove that failure mode occurred."
+    }
+  },
+  "live_diagnostics": {
+    "glm_transport_probe": {
+      "model": "glm-5.3-flash",
+      "case": "CB-DOC-H-EN",
+      "finish_reason": "stop",
+      "canonical_content_nonempty": true,
+      "reasoning_content_nonempty": true,
+      "adapter_accepted": true,
+      "documentation_parser_accepted": true,
+      "conclusion": "The current adapter works when canonical message.content is present; a general adapter defect is not supported."
+    },
+    "paired_language_diagnostic": {
+      "design": "Two fixed symbols (simple and complex), English and Persian, unchanged contract, temperature 0, max_tokens 1200, no retries.",
+      "qwen": {
+        "attempts": 4,
+        "completed": 0,
+        "failures": 4,
+        "failure_type": "HTTPError",
+        "interpretation": "Local provider availability prevented a paired Qwen language comparison; this is not a model-quality result."
+      },
+      "glm": {
+        "attempts": 4,
+        "simple_english": "complete_and_parser_accepted",
+        "simple_persian": "complete_and_parser_accepted",
+        "complex_english": "finish_reason_length_incomplete",
+        "complex_persian": "finish_reason_length_empty_canonical_content",
+        "interpretation": "Complexity predicts failure in both languages. Persian may increase output pressure in the complex case, but two symbols are insufficient for a causal language claim."
+      }
+    }
+  },
+  "decision_gate": {
+    "integration_bug_confirmed": false,
+    "provider_only_limitation_confirmed": false,
+    "schema_contract_pressure_confirmed": true,
+    "missing_deterministic_fact_ownership_confirmed": true,
+    "persian_specific_model_weakness_confirmed": false,
+    "production_bug_fix_authorized": false
+  },
+  "root_cause": {
+    "primary": "The strict eight-field JSON contract and 1200-token completion budget are unreliable for complex symbols. Both English and Persian GLM complex-symbol diagnostics terminated for length, matching the historical truncation pattern.",
+    "secondary": "The model is asked to infer syntax-visible facts such as parameters, return annotations, raises, dependencies, and side effects instead of receiving deterministic AST-derived facts.",
+    "not_proven": [
+      "A general OpenAI-compatible adapter bug",
+      "A Persian-specific model-quality defect",
+      "A validator that rejects otherwise valid complete documentation"
+    ]
+  },
+  "m26_recommendation": {
+    "goal": "Reliable Persian-first function documentation grounded in deterministic source facts.",
+    "minimum_architecture": [
+      "Extract syntax-visible facts deterministically from AST/SQLite.",
+      "Keep citations, symbol identity, file path, and line range outside model ownership.",
+      "Reduce the model contract to narrative fields that require explanation rather than extraction.",
+      "Validate output and fail closed on truncation or malformed structured output.",
+      "Evaluate English and Persian on the same symbols to separate language from symbol complexity."
+    ],
+    "explicitly_deferred": [
+      "Prompt tuning against the existing benchmark",
+      "Provider-specific reasoning_content fallback without a defined compatibility contract",
+      "A larger model comparison",
+      "New retrieval or indexing work"
+    ]
+  },
+  "limitations": [
+    "Historical GLM raw envelopes were not captured.",
+    "The paired diagnostic used only two symbols and is descriptive, not statistically conclusive.",
+    "Qwen paired cells were unavailable because the local provider returned HTTP errors.",
+    "The diagnostic did not score generated quality; it isolated transport, completion, and parsing behavior."
+  ]
+}

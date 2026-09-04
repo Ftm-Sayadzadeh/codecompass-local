@@ -53,12 +53,9 @@ class FakeLLMProvider:
                 json.dumps(
                     {
                         "summary": "Returns the supplied value.",
-                        "detailed_description": "The function returns its input.",
-                        "parameters": [{"name": "value", "description": "Input value."}],
-                        "return_value": "The input value.",
-                        "raises": [],
-                        "side_effects": [],
-                        "dependencies": [],
+                        "behavior": "The function returns its input.",
+                        "parameter_descriptions": {"value": "Input value."},
+                        "return_description": "The input value.",
                         "notes": [],
                     }
                 ),
@@ -434,6 +431,23 @@ def test_ask_and_documentation_preserve_trusted_citations(api) -> None:
     assert documentation_citation["symbol_id"] == documentation_chunk.symbol_id
     assert documentation_citation["relative_source_path"] == documentation_chunk.relative_path == "first.py"
     assert success.json()["extracted"]["citation"] == documentation_citation
+    assert success.json()["extracted"]["parameter_details"] == [
+        {"name": "value", "annotation": "str", "default": None}
+    ]
+    assert success.json()["extracted"]["explicit_raises"] == []
+    assert success.json()["extracted"]["direct_calls"] == []
+    assert success.json()["extracted"]["has_explicit_return"] is True
+    assert success.json()["generation"]["schema_version"] == "2"
+    assert set(success.json()["generated"]) == {
+        "summary",
+        "detailed_description",
+        "parameters",
+        "return_value",
+        "raises",
+        "side_effects",
+        "dependencies",
+        "notes",
+    }
     assert client.get(f"/projects/{project_id}/files/{documentation_citation['file_id']}/content").status_code == 200
     assert str(repo) not in success.text
 

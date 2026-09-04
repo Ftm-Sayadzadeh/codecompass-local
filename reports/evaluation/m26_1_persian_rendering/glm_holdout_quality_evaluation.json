@@ -1,0 +1,67 @@
+{
+  "evaluation_id": "m26.1-glm-holdout-quality-v1",
+  "status": "complete",
+  "method": "AI-assisted evidence review against the frozen M26 ground truth. Final thesis reporting requires human confirmation.",
+  "manifest_sha256": "210aff4e08718c863bc1a3d757b9d40cf55156d5e8b2c9cea6dff21ab76181eb",
+  "raw_results_sha256": "cd740542c08994306c2a0ab6d7344c02591e99e77d7764ecdae923195140e981",
+  "provider": "openai_compatible",
+  "model": "glm-5.3-flash",
+  "generation": {"temperature": 0.0, "max_tokens": 2400, "response_format": "json"},
+  "execution": {
+    "complete": 10,
+    "total": 10,
+    "persian_complete": 8,
+    "persian_total": 8,
+    "json_valid": 10,
+    "average_latency_seconds": 14.066,
+    "median_latency_seconds": 15.596,
+    "minimum_latency_seconds": 7.441,
+    "maximum_latency_seconds": 20.73,
+    "prompt_tokens": 6040,
+    "completion_tokens": 9564,
+    "reasoning_tokens": 7218,
+    "total_tokens": 15604
+  },
+  "quality": {
+    "average_persian_readability": 9.0,
+    "average_factual_correctness": 9.9,
+    "average_groundedness": 10.0,
+    "average_unsupported_claim_safety": 9.9,
+    "average_completeness": 9.9,
+    "hallucination": "none",
+    "hallucinated_structured_identifiers": 0
+  },
+  "trust_validation": {
+    "citation_path_and_line_identity": "10/10",
+    "parameter_identity": "10/10",
+    "return_annotation_identity": "10/10",
+    "explicit_raise_identity": "10/10",
+    "direct_call_set_identity": "10/10",
+    "note": "One nested-call case used deterministic AST traversal order rather than the manifest's human-listed call order; the call set was identical."
+  },
+  "per_case": [
+    {"case_id": "M26-DOC-H-LOGIN-FA", "readability": 9, "factual": 10, "groundedness": 10, "unsupported_claim_safety": 10, "completeness": 10, "hallucination": "none"},
+    {"case_id": "M26-DOC-H-LOGIN-EN", "readability": null, "factual": 10, "groundedness": 10, "unsupported_claim_safety": 10, "completeness": 10, "hallucination": "none"},
+    {"case_id": "M26-DOC-H-FIND-FA", "readability": 9, "factual": 10, "groundedness": 10, "unsupported_claim_safety": 10, "completeness": 9, "hallucination": "none"},
+    {"case_id": "M26-DOC-C-PROVIDER-FA", "readability": 9, "factual": 10, "groundedness": 10, "unsupported_claim_safety": 10, "completeness": 10, "hallucination": "none"},
+    {"case_id": "M26-DOC-H-HEAP-FA", "readability": 9, "factual": 10, "groundedness": 10, "unsupported_claim_safety": 10, "completeness": 10, "hallucination": "none"},
+    {"case_id": "M26-DOC-B-PASSWORD-FA", "readability": 9, "factual": 10, "groundedness": 10, "unsupported_claim_safety": 10, "completeness": 10, "hallucination": "none"},
+    {"case_id": "M26-DOC-B-REGISTER-FA", "readability": 9, "factual": 10, "groundedness": 10, "unsupported_claim_safety": 10, "completeness": 10, "hallucination": "none"},
+    {"case_id": "M26-DOC-B-REVIEW-FA", "readability": 9, "factual": 10, "groundedness": 10, "unsupported_claim_safety": 9, "completeness": 10, "hallucination": "none", "note": "The 404 behavior is supported by the named get_object_or_404 call but is one step more interpretive than the other claims."},
+    {"case_id": "M26-DOC-C-QA-FA", "readability": 9, "factual": 9, "groundedness": 10, "unsupported_claim_safety": 10, "completeness": 10, "hallucination": "none"},
+    {"case_id": "M26-DOC-C-QA-EN", "readability": null, "factual": 10, "groundedness": 10, "unsupported_claim_safety": 10, "completeness": 10, "hallucination": "none"}
+  ],
+  "comparison_to_qwen_m26": {
+    "qwen_complete": "9/10",
+    "glm_complete": "10/10",
+    "qwen_persian_complete": "7/8",
+    "glm_persian_complete": "8/8",
+    "qwen_persian_readability": 4.3,
+    "glm_persian_readability": 9.0,
+    "qwen_average_latency_seconds": 48.307,
+    "glm_average_latency_seconds": 14.066,
+    "scientific_boundary": "This final comparison is operational rather than a pure model-only ablation because GLM used the separately validated 2400-token reliability budget while Qwen used 1200. The earlier six-case development comparison at 1200 tokens remains the controlled model-only evidence."
+  },
+  "verdict": "GLM_PASSES_M26_PERSIAN_DOCUMENTATION_HOLDOUT",
+  "product_interpretation": "The Documentation architecture is provider-independent. GLM is a validated higher-quality option for Persian rendering; Qwen remains the private local option with a documented language-quality limitation."
+}

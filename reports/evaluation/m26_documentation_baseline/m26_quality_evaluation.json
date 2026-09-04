@@ -1,0 +1,55 @@
+{
+  "evaluation_id": "m26-documentation-before-after-v1",
+  "status": "complete_with_failed_quality_gate",
+  "method": "Independent AI-assisted evidence review against frozen source ground truth; thesis use requires human confirmation.",
+  "manifest_sha256": "210aff4e08718c863bc1a3d757b9d40cf55156d5e8b2c9cea6dff21ab76181eb",
+  "measured_execution": {
+    "prechange": {"complete": 8, "total": 10, "persian_complete": 6, "persian_total": 8},
+    "postchange": {"complete": 9, "total": 10, "persian_complete": 7, "persian_total": 8},
+    "postchange_provider_attempts": 11,
+    "postchange_failure": {
+      "case_id": "M26-DOC-H-LOGIN-FA",
+      "category": "provider_failure",
+      "quality_score": null
+    }
+  },
+  "cases": [
+    {"case_id":"M26-DOC-H-LOGIN-FA","prechange":null,"postchange":null,"reason":"Both executions failed and are not assigned quality scores."},
+    {"case_id":"M26-DOC-H-LOGIN-EN","prechange":{"factual":7,"grounded_usefulness":7,"unsupported_claim_safety":5,"completeness":8,"persian_readability":null},"postchange":{"factual":9,"grounded_usefulness":9,"unsupported_claim_safety":10,"completeness":9,"persian_readability":null},"finding":"Clear factual improvement and removal of an unsupported state-change claim."},
+    {"case_id":"M26-DOC-H-FIND-FA","prechange":{"factual":5,"grounded_usefulness":5,"unsupported_claim_safety":4,"completeness":6,"persian_readability":4},"postchange":{"factual":8,"grounded_usefulness":8,"unsupported_claim_safety":9,"completeness":7,"persian_readability":5},"finding":"Factual grounding improved; Persian terminology remains unnatural and the return is underexplained."},
+    {"case_id":"M26-DOC-C-PROVIDER-FA","prechange":{"factual":4,"grounded_usefulness":4,"unsupported_claim_safety":8,"completeness":3,"persian_readability":3},"postchange":{"factual":3,"grounded_usefulness":3,"unsupported_claim_safety":9,"completeness":2,"persian_readability":3},"finding":"The narrative is vague and omits the mapping behavior despite correct deterministic facts."},
+    {"case_id":"M26-DOC-H-HEAP-FA","prechange":{"factual":8,"grounded_usefulness":7,"unsupported_claim_safety":8,"completeness":8,"persian_readability":5},"postchange":{"factual":8,"grounded_usefulness":7,"unsupported_claim_safety":9,"completeness":8,"persian_readability":3},"finding":"Structural facts improved, but Persian terminology and decrement wording are poor."},
+    {"case_id":"M26-DOC-B-PASSWORD-FA","prechange":{"factual":8,"grounded_usefulness":8,"unsupported_claim_safety":10,"completeness":8,"persian_readability":5},"postchange":{"factual":7,"grounded_usefulness":7,"unsupported_claim_safety":7,"completeness":8,"persian_readability":5},"finding":"The output incorrectly describes raising ValidationError as updating the form."},
+    {"case_id":"M26-DOC-B-REGISTER-FA","prechange":{"factual":8,"grounded_usefulness":8,"unsupported_claim_safety":9,"completeness":7,"persian_readability":5},"postchange":{"factual":7,"grounded_usefulness":7,"unsupported_claim_safety":7,"completeness":7,"persian_readability":4},"finding":"Core behavior is recognizable, but the Persian wording is unnatural and control paths are incomplete."},
+    {"case_id":"M26-DOC-B-REVIEW-FA","prechange":{"factual":7,"grounded_usefulness":7,"unsupported_claim_safety":9,"completeness":4,"persian_readability":5},"postchange":{"factual":8,"grounded_usefulness":8,"unsupported_claim_safety":7,"completeness":8,"persian_readability":4},"finding":"Completeness improved; language remains awkward and the non-POST wording is imprecise."},
+    {"case_id":"M26-DOC-C-QA-FA","prechange":null,"postchange":{"factual":8,"grounded_usefulness":8,"unsupported_claim_safety":9,"completeness":7,"persian_readability":6},"finding":"A previously failed complex case became complete, but the no-evidence path is omitted and terminology is partly artificial."},
+    {"case_id":"M26-DOC-C-QA-EN","prechange":{"factual":7,"grounded_usefulness":8,"unsupported_claim_safety":7,"completeness":7,"persian_readability":null},"postchange":{"factual":9,"grounded_usefulness":9,"unsupported_claim_safety":10,"completeness":8,"persian_readability":null},"finding":"Clear factual and grounding improvement."}
+  ],
+  "aggregates": {
+    "eight_common_reviewable_cases": {
+      "prechange":{"factual":6.75,"grounded_usefulness":6.75,"unsupported_claim_safety":7.5,"completeness":6.38},
+      "postchange":{"factual":7.38,"grounded_usefulness":7.25,"unsupported_claim_safety":8.5,"completeness":7.13}
+    },
+    "six_common_reviewable_persian_cases": {"prechange_readability":4.5,"postchange_readability":4.0},
+    "all_postchange_reviewable_persian_cases": {"readability":4.3}
+  },
+  "deterministic_validation": {
+    "successful_cases_checked": 9,
+    "citation_identity_exact": 9,
+    "parameter_identity_exact": 9,
+    "return_annotation_exact": 9,
+    "explicit_raise_identity_exact": 9,
+    "direct_call_identity_exact": 9,
+    "structured_identifier_hallucinations": 0
+  },
+  "acceptance_gate": [
+    {"criterion":"At least 9/10 complete outputs","result":"PASS","observed":"9/10"},
+    {"criterion":"At least 7/8 Persian outputs complete","result":"PASS","observed":"7/8"},
+    {"criterion":"At least one complex case complete","result":"PASS","observed":"2/2"},
+    {"criterion":"Citation validity 100%","result":"PASS","observed":"9/9 successful cases"},
+    {"criterion":"Deterministic facts 100%","result":"PASS","observed":"9/9 successful cases"},
+    {"criterion":"No structured identifier hallucination","result":"PASS","observed":"0"},
+    {"criterion":"Average Persian quality at least 8/10","result":"FAIL","observed":"4.3/10 readability in AI-assisted review"}
+  ],
+  "verdict": "RELIABILITY_IMPROVED_PERSIAN_QUALITY_GATE_FAILED"
+}

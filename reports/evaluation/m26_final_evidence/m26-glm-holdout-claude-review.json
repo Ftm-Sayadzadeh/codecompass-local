@@ -1,0 +1,99 @@
+{
+  "review_id": "m26-glm-holdout-claude-review-v1",
+  "status": "completed_ai_assisted",
+  "review_type": "AI-assisted evaluation",
+  "reviewer": "Claude",
+  "source_results": "reports/evaluation/m26_1_persian_rendering/glm_holdout_results.json",
+  "ground_truth": "reports/evaluation/m26_documentation_baseline/m26_documentation_cases.json",
+
+  "cases": [
+    {
+      "case_id": "M26-DOC-H-LOGIN-FA",
+      "language": "fa",
+      "persian_readability": 8,
+      "factual_correctness": 8,
+      "usefulness": 8,
+      "notes": "منطق lookup و مقایسه شماره تلفن درست توضیح داده شده است. اشاره‌ای به احتمال KeyError در صورت نبود password در signed_in وجود ندارد."
+    },
+    {
+      "case_id": "M26-DOC-H-LOGIN-EN",
+      "language": "en",
+      "persian_readability": "not_applicable",
+      "factual_correctness": 8,
+      "usefulness": 8,
+      "notes": "خروجی انگلیسی واضح است و identifierها حفظ شده‌اند، اما همان محدودیت عدم اشاره به KeyError وجود دارد."
+    },
+    {
+      "case_id": "M26-DOC-H-FIND-FA",
+      "language": "fa",
+      "persian_readability": 9,
+      "factual_correctness": 9,
+      "usefulness": 7,
+      "notes": "توضیح delegation به self.find_ دقیق است، اما به دلیل ساده بودن تابع ارزش افزوده محدود است."
+    },
+    {
+      "case_id": "M26-DOC-C-PROVIDER-FA",
+      "language": "fa",
+      "persian_readability": 8,
+      "factual_correctness": 9,
+      "usefulness": 8,
+      "notes": "منطق normalization خطاها درست توضیح داده شده، اما برخی اصطلاحات کمی آزاد ترجمه شده‌اند."
+    },
+    {
+      "case_id": "M26-DOC-H-HEAP-FA",
+      "language": "fa",
+      "persian_readability": 9,
+      "factual_correctness": 9,
+      "usefulness": 9,
+      "notes": "مراحل حذف عنصر از heap و بازسازی ساختار دقیق توضیح داده شده‌اند."
+    },
+    {
+      "case_id": "M26-DOC-B-PASSWORD-FA",
+      "language": "fa",
+      "persian_readability": 9,
+      "factual_correctness": 10,
+      "usefulness": 8,
+      "notes": "Validation فرم دقیقاً مطابق source توضیح داده شده است."
+    },
+    {
+      "case_id": "M26-DOC-B-REGISTER-FA",
+      "language": "fa",
+      "persian_readability": 8,
+      "factual_correctness": 9,
+      "usefulness": 9,
+      "notes": "مسیرهای POST، invalid form و GET درست پوشش داده شده‌اند، ولی متن کمی طولانی است."
+    },
+    {
+      "case_id": "M26-DOC-B-REVIEW-FA",
+      "language": "fa",
+      "persian_readability": 9,
+      "factual_correctness": 9,
+      "usefulness": 9,
+      "notes": "رفتار redirect و مسیرهای اصلی کنترل flow به خوبی توضیح داده شده است."
+    },
+    {
+      "case_id": "M26-DOC-C-QA-FA",
+      "language": "fa",
+      "persian_readability": 8,
+      "factual_correctness": 9,
+      "usefulness": 9,
+      "notes": "مسیر no-evidence و خطای LLMProviderError درست پوشش داده شده‌اند. برخی اصطلاحات کمی تحت‌اللفظی هستند."
+    },
+    {
+      "case_id": "M26-DOC-C-QA-EN",
+      "language": "en",
+      "persian_readability": "not_applicable",
+      "factual_correctness": 9,
+      "usefulness": 9,
+      "notes": "توضیح کامل QA flow و metadata خروجی ارائه شده است."
+    }
+  ],
+
+  "aggregates": {
+    "persian_readability": 8.5,
+    "factual_correctness": 8.9,
+    "usefulness": 8.4
+  },
+
+  "human_sign_off": "not_applicable"
+}

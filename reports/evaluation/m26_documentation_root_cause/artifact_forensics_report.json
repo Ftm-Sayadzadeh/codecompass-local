@@ -1,0 +1,4674 @@
+{
+  "report_id": "m26_documentation_root_cause_artifact_forensics_v1",
+  "scope": {
+    "mode": "offline_only",
+    "indexing_calls": 0,
+    "retrieval_calls": 0,
+    "provider_calls": 0,
+    "network_calls": 0,
+    "production_changes": 0,
+    "benchmark_changes": 0
+  },
+  "label_definitions": {
+    "measured": "Directly recorded in an input artifact",
+    "measured_offline": "Computed from saved artifact data without external execution",
+    "inferred": "Derived from artifact structure or naming and explicitly labelled",
+    "unavailable": "Not recorded; no value inferred",
+    "not_applicable": "Field does not apply to this task"
+  },
+  "input_hashes": {
+    "benchmark_cases.json": {
+      "sha256": "5fbec49e1ad4c70af6a8aabf028f473afbdeb807d189070914b778ed3e9699af",
+      "label": "measured",
+      "source": "file bytes"
+    },
+    "frozen_retrieval_evidence.json": {
+      "sha256": "2359b07c36f19d47faf0171de0ab5e48ebc8b2f4620b6a8a8a6865cf75cc4c83",
+      "label": "measured",
+      "source": "file bytes"
+    },
+    "qwen_results.json": {
+      "sha256": "f0ed5404b5a7b86f33147ac002841f42624c173807325abfc32faa62f00d4f86",
+      "label": "measured",
+      "source": "file bytes"
+    },
+    "glm_results.json": {
+      "sha256": "a2802c6f598c36baf9496cf915491d977b8abb1f39811de7f7e8f2435c43aaa2",
+      "label": "measured",
+      "source": "file bytes"
+    },
+    "qwen_quality_evaluation.json": {
+      "sha256": "e048e00fa3f1c38aebd261a9914fc1bce2987eba0d8b83a82c1fda7c8fddeccd",
+      "label": "measured",
+      "source": "file bytes"
+    },
+    "glm_quality_evaluation.json": {
+      "sha256": "9966990408e7cd503ef34fc0078ec786fea386caee538dcef17dc5b66cf727bf",
+      "label": "measured",
+      "source": "file bytes"
+    }
+  },
+  "embedded_hash_validation": {
+    "qwen_benchmark_hash_matches": true,
+    "qwen_evidence_hash_matches": true,
+    "glm_benchmark_hash_matches": true,
+    "glm_evidence_hash_matches": true,
+    "label": "measured_offline"
+  },
+  "executions": [
+    {
+      "case_id": {
+        "value": "CB-QA-H-EN",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_initial_attempt",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "qa",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "en",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "hospital_system",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "latency_seconds": {
+        "value": 1.686946,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": false,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 0,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output is free text"
+      },
+      "schema_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output has no JSON documentation schema"
+      },
+      "artifact_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "sanitized fields only"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "status": null,
+          "error": {
+            "type": "LLMProviderError",
+            "safe_message": "Qwen local provider call failed"
+          }
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-QA-H-FA",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_initial_attempt",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "qa",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "fa",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "hospital_system",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "latency_seconds": {
+        "value": 1.398458,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": false,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 0,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output is free text"
+      },
+      "schema_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output has no JSON documentation schema"
+      },
+      "artifact_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "sanitized fields only"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "status": null,
+          "error": {
+            "type": "LLMProviderError",
+            "safe_message": "Qwen local provider call failed"
+          }
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-QA-B-EN",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_initial_attempt",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "qa",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "en",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "cs_bookstore",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "latency_seconds": {
+        "value": 1.335267,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": false,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 0,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output is free text"
+      },
+      "schema_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output has no JSON documentation schema"
+      },
+      "artifact_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "sanitized fields only"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "status": null,
+          "error": {
+            "type": "LLMProviderError",
+            "safe_message": "Qwen local provider call failed"
+          }
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-QA-B-FA",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_initial_attempt",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "qa",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "fa",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "cs_bookstore",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "latency_seconds": {
+        "value": 1.371223,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": false,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 0,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output is free text"
+      },
+      "schema_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output has no JSON documentation schema"
+      },
+      "artifact_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "sanitized fields only"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "status": null,
+          "error": {
+            "type": "LLMProviderError",
+            "safe_message": "Qwen local provider call failed"
+          }
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-QA-C-EN",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_initial_attempt",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "qa",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "en",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "codecompass",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "latency_seconds": {
+        "value": 1.453193,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": false,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 0,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output is free text"
+      },
+      "schema_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output has no JSON documentation schema"
+      },
+      "artifact_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "sanitized fields only"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "status": null,
+          "error": {
+            "type": "LLMProviderError",
+            "safe_message": "Qwen local provider call failed"
+          }
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-QA-C-FA",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_initial_attempt",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "qa",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "fa",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "codecompass",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "latency_seconds": {
+        "value": 7.888178,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": false,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 0,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output is free text"
+      },
+      "schema_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output has no JSON documentation schema"
+      },
+      "artifact_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "sanitized fields only"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "status": null,
+          "error": {
+            "type": "LLMProviderError",
+            "safe_message": "Qwen local provider call failed"
+          }
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-DOC-H-EN",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_initial_attempt",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "documentation",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "en",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "hospital_system",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "latency_seconds": {
+        "value": 5.899048,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": false,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 0,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": "not_evaluable_no_output",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "schema_status": {
+        "value": "not_evaluable_no_output",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "artifact_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "EVALUATED",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "sanitized fields only"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "status": null,
+          "error": {
+            "type": "LLMProviderError",
+            "safe_message": "Qwen local provider call failed"
+          }
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-DOC-H-FA",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_initial_attempt",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "documentation",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "fa",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "hospital_system",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "latency_seconds": {
+        "value": 1.395115,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": false,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 0,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": "not_evaluable_no_output",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "schema_status": {
+        "value": "not_evaluable_no_output",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "artifact_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "EVALUATED",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "sanitized fields only"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "status": null,
+          "error": {
+            "type": "LLMProviderError",
+            "safe_message": "Qwen local provider call failed"
+          }
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-DOC-B-EN",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_initial_attempt",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "documentation",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "en",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "cs_bookstore",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "latency_seconds": {
+        "value": 6.042957,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": false,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 0,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": "not_evaluable_no_output",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "schema_status": {
+        "value": "not_evaluable_no_output",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "artifact_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "EVALUATED",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "sanitized fields only"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "status": null,
+          "error": {
+            "type": "LLMProviderError",
+            "safe_message": "Qwen local provider call failed"
+          }
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-DOC-B-FA",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_initial_attempt",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "documentation",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "fa",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "cs_bookstore",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "latency_seconds": {
+        "value": 1.534239,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": false,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 0,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": "not_evaluable_no_output",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "schema_status": {
+        "value": "not_evaluable_no_output",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "artifact_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "EVALUATED",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "sanitized fields only"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "status": null,
+          "error": {
+            "type": "LLMProviderError",
+            "safe_message": "Qwen local provider call failed"
+          }
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-DOC-C-EN",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_initial_attempt",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "documentation",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "en",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "codecompass",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "latency_seconds": {
+        "value": 1.412295,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": false,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 0,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": "not_evaluable_no_output",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "schema_status": {
+        "value": "not_evaluable_no_output",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "artifact_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "EVALUATED",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "sanitized fields only"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "status": null,
+          "error": {
+            "type": "LLMProviderError",
+            "safe_message": "Qwen local provider call failed"
+          }
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-DOC-C-FA",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_initial_attempt",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "documentation",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "fa",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "codecompass",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "latency_seconds": {
+        "value": 5.908164,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": false,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 0,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": "not_evaluable_no_output",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "schema_status": {
+        "value": "not_evaluable_no_output",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "artifact_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "EVALUATED",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "sanitized fields only"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "status": null,
+          "error": {
+            "type": "LLMProviderError",
+            "safe_message": "Qwen local provider call failed"
+          }
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-QA-H-EN",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_frozen_input_replay",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "qa",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "en",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "hospital_system",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": "stop",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "latency_seconds": {
+        "value": 22.690917,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": true,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 274,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output is free text"
+      },
+      "schema_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output has no JSON documentation schema"
+      },
+      "artifact_status": {
+        "value": "REVIEWABLE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": null,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "no error recorded"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-QA-H-FA",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_frozen_input_replay",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "qa",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "fa",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "hospital_system",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": "stop",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "latency_seconds": {
+        "value": 11.876142,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": true,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 156,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output is free text"
+      },
+      "schema_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output has no JSON documentation schema"
+      },
+      "artifact_status": {
+        "value": "REVIEWABLE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": null,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "no error recorded"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-QA-B-EN",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_frozen_input_replay",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "qa",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "en",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "cs_bookstore",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": "stop",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "latency_seconds": {
+        "value": 9.167451,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": true,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 322,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output is free text"
+      },
+      "schema_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output has no JSON documentation schema"
+      },
+      "artifact_status": {
+        "value": "REVIEWABLE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": null,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "no error recorded"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-QA-B-FA",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_frozen_input_replay",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "qa",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "fa",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "cs_bookstore",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": "stop",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "latency_seconds": {
+        "value": 27.03155,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": true,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 500,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output is free text"
+      },
+      "schema_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output has no JSON documentation schema"
+      },
+      "artifact_status": {
+        "value": "REVIEWABLE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": null,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "no error recorded"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-QA-C-EN",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_frozen_input_replay",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "qa",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "en",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "codecompass",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": "stop",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "latency_seconds": {
+        "value": 23.422783,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": true,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 753,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output is free text"
+      },
+      "schema_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output has no JSON documentation schema"
+      },
+      "artifact_status": {
+        "value": "REVIEWABLE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": null,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "no error recorded"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-QA-C-FA",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_frozen_input_replay",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "qa",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "fa",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "codecompass",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": "stop",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "latency_seconds": {
+        "value": 65.131017,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": true,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 1090,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output is free text"
+      },
+      "schema_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output has no JSON documentation schema"
+      },
+      "artifact_status": {
+        "value": "REVIEWABLE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": null,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "no error recorded"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-DOC-H-EN",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_frozen_input_replay",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "documentation",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "en",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "hospital_system",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": "stop",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "latency_seconds": {
+        "value": 45.208763,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": true,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 754,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": "valid_json",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "schema_status": {
+        "value": "expected_top_level_fields_present",
+        "label": "measured_offline",
+        "source": "offline top-level shape check; not the production validator",
+        "reason": null
+      },
+      "artifact_status": {
+        "value": "REVIEWABLE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "EVALUATED",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": null,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "no error recorded"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-DOC-H-FA",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_frozen_input_replay",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "documentation",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "fa",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "hospital_system",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": "stop",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "latency_seconds": {
+        "value": 67.449457,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": true,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 758,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": "valid_json",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "schema_status": {
+        "value": "expected_top_level_fields_present",
+        "label": "measured_offline",
+        "source": "offline top-level shape check; not the production validator",
+        "reason": null
+      },
+      "artifact_status": {
+        "value": "REVIEWABLE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "EVALUATED",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": null,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "no error recorded"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-DOC-B-EN",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_frozen_input_replay",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "documentation",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "en",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "cs_bookstore",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": "stop",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "latency_seconds": {
+        "value": 46.410416,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": true,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 956,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": "valid_json",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "schema_status": {
+        "value": "expected_top_level_fields_present",
+        "label": "measured_offline",
+        "source": "offline top-level shape check; not the production validator",
+        "reason": null
+      },
+      "artifact_status": {
+        "value": "REVIEWABLE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "EVALUATED",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": null,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "no error recorded"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-DOC-B-FA",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_frozen_input_replay",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "documentation",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "fa",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "cs_bookstore",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": "stop",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "latency_seconds": {
+        "value": 48.970779,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": true,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 555,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": "valid_json",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "schema_status": {
+        "value": "expected_top_level_fields_present",
+        "label": "measured_offline",
+        "source": "offline top-level shape check; not the production validator",
+        "reason": null
+      },
+      "artifact_status": {
+        "value": "REVIEWABLE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "EVALUATED",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": null,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "no error recorded"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-DOC-C-EN",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_frozen_input_replay",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "documentation",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "en",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "codecompass",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": "stop",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "latency_seconds": {
+        "value": 93.380736,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": true,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 1694,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": "valid_json",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "schema_status": {
+        "value": "expected_top_level_fields_present",
+        "label": "measured_offline",
+        "source": "offline top-level shape check; not the production validator",
+        "reason": null
+      },
+      "artifact_status": {
+        "value": "REVIEWABLE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "EVALUATED",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": null,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "no error recorded"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-DOC-C-FA",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "qwen_frozen_input_replay",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "documentation",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "fa",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "codecompass",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "ollama",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "qwen2.5-coder-3b-codecompass:latest",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "latency_seconds": {
+        "value": 94.510438,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": true,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 1023,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": "invalid_json",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "schema_status": {
+        "value": "not_evaluable_invalid_json",
+        "label": "measured_offline",
+        "source": "offline top-level shape check; not the production validator",
+        "reason": null
+      },
+      "artifact_status": {
+        "value": "REVIEWABLE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "EVALUATED",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": null,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "no error recorded"
+      },
+      "previous_attempt_reference": {
+        "value": {
+          "type": "LLMProviderError",
+          "safe_message": "Qwen local provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "traceability only; not this execution result"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-QA-H-EN",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "glm_comparison_run",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "qa",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "en",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "hospital_system",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "openai_compatible",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "glm-5.3-flash",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": "stop",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "latency_seconds": {
+        "value": 3.087417,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": true,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 462,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output is free text"
+      },
+      "schema_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output has no JSON documentation schema"
+      },
+      "artifact_status": {
+        "value": "REVIEWABLE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "PASS",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": null,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "no error recorded"
+      },
+      "previous_attempt_reference": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-QA-H-FA",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "glm_comparison_run",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "qa",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "fa",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "hospital_system",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "openai_compatible",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "glm-5.3-flash",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": "stop",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "latency_seconds": {
+        "value": 5.262044,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": true,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 745,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output is free text"
+      },
+      "schema_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output has no JSON documentation schema"
+      },
+      "artifact_status": {
+        "value": "REVIEWABLE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "PASS",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": null,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "no error recorded"
+      },
+      "previous_attempt_reference": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-QA-B-EN",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "glm_comparison_run",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "qa",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "en",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "cs_bookstore",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "openai_compatible",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "glm-5.3-flash",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": "stop",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "latency_seconds": {
+        "value": 2.79541,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": true,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 703,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output is free text"
+      },
+      "schema_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output has no JSON documentation schema"
+      },
+      "artifact_status": {
+        "value": "REVIEWABLE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "PASS",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": null,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "no error recorded"
+      },
+      "previous_attempt_reference": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-QA-B-FA",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "glm_comparison_run",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "qa",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "fa",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "cs_bookstore",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "openai_compatible",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "glm-5.3-flash",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": "stop",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "latency_seconds": {
+        "value": 5.747394,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": true,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 651,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output is free text"
+      },
+      "schema_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output has no JSON documentation schema"
+      },
+      "artifact_status": {
+        "value": "REVIEWABLE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "PASS",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": null,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "no error recorded"
+      },
+      "previous_attempt_reference": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-QA-C-EN",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "glm_comparison_run",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "qa",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "en",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "codecompass",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "openai_compatible",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "glm-5.3-flash",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": "stop",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "latency_seconds": {
+        "value": 6.023187,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": true,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 1407,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output is free text"
+      },
+      "schema_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output has no JSON documentation schema"
+      },
+      "artifact_status": {
+        "value": "REVIEWABLE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "PASS",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": null,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "no error recorded"
+      },
+      "previous_attempt_reference": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-QA-C-FA",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "glm_comparison_run",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "qa",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "fa",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "codecompass",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "openai_compatible",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "glm-5.3-flash",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": "length",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "latency_seconds": {
+        "value": 10.216212,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": true,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 1532,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output is free text"
+      },
+      "schema_status": {
+        "value": null,
+        "label": "not_applicable",
+        "source": "offline check",
+        "reason": "QA output has no JSON documentation schema"
+      },
+      "artifact_status": {
+        "value": "REVIEWABLE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": null,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "no error recorded"
+      },
+      "previous_attempt_reference": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-DOC-H-EN",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "glm_comparison_run",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "documentation",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "en",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "hospital_system",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "openai_compatible",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "glm-5.3-flash",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "latency_seconds": {
+        "value": 10.522298,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": false,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 0,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": "not_evaluable_no_output",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "schema_status": {
+        "value": "not_evaluable_no_output",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "artifact_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": {
+          "type": "LLMProviderError",
+          "provider_error_type": "invalid_response_empty_content",
+          "safe_message": "OpenAI-compatible provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "sanitized fields only"
+      },
+      "previous_attempt_reference": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-DOC-H-FA",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "glm_comparison_run",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "documentation",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "fa",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "hospital_system",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "openai_compatible",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "glm-5.3-flash",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": "length",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "latency_seconds": {
+        "value": 9.533046,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": true,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 816,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": "invalid_json",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "schema_status": {
+        "value": "not_evaluable_invalid_json",
+        "label": "measured_offline",
+        "source": "offline top-level shape check; not the production validator",
+        "reason": null
+      },
+      "artifact_status": {
+        "value": "REVIEWABLE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": null,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "no error recorded"
+      },
+      "previous_attempt_reference": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-DOC-B-EN",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "glm_comparison_run",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "documentation",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "en",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "cs_bookstore",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "openai_compatible",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "glm-5.3-flash",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "latency_seconds": {
+        "value": 10.505039,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": false,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 0,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": "not_evaluable_no_output",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "schema_status": {
+        "value": "not_evaluable_no_output",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "artifact_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": {
+          "type": "LLMProviderError",
+          "provider_error_type": "invalid_response_empty_content",
+          "safe_message": "OpenAI-compatible provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "sanitized fields only"
+      },
+      "previous_attempt_reference": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-DOC-B-FA",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "glm_comparison_run",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "documentation",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "fa",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "cs_bookstore",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "openai_compatible",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "glm-5.3-flash",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": "length",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "latency_seconds": {
+        "value": 10.684965,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": true,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 398,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": "invalid_json",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "schema_status": {
+        "value": "not_evaluable_invalid_json",
+        "label": "measured_offline",
+        "source": "offline top-level shape check; not the production validator",
+        "reason": null
+      },
+      "artifact_status": {
+        "value": "REVIEWABLE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": null,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "no error recorded"
+      },
+      "previous_attempt_reference": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-DOC-C-EN",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "glm_comparison_run",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "documentation",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "en",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "codecompass",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "openai_compatible",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "glm-5.3-flash",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "latency_seconds": {
+        "value": 10.102195,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": false,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 0,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": "not_evaluable_no_output",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "schema_status": {
+        "value": "not_evaluable_no_output",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "artifact_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": {
+          "type": "LLMProviderError",
+          "provider_error_type": "invalid_response_empty_content",
+          "safe_message": "OpenAI-compatible provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "sanitized fields only"
+      },
+      "previous_attempt_reference": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      }
+    },
+    {
+      "case_id": {
+        "value": "CB-DOC-C-FA",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "execution_phase": {
+        "value": "glm_comparison_run",
+        "label": "inferred",
+        "source": "artifact container",
+        "reason": null
+      },
+      "task": {
+        "value": "documentation",
+        "label": "inferred",
+        "source": "case_id prefix and artifact container",
+        "reason": null
+      },
+      "language": {
+        "value": "fa",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "repository_id": {
+        "value": "codecompass",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "provider": {
+        "value": "openai_compatible",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "model": {
+        "value": "glm-5.3-flash",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "finish_reason": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "latency_seconds": {
+        "value": 12.461999,
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "token_usage": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      },
+      "generated_output_available": {
+        "value": false,
+        "label": "measured",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "generated_output_chars": {
+        "value": 0,
+        "label": "measured_offline",
+        "source": "answer/documentation field",
+        "reason": null
+      },
+      "raw_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "raw_reasoning_content_field": {
+        "value": null,
+        "label": "unavailable",
+        "source": "raw provider envelope",
+        "reason": "raw provider envelope not recorded"
+      },
+      "parse_status": {
+        "value": "not_evaluable_no_output",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "schema_status": {
+        "value": "not_evaluable_no_output",
+        "label": "measured_offline",
+        "source": "generated output",
+        "reason": null
+      },
+      "artifact_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "result artifact",
+        "reason": null
+      },
+      "quality_evaluation_status": {
+        "value": "INCONCLUSIVE",
+        "label": "measured",
+        "source": "quality evaluation artifact",
+        "reason": null
+      },
+      "sanitized_error": {
+        "value": {
+          "type": "LLMProviderError",
+          "provider_error_type": "invalid_response_empty_content",
+          "safe_message": "OpenAI-compatible provider call failed"
+        },
+        "label": "measured",
+        "source": "result artifact",
+        "reason": "sanitized fields only"
+      },
+      "previous_attempt_reference": {
+        "value": null,
+        "label": "unavailable",
+        "source": "result artifact",
+        "reason": "not recorded"
+      }
+    }
+  ],
+  "comparisons": {
+    "qwen_initial": {
+      "executions": 12,
+      "qa": 6,
+      "documentation": 6,
+      "generated_outputs": 0,
+      "sanitized_provider_errors": 12,
+      "label": "measured_offline"
+    },
+    "qwen_replay": {
+      "executions": 12,
+      "qa_outputs": "6/6",
+      "documentation_outputs": "6/6",
+      "documentation_valid_json": "5/6",
+      "documentation_expected_shape": "5/6",
+      "label": "measured_offline"
+    },
+    "glm": {
+      "executions": 12,
+      "qa_outputs": "6/6",
+      "qa_finish_stop": "5/6",
+      "qa_finish_length": "1/6",
+      "documentation_outputs": "2/6",
+      "documentation_finish_length": "2/6",
+      "documentation_empty_content_errors": "4/6",
+      "documentation_valid_json": "0/6",
+      "documentation_expected_shape": "0/6",
+      "label": "measured_offline"
+    }
+  },
+  "findings": [
+    {
+      "statement": "GLM failures are concentrated in Documentation, not QA: QA output exists for 6/6 cases, while complete Documentation JSON exists for 0/6.",
+      "label": "measured_offline"
+    },
+    {
+      "statement": "The two non-empty GLM Documentation outputs both record finish_reason=length and are invalid JSON.",
+      "label": "measured_offline"
+    },
+    {
+      "statement": "Four GLM Documentation cases record sanitized invalid_response_empty_content errors.",
+      "label": "measured"
+    },
+    {
+      "statement": "Qwen replay produced five complete Documentation JSON objects and one incomplete Persian CodeCompass object.",
+      "label": "measured_offline"
+    },
+    {
+      "statement": "Structured-contract/output-length pressure is a supported hypothesis, not a proven sole cause.",
+      "label": "inferred"
+    },
+    {
+      "statement": "Provider-versus-adapter attribution is unavailable because raw response envelopes, content, and reasoning_content were not recorded.",
+      "label": "unavailable"
+    }
+  ],
+  "decision_gate": {
+    "result": "INSUFFICIENT_EVIDENCE_FOR_SINGLE_CAUSAL_ATTRIBUTION",
+    "next_step": "offline adapter/validator audit",
+    "live_diagnostic_authorized": false,
+    "contract_redesign_authorized": false
+  }
+}
