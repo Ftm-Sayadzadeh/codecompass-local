@@ -1,4 +1,4 @@
-import { AlertTriangle, BookOpen, Braces, LoaderCircle, MessageSquareText, Search, Send, Sparkles } from "lucide-react";
+import { AlertTriangle, BookOpen, Braces, Check, Copy, LoaderCircle, MessageSquareText, Pencil, Plus, Search, Send, ShieldCheck, SlidersHorizontal, Sparkles } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import ReactMarkdown from "react-markdown";
 
@@ -10,8 +10,9 @@ import { ErrorMessage } from "./ErrorMessage";
 export type WorkspaceTab = "ask" | "search" | "documentation";
 
 function GroundedMarkdown({ children }: { children: string }) {
+  const persian = /[\u0600-\u06ff]/.test(children);
   return (
-    <div className="answer-markdown" dir="auto">
+    <div className={`answer-markdown${persian ? " persian" : ""}`} dir={persian ? "rtl" : "ltr"}>
       <ReactMarkdown
         components={{
           code: ({ children: code }) => <code dir="ltr">{code}</code>,
@@ -37,11 +38,12 @@ function MethodControl({ value, onChange }: { value: RetrievalMethod; onChange: 
   );
 }
 
-function AskPanel({ result, loading, error, onAsk, onOpenCitation, onReindex, maxTokens, onMaxTokensChange }: {
+function AskPanel({ result, loading, error, onAsk, onNewQuestion, onOpenCitation, onReindex, maxTokens, onMaxTokensChange }: {
   result: AskResponse | null;
   loading: boolean;
   error: unknown;
   onAsk: (question: string, method: RetrievalMethod, maxTokens?: number) => void;
+  onNewQuestion: () => void;
   onOpenCitation: (citation: NavigationCitation) => void;
   onReindex: () => void;
   maxTokens: string;
@@ -49,13 +51,19 @@ function AskPanel({ result, loading, error, onAsk, onOpenCitation, onReindex, ma
 }) {
   const [question, setQuestion] = useState("");
   const [method, setMethod] = useState<RetrievalMethod>("hybrid");
+  const [editing, setEditing] = useState(false);
+  const [copied, setCopied] = useState(false);
   const parsedMaxTokens = maxTokens === "" ? undefined : Number(maxTokens);
   const maxTokensError = parsedMaxTokens !== undefined && (!Number.isInteger(parsedMaxTokens) || parsedMaxTokens < 1 || parsedMaxTokens > 8000)
     ? "Enter an integer from 1 to 8000."
     : null;
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    if (question.trim() && !maxTokensError) onAsk(question.trim(), method, parsedMaxTokens);
+    if (question.trim() && !maxTokensError) {
+      setEditing(false);
+      setCopied(false);
+      onAsk(question.trim(), method, parsedMaxTokens);
+    }
   };
   const citations = result?.citations.map((item) => ({
     fileId: item.file_id,
@@ -66,44 +74,73 @@ function AskPanel({ result, loading, error, onAsk, onOpenCitation, onReindex, ma
     endLine: item.end_line,
   })) ?? [];
   return (
-    <div className="workspace-panel">
-      <form className="prompt-form" onSubmit={submit}>
+    <div className={`workspace-panel${!result && !loading && !error ? " empty" : ""}`}>
+      {result && !editing ? (
+        <div className="compact-question">
+          <span dir="auto">{result.question}</span>
+          <div className="compact-question-actions">
+            <button className="secondary-button" type="button" title="Edit the previous question" onClick={() => { setQuestion(result.question); setEditing(true); }}><Pencil size={15} /> Edit question</button>
+            <button className="primary-button" type="button" title="Start a new question" onClick={() => { setQuestion(""); setEditing(true); onNewQuestion(); }}><Plus size={15} /> New question</button>
+          </div>
+        </div>
+      ) : <form className="prompt-form" onSubmit={submit}>
         <label htmlFor="question">Ask about this codebase</label>
-        <textarea id="question" value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="How does escape_silent handle None?" dir="auto" rows={4} />
-        <details className="ask-advanced" open={result?.finish_reason === "length" || undefined}>
-          <summary>Advanced</summary>
-          <label htmlFor="answer-token-budget">Answer token budget</label>
-          <input
-            id="answer-token-budget"
-            type="number"
-            min="1"
-            max="8000"
-            step="1"
-            value={maxTokens}
-            onChange={(event) => onMaxTokensChange(event.target.value)}
-            placeholder="Backend default (180)"
-            aria-invalid={Boolean(maxTokensError)}
-            aria-describedby={maxTokensError ? "answer-token-budget-error" : undefined}
-          />
-          {maxTokensError ? <p id="answer-token-budget-error" className="validation-message" role="alert">{maxTokensError}</p> : null}
-        </details>
+        <textarea id="question" value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="How does escape_silent handle None?" dir="auto" rows={2} />
         <div className="form-actions">
-          <MethodControl value={method} onChange={setMethod} />
+          <div className="ask-controls">
+            <MethodControl value={method} onChange={setMethod} />
+            <details className="ask-advanced" open={result?.finish_reason === "length" || undefined}>
+              <summary><SlidersHorizontal size={14} /> Advanced</summary>
+              <div className="advanced-popover">
+                <label htmlFor="answer-token-budget">Answer token budget</label>
+                <input
+                  id="answer-token-budget"
+                  type="number"
+                  min="1"
+                  max="8000"
+                  step="1"
+                  value={maxTokens}
+                  onChange={(event) => onMaxTokensChange(event.target.value)}
+                  placeholder="Backend default (180)"
+                  aria-invalid={Boolean(maxTokensError)}
+                  aria-describedby={maxTokensError ? "answer-token-budget-error" : undefined}
+                />
+                <small>Overrides the backend default for this answer.</small>
+                {maxTokensError ? <p id="answer-token-budget-error" className="validation-message" role="alert">{maxTokensError}</p> : null}
+              </div>
+            </details>
+          </div>
           <button className="primary-button" type="submit" disabled={loading || !question.trim() || Boolean(maxTokensError)}>
             {loading ? <LoaderCircle className="spin" size={17} /> : <Send size={17} />}
             {loading ? "Generating answer..." : "Ask CodeCompass"}
           </button>
         </div>
-      </form>
+      </form>}
       {error ? <ErrorMessage error={error} onReindex={onReindex} /> : null}
-      {result ? (
+      {loading ? (
+        <section className="answer-loading" role="status" aria-live="polite">
+          <div><LoaderCircle className="spin" size={18} /><strong>Retrieving evidence and generating answer...</strong></div>
+          <span /><span /><span />
+        </section>
+      ) : result ? (
         <section className="answer-section" aria-live="polite">
-          <div className="answer-heading"><Sparkles size={18} /><span>Grounded answer</span><small>{result.method} · {result.llm_model ?? "backend model"}</small></div>
+          <div className="answer-heading">
+            <Sparkles size={18} /><span>Grounded answer</span>
+            <div className="answer-toolbar">
+              <span className="answer-badge">{result.method}</span>
+              <span className="answer-badge model" dir="ltr" title={result.llm_model ?? "backend model"}>{result.llm_model ?? "backend model"}</span>
+              {result.finish_reason ? <span className={`answer-badge ${result.finish_reason === "length" ? "warning" : "success"}`}>{result.finish_reason === "length" ? "Token limit" : result.finish_reason === "stop" ? "Complete" : result.finish_reason}</span> : null}
+              <button className="icon-button" type="button" title="Copy answer" aria-label="Copy answer" onClick={() => void navigator.clipboard?.writeText(result.answer).then(() => setCopied(true)).catch(() => setCopied(false))}>
+                {copied ? <Check size={16} /> : <Copy size={16} />}
+                <span className="copy-label">{copied ? "Copied" : "Copy"}</span>
+              </button>
+            </div>
+          </div>
           {result.finish_reason === "length" ? <div className="answer-warning" role="status"><AlertTriangle size={17} /><span><strong>The answer reached its token limit.</strong> Increase Answer token budget in Advanced and ask again.</span></div> : null}
           <GroundedMarkdown>{result.answer}</GroundedMarkdown>
           <CitationList citations={citations} onOpen={onOpenCitation} />
         </section>
-      ) : !loading && !error ? <div className="workspace-empty"><MessageSquareText size={28} /><p>Ask a Persian or English question about the selected project.</p></div> : null}
+      ) : !error ? <div className="workspace-empty"><MessageSquareText size={28} /><p>Ask a Persian or English question about the selected project.</p></div> : null}
     </div>
   );
 }
@@ -124,15 +161,15 @@ function SearchPanel({ result, loading, error, onSearch, onOpenCitation, onReind
     if (query.trim()) onSearch(query.trim(), method, limit);
   };
   return (
-    <div className="workspace-panel">
+    <div className={`workspace-panel${!result && !loading && !error ? " empty" : ""}`}>
       <form className="search-form" onSubmit={submit}>
         <label htmlFor="search-query">Search indexed code</label>
         <div className="search-input-row">
           <div className="search-box"><Search size={17} /><input id="search-query" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="escape HTML input" dir="auto" /></div>
-          <label className="limit-input">Limit <input type="number" min="1" max="50" value={limit} onChange={(event) => setLimit(Math.max(1, Math.min(50, Number(event.target.value))))} /></label>
+          <MethodControl value={method} onChange={setMethod} />
+          <label className="limit-input"><span>Results</span><input aria-label="Result limit" type="number" min="1" max="50" value={limit} onChange={(event) => setLimit(Math.max(1, Math.min(50, Number(event.target.value))))} /></label>
           <button className="primary-button" type="submit" disabled={loading || !query.trim()}>{loading ? <LoaderCircle className="spin" size={17} /> : <Search size={17} />} Search</button>
         </div>
-        <MethodControl value={method} onChange={setMethod} />
       </form>
       {error ? <ErrorMessage error={error} onReindex={onReindex} /> : null}
       {result ? (
@@ -192,7 +229,7 @@ function DocumentationPanel({ preset, result, loading, error, onDocument, onOpen
   const citation = result?.citations[0];
   const persian = result?.generation.language === "fa";
   return (
-    <div className="workspace-panel">
+    <div className={`workspace-panel${!result && !loading && !error ? " empty" : ""}`}>
       <form className="documentation-form" onSubmit={submit}>
         <label htmlFor="symbol-identifier">Function or method</label>
         <div className="search-input-row">
@@ -218,12 +255,12 @@ function DocumentationPanel({ preset, result, loading, error, onDocument, onOpen
       {result ? (
         <section className="documentation-result" aria-live="polite" dir={result.generation.language === "fa" ? "rtl" : "ltr"}>
           <header>
-            <div><span className="eyebrow">Extracted identity</span><h2>{result.extracted.citation.qualified_name}</h2></div>
+            <div className="documentation-identity" dir="ltr"><span className="eyebrow">Extracted identity</span><h2>{result.extracted.citation.qualified_name}</h2></div>
             {citation ? <button className="text-button" type="button" onClick={() => onOpenCitation({ fileId: citation.file_id, chunkId: citation.chunk_id, qualifiedName: citation.qualified_name, relativePath: citation.relative_source_path, startLine: citation.start_line, endLine: citation.end_line })}>Open code</button> : null}
           </header>
           <div className="documentation-columns">
-            <section className="extracted-facts">
-              <h3>Extracted facts</h3>
+            <section className="extracted-facts" dir="ltr">
+              <div className="documentation-section-heading"><h3><ShieldCheck size={17} /> Trusted facts</h3><span>Extracted facts</span></div>
               <dl>
                 <div><dt>Type</dt><dd>{result.extracted.symbol_type}</dd></div>
                 <div><dt>Signature</dt><dd><code>{result.extracted.signature}</code></dd></div>
@@ -232,8 +269,8 @@ function DocumentationPanel({ preset, result, loading, error, onDocument, onOpen
                 <div><dt>Source</dt><dd>{result.extracted.citation.relative_source_path}<br />L{result.extracted.citation.start_line}–{result.extracted.citation.end_line}</dd></div>
               </dl>
             </section>
-            <section className="generated-docs">
-              <h3>Generated explanation</h3>
+            <section className="generated-docs" dir={persian ? "rtl" : "ltr"}>
+              <div className="documentation-section-heading"><h3><Sparkles size={17} /> Generated explanation</h3><span className="model-badge" dir="ltr">{result.generation.model}</span></div>
               <p className="doc-summary"><BidiText text={result.generated.summary} isolate={persian} /></p>
               <p><BidiText text={result.generated.detailed_description} isolate={persian} /></p>
               <dl>
@@ -259,6 +296,7 @@ export function Workspace(props: {
   search: { result: SearchResponse | null; loading: boolean; error: unknown };
   documentation: { result: DocumentationResponse | null; loading: boolean; error: unknown; preset: string | number | null };
   onAsk: (question: string, method: RetrievalMethod, maxTokens?: number) => void;
+  onNewQuestion: () => void;
   onSearch: (query: string, method: RetrievalMethod, limit: number) => void;
   onDocument: (identifier: string | number, language: "en" | "fa") => void;
   onOpenCitation: (citation: NavigationCitation) => void;
@@ -273,7 +311,7 @@ export function Workspace(props: {
         <button type="button" role="tab" aria-selected={props.tab === "search"} className={props.tab === "search" ? "active" : ""} onClick={() => props.setTab("search")}><Search size={17} /> Search</button>
         <button type="button" role="tab" aria-selected={props.tab === "documentation"} className={props.tab === "documentation" ? "active" : ""} onClick={() => props.setTab("documentation")}><BookOpen size={17} /> Documentation</button>
       </div>
-      {props.tab === "ask" ? <AskPanel {...props.ask} onAsk={props.onAsk} onOpenCitation={props.onOpenCitation} onReindex={props.onReindex} maxTokens={props.answerTokenBudget} onMaxTokensChange={props.onAnswerTokenBudgetChange} /> : null}
+      {props.tab === "ask" ? <AskPanel {...props.ask} onAsk={props.onAsk} onNewQuestion={props.onNewQuestion} onOpenCitation={props.onOpenCitation} onReindex={props.onReindex} maxTokens={props.answerTokenBudget} onMaxTokensChange={props.onAnswerTokenBudgetChange} /> : null}
       {props.tab === "search" ? <SearchPanel {...props.search} onSearch={props.onSearch} onOpenCitation={props.onOpenCitation} onReindex={props.onReindex} /> : null}
       {props.tab === "documentation" ? <DocumentationPanel {...props.documentation} onDocument={props.onDocument} onOpenCitation={props.onOpenCitation} /> : null}
     </main>

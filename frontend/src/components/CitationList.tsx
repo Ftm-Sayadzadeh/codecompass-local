@@ -16,7 +16,7 @@ export function CitationList({ citations, onOpen }: { citations: NavigationCitat
       <h3 id="citations-title"><Link2 size={16} /> Sources</h3>
       <div className="citation-list">
         {citations.map((citation, index) => (
-          <div className="citation-row" key={`${citation.chunkId}-${index}`}>
+          <div className={`citation-row${index === 0 ? " primary" : ""}`} key={`${citation.chunkId}-${index}`}>
             <span className="rank">{index + 1}</span>
             <span className="citation-symbol">{citation.qualifiedName ?? "Source"}</span>
             <span className="citation-path" title={citation.relativePath}>{citation.relativePath}</span>

@@ -61,6 +61,21 @@ export function ProjectSetup({
       : []
   ));
   const visibleCounters = job ? counters.filter(([key]) => Object.hasOwn(job.counters, key)) : [];
+  const noChanges = job?.result?.no_changes === true;
+  const currentStageIndex = stages.findIndex(({ state }) => state === currentStage);
+  const visibleStages = noChanges ? stages.filter(({ state }) => observedStages.has(state)) : stages;
+  const embeddingsCompleted = job?.counters.embeddings_completed;
+  const embeddingsExpected = job?.counters.chunks_expected;
+  const hasEmbeddingProgress = currentStage === "embedding" && embeddingsExpected !== undefined && embeddingsExpected > 0;
+  const embeddingProgress = hasEmbeddingProgress
+    ? Math.min(100, ((embeddingsCompleted ?? 0) / embeddingsExpected) * 100)
+    : 0;
+  const summaryStats = job ? [
+    ["Files", noChanges ? currentProject?.files : job.counters.files_parsed ?? job.counters.files_discovered],
+    ["Symbols", noChanges ? currentProject?.symbols : job.counters.symbols_extracted],
+    ["Chunks", noChanges ? currentProject?.chunks : job.counters.chunks_generated],
+    ["Vectors", job.counters.vectors_stored ?? job.counters.embeddings_completed ?? job.counters.chunks_expected],
+  ] as const : [];
   return (
     <section className="setup-band" aria-labelledby="repository-setup-title">
       <div className="setup-copy">
@@ -77,15 +92,31 @@ export function ProjectSetup({
           </div>
           <button className="primary-button" type="submit" disabled={indexing || (!path.trim() && !currentProject)}>
             {indexing ? <LoaderCircle className="spin" size={17} /> : currentProject ? <RefreshCw size={17} /> : <FolderInput size={17} />}
-            {indexing ? "Indexing repository..." : currentProject ? "Index / Re-index" : "Index repository"}
+            {indexing ? "Working..." : currentProject ? "Index / Re-index" : "Index repository"}
           </button>
         </div>
       </form>
       {error ? <ErrorMessage error={error} /> : null}
       {job ? (
         <div className="index-progress" aria-live="polite">
+          <div className="index-progress-heading">
+            <div>
+              <strong>{noChanges ? "Repository already up to date" : job.state === "completed" ? "Repository ready" : job.state === "failed" ? "Indexing failed" : currentProject ? "Updating repository" : "Indexing repository"}</strong>
+              <span>{noChanges ? "Existing verified index retained" : job.state === "completed" ? "Observed pipeline stages completed" : job.state === "failed" ? `Stopped during ${job.error?.stage ?? "indexing"}` : `${stages.find(({ state }) => state === currentStage)?.label ?? "Preparing index"}${currentStageIndex >= 0 ? ` · Stage ${currentStageIndex + 1} of ${stages.length}` : ""}`}</span>
+              {indexing && currentProject?.vector_complete ? <span>Current verified index remains available during this update.</span> : null}
+            </div>
+            <span>Elapsed {job.elapsed_seconds.toFixed(1)}s</span>
+          </div>
+          {hasEmbeddingProgress ? (
+            <div className="index-stage-progress">
+              <div><span>Embedding progress</span><strong>{embeddingsCompleted ?? 0} / {embeddingsExpected}</strong></div>
+              <div className="index-progress-track" role="progressbar" aria-label="Embedding progress" aria-valuemin={0} aria-valuemax={embeddingsExpected} aria-valuenow={embeddingsCompleted ?? 0}>
+                <i style={{ width: `${embeddingProgress}%` }} />
+              </div>
+            </div>
+          ) : null}
           <ol className="index-timeline" aria-label="Indexing progress">
-            {stages.map((stage) => {
+            {visibleStages.map((stage) => {
               const current = currentStage === stage.state;
               const complete = observedStages.has(stage.state) && !current;
               return (
@@ -96,11 +127,19 @@ export function ProjectSetup({
               );
             })}
           </ol>
-          <div className="index-progress-meta">
-            <strong>{job.state === "completed" ? "Repository ready" : job.state === "failed" ? "Indexing failed" : "Indexing repository..."}</strong>
-            <span>Elapsed {job.elapsed_seconds.toFixed(1)}s</span>
-            {visibleCounters.map(([key, label]) => <span key={key}>{label}: <strong>{job.counters[key]}</strong></span>)}
+          <div className="index-stats" aria-label="Indexing counters">
+            {summaryStats.map(([label, value]) => (
+              <div key={label}><span>{label}</span><strong>{value ?? "—"}</strong></div>
+            ))}
           </div>
+          {visibleCounters.length ? (
+            <details className="index-diagnostics">
+              <summary>Technical details</summary>
+              <div className="index-progress-meta">
+                {visibleCounters.map(([key, label]) => <span key={key}>{label}: <strong>{job.counters[key]}</strong></span>)}
+              </div>
+            </details>
+          ) : null}
           {job.state === "failed" && job.error ? (
             <div className="index-failure" role="alert">
               <strong>{job.error.message}</strong>
@@ -111,7 +150,7 @@ export function ProjectSetup({
           ) : null}
         </div>
       ) : null}
-      {job?.result ? (
+      {job?.result && !noChanges ? (
         <div className="index-result" role="status">
           <strong>{job.result.no_changes ? "Repository is already up to date" : job.result.strategy === "incremental" ? "Incremental update complete" : job.result.operation === "reindexed" ? "Full re-index complete" : "Repository ready"}</strong>
           <span>{job.result.complete ? "Vector index verified" : "Index incomplete"}</span>

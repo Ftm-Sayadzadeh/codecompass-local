@@ -6,12 +6,14 @@ import type { SourceFile, SymbolItem } from "../api/types";
 export function ProjectExplorer({
   files,
   symbols,
+  selectedFileId,
   onOpenFile,
   onOpenSymbol,
   onDocumentSymbol,
 }: {
   files: SourceFile[];
   symbols: SymbolItem[];
+  selectedFileId: number | null;
   onOpenFile: (file: SourceFile) => void;
   onOpenSymbol: (symbol: SymbolItem) => void;
   onDocumentSymbol: (symbol: SymbolItem) => void;
@@ -45,9 +47,17 @@ export function ProjectExplorer({
       </label>
       <div className="explorer-list">
         {tab === "files" ? shownFiles.map((file) => (
-          <button className="explorer-row" type="button" key={file.id} onClick={() => onOpenFile(file)}>
+          <button
+            className={`explorer-row file-row depth-${Math.min(file.relative_path.split("/").length - 1, 2)}${selectedFileId === file.id ? " selected" : ""}`}
+            type="button"
+            key={file.id}
+            onClick={() => onOpenFile(file)}
+            aria-current={selectedFileId === file.id ? "true" : undefined}
+            aria-label={file.relative_path}
+            title={file.relative_path}
+          >
             <FileCode2 size={16} aria-hidden="true" />
-            <span title={file.relative_path}>{file.relative_path}</span>
+            <span>{file.relative_path}</span>
           </button>
         )) : shownSymbols.map((symbol) => (
           <div className="symbol-row" key={symbol.id}>
