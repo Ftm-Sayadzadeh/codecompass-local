@@ -226,6 +226,60 @@ export interface EvaluationResponse {
   };
 }
 
+export interface ThesisScore {
+  n: number;
+  mean: number | null;
+}
+
+export interface ThesisQuality {
+  scored_records: number;
+  correctness_0_10: ThesisScore;
+  groundedness_0_10: ThesisScore;
+  persian_readability_0_10: ThesisScore;
+  usefulness_0_10: ThesisScore;
+}
+
+export interface ThesisRankMetrics {
+  cases?: number;
+  n?: number;
+  hit_at_1: number;
+  hit_at_3: number;
+  hit_at_5: number;
+  hit_at_10: number;
+  mrr_at_10: number;
+}
+
+export interface FinalThesisEvaluationResponse {
+  scope: "benchmark_evaluation";
+  not_per_answer_confidence: true;
+  artifact_sha256: string;
+  data: {
+    evaluation_id: string;
+    frozen_at_utc?: string;
+    index_complete: boolean;
+    design: { repositories: number; search_queries: number; qa_cases: number; documentation_cases: number };
+    models: { embeddings: Record<string, string>; llms: Record<string, string> };
+    search: { records: number; global: Record<string, Record<string, ThesisRankMetrics>> };
+    qa: {
+      execution: Record<string, { initial_success: number; recovered_by_retry_1: number; recovered_by_retry_2: number; final_failure: number; total: number }>;
+      quality: { qa_by_llm: Record<string, ThesisQuality> };
+      paired_effects: Record<string, { paired_cases: number; treatment_minus_control: Record<string, ThesisScore> }>;
+    };
+    documentation: {
+      execution: { expected_records: number; actual_records: number; unique_records: number; glm_complete: number; glm_failed: number; qwen_complete: number; qwen_failed: number; citation_identity_mismatches: number };
+      final_status: { usable_documentation_outputs: number; unavailable_documentation_outputs: number; quality_interpretation: string };
+      quality: { by_llm: Record<string, ThesisQuality> };
+    };
+    human_evaluation: {
+      overall: ThesisQuality;
+      records: number;
+      usable: number;
+      unavailable: number;
+      limitations: string[];
+    };
+  };
+}
+
 export interface ApiErrorBody {
   error: {
     code: string;

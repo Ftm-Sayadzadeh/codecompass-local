@@ -6,6 +6,7 @@ import type {
   AskResponse,
   DocumentationResponse,
   EvaluationResponse,
+  FinalThesisEvaluationResponse,
   IndexJob,
   Project,
   RetrievalMethod,
@@ -119,6 +120,7 @@ export default function App() {
   const [sourceError, setSourceError] = useState<unknown>(null);
   const [evaluation, setEvaluation] = useState<EvaluationResponse | null>(null);
   const [performance, setPerformance] = useState<EvaluationResponse | null>(null);
+  const [finalThesisEvaluation, setFinalThesisEvaluation] = useState<FinalThesisEvaluationResponse | null>(null);
   const [evaluationLoading, setEvaluationLoading] = useState(true);
   const [evaluationError, setEvaluationError] = useState<unknown>(null);
 
@@ -165,8 +167,8 @@ export default function App() {
     }).catch((error) => {
       if (active) { setProjectError(error); setProjectLoading(false); }
     });
-    void Promise.all([api.evaluation(), api.performance()]).then(([summary, measured]) => {
-      if (active) { setEvaluation(summary); setPerformance(measured); }
+    void Promise.all([api.evaluation(), api.performance(), api.finalThesisEvaluation()]).then(([summary, measured, thesis]) => {
+      if (active) { setEvaluation(summary); setPerformance(measured); setFinalThesisEvaluation(thesis); }
     }).catch((error) => { if (active) setEvaluationError(error); }).finally(() => { if (active) setEvaluationLoading(false); });
     return () => { active = false; };
   }, [loadProject]);
@@ -358,7 +360,7 @@ export default function App() {
         </section>
       ) : null}
 
-      <EvaluationPanel summary={evaluation} performance={performance} loading={evaluationLoading} error={evaluationError} />
+      <EvaluationPanel summary={evaluation} performance={performance} finalThesis={finalThesisEvaluation} loading={evaluationLoading} error={evaluationError} />
       <ProviderSettings
         open={settingsOpen}
         embedding={embedding}
