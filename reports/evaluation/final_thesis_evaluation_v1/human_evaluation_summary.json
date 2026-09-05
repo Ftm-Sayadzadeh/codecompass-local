@@ -1,0 +1,805 @@
+{
+  "evaluation_id": "final_thesis_evaluation_v1",
+  "status": "human_evaluation_complete",
+  "artifact_integrity": {
+    "blind_source_sha256": "715d64dc60f4fbe53b5768d12ee22d1ffb7ca93dac2a9748c555028f256cbbaf",
+    "scored_review_sha256": "4dbfb5b38259aad4bd189c3e5bfc18186718e6286ff48654874a94334057a97b",
+    "blind_mapping_sha256": "cd2b3c09ad9ece447a1ddf923acb9f29457bec0df13af8eb1b1973b1c24fd225",
+    "non_score_content_unchanged": true
+  },
+  "execution": {
+    "total_records": 90,
+    "usable_records": 80,
+    "unavailable_records": 10,
+    "qa_usable": 71,
+    "qa_unavailable": 1,
+    "documentation_usable": 9,
+    "documentation_unavailable": 9
+  },
+  "quality": {
+    "overall": {
+      "scored_records": 80,
+      "correctness_0_10": {
+        "n": 80,
+        "mean": 7.375
+      },
+      "groundedness_0_10": {
+        "n": 80,
+        "mean": 7.713
+      },
+      "persian_readability_0_10": {
+        "n": 44,
+        "mean": 6.932
+      },
+      "usefulness_0_10": {
+        "n": 80,
+        "mean": 7.35
+      },
+      "hallucination_labels": {
+        "خیر": 73,
+        "خیر (ولی مبهم)": 1,
+        "بله": 4,
+        "خفیف / ضمنی": 2
+      }
+    },
+    "qa_by_llm": {
+      "glm": {
+        "scored_records": 35,
+        "correctness_0_10": {
+          "n": 35,
+          "mean": 7.943
+        },
+        "groundedness_0_10": {
+          "n": 35,
+          "mean": 8.314
+        },
+        "persian_readability_0_10": {
+          "n": 17,
+          "mean": 8.0
+        },
+        "usefulness_0_10": {
+          "n": 35,
+          "mean": 8.286
+        },
+        "hallucination_labels": {
+          "خیر": 35
+        }
+      },
+      "qwen": {
+        "scored_records": 36,
+        "correctness_0_10": {
+          "n": 36,
+          "mean": 6.972
+        },
+        "groundedness_0_10": {
+          "n": 36,
+          "mean": 7.0
+        },
+        "persian_readability_0_10": {
+          "n": 18,
+          "mean": 5.333
+        },
+        "usefulness_0_10": {
+          "n": 36,
+          "mean": 6.25
+        },
+        "hallucination_labels": {
+          "خیر (ولی مبهم)": 1,
+          "خیر": 29,
+          "بله": 4,
+          "خفیف / ضمنی": 2
+        }
+      }
+    },
+    "qa_by_embedding": {
+      "gemini_001": {
+        "scored_records": 23,
+        "correctness_0_10": {
+          "n": 23,
+          "mean": 7.783
+        },
+        "groundedness_0_10": {
+          "n": 23,
+          "mean": 7.913
+        },
+        "persian_readability_0_10": {
+          "n": 11,
+          "mean": 6.545
+        },
+        "usefulness_0_10": {
+          "n": 23,
+          "mean": 7.435
+        },
+        "hallucination_labels": {
+          "خیر (ولی مبهم)": 1,
+          "خیر": 21,
+          "بله": 1
+        }
+      },
+      "gemini_2": {
+        "scored_records": 24,
+        "correctness_0_10": {
+          "n": 24,
+          "mean": 7.0
+        },
+        "groundedness_0_10": {
+          "n": 24,
+          "mean": 7.333
+        },
+        "persian_readability_0_10": {
+          "n": 12,
+          "mean": 6.667
+        },
+        "usefulness_0_10": {
+          "n": 24,
+          "mean": 7.0
+        },
+        "hallucination_labels": {
+          "خیر": 21,
+          "بله": 2,
+          "خفیف / ضمنی": 1
+        }
+      },
+      "nomic": {
+        "scored_records": 24,
+        "correctness_0_10": {
+          "n": 24,
+          "mean": 7.583
+        },
+        "groundedness_0_10": {
+          "n": 24,
+          "mean": 7.708
+        },
+        "persian_readability_0_10": {
+          "n": 12,
+          "mean": 6.667
+        },
+        "usefulness_0_10": {
+          "n": 24,
+          "mean": 7.333
+        },
+        "hallucination_labels": {
+          "خیر": 22,
+          "خفیف / ضمنی": 1,
+          "بله": 1
+        }
+      }
+    },
+    "qa_by_language_and_llm": {
+      "en / glm": {
+        "scored_records": 18,
+        "correctness_0_10": {
+          "n": 18,
+          "mean": 8.444
+        },
+        "groundedness_0_10": {
+          "n": 18,
+          "mean": 8.556
+        },
+        "persian_readability_0_10": {
+          "n": 0,
+          "mean": null
+        },
+        "usefulness_0_10": {
+          "n": 18,
+          "mean": 8.556
+        },
+        "hallucination_labels": {
+          "خیر": 18
+        }
+      },
+      "en / qwen": {
+        "scored_records": 18,
+        "correctness_0_10": {
+          "n": 18,
+          "mean": 5.944
+        },
+        "groundedness_0_10": {
+          "n": 18,
+          "mean": 6.0
+        },
+        "persian_readability_0_10": {
+          "n": 0,
+          "mean": null
+        },
+        "usefulness_0_10": {
+          "n": 18,
+          "mean": 5.833
+        },
+        "hallucination_labels": {
+          "خیر (ولی مبهم)": 1,
+          "خیر": 11,
+          "بله": 4,
+          "خفیف / ضمنی": 2
+        }
+      },
+      "fa / glm": {
+        "scored_records": 17,
+        "correctness_0_10": {
+          "n": 17,
+          "mean": 7.412
+        },
+        "groundedness_0_10": {
+          "n": 17,
+          "mean": 8.059
+        },
+        "persian_readability_0_10": {
+          "n": 17,
+          "mean": 8.0
+        },
+        "usefulness_0_10": {
+          "n": 17,
+          "mean": 8.0
+        },
+        "hallucination_labels": {
+          "خیر": 17
+        }
+      },
+      "fa / qwen": {
+        "scored_records": 18,
+        "correctness_0_10": {
+          "n": 18,
+          "mean": 8.0
+        },
+        "groundedness_0_10": {
+          "n": 18,
+          "mean": 8.0
+        },
+        "persian_readability_0_10": {
+          "n": 18,
+          "mean": 5.333
+        },
+        "usefulness_0_10": {
+          "n": 18,
+          "mean": 6.667
+        },
+        "hallucination_labels": {
+          "خیر": 18
+        }
+      }
+    },
+    "qa_by_repository_and_llm": {
+      "codecompass / glm": {
+        "scored_records": 12,
+        "correctness_0_10": {
+          "n": 12,
+          "mean": 7.833
+        },
+        "groundedness_0_10": {
+          "n": 12,
+          "mean": 8.333
+        },
+        "persian_readability_0_10": {
+          "n": 6,
+          "mean": 8.0
+        },
+        "usefulness_0_10": {
+          "n": 12,
+          "mean": 8.333
+        },
+        "hallucination_labels": {
+          "خیر": 12
+        }
+      },
+      "codecompass / qwen": {
+        "scored_records": 12,
+        "correctness_0_10": {
+          "n": 12,
+          "mean": 7.083
+        },
+        "groundedness_0_10": {
+          "n": 12,
+          "mean": 7.167
+        },
+        "persian_readability_0_10": {
+          "n": 6,
+          "mean": 4.0
+        },
+        "usefulness_0_10": {
+          "n": 12,
+          "mean": 5.917
+        },
+        "hallucination_labels": {
+          "خیر (ولی مبهم)": 1,
+          "خیر": 9,
+          "خفیف / ضمنی": 2
+        }
+      },
+      "cs_bookstore / glm": {
+        "scored_records": 12,
+        "correctness_0_10": {
+          "n": 12,
+          "mean": 7.917
+        },
+        "groundedness_0_10": {
+          "n": 12,
+          "mean": 8.333
+        },
+        "persian_readability_0_10": {
+          "n": 6,
+          "mean": 8.0
+        },
+        "usefulness_0_10": {
+          "n": 12,
+          "mean": 8.25
+        },
+        "hallucination_labels": {
+          "خیر": 12
+        }
+      },
+      "cs_bookstore / qwen": {
+        "scored_records": 12,
+        "correctness_0_10": {
+          "n": 12,
+          "mean": 6.25
+        },
+        "groundedness_0_10": {
+          "n": 12,
+          "mean": 6.25
+        },
+        "persian_readability_0_10": {
+          "n": 6,
+          "mean": 8.0
+        },
+        "usefulness_0_10": {
+          "n": 12,
+          "mean": 6.25
+        },
+        "hallucination_labels": {
+          "بله": 3,
+          "خیر": 9
+        }
+      },
+      "hospital_system / glm": {
+        "scored_records": 11,
+        "correctness_0_10": {
+          "n": 11,
+          "mean": 8.091
+        },
+        "groundedness_0_10": {
+          "n": 11,
+          "mean": 8.273
+        },
+        "persian_readability_0_10": {
+          "n": 5,
+          "mean": 8.0
+        },
+        "usefulness_0_10": {
+          "n": 11,
+          "mean": 8.273
+        },
+        "hallucination_labels": {
+          "خیر": 11
+        }
+      },
+      "hospital_system / qwen": {
+        "scored_records": 12,
+        "correctness_0_10": {
+          "n": 12,
+          "mean": 7.583
+        },
+        "groundedness_0_10": {
+          "n": 12,
+          "mean": 7.583
+        },
+        "persian_readability_0_10": {
+          "n": 6,
+          "mean": 4.0
+        },
+        "usefulness_0_10": {
+          "n": 12,
+          "mean": 6.583
+        },
+        "hallucination_labels": {
+          "خیر": 11,
+          "بله": 1
+        }
+      }
+    },
+    "qa_by_embedding_and_llm": {
+      "gemini_001 / glm": {
+        "scored_records": 11,
+        "correctness_0_10": {
+          "n": 11,
+          "mean": 8.182
+        },
+        "groundedness_0_10": {
+          "n": 11,
+          "mean": 8.364
+        },
+        "persian_readability_0_10": {
+          "n": 5,
+          "mean": 8.0
+        },
+        "usefulness_0_10": {
+          "n": 11,
+          "mean": 8.364
+        },
+        "hallucination_labels": {
+          "خیر": 11
+        }
+      },
+      "gemini_001 / qwen": {
+        "scored_records": 12,
+        "correctness_0_10": {
+          "n": 12,
+          "mean": 7.417
+        },
+        "groundedness_0_10": {
+          "n": 12,
+          "mean": 7.5
+        },
+        "persian_readability_0_10": {
+          "n": 6,
+          "mean": 5.333
+        },
+        "usefulness_0_10": {
+          "n": 12,
+          "mean": 6.583
+        },
+        "hallucination_labels": {
+          "خیر (ولی مبهم)": 1,
+          "خیر": 10,
+          "بله": 1
+        }
+      },
+      "gemini_2 / glm": {
+        "scored_records": 12,
+        "correctness_0_10": {
+          "n": 12,
+          "mean": 7.583
+        },
+        "groundedness_0_10": {
+          "n": 12,
+          "mean": 8.25
+        },
+        "persian_readability_0_10": {
+          "n": 6,
+          "mean": 8.0
+        },
+        "usefulness_0_10": {
+          "n": 12,
+          "mean": 8.25
+        },
+        "hallucination_labels": {
+          "خیر": 12
+        }
+      },
+      "gemini_2 / qwen": {
+        "scored_records": 12,
+        "correctness_0_10": {
+          "n": 12,
+          "mean": 6.417
+        },
+        "groundedness_0_10": {
+          "n": 12,
+          "mean": 6.417
+        },
+        "persian_readability_0_10": {
+          "n": 6,
+          "mean": 5.333
+        },
+        "usefulness_0_10": {
+          "n": 12,
+          "mean": 5.75
+        },
+        "hallucination_labels": {
+          "خیر": 9,
+          "بله": 2,
+          "خفیف / ضمنی": 1
+        }
+      },
+      "nomic / glm": {
+        "scored_records": 12,
+        "correctness_0_10": {
+          "n": 12,
+          "mean": 8.083
+        },
+        "groundedness_0_10": {
+          "n": 12,
+          "mean": 8.333
+        },
+        "persian_readability_0_10": {
+          "n": 6,
+          "mean": 8.0
+        },
+        "usefulness_0_10": {
+          "n": 12,
+          "mean": 8.25
+        },
+        "hallucination_labels": {
+          "خیر": 12
+        }
+      },
+      "nomic / qwen": {
+        "scored_records": 12,
+        "correctness_0_10": {
+          "n": 12,
+          "mean": 7.083
+        },
+        "groundedness_0_10": {
+          "n": 12,
+          "mean": 7.083
+        },
+        "persian_readability_0_10": {
+          "n": 6,
+          "mean": 5.333
+        },
+        "usefulness_0_10": {
+          "n": 12,
+          "mean": 6.417
+        },
+        "hallucination_labels": {
+          "خیر": 10,
+          "خفیف / ضمنی": 1,
+          "بله": 1
+        }
+      }
+    },
+    "documentation_by_llm": {
+      "glm": {
+        "scored_records": 9,
+        "correctness_0_10": {
+          "n": 9,
+          "mean": 6.778
+        },
+        "groundedness_0_10": {
+          "n": 9,
+          "mean": 8.222
+        },
+        "persian_readability_0_10": {
+          "n": 9,
+          "mean": 8.111
+        },
+        "usefulness_0_10": {
+          "n": 9,
+          "mean": 8.111
+        },
+        "hallucination_labels": {
+          "خیر": 9
+        }
+      }
+    },
+    "documentation_by_repository": {
+      "codecompass": {
+        "scored_records": 3,
+        "correctness_0_10": {
+          "n": 3,
+          "mean": 6.0
+        },
+        "groundedness_0_10": {
+          "n": 3,
+          "mean": 8.0
+        },
+        "persian_readability_0_10": {
+          "n": 3,
+          "mean": 8.0
+        },
+        "usefulness_0_10": {
+          "n": 3,
+          "mean": 8.0
+        },
+        "hallucination_labels": {
+          "خیر": 3
+        }
+      },
+      "cs_bookstore": {
+        "scored_records": 3,
+        "correctness_0_10": {
+          "n": 3,
+          "mean": 7.0
+        },
+        "groundedness_0_10": {
+          "n": 3,
+          "mean": 8.667
+        },
+        "persian_readability_0_10": {
+          "n": 3,
+          "mean": 8.333
+        },
+        "usefulness_0_10": {
+          "n": 3,
+          "mean": 8.333
+        },
+        "hallucination_labels": {
+          "خیر": 3
+        }
+      },
+      "hospital_system": {
+        "scored_records": 3,
+        "correctness_0_10": {
+          "n": 3,
+          "mean": 7.333
+        },
+        "groundedness_0_10": {
+          "n": 3,
+          "mean": 8.0
+        },
+        "persian_readability_0_10": {
+          "n": 3,
+          "mean": 8.0
+        },
+        "usefulness_0_10": {
+          "n": 3,
+          "mean": 8.0
+        },
+        "hallucination_labels": {
+          "خیر": 3
+        }
+      }
+    }
+  },
+  "paired_effects": {
+    "glm_minus_qwen": {
+      "paired_cases": 35,
+      "treatment_minus_control": {
+        "correctness_0_10": {
+          "n": 35,
+          "mean": 1.0
+        },
+        "groundedness_0_10": {
+          "n": 35,
+          "mean": 1.343
+        },
+        "persian_readability_0_10": {
+          "n": 17,
+          "mean": 2.824
+        },
+        "usefulness_0_10": {
+          "n": 35,
+          "mean": 2.086
+        }
+      }
+    },
+    "gemini_001_minus_nomic": {
+      "paired_cases": 23,
+      "treatment_minus_control": {
+        "correctness_0_10": {
+          "n": 23,
+          "mean": 0.217
+        },
+        "groundedness_0_10": {
+          "n": 23,
+          "mean": 0.217
+        },
+        "persian_readability_0_10": {
+          "n": 11,
+          "mean": 0.0
+        },
+        "usefulness_0_10": {
+          "n": 23,
+          "mean": 0.13
+        }
+      }
+    },
+    "gemini_2_minus_nomic": {
+      "paired_cases": 24,
+      "treatment_minus_control": {
+        "correctness_0_10": {
+          "n": 24,
+          "mean": -0.583
+        },
+        "groundedness_0_10": {
+          "n": 24,
+          "mean": -0.375
+        },
+        "persian_readability_0_10": {
+          "n": 12,
+          "mean": 0.0
+        },
+        "usefulness_0_10": {
+          "n": 24,
+          "mean": -0.333
+        }
+      }
+    },
+    "gemini_2_minus_gemini_001": {
+      "paired_cases": 23,
+      "treatment_minus_control": {
+        "correctness_0_10": {
+          "n": 23,
+          "mean": -0.826
+        },
+        "groundedness_0_10": {
+          "n": 23,
+          "mean": -0.609
+        },
+        "persian_readability_0_10": {
+          "n": 11,
+          "mean": 0.0
+        },
+        "usefulness_0_10": {
+          "n": 23,
+          "mean": -0.478
+        }
+      }
+    }
+  },
+  "retrieval": {
+    "nomic": {
+      "lexical": {
+        "cases": 36,
+        "hit_at_1": 4,
+        "hit_at_3": 12,
+        "hit_at_5": 18,
+        "hit_at_10": 22,
+        "mrr_at_10": 0.2419753086419752
+      },
+      "semantic": {
+        "cases": 36,
+        "hit_at_1": 10,
+        "hit_at_3": 13,
+        "hit_at_5": 14,
+        "hit_at_10": 17,
+        "mrr_at_10": 0.3280864197530864
+      },
+      "hybrid": {
+        "cases": 36,
+        "hit_at_1": 12,
+        "hit_at_3": 16,
+        "hit_at_5": 17,
+        "hit_at_10": 21,
+        "mrr_at_10": 0.4060515873015873
+      }
+    },
+    "gemini_001": {
+      "lexical": {
+        "cases": 36,
+        "hit_at_1": 4,
+        "hit_at_3": 12,
+        "hit_at_5": 18,
+        "hit_at_10": 22,
+        "mrr_at_10": 0.2419753086419752
+      },
+      "semantic": {
+        "cases": 36,
+        "hit_at_1": 23,
+        "hit_at_3": 31,
+        "hit_at_5": 34,
+        "hit_at_10": 36,
+        "mrr_at_10": 0.770866402116402
+      },
+      "hybrid": {
+        "cases": 36,
+        "hit_at_1": 20,
+        "hit_at_3": 28,
+        "hit_at_5": 32,
+        "hit_at_10": 34,
+        "mrr_at_10": 0.6888888888888889
+      }
+    },
+    "gemini_2": {
+      "lexical": {
+        "cases": 36,
+        "hit_at_1": 4,
+        "hit_at_3": 12,
+        "hit_at_5": 18,
+        "hit_at_10": 22,
+        "mrr_at_10": 0.2419753086419752
+      },
+      "semantic": {
+        "cases": 36,
+        "hit_at_1": 27,
+        "hit_at_3": 34,
+        "hit_at_5": 35,
+        "hit_at_10": 36,
+        "mrr_at_10": 0.8530092592592593
+      },
+      "hybrid": {
+        "cases": 36,
+        "hit_at_1": 17,
+        "hit_at_3": 30,
+        "hit_at_5": 34,
+        "hit_at_10": 35,
+        "mrr_at_10": 0.660648148148148
+      }
+    }
+  },
+  "limitations": [
+    "Scores come from one human reviewer and are interpreted descriptively.",
+    "Ten failed executions were retained as unavailable and were not assigned quality scores.",
+    "Qwen documentation quality is unavailable because all nine executions failed at the local provider path.",
+    "Seven QA outputs have provider-confirmed finish_reason=length; additional visually incomplete outputs are not reclassified as token-limit failures.",
+    "One GLM QA combination is unavailable, so some paired comparisons contain 11 rather than 12 cases."
+  ]
+}

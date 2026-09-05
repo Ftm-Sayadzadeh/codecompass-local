@@ -1,0 +1,43 @@
+{
+  "evaluation_id": "final_thesis_evaluation_v1",
+  "status": "validated",
+  "provider_calls_during_validation": 0,
+  "artifact_integrity": {
+    "benchmark_cases": {
+      "sha256": "ec134348d3b0cb24e062b2d663a4521b5630dc449f4bb27e3bb1461a3536974f",
+      "unchanged": true
+    },
+    "documentation_results": {
+      "role": "immutable original execution",
+      "sha256": "85b4fc6b448177e8cfb9771b94deaec8db4f27fa0328439893359d1620b90d90",
+      "unchanged": true
+    },
+    "documentation_qwen_recovery_results": {
+      "role": "separate single-retry history",
+      "sha256": "40fba2049fd386f69aa8414e7e0c3f334876d59b5165bada60d2acdd33405981"
+    }
+  },
+  "original_execution": {
+    "expected_records": 18,
+    "actual_records": 18,
+    "unique_records": 18,
+    "glm_complete": 9,
+    "glm_failed": 0,
+    "qwen_complete": 0,
+    "qwen_failed": 9,
+    "citation_identity_mismatches": 0
+  },
+  "qwen_recovery": {
+    "eligible": 9,
+    "attempted": 9,
+    "recovered": 0,
+    "failed": 9,
+    "failure_code": "provider_failure",
+    "provider_error_type": "http_error"
+  },
+  "final_status": {
+    "usable_documentation_outputs": 9,
+    "unavailable_documentation_outputs": 9,
+    "quality_interpretation": "Only available outputs may be scored. Execution failure is not a documentation-quality score."
+  }
+}

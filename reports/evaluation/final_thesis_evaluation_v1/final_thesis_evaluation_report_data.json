@@ -1,0 +1,4487 @@
+{
+  "report_id": "final_thesis_evaluation_v1_publication_report",
+  "generated_at_utc": "2026-09-05T12:41:32.415704+00:00",
+  "evaluation_id": "final_thesis_evaluation_v1",
+  "frozen_at_utc": "2026-09-04T22:56:48.703727+00:00",
+  "design": {
+    "repositories": 3,
+    "search_concepts": 18,
+    "search_queries": 36,
+    "qa_cases": 12,
+    "documentation_cases": 9,
+    "languages": [
+      "en",
+      "fa"
+    ],
+    "difficulty_levels": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "search_methods": [
+      "lexical",
+      "semantic",
+      "hybrid"
+    ],
+    "embedding_arms": [
+      "nomic",
+      "gemini_001",
+      "gemini_2"
+    ],
+    "llm_arms": [
+      "qwen",
+      "glm"
+    ]
+  },
+  "setup": {
+    "repositories": [
+      {
+        "repository_id": "hospital_system",
+        "commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633",
+        "files": 33,
+        "symbols": 409,
+        "chunks": 409,
+        "vectors_per_arm": {
+          "nomic": 409,
+          "gemini_001": 409,
+          "gemini_2": 409
+        },
+        "source_manifest_sha256": "bd91675f2ca42e57b9b12fa1b64c1e272c5e54e1cb0f5f149c6dce618eb4959c"
+      },
+      {
+        "repository_id": "cs_bookstore",
+        "commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+        "files": 56,
+        "symbols": 144,
+        "chunks": 144,
+        "vectors_per_arm": {
+          "nomic": 144,
+          "gemini_001": 144,
+          "gemini_2": 144
+        },
+        "source_manifest_sha256": "2e2f647f35f9c752341c15eaf20a91af31b65dd245524b4a3ac6ada8af0fa05c"
+      },
+      {
+        "repository_id": "codecompass",
+        "commit": "4b9eba4df4cc7a5afca27ee3d4c60d578caec0f7",
+        "files": 100,
+        "symbols": 1236,
+        "chunks": 1236,
+        "vectors_per_arm": {
+          "nomic": 1236,
+          "gemini_001": 1236,
+          "gemini_2": 1236
+        },
+        "source_manifest_sha256": "fc75e63befc5a6d6c3d0cf79ad3ba4ba06a2d1416da04c8e7b317a9a467b1aa2"
+      }
+    ],
+    "benchmark": {
+      "path": "reports/evaluation/final_thesis_evaluation_v1/benchmark_cases.json",
+      "sha256": "ec134348d3b0cb24e062b2d663a4521b5630dc449f4bb27e3bb1461a3536974f",
+      "search_queries": 36,
+      "qa_cases": 12,
+      "documentation_cases": 9
+    },
+    "fixed": {
+      "retrieval_methods": [
+        "lexical",
+        "semantic",
+        "hybrid"
+      ],
+      "search_limit": 10,
+      "qa_method": "hybrid",
+      "qa_limit": 5,
+      "qa_context_chars": 6000,
+      "temperature": 0.0,
+      "qa_max_tokens": 1200,
+      "documentation_max_tokens": 2400,
+      "documentation_language": "fa"
+    },
+    "models": {
+      "embeddings": {
+        "nomic": "nomic-embed-text-local:latest",
+        "gemini_001": "gemini-embedding-001",
+        "gemini_2": "gemini-embedding-2"
+      },
+      "llms": {
+        "qwen": "qwen2.5-coder-3b-codecompass:latest",
+        "glm": "glm-5.3-flash"
+      }
+    },
+    "index_completeness": {
+      "all_complete": true,
+      "checks": [
+        {
+          "embedding_arm": "nomic",
+          "repository_id": "hospital_system",
+          "chunks": 409,
+          "vectors": 409,
+          "complete": true
+        },
+        {
+          "embedding_arm": "nomic",
+          "repository_id": "cs_bookstore",
+          "chunks": 144,
+          "vectors": 144,
+          "complete": true
+        },
+        {
+          "embedding_arm": "nomic",
+          "repository_id": "codecompass",
+          "chunks": 1236,
+          "vectors": 1236,
+          "complete": true
+        },
+        {
+          "embedding_arm": "gemini_001",
+          "repository_id": "hospital_system",
+          "chunks": 409,
+          "vectors": 409,
+          "complete": true
+        },
+        {
+          "embedding_arm": "gemini_001",
+          "repository_id": "cs_bookstore",
+          "chunks": 144,
+          "vectors": 144,
+          "complete": true
+        },
+        {
+          "embedding_arm": "gemini_001",
+          "repository_id": "codecompass",
+          "chunks": 1236,
+          "vectors": 1236,
+          "complete": true
+        },
+        {
+          "embedding_arm": "gemini_2",
+          "repository_id": "hospital_system",
+          "chunks": 409,
+          "vectors": 409,
+          "complete": true
+        },
+        {
+          "embedding_arm": "gemini_2",
+          "repository_id": "cs_bookstore",
+          "chunks": 144,
+          "vectors": 144,
+          "complete": true
+        },
+        {
+          "embedding_arm": "gemini_2",
+          "repository_id": "codecompass",
+          "chunks": 1236,
+          "vectors": 1236,
+          "complete": true
+        }
+      ]
+    }
+  },
+  "search": {
+    "records": 324,
+    "global": {
+      "nomic": {
+        "lexical": {
+          "cases": 36,
+          "hit_at_1": 4,
+          "hit_at_3": 12,
+          "hit_at_5": 18,
+          "hit_at_10": 22,
+          "mrr_at_10": 0.2419753086419752
+        },
+        "semantic": {
+          "cases": 36,
+          "hit_at_1": 10,
+          "hit_at_3": 13,
+          "hit_at_5": 14,
+          "hit_at_10": 17,
+          "mrr_at_10": 0.3280864197530864
+        },
+        "hybrid": {
+          "cases": 36,
+          "hit_at_1": 12,
+          "hit_at_3": 16,
+          "hit_at_5": 17,
+          "hit_at_10": 21,
+          "mrr_at_10": 0.4060515873015873
+        }
+      },
+      "gemini_001": {
+        "lexical": {
+          "cases": 36,
+          "hit_at_1": 4,
+          "hit_at_3": 12,
+          "hit_at_5": 18,
+          "hit_at_10": 22,
+          "mrr_at_10": 0.2419753086419752
+        },
+        "semantic": {
+          "cases": 36,
+          "hit_at_1": 23,
+          "hit_at_3": 31,
+          "hit_at_5": 34,
+          "hit_at_10": 36,
+          "mrr_at_10": 0.770866402116402
+        },
+        "hybrid": {
+          "cases": 36,
+          "hit_at_1": 20,
+          "hit_at_3": 28,
+          "hit_at_5": 32,
+          "hit_at_10": 34,
+          "mrr_at_10": 0.6888888888888889
+        }
+      },
+      "gemini_2": {
+        "lexical": {
+          "cases": 36,
+          "hit_at_1": 4,
+          "hit_at_3": 12,
+          "hit_at_5": 18,
+          "hit_at_10": 22,
+          "mrr_at_10": 0.2419753086419752
+        },
+        "semantic": {
+          "cases": 36,
+          "hit_at_1": 27,
+          "hit_at_3": 34,
+          "hit_at_5": 35,
+          "hit_at_10": 36,
+          "mrr_at_10": 0.8530092592592593
+        },
+        "hybrid": {
+          "cases": 36,
+          "hit_at_1": 17,
+          "hit_at_3": 30,
+          "hit_at_5": 34,
+          "hit_at_10": 35,
+          "mrr_at_10": 0.660648148148148
+        }
+      }
+    },
+    "by_language": {
+      "en": {
+        "nomic": {
+          "lexical": {
+            "n": 18,
+            "hit_at_1": 4,
+            "hit_at_3": 9,
+            "hit_at_5": 12,
+            "hit_at_10": 15,
+            "mrr_at_10": 0.388889
+          },
+          "semantic": {
+            "n": 18,
+            "hit_at_1": 10,
+            "hit_at_3": 13,
+            "hit_at_5": 14,
+            "hit_at_10": 16,
+            "mrr_at_10": 0.646914
+          },
+          "hybrid": {
+            "n": 18,
+            "hit_at_1": 12,
+            "hit_at_3": 15,
+            "hit_at_5": 15,
+            "hit_at_10": 15,
+            "mrr_at_10": 0.740741
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 18,
+            "hit_at_1": 4,
+            "hit_at_3": 9,
+            "hit_at_5": 12,
+            "hit_at_10": 15,
+            "mrr_at_10": 0.388889
+          },
+          "semantic": {
+            "n": 18,
+            "hit_at_1": 12,
+            "hit_at_3": 16,
+            "hit_at_5": 18,
+            "hit_at_10": 18,
+            "mrr_at_10": 0.802778
+          },
+          "hybrid": {
+            "n": 18,
+            "hit_at_1": 13,
+            "hit_at_3": 16,
+            "hit_at_5": 18,
+            "hit_at_10": 18,
+            "mrr_at_10": 0.818519
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 18,
+            "hit_at_1": 4,
+            "hit_at_3": 9,
+            "hit_at_5": 12,
+            "hit_at_10": 15,
+            "mrr_at_10": 0.388889
+          },
+          "semantic": {
+            "n": 18,
+            "hit_at_1": 14,
+            "hit_at_3": 17,
+            "hit_at_5": 17,
+            "hit_at_10": 18,
+            "mrr_at_10": 0.868056
+          },
+          "hybrid": {
+            "n": 18,
+            "hit_at_1": 11,
+            "hit_at_3": 16,
+            "hit_at_5": 17,
+            "hit_at_10": 17,
+            "mrr_at_10": 0.742593
+          }
+        }
+      },
+      "fa": {
+        "nomic": {
+          "lexical": {
+            "n": 18,
+            "hit_at_1": 0,
+            "hit_at_3": 3,
+            "hit_at_5": 6,
+            "hit_at_10": 7,
+            "mrr_at_10": 0.095062
+          },
+          "semantic": {
+            "n": 18,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 0,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.009259
+          },
+          "hybrid": {
+            "n": 18,
+            "hit_at_1": 0,
+            "hit_at_3": 1,
+            "hit_at_5": 2,
+            "hit_at_10": 6,
+            "mrr_at_10": 0.071362
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 18,
+            "hit_at_1": 0,
+            "hit_at_3": 3,
+            "hit_at_5": 6,
+            "hit_at_10": 7,
+            "mrr_at_10": 0.095062
+          },
+          "semantic": {
+            "n": 18,
+            "hit_at_1": 11,
+            "hit_at_3": 15,
+            "hit_at_5": 16,
+            "hit_at_10": 18,
+            "mrr_at_10": 0.738955
+          },
+          "hybrid": {
+            "n": 18,
+            "hit_at_1": 7,
+            "hit_at_3": 12,
+            "hit_at_5": 14,
+            "hit_at_10": 16,
+            "mrr_at_10": 0.559259
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 18,
+            "hit_at_1": 0,
+            "hit_at_3": 3,
+            "hit_at_5": 6,
+            "hit_at_10": 7,
+            "mrr_at_10": 0.095062
+          },
+          "semantic": {
+            "n": 18,
+            "hit_at_1": 13,
+            "hit_at_3": 17,
+            "hit_at_5": 18,
+            "hit_at_10": 18,
+            "mrr_at_10": 0.837963
+          },
+          "hybrid": {
+            "n": 18,
+            "hit_at_1": 6,
+            "hit_at_3": 14,
+            "hit_at_5": 17,
+            "hit_at_10": 18,
+            "mrr_at_10": 0.578704
+          }
+        }
+      }
+    },
+    "by_repository": {
+      "codecompass": {
+        "nomic": {
+          "lexical": {
+            "n": 12,
+            "hit_at_1": 0,
+            "hit_at_3": 3,
+            "hit_at_5": 7,
+            "hit_at_10": 8,
+            "mrr_at_10": 0.176389
+          },
+          "semantic": {
+            "n": 12,
+            "hit_at_1": 1,
+            "hit_at_3": 2,
+            "hit_at_5": 3,
+            "hit_at_10": 5,
+            "mrr_at_10": 0.150926
+          },
+          "hybrid": {
+            "n": 12,
+            "hit_at_1": 4,
+            "hit_at_3": 5,
+            "hit_at_5": 6,
+            "hit_at_10": 7,
+            "mrr_at_10": 0.40625
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 12,
+            "hit_at_1": 0,
+            "hit_at_3": 3,
+            "hit_at_5": 7,
+            "hit_at_10": 8,
+            "mrr_at_10": 0.176389
+          },
+          "semantic": {
+            "n": 12,
+            "hit_at_1": 7,
+            "hit_at_3": 10,
+            "hit_at_5": 11,
+            "hit_at_10": 12,
+            "mrr_at_10": 0.723016
+          },
+          "hybrid": {
+            "n": 12,
+            "hit_at_1": 7,
+            "hit_at_3": 9,
+            "hit_at_5": 10,
+            "hit_at_10": 11,
+            "mrr_at_10": 0.697222
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 12,
+            "hit_at_1": 0,
+            "hit_at_3": 3,
+            "hit_at_5": 7,
+            "hit_at_10": 8,
+            "mrr_at_10": 0.176389
+          },
+          "semantic": {
+            "n": 12,
+            "hit_at_1": 11,
+            "hit_at_3": 12,
+            "hit_at_5": 12,
+            "hit_at_10": 12,
+            "mrr_at_10": 0.958333
+          },
+          "hybrid": {
+            "n": 12,
+            "hit_at_1": 7,
+            "hit_at_3": 12,
+            "hit_at_5": 12,
+            "hit_at_10": 12,
+            "mrr_at_10": 0.75
+          }
+        }
+      },
+      "cs_bookstore": {
+        "nomic": {
+          "lexical": {
+            "n": 12,
+            "hit_at_1": 1,
+            "hit_at_3": 5,
+            "hit_at_5": 6,
+            "hit_at_10": 9,
+            "mrr_at_10": 0.255093
+          },
+          "semantic": {
+            "n": 12,
+            "hit_at_1": 5,
+            "hit_at_3": 6,
+            "hit_at_5": 6,
+            "hit_at_10": 6,
+            "mrr_at_10": 0.458333
+          },
+          "hybrid": {
+            "n": 12,
+            "hit_at_1": 3,
+            "hit_at_3": 6,
+            "hit_at_5": 6,
+            "hit_at_10": 8,
+            "mrr_at_10": 0.386905
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 12,
+            "hit_at_1": 1,
+            "hit_at_3": 5,
+            "hit_at_5": 6,
+            "hit_at_10": 9,
+            "mrr_at_10": 0.255093
+          },
+          "semantic": {
+            "n": 12,
+            "hit_at_1": 8,
+            "hit_at_3": 11,
+            "hit_at_5": 11,
+            "hit_at_10": 12,
+            "mrr_at_10": 0.802083
+          },
+          "hybrid": {
+            "n": 12,
+            "hit_at_1": 5,
+            "hit_at_3": 9,
+            "hit_at_5": 10,
+            "hit_at_10": 11,
+            "mrr_at_10": 0.586111
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 12,
+            "hit_at_1": 1,
+            "hit_at_3": 5,
+            "hit_at_5": 6,
+            "hit_at_10": 9,
+            "mrr_at_10": 0.255093
+          },
+          "semantic": {
+            "n": 12,
+            "hit_at_1": 9,
+            "hit_at_3": 12,
+            "hit_at_5": 12,
+            "hit_at_10": 12,
+            "mrr_at_10": 0.861111
+          },
+          "hybrid": {
+            "n": 12,
+            "hit_at_1": 4,
+            "hit_at_3": 9,
+            "hit_at_5": 11,
+            "hit_at_10": 12,
+            "mrr_at_10": 0.569444
+          }
+        }
+      },
+      "hospital_system": {
+        "nomic": {
+          "lexical": {
+            "n": 12,
+            "hit_at_1": 3,
+            "hit_at_3": 4,
+            "hit_at_5": 5,
+            "hit_at_10": 5,
+            "mrr_at_10": 0.294444
+          },
+          "semantic": {
+            "n": 12,
+            "hit_at_1": 4,
+            "hit_at_3": 5,
+            "hit_at_5": 5,
+            "hit_at_10": 6,
+            "mrr_at_10": 0.375
+          },
+          "hybrid": {
+            "n": 12,
+            "hit_at_1": 5,
+            "hit_at_3": 5,
+            "hit_at_5": 5,
+            "hit_at_10": 6,
+            "mrr_at_10": 0.425
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 12,
+            "hit_at_1": 3,
+            "hit_at_3": 4,
+            "hit_at_5": 5,
+            "hit_at_10": 5,
+            "mrr_at_10": 0.294444
+          },
+          "semantic": {
+            "n": 12,
+            "hit_at_1": 8,
+            "hit_at_3": 10,
+            "hit_at_5": 12,
+            "hit_at_10": 12,
+            "mrr_at_10": 0.7875
+          },
+          "hybrid": {
+            "n": 12,
+            "hit_at_1": 8,
+            "hit_at_3": 10,
+            "hit_at_5": 12,
+            "hit_at_10": 12,
+            "mrr_at_10": 0.783333
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 12,
+            "hit_at_1": 3,
+            "hit_at_3": 4,
+            "hit_at_5": 5,
+            "hit_at_10": 5,
+            "mrr_at_10": 0.294444
+          },
+          "semantic": {
+            "n": 12,
+            "hit_at_1": 7,
+            "hit_at_3": 10,
+            "hit_at_5": 11,
+            "hit_at_10": 12,
+            "mrr_at_10": 0.739583
+          },
+          "hybrid": {
+            "n": 12,
+            "hit_at_1": 6,
+            "hit_at_3": 9,
+            "hit_at_5": 11,
+            "hit_at_10": 11,
+            "mrr_at_10": 0.6625
+          }
+        }
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "nomic": {
+          "lexical": {
+            "n": 12,
+            "hit_at_1": 1,
+            "hit_at_3": 7,
+            "hit_at_5": 8,
+            "hit_at_10": 9,
+            "mrr_at_10": 0.288889
+          },
+          "semantic": {
+            "n": 12,
+            "hit_at_1": 4,
+            "hit_at_3": 5,
+            "hit_at_5": 5,
+            "hit_at_10": 5,
+            "mrr_at_10": 0.361111
+          },
+          "hybrid": {
+            "n": 12,
+            "hit_at_1": 3,
+            "hit_at_3": 5,
+            "hit_at_5": 6,
+            "hit_at_10": 9,
+            "mrr_at_10": 0.374405
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 12,
+            "hit_at_1": 1,
+            "hit_at_3": 7,
+            "hit_at_5": 8,
+            "hit_at_10": 9,
+            "mrr_at_10": 0.288889
+          },
+          "semantic": {
+            "n": 12,
+            "hit_at_1": 9,
+            "hit_at_3": 10,
+            "hit_at_5": 12,
+            "hit_at_10": 12,
+            "mrr_at_10": 0.829167
+          },
+          "hybrid": {
+            "n": 12,
+            "hit_at_1": 6,
+            "hit_at_3": 10,
+            "hit_at_5": 12,
+            "hit_at_10": 12,
+            "mrr_at_10": 0.686111
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 12,
+            "hit_at_1": 1,
+            "hit_at_3": 7,
+            "hit_at_5": 8,
+            "hit_at_10": 9,
+            "mrr_at_10": 0.288889
+          },
+          "semantic": {
+            "n": 12,
+            "hit_at_1": 8,
+            "hit_at_3": 12,
+            "hit_at_5": 12,
+            "hit_at_10": 12,
+            "mrr_at_10": 0.819444
+          },
+          "hybrid": {
+            "n": 12,
+            "hit_at_1": 5,
+            "hit_at_3": 12,
+            "hit_at_5": 12,
+            "hit_at_10": 12,
+            "mrr_at_10": 0.666667
+          }
+        }
+      },
+      "hard": {
+        "nomic": {
+          "lexical": {
+            "n": 12,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 5,
+            "hit_at_10": 7,
+            "mrr_at_10": 0.238426
+          },
+          "semantic": {
+            "n": 12,
+            "hit_at_1": 2,
+            "hit_at_3": 3,
+            "hit_at_5": 3,
+            "hit_at_10": 6,
+            "mrr_at_10": 0.231481
+          },
+          "hybrid": {
+            "n": 12,
+            "hit_at_1": 4,
+            "hit_at_3": 5,
+            "hit_at_5": 5,
+            "hit_at_10": 5,
+            "mrr_at_10": 0.375
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 12,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 5,
+            "hit_at_10": 7,
+            "mrr_at_10": 0.238426
+          },
+          "semantic": {
+            "n": 12,
+            "hit_at_1": 6,
+            "hit_at_3": 12,
+            "hit_at_5": 12,
+            "hit_at_10": 12,
+            "mrr_at_10": 0.736111
+          },
+          "hybrid": {
+            "n": 12,
+            "hit_at_1": 7,
+            "hit_at_3": 9,
+            "hit_at_5": 11,
+            "hit_at_10": 12,
+            "mrr_at_10": 0.7
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 12,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 5,
+            "hit_at_10": 7,
+            "mrr_at_10": 0.238426
+          },
+          "semantic": {
+            "n": 12,
+            "hit_at_1": 9,
+            "hit_at_3": 12,
+            "hit_at_5": 12,
+            "hit_at_10": 12,
+            "mrr_at_10": 0.875
+          },
+          "hybrid": {
+            "n": 12,
+            "hit_at_1": 7,
+            "hit_at_3": 10,
+            "hit_at_5": 12,
+            "hit_at_10": 12,
+            "mrr_at_10": 0.718056
+          }
+        }
+      },
+      "medium": {
+        "nomic": {
+          "lexical": {
+            "n": 12,
+            "hit_at_1": 1,
+            "hit_at_3": 3,
+            "hit_at_5": 5,
+            "hit_at_10": 6,
+            "mrr_at_10": 0.198611
+          },
+          "semantic": {
+            "n": 12,
+            "hit_at_1": 4,
+            "hit_at_3": 5,
+            "hit_at_5": 6,
+            "hit_at_10": 6,
+            "mrr_at_10": 0.391667
+          },
+          "hybrid": {
+            "n": 12,
+            "hit_at_1": 5,
+            "hit_at_3": 6,
+            "hit_at_5": 6,
+            "hit_at_10": 7,
+            "mrr_at_10": 0.46875
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 12,
+            "hit_at_1": 1,
+            "hit_at_3": 3,
+            "hit_at_5": 5,
+            "hit_at_10": 6,
+            "mrr_at_10": 0.198611
+          },
+          "semantic": {
+            "n": 12,
+            "hit_at_1": 8,
+            "hit_at_3": 9,
+            "hit_at_5": 10,
+            "hit_at_10": 12,
+            "mrr_at_10": 0.747321
+          },
+          "hybrid": {
+            "n": 12,
+            "hit_at_1": 7,
+            "hit_at_3": 9,
+            "hit_at_5": 9,
+            "hit_at_10": 10,
+            "mrr_at_10": 0.680556
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 12,
+            "hit_at_1": 1,
+            "hit_at_3": 3,
+            "hit_at_5": 5,
+            "hit_at_10": 6,
+            "mrr_at_10": 0.198611
+          },
+          "semantic": {
+            "n": 12,
+            "hit_at_1": 10,
+            "hit_at_3": 10,
+            "hit_at_5": 11,
+            "hit_at_10": 12,
+            "mrr_at_10": 0.864583
+          },
+          "hybrid": {
+            "n": 12,
+            "hit_at_1": 5,
+            "hit_at_3": 8,
+            "hit_at_5": 10,
+            "hit_at_10": 11,
+            "mrr_at_10": 0.597222
+          }
+        }
+      }
+    },
+    "by_category": {
+      "authentication": {
+        "nomic": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.5
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.5
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.5
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.5
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.5
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.6
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.5
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.75
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.625
+          }
+        }
+      },
+      "behavior": {
+        "nomic": {
+          "lexical": {
+            "n": 4,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.25
+          },
+          "semantic": {
+            "n": 4,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.5
+          },
+          "hybrid": {
+            "n": 4,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.5
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 4,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.25
+          },
+          "semantic": {
+            "n": 4,
+            "hit_at_1": 4,
+            "hit_at_3": 4,
+            "hit_at_5": 4,
+            "hit_at_10": 4,
+            "mrr_at_10": 1.0
+          },
+          "hybrid": {
+            "n": 4,
+            "hit_at_1": 4,
+            "hit_at_3": 4,
+            "hit_at_5": 4,
+            "hit_at_10": 4,
+            "mrr_at_10": 1.0
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 4,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.25
+          },
+          "semantic": {
+            "n": 4,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 3,
+            "hit_at_10": 4,
+            "mrr_at_10": 0.59375
+          },
+          "hybrid": {
+            "n": 4,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 3,
+            "hit_at_10": 3,
+            "mrr_at_10": 0.5625
+          }
+        }
+      },
+      "capability": {
+        "nomic": {
+          "lexical": {
+            "n": 4,
+            "hit_at_1": 1,
+            "hit_at_3": 2,
+            "hit_at_5": 3,
+            "hit_at_10": 3,
+            "mrr_at_10": 0.425
+          },
+          "semantic": {
+            "n": 4,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.5
+          },
+          "hybrid": {
+            "n": 4,
+            "hit_at_1": 1,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 3,
+            "mrr_at_10": 0.4
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 4,
+            "hit_at_1": 1,
+            "hit_at_3": 2,
+            "hit_at_5": 3,
+            "hit_at_10": 3,
+            "mrr_at_10": 0.425
+          },
+          "semantic": {
+            "n": 4,
+            "hit_at_1": 3,
+            "hit_at_3": 3,
+            "hit_at_5": 3,
+            "hit_at_10": 4,
+            "mrr_at_10": 0.78125
+          },
+          "hybrid": {
+            "n": 4,
+            "hit_at_1": 1,
+            "hit_at_3": 3,
+            "hit_at_5": 3,
+            "hit_at_10": 3,
+            "mrr_at_10": 0.5
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 4,
+            "hit_at_1": 1,
+            "hit_at_3": 2,
+            "hit_at_5": 3,
+            "hit_at_10": 3,
+            "mrr_at_10": 0.425
+          },
+          "semantic": {
+            "n": 4,
+            "hit_at_1": 4,
+            "hit_at_3": 4,
+            "hit_at_5": 4,
+            "hit_at_10": 4,
+            "mrr_at_10": 1.0
+          },
+          "hybrid": {
+            "n": 4,
+            "hit_at_1": 1,
+            "hit_at_3": 3,
+            "hit_at_5": 3,
+            "hit_at_10": 4,
+            "mrr_at_10": 0.541667
+          }
+        }
+      },
+      "configuration": {
+        "nomic": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 0,
+            "hit_at_10": 0,
+            "mrr_at_10": 0.0
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 0,
+            "hit_at_10": 0,
+            "mrr_at_10": 0.0
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 0,
+            "hit_at_10": 0,
+            "mrr_at_10": 0.0
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 0,
+            "hit_at_10": 0,
+            "mrr_at_10": 0.0
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.75
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 1,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.35
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 0,
+            "hit_at_10": 0,
+            "mrr_at_10": 0.0
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 1.0
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.333333
+          }
+        }
+      },
+      "context_building": {
+        "nomic": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.125
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.1
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.5
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.125
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 1,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.171429
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.25
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.125
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 1.0
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.5
+          }
+        }
+      },
+      "implementation_location": {
+        "nomic": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.166667
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.5
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.5
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.166667
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.225
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.6
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.166667
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.5
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.75
+          }
+        }
+      },
+      "multi_step_flow": {
+        "nomic": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 0,
+            "hit_at_10": 0,
+            "mrr_at_10": 0.0
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 0,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.083333
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 0,
+            "hit_at_10": 0,
+            "mrr_at_10": 0.0
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 0,
+            "hit_at_10": 0,
+            "mrr_at_10": 0.0
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.75
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 1,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.35
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 0,
+            "hit_at_10": 0,
+            "mrr_at_10": 0.0
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.75
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 1,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.35
+          }
+        }
+      },
+      "output_validation": {
+        "nomic": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 1,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.266667
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.5
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.5625
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 1,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.266667
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 1.0
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 1.0
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 1,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.266667
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 1.0
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 1.0
+          }
+        }
+      },
+      "pagination": {
+        "nomic": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 0,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.05
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.25
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.5
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 0,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.05
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.75
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.583333
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 0,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.05
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 1.0
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.625
+          }
+        }
+      },
+      "reliability": {
+        "nomic": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 1,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.15
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 0,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.083333
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.25
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 1,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.15
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 1.0
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 1.0
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 1,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.15
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 1.0
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 1.0
+          }
+        }
+      },
+      "request_flow": {
+        "nomic": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 1,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.180556
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.5
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.5
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 1,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.180556
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 1.0
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.666667
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 1,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.180556
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 1.0
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.666667
+          }
+        }
+      },
+      "side_effect": {
+        "nomic": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.216667
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.5
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.25
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.216667
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 1.0
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.666667
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.216667
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 1.0
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.666667
+          }
+        }
+      },
+      "trust_boundary": {
+        "nomic": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.1
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 0,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.055556
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.5
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.1
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.416667
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.583333
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 0,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.1
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.75
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.666667
+          }
+        }
+      },
+      "user_flow": {
+        "nomic": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.5
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 0,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.166667
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.5
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.5
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.75
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 1.0
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 2,
+            "hit_at_1": 1,
+            "hit_at_3": 1,
+            "hit_at_5": 1,
+            "hit_at_10": 1,
+            "mrr_at_10": 0.5
+          },
+          "semantic": {
+            "n": 2,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 1.0
+          },
+          "hybrid": {
+            "n": 2,
+            "hit_at_1": 2,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 1.0
+          }
+        }
+      },
+      "validation": {
+        "nomic": {
+          "lexical": {
+            "n": 4,
+            "hit_at_1": 0,
+            "hit_at_3": 4,
+            "hit_at_5": 4,
+            "hit_at_10": 4,
+            "mrr_at_10": 0.375
+          },
+          "semantic": {
+            "n": 4,
+            "hit_at_1": 1,
+            "hit_at_3": 2,
+            "hit_at_5": 2,
+            "hit_at_10": 2,
+            "mrr_at_10": 0.333333
+          },
+          "hybrid": {
+            "n": 4,
+            "hit_at_1": 1,
+            "hit_at_3": 2,
+            "hit_at_5": 3,
+            "hit_at_10": 4,
+            "mrr_at_10": 0.473214
+          }
+        },
+        "gemini_001": {
+          "lexical": {
+            "n": 4,
+            "hit_at_1": 0,
+            "hit_at_3": 4,
+            "hit_at_5": 4,
+            "hit_at_10": 4,
+            "mrr_at_10": 0.375
+          },
+          "semantic": {
+            "n": 4,
+            "hit_at_1": 4,
+            "hit_at_3": 4,
+            "hit_at_5": 4,
+            "hit_at_10": 4,
+            "mrr_at_10": 1.0
+          },
+          "hybrid": {
+            "n": 4,
+            "hit_at_1": 3,
+            "hit_at_3": 4,
+            "hit_at_5": 4,
+            "hit_at_10": 4,
+            "mrr_at_10": 0.875
+          }
+        },
+        "gemini_2": {
+          "lexical": {
+            "n": 4,
+            "hit_at_1": 0,
+            "hit_at_3": 4,
+            "hit_at_5": 4,
+            "hit_at_10": 4,
+            "mrr_at_10": 0.375
+          },
+          "semantic": {
+            "n": 4,
+            "hit_at_1": 2,
+            "hit_at_3": 4,
+            "hit_at_5": 4,
+            "hit_at_10": 4,
+            "mrr_at_10": 0.708333
+          },
+          "hybrid": {
+            "n": 4,
+            "hit_at_1": 2,
+            "hit_at_3": 4,
+            "hit_at_5": 4,
+            "hit_at_10": 4,
+            "mrr_at_10": 0.75
+          }
+        }
+      }
+    },
+    "latency_ms": {
+      "nomic": {
+        "lexical": {
+          "n": 36,
+          "mean": 66.928,
+          "median": 30.971,
+          "p95": 203.125,
+          "min": 9.318,
+          "max": 207.47
+        },
+        "semantic": {
+          "n": 36,
+          "mean": 11.151,
+          "median": 11.317,
+          "p95": 17.96,
+          "min": 5.803,
+          "max": 21.799
+        },
+        "hybrid": {
+          "n": 36,
+          "mean": 77.021,
+          "median": 36.883,
+          "p95": 203.3,
+          "min": 17.114,
+          "max": 248.693
+        }
+      },
+      "gemini_001": {
+        "lexical": {
+          "n": 36,
+          "mean": 68.762,
+          "median": 34.258,
+          "p95": 200.899,
+          "min": 11.075,
+          "max": 251.178
+        },
+        "semantic": {
+          "n": 36,
+          "mean": 12.742,
+          "median": 12.607,
+          "p95": 23.445,
+          "min": 6.409,
+          "max": 27.257
+        },
+        "hybrid": {
+          "n": 36,
+          "mean": 78.796,
+          "median": 36.281,
+          "p95": 211.891,
+          "min": 17.083,
+          "max": 234.098
+        }
+      },
+      "gemini_2": {
+        "lexical": {
+          "n": 36,
+          "mean": 69.659,
+          "median": 29.365,
+          "p95": 193.118,
+          "min": 9.996,
+          "max": 254.064
+        },
+        "semantic": {
+          "n": 36,
+          "mean": 12.815,
+          "median": 11.503,
+          "p95": 22.982,
+          "min": 6.59,
+          "max": 25.251
+        },
+        "hybrid": {
+          "n": 36,
+          "mean": 78.552,
+          "median": 43.182,
+          "p95": 186.681,
+          "min": 18.71,
+          "max": 194.506
+        }
+      }
+    },
+    "calls": {
+      "document_embeddings": 0,
+      "query_embeddings_per_arm": 48,
+      "llm": 0
+    }
+  },
+  "qa": {
+    "execution": {
+      "overall": {
+        "initial_success": 51,
+        "recovered_by_retry_1": 9,
+        "recovered_by_retry_2": 11,
+        "final_failure": 1,
+        "total": 72
+      },
+      "qwen": {
+        "initial_success": 27,
+        "recovered_by_retry_1": 9,
+        "recovered_by_retry_2": 0,
+        "final_failure": 0,
+        "total": 36
+      },
+      "glm": {
+        "initial_success": 24,
+        "recovered_by_retry_1": 0,
+        "recovered_by_retry_2": 11,
+        "final_failure": 1,
+        "total": 36
+      }
+    },
+    "final_status": {
+      "usable_answers": 71,
+      "unavailable_answers": 1,
+      "usable_rate": 0.9861111111111112,
+      "unique_expected_combinations": 72,
+      "unique_reconciled_combinations": 72
+    },
+    "remaining_failure": {
+      "case_id": "FTE-QA-H-FA-02",
+      "repository_id": "hospital_system",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "glm",
+      "error_type": "invalid_response_empty_content",
+      "classification": "provider/model-output failure; not retried by network recovery policy"
+    },
+    "quality": {
+      "qa_by_llm": {
+        "glm": {
+          "scored_records": 35,
+          "correctness_0_10": {
+            "n": 35,
+            "mean": 7.943
+          },
+          "groundedness_0_10": {
+            "n": 35,
+            "mean": 8.314
+          },
+          "persian_readability_0_10": {
+            "n": 17,
+            "mean": 8.0
+          },
+          "usefulness_0_10": {
+            "n": 35,
+            "mean": 8.286
+          },
+          "hallucination_labels": {
+            "خیر": 35
+          }
+        },
+        "qwen": {
+          "scored_records": 36,
+          "correctness_0_10": {
+            "n": 36,
+            "mean": 6.972
+          },
+          "groundedness_0_10": {
+            "n": 36,
+            "mean": 7.0
+          },
+          "persian_readability_0_10": {
+            "n": 18,
+            "mean": 5.333
+          },
+          "usefulness_0_10": {
+            "n": 36,
+            "mean": 6.25
+          },
+          "hallucination_labels": {
+            "خیر (ولی مبهم)": 1,
+            "خیر": 29,
+            "بله": 4,
+            "خفیف / ضمنی": 2
+          }
+        }
+      },
+      "qa_by_embedding": {
+        "gemini_001": {
+          "scored_records": 23,
+          "correctness_0_10": {
+            "n": 23,
+            "mean": 7.783
+          },
+          "groundedness_0_10": {
+            "n": 23,
+            "mean": 7.913
+          },
+          "persian_readability_0_10": {
+            "n": 11,
+            "mean": 6.545
+          },
+          "usefulness_0_10": {
+            "n": 23,
+            "mean": 7.435
+          },
+          "hallucination_labels": {
+            "خیر (ولی مبهم)": 1,
+            "خیر": 21,
+            "بله": 1
+          }
+        },
+        "gemini_2": {
+          "scored_records": 24,
+          "correctness_0_10": {
+            "n": 24,
+            "mean": 7.0
+          },
+          "groundedness_0_10": {
+            "n": 24,
+            "mean": 7.333
+          },
+          "persian_readability_0_10": {
+            "n": 12,
+            "mean": 6.667
+          },
+          "usefulness_0_10": {
+            "n": 24,
+            "mean": 7.0
+          },
+          "hallucination_labels": {
+            "خیر": 21,
+            "بله": 2,
+            "خفیف / ضمنی": 1
+          }
+        },
+        "nomic": {
+          "scored_records": 24,
+          "correctness_0_10": {
+            "n": 24,
+            "mean": 7.583
+          },
+          "groundedness_0_10": {
+            "n": 24,
+            "mean": 7.708
+          },
+          "persian_readability_0_10": {
+            "n": 12,
+            "mean": 6.667
+          },
+          "usefulness_0_10": {
+            "n": 24,
+            "mean": 7.333
+          },
+          "hallucination_labels": {
+            "خیر": 22,
+            "خفیف / ضمنی": 1,
+            "بله": 1
+          }
+        }
+      },
+      "qa_by_language_and_llm": {
+        "en / glm": {
+          "scored_records": 18,
+          "correctness_0_10": {
+            "n": 18,
+            "mean": 8.444
+          },
+          "groundedness_0_10": {
+            "n": 18,
+            "mean": 8.556
+          },
+          "persian_readability_0_10": {
+            "n": 0,
+            "mean": null
+          },
+          "usefulness_0_10": {
+            "n": 18,
+            "mean": 8.556
+          },
+          "hallucination_labels": {
+            "خیر": 18
+          }
+        },
+        "en / qwen": {
+          "scored_records": 18,
+          "correctness_0_10": {
+            "n": 18,
+            "mean": 5.944
+          },
+          "groundedness_0_10": {
+            "n": 18,
+            "mean": 6.0
+          },
+          "persian_readability_0_10": {
+            "n": 0,
+            "mean": null
+          },
+          "usefulness_0_10": {
+            "n": 18,
+            "mean": 5.833
+          },
+          "hallucination_labels": {
+            "خیر (ولی مبهم)": 1,
+            "خیر": 11,
+            "بله": 4,
+            "خفیف / ضمنی": 2
+          }
+        },
+        "fa / glm": {
+          "scored_records": 17,
+          "correctness_0_10": {
+            "n": 17,
+            "mean": 7.412
+          },
+          "groundedness_0_10": {
+            "n": 17,
+            "mean": 8.059
+          },
+          "persian_readability_0_10": {
+            "n": 17,
+            "mean": 8.0
+          },
+          "usefulness_0_10": {
+            "n": 17,
+            "mean": 8.0
+          },
+          "hallucination_labels": {
+            "خیر": 17
+          }
+        },
+        "fa / qwen": {
+          "scored_records": 18,
+          "correctness_0_10": {
+            "n": 18,
+            "mean": 8.0
+          },
+          "groundedness_0_10": {
+            "n": 18,
+            "mean": 8.0
+          },
+          "persian_readability_0_10": {
+            "n": 18,
+            "mean": 5.333
+          },
+          "usefulness_0_10": {
+            "n": 18,
+            "mean": 6.667
+          },
+          "hallucination_labels": {
+            "خیر": 18
+          }
+        }
+      },
+      "qa_by_repository_and_llm": {
+        "codecompass / glm": {
+          "scored_records": 12,
+          "correctness_0_10": {
+            "n": 12,
+            "mean": 7.833
+          },
+          "groundedness_0_10": {
+            "n": 12,
+            "mean": 8.333
+          },
+          "persian_readability_0_10": {
+            "n": 6,
+            "mean": 8.0
+          },
+          "usefulness_0_10": {
+            "n": 12,
+            "mean": 8.333
+          },
+          "hallucination_labels": {
+            "خیر": 12
+          }
+        },
+        "codecompass / qwen": {
+          "scored_records": 12,
+          "correctness_0_10": {
+            "n": 12,
+            "mean": 7.083
+          },
+          "groundedness_0_10": {
+            "n": 12,
+            "mean": 7.167
+          },
+          "persian_readability_0_10": {
+            "n": 6,
+            "mean": 4.0
+          },
+          "usefulness_0_10": {
+            "n": 12,
+            "mean": 5.917
+          },
+          "hallucination_labels": {
+            "خیر (ولی مبهم)": 1,
+            "خیر": 9,
+            "خفیف / ضمنی": 2
+          }
+        },
+        "cs_bookstore / glm": {
+          "scored_records": 12,
+          "correctness_0_10": {
+            "n": 12,
+            "mean": 7.917
+          },
+          "groundedness_0_10": {
+            "n": 12,
+            "mean": 8.333
+          },
+          "persian_readability_0_10": {
+            "n": 6,
+            "mean": 8.0
+          },
+          "usefulness_0_10": {
+            "n": 12,
+            "mean": 8.25
+          },
+          "hallucination_labels": {
+            "خیر": 12
+          }
+        },
+        "cs_bookstore / qwen": {
+          "scored_records": 12,
+          "correctness_0_10": {
+            "n": 12,
+            "mean": 6.25
+          },
+          "groundedness_0_10": {
+            "n": 12,
+            "mean": 6.25
+          },
+          "persian_readability_0_10": {
+            "n": 6,
+            "mean": 8.0
+          },
+          "usefulness_0_10": {
+            "n": 12,
+            "mean": 6.25
+          },
+          "hallucination_labels": {
+            "بله": 3,
+            "خیر": 9
+          }
+        },
+        "hospital_system / glm": {
+          "scored_records": 11,
+          "correctness_0_10": {
+            "n": 11,
+            "mean": 8.091
+          },
+          "groundedness_0_10": {
+            "n": 11,
+            "mean": 8.273
+          },
+          "persian_readability_0_10": {
+            "n": 5,
+            "mean": 8.0
+          },
+          "usefulness_0_10": {
+            "n": 11,
+            "mean": 8.273
+          },
+          "hallucination_labels": {
+            "خیر": 11
+          }
+        },
+        "hospital_system / qwen": {
+          "scored_records": 12,
+          "correctness_0_10": {
+            "n": 12,
+            "mean": 7.583
+          },
+          "groundedness_0_10": {
+            "n": 12,
+            "mean": 7.583
+          },
+          "persian_readability_0_10": {
+            "n": 6,
+            "mean": 4.0
+          },
+          "usefulness_0_10": {
+            "n": 12,
+            "mean": 6.583
+          },
+          "hallucination_labels": {
+            "خیر": 11,
+            "بله": 1
+          }
+        }
+      },
+      "qa_by_embedding_and_llm": {
+        "gemini_001 / glm": {
+          "scored_records": 11,
+          "correctness_0_10": {
+            "n": 11,
+            "mean": 8.182
+          },
+          "groundedness_0_10": {
+            "n": 11,
+            "mean": 8.364
+          },
+          "persian_readability_0_10": {
+            "n": 5,
+            "mean": 8.0
+          },
+          "usefulness_0_10": {
+            "n": 11,
+            "mean": 8.364
+          },
+          "hallucination_labels": {
+            "خیر": 11
+          }
+        },
+        "gemini_001 / qwen": {
+          "scored_records": 12,
+          "correctness_0_10": {
+            "n": 12,
+            "mean": 7.417
+          },
+          "groundedness_0_10": {
+            "n": 12,
+            "mean": 7.5
+          },
+          "persian_readability_0_10": {
+            "n": 6,
+            "mean": 5.333
+          },
+          "usefulness_0_10": {
+            "n": 12,
+            "mean": 6.583
+          },
+          "hallucination_labels": {
+            "خیر (ولی مبهم)": 1,
+            "خیر": 10,
+            "بله": 1
+          }
+        },
+        "gemini_2 / glm": {
+          "scored_records": 12,
+          "correctness_0_10": {
+            "n": 12,
+            "mean": 7.583
+          },
+          "groundedness_0_10": {
+            "n": 12,
+            "mean": 8.25
+          },
+          "persian_readability_0_10": {
+            "n": 6,
+            "mean": 8.0
+          },
+          "usefulness_0_10": {
+            "n": 12,
+            "mean": 8.25
+          },
+          "hallucination_labels": {
+            "خیر": 12
+          }
+        },
+        "gemini_2 / qwen": {
+          "scored_records": 12,
+          "correctness_0_10": {
+            "n": 12,
+            "mean": 6.417
+          },
+          "groundedness_0_10": {
+            "n": 12,
+            "mean": 6.417
+          },
+          "persian_readability_0_10": {
+            "n": 6,
+            "mean": 5.333
+          },
+          "usefulness_0_10": {
+            "n": 12,
+            "mean": 5.75
+          },
+          "hallucination_labels": {
+            "خیر": 9,
+            "بله": 2,
+            "خفیف / ضمنی": 1
+          }
+        },
+        "nomic / glm": {
+          "scored_records": 12,
+          "correctness_0_10": {
+            "n": 12,
+            "mean": 8.083
+          },
+          "groundedness_0_10": {
+            "n": 12,
+            "mean": 8.333
+          },
+          "persian_readability_0_10": {
+            "n": 6,
+            "mean": 8.0
+          },
+          "usefulness_0_10": {
+            "n": 12,
+            "mean": 8.25
+          },
+          "hallucination_labels": {
+            "خیر": 12
+          }
+        },
+        "nomic / qwen": {
+          "scored_records": 12,
+          "correctness_0_10": {
+            "n": 12,
+            "mean": 7.083
+          },
+          "groundedness_0_10": {
+            "n": 12,
+            "mean": 7.083
+          },
+          "persian_readability_0_10": {
+            "n": 6,
+            "mean": 5.333
+          },
+          "usefulness_0_10": {
+            "n": 12,
+            "mean": 6.417
+          },
+          "hallucination_labels": {
+            "خیر": 10,
+            "خفیف / ضمنی": 1,
+            "بله": 1
+          }
+        }
+      }
+    },
+    "paired_effects": {
+      "glm_minus_qwen": {
+        "paired_cases": 35,
+        "treatment_minus_control": {
+          "correctness_0_10": {
+            "n": 35,
+            "mean": 1.0
+          },
+          "groundedness_0_10": {
+            "n": 35,
+            "mean": 1.343
+          },
+          "persian_readability_0_10": {
+            "n": 17,
+            "mean": 2.824
+          },
+          "usefulness_0_10": {
+            "n": 35,
+            "mean": 2.086
+          }
+        }
+      },
+      "gemini_001_minus_nomic": {
+        "paired_cases": 23,
+        "treatment_minus_control": {
+          "correctness_0_10": {
+            "n": 23,
+            "mean": 0.217
+          },
+          "groundedness_0_10": {
+            "n": 23,
+            "mean": 0.217
+          },
+          "persian_readability_0_10": {
+            "n": 11,
+            "mean": 0.0
+          },
+          "usefulness_0_10": {
+            "n": 23,
+            "mean": 0.13
+          }
+        }
+      },
+      "gemini_2_minus_nomic": {
+        "paired_cases": 24,
+        "treatment_minus_control": {
+          "correctness_0_10": {
+            "n": 24,
+            "mean": -0.583
+          },
+          "groundedness_0_10": {
+            "n": 24,
+            "mean": -0.375
+          },
+          "persian_readability_0_10": {
+            "n": 12,
+            "mean": 0.0
+          },
+          "usefulness_0_10": {
+            "n": 24,
+            "mean": -0.333
+          }
+        }
+      },
+      "gemini_2_minus_gemini_001": {
+        "paired_cases": 23,
+        "treatment_minus_control": {
+          "correctness_0_10": {
+            "n": 23,
+            "mean": -0.826
+          },
+          "groundedness_0_10": {
+            "n": 23,
+            "mean": -0.609
+          },
+          "persian_readability_0_10": {
+            "n": 11,
+            "mean": 0.0
+          },
+          "usefulness_0_10": {
+            "n": 23,
+            "mean": -0.478
+          }
+        }
+      }
+    },
+    "runtime": {
+      "successful_attempt_latency_seconds": {
+        "qwen": {
+          "n": 36,
+          "mean": 64.688,
+          "median": 67.172,
+          "p95": 100.152,
+          "min": 20.002,
+          "max": 103.705
+        },
+        "glm": {
+          "n": 35,
+          "mean": 122.156,
+          "median": 10.753,
+          "p95": 75.939,
+          "min": 5.039,
+          "max": 3796.914
+        }
+      },
+      "finish_reason": {
+        "stop": 64,
+        "length": 7
+      },
+      "provider_confirmed_length_terminations": 7,
+      "provenance": {
+        "initial": 51,
+        "retry_1": 9,
+        "retry_2": 11
+      }
+    }
+  },
+  "documentation": {
+    "execution": {
+      "expected_records": 18,
+      "actual_records": 18,
+      "unique_records": 18,
+      "glm_complete": 9,
+      "glm_failed": 0,
+      "qwen_complete": 0,
+      "qwen_failed": 9,
+      "citation_identity_mismatches": 0
+    },
+    "qwen_recovery": {
+      "eligible": 9,
+      "attempted": 9,
+      "recovered": 0,
+      "failed": 9,
+      "failure_code": "provider_failure",
+      "provider_error_type": "http_error"
+    },
+    "final_status": {
+      "usable_documentation_outputs": 9,
+      "unavailable_documentation_outputs": 9,
+      "quality_interpretation": "Only available outputs may be scored. Execution failure is not a documentation-quality score."
+    },
+    "quality": {
+      "by_llm": {
+        "glm": {
+          "scored_records": 9,
+          "correctness_0_10": {
+            "n": 9,
+            "mean": 6.778
+          },
+          "groundedness_0_10": {
+            "n": 9,
+            "mean": 8.222
+          },
+          "persian_readability_0_10": {
+            "n": 9,
+            "mean": 8.111
+          },
+          "usefulness_0_10": {
+            "n": 9,
+            "mean": 8.111
+          },
+          "hallucination_labels": {
+            "خیر": 9
+          }
+        }
+      },
+      "by_repository": {
+        "codecompass": {
+          "scored_records": 3,
+          "correctness_0_10": {
+            "n": 3,
+            "mean": 6.0
+          },
+          "groundedness_0_10": {
+            "n": 3,
+            "mean": 8.0
+          },
+          "persian_readability_0_10": {
+            "n": 3,
+            "mean": 8.0
+          },
+          "usefulness_0_10": {
+            "n": 3,
+            "mean": 8.0
+          },
+          "hallucination_labels": {
+            "خیر": 3
+          }
+        },
+        "cs_bookstore": {
+          "scored_records": 3,
+          "correctness_0_10": {
+            "n": 3,
+            "mean": 7.0
+          },
+          "groundedness_0_10": {
+            "n": 3,
+            "mean": 8.667
+          },
+          "persian_readability_0_10": {
+            "n": 3,
+            "mean": 8.333
+          },
+          "usefulness_0_10": {
+            "n": 3,
+            "mean": 8.333
+          },
+          "hallucination_labels": {
+            "خیر": 3
+          }
+        },
+        "hospital_system": {
+          "scored_records": 3,
+          "correctness_0_10": {
+            "n": 3,
+            "mean": 7.333
+          },
+          "groundedness_0_10": {
+            "n": 3,
+            "mean": 8.0
+          },
+          "persian_readability_0_10": {
+            "n": 3,
+            "mean": 8.0
+          },
+          "usefulness_0_10": {
+            "n": 3,
+            "mean": 8.0
+          },
+          "hallucination_labels": {
+            "خیر": 3
+          }
+        }
+      }
+    },
+    "runtime": {
+      "glm_success_latency_seconds": {
+        "n": 9,
+        "mean": 13.558,
+        "median": 11.09,
+        "p95": 26.803,
+        "min": 7.949,
+        "max": 26.803
+      },
+      "qwen_failed_attempt_latency_seconds": {
+        "n": 9,
+        "mean": 1.468,
+        "median": 1.421,
+        "p95": 1.728,
+        "min": 1.315,
+        "max": 1.728
+      },
+      "successful_finish_reason": {
+        "stop": 9
+      }
+    }
+  },
+  "human_evaluation": {
+    "overall": {
+      "scored_records": 80,
+      "correctness_0_10": {
+        "n": 80,
+        "mean": 7.375
+      },
+      "groundedness_0_10": {
+        "n": 80,
+        "mean": 7.713
+      },
+      "persian_readability_0_10": {
+        "n": 44,
+        "mean": 6.932
+      },
+      "usefulness_0_10": {
+        "n": 80,
+        "mean": 7.35
+      },
+      "hallucination_labels": {
+        "خیر": 73,
+        "خیر (ولی مبهم)": 1,
+        "بله": 4,
+        "خفیف / ضمنی": 2
+      }
+    },
+    "records": 90,
+    "usable": 80,
+    "unavailable": 10,
+    "case_rows": [
+      {
+        "blind_id": "FTE-R-001",
+        "case_id": "FTE-DOC-B-03",
+        "task_type": "documentation",
+        "repository_id": "cs_bookstore",
+        "language": "fa",
+        "embedding_arm": null,
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 9,
+        "groundedness": 10,
+        "persian_readability": 9,
+        "usefulness": 9,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-002",
+        "case_id": "FTE-QA-C-EN-02",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "en",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "retry_2",
+        "correctness": 9,
+        "groundedness": 9,
+        "persian_readability": null,
+        "usefulness": 9,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-003",
+        "case_id": "FTE-QA-C-EN-01",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "en",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "retry_1",
+        "correctness": 6,
+        "groundedness": 7,
+        "persian_readability": null,
+        "usefulness": 4,
+        "hallucination": "خیر (ولی مبهم)"
+      },
+      {
+        "blind_id": "FTE-R-004",
+        "case_id": "FTE-QA-B-FA-02",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "fa",
+        "embedding_arm": "nomic",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 9,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-005",
+        "case_id": "FTE-QA-C-EN-01",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "en",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 9,
+        "groundedness": 9,
+        "persian_readability": null,
+        "usefulness": 9,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-006",
+        "case_id": "FTE-QA-H-EN-01",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "en",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": null,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-007",
+        "case_id": "FTE-QA-C-EN-02",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "en",
+        "embedding_arm": "nomic",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "retry_2",
+        "correctness": 9,
+        "groundedness": 9,
+        "persian_readability": null,
+        "usefulness": 9,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-008",
+        "case_id": "FTE-QA-C-EN-01",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "en",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "retry_2",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": null,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-009",
+        "case_id": "FTE-QA-C-FA-01",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "fa",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "retry_2",
+        "correctness": 6,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-010",
+        "case_id": "FTE-QA-B-FA-01",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "fa",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-011",
+        "case_id": "FTE-QA-B-FA-01",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "fa",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-012",
+        "case_id": "FTE-QA-H-FA-02",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "fa",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-013",
+        "case_id": "FTE-QA-B-EN-02",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "en",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 1,
+        "groundedness": 1,
+        "persian_readability": null,
+        "usefulness": 1,
+        "hallucination": "بله"
+      },
+      {
+        "blind_id": "FTE-R-014",
+        "case_id": "FTE-QA-C-FA-01",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "fa",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 6,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-015",
+        "case_id": "FTE-QA-H-FA-01",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "fa",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 0,
+        "usefulness": 4,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-016",
+        "case_id": "FTE-QA-C-EN-01",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "en",
+        "embedding_arm": "nomic",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": null,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-017",
+        "case_id": "FTE-QA-C-EN-02",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "en",
+        "embedding_arm": "nomic",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "retry_1",
+        "correctness": 3,
+        "groundedness": 3,
+        "persian_readability": null,
+        "usefulness": 3,
+        "hallucination": "خفیف / ضمنی"
+      },
+      {
+        "blind_id": "FTE-R-018",
+        "case_id": "FTE-DOC-H-02",
+        "task_type": "documentation",
+        "repository_id": "hospital_system",
+        "language": "fa",
+        "embedding_arm": null,
+        "llm_arm": "qwen",
+        "execution_status": "failed",
+        "execution_provenance": "initial",
+        "correctness": null,
+        "groundedness": null,
+        "persian_readability": null,
+        "usefulness": null,
+        "hallucination": null
+      },
+      {
+        "blind_id": "FTE-R-019",
+        "case_id": "FTE-QA-C-FA-02",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "fa",
+        "embedding_arm": "nomic",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "retry_2",
+        "correctness": 6,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-020",
+        "case_id": "FTE-QA-H-FA-02",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "fa",
+        "embedding_arm": "nomic",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-021",
+        "case_id": "FTE-DOC-B-03",
+        "task_type": "documentation",
+        "repository_id": "cs_bookstore",
+        "language": "fa",
+        "embedding_arm": null,
+        "llm_arm": "qwen",
+        "execution_status": "failed",
+        "execution_provenance": "initial",
+        "correctness": null,
+        "groundedness": null,
+        "persian_readability": null,
+        "usefulness": null,
+        "hallucination": null
+      },
+      {
+        "blind_id": "FTE-R-022",
+        "case_id": "FTE-QA-C-EN-02",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "en",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "retry_2",
+        "correctness": 9,
+        "groundedness": 9,
+        "persian_readability": null,
+        "usefulness": 9,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-023",
+        "case_id": "FTE-QA-H-EN-02",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "en",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 9,
+        "groundedness": 9,
+        "persian_readability": null,
+        "usefulness": 9,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-024",
+        "case_id": "FTE-QA-B-FA-02",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "fa",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-025",
+        "case_id": "FTE-QA-C-FA-01",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "fa",
+        "embedding_arm": "nomic",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 0,
+        "usefulness": 4,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-026",
+        "case_id": "FTE-QA-H-FA-01",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "fa",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 0,
+        "usefulness": 4,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-027",
+        "case_id": "FTE-QA-B-FA-02",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "fa",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-028",
+        "case_id": "FTE-QA-H-EN-01",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "en",
+        "embedding_arm": "nomic",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": null,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-029",
+        "case_id": "FTE-QA-B-EN-01",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "en",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": null,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-030",
+        "case_id": "FTE-QA-H-FA-02",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "fa",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-031",
+        "case_id": "FTE-QA-B-FA-01",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "fa",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-032",
+        "case_id": "FTE-QA-C-FA-01",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "fa",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 0,
+        "usefulness": 4,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-033",
+        "case_id": "FTE-QA-H-FA-02",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "fa",
+        "embedding_arm": "nomic",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-034",
+        "case_id": "FTE-QA-B-FA-02",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "fa",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 6,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-035",
+        "case_id": "FTE-QA-B-FA-02",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "fa",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-036",
+        "case_id": "FTE-QA-B-EN-01",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "en",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": null,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-037",
+        "case_id": "FTE-QA-B-EN-01",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "en",
+        "embedding_arm": "nomic",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": null,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-038",
+        "case_id": "FTE-QA-H-EN-02",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "en",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 9,
+        "groundedness": 9,
+        "persian_readability": null,
+        "usefulness": 9,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-039",
+        "case_id": "FTE-QA-B-EN-01",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "en",
+        "embedding_arm": "nomic",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": null,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-040",
+        "case_id": "FTE-DOC-B-02",
+        "task_type": "documentation",
+        "repository_id": "cs_bookstore",
+        "language": "fa",
+        "embedding_arm": null,
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 6,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-041",
+        "case_id": "FTE-QA-C-EN-02",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "en",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "retry_1",
+        "correctness": 9,
+        "groundedness": 9,
+        "persian_readability": null,
+        "usefulness": 9,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-042",
+        "case_id": "FTE-DOC-C-01",
+        "task_type": "documentation",
+        "repository_id": "codecompass",
+        "language": "fa",
+        "embedding_arm": null,
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 6,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-043",
+        "case_id": "FTE-QA-C-EN-01",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "en",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": null,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-044",
+        "case_id": "FTE-DOC-H-01",
+        "task_type": "documentation",
+        "repository_id": "hospital_system",
+        "language": "fa",
+        "embedding_arm": null,
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 6,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-045",
+        "case_id": "FTE-QA-B-EN-02",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "en",
+        "embedding_arm": "nomic",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 1,
+        "groundedness": 1,
+        "persian_readability": null,
+        "usefulness": 1,
+        "hallucination": "بله"
+      },
+      {
+        "blind_id": "FTE-R-046",
+        "case_id": "FTE-QA-B-EN-02",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "en",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 9,
+        "groundedness": 9,
+        "persian_readability": null,
+        "usefulness": 9,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-047",
+        "case_id": "FTE-QA-C-FA-01",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "fa",
+        "embedding_arm": "nomic",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "retry_2",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-048",
+        "case_id": "FTE-DOC-H-02",
+        "task_type": "documentation",
+        "repository_id": "hospital_system",
+        "language": "fa",
+        "embedding_arm": null,
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-049",
+        "case_id": "FTE-QA-C-FA-02",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "fa",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "retry_1",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-050",
+        "case_id": "FTE-QA-H-EN-02",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "en",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 1,
+        "groundedness": 1,
+        "persian_readability": null,
+        "usefulness": 1,
+        "hallucination": "بله"
+      },
+      {
+        "blind_id": "FTE-R-051",
+        "case_id": "FTE-QA-B-EN-01",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "en",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 6,
+        "groundedness": 8,
+        "persian_readability": null,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-052",
+        "case_id": "FTE-QA-B-EN-02",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "en",
+        "embedding_arm": "nomic",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 9,
+        "groundedness": 9,
+        "persian_readability": null,
+        "usefulness": 9,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-053",
+        "case_id": "FTE-QA-C-FA-02",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "fa",
+        "embedding_arm": "nomic",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "retry_1",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-054",
+        "case_id": "FTE-QA-H-FA-02",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "fa",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "glm",
+        "execution_status": "failed",
+        "execution_provenance": "initial",
+        "correctness": null,
+        "groundedness": null,
+        "persian_readability": null,
+        "usefulness": null,
+        "hallucination": null
+      },
+      {
+        "blind_id": "FTE-R-055",
+        "case_id": "FTE-DOC-C-01",
+        "task_type": "documentation",
+        "repository_id": "codecompass",
+        "language": "fa",
+        "embedding_arm": null,
+        "llm_arm": "qwen",
+        "execution_status": "failed",
+        "execution_provenance": "initial",
+        "correctness": null,
+        "groundedness": null,
+        "persian_readability": null,
+        "usefulness": null,
+        "hallucination": null
+      },
+      {
+        "blind_id": "FTE-R-056",
+        "case_id": "FTE-QA-H-FA-01",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "fa",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 6,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-057",
+        "case_id": "FTE-QA-C-EN-02",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "en",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "retry_1",
+        "correctness": 3,
+        "groundedness": 3,
+        "persian_readability": null,
+        "usefulness": 3,
+        "hallucination": "خفیف / ضمنی"
+      },
+      {
+        "blind_id": "FTE-R-058",
+        "case_id": "FTE-QA-H-FA-01",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "fa",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-059",
+        "case_id": "FTE-DOC-C-03",
+        "task_type": "documentation",
+        "repository_id": "codecompass",
+        "language": "fa",
+        "embedding_arm": null,
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 6,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-060",
+        "case_id": "FTE-QA-B-EN-01",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "en",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": null,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-061",
+        "case_id": "FTE-DOC-H-01",
+        "task_type": "documentation",
+        "repository_id": "hospital_system",
+        "language": "fa",
+        "embedding_arm": null,
+        "llm_arm": "qwen",
+        "execution_status": "failed",
+        "execution_provenance": "initial",
+        "correctness": null,
+        "groundedness": null,
+        "persian_readability": null,
+        "usefulness": null,
+        "hallucination": null
+      },
+      {
+        "blind_id": "FTE-R-062",
+        "case_id": "FTE-QA-H-EN-01",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "en",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": null,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-063",
+        "case_id": "FTE-QA-H-FA-01",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "fa",
+        "embedding_arm": "nomic",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-064",
+        "case_id": "FTE-QA-C-FA-02",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "fa",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "retry_2",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-065",
+        "case_id": "FTE-DOC-H-03",
+        "task_type": "documentation",
+        "repository_id": "hospital_system",
+        "language": "fa",
+        "embedding_arm": null,
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-066",
+        "case_id": "FTE-DOC-C-02",
+        "task_type": "documentation",
+        "repository_id": "codecompass",
+        "language": "fa",
+        "embedding_arm": null,
+        "llm_arm": "qwen",
+        "execution_status": "failed",
+        "execution_provenance": "initial",
+        "correctness": null,
+        "groundedness": null,
+        "persian_readability": null,
+        "usefulness": null,
+        "hallucination": null
+      },
+      {
+        "blind_id": "FTE-R-067",
+        "case_id": "FTE-QA-H-EN-01",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "en",
+        "embedding_arm": "nomic",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": null,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-068",
+        "case_id": "FTE-QA-B-FA-01",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "fa",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "retry_1",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-069",
+        "case_id": "FTE-QA-C-FA-02",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "fa",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "retry_1",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-070",
+        "case_id": "FTE-QA-H-EN-02",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "en",
+        "embedding_arm": "nomic",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 9,
+        "groundedness": 9,
+        "persian_readability": null,
+        "usefulness": 9,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-071",
+        "case_id": "FTE-DOC-H-03",
+        "task_type": "documentation",
+        "repository_id": "hospital_system",
+        "language": "fa",
+        "embedding_arm": null,
+        "llm_arm": "qwen",
+        "execution_status": "failed",
+        "execution_provenance": "initial",
+        "correctness": null,
+        "groundedness": null,
+        "persian_readability": null,
+        "usefulness": null,
+        "hallucination": null
+      },
+      {
+        "blind_id": "FTE-R-072",
+        "case_id": "FTE-DOC-C-02",
+        "task_type": "documentation",
+        "repository_id": "codecompass",
+        "language": "fa",
+        "embedding_arm": null,
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 6,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-073",
+        "case_id": "FTE-QA-H-FA-02",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "fa",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-074",
+        "case_id": "FTE-QA-H-EN-01",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "en",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": null,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-075",
+        "case_id": "FTE-QA-B-FA-02",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "fa",
+        "embedding_arm": "nomic",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-076",
+        "case_id": "FTE-QA-H-EN-02",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "en",
+        "embedding_arm": "nomic",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 9,
+        "groundedness": 9,
+        "persian_readability": null,
+        "usefulness": 9,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-077",
+        "case_id": "FTE-QA-B-FA-01",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "fa",
+        "embedding_arm": "nomic",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "retry_1",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-078",
+        "case_id": "FTE-QA-C-FA-02",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "fa",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "retry_2",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-079",
+        "case_id": "FTE-QA-H-EN-01",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "en",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": null,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-080",
+        "case_id": "FTE-QA-B-EN-02",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "en",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 1,
+        "groundedness": 1,
+        "persian_readability": null,
+        "usefulness": 1,
+        "hallucination": "بله"
+      },
+      {
+        "blind_id": "FTE-R-081",
+        "case_id": "FTE-QA-B-FA-01",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "fa",
+        "embedding_arm": "nomic",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-082",
+        "case_id": "FTE-QA-C-FA-01",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "fa",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 0,
+        "usefulness": 4,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-083",
+        "case_id": "FTE-DOC-B-01",
+        "task_type": "documentation",
+        "repository_id": "cs_bookstore",
+        "language": "fa",
+        "embedding_arm": null,
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 6,
+        "groundedness": 8,
+        "persian_readability": 8,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-084",
+        "case_id": "FTE-QA-H-EN-02",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "en",
+        "embedding_arm": "gemini_001",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 9,
+        "groundedness": 9,
+        "persian_readability": null,
+        "usefulness": 9,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-085",
+        "case_id": "FTE-QA-C-EN-01",
+        "task_type": "qa",
+        "repository_id": "codecompass",
+        "language": "en",
+        "embedding_arm": "nomic",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "retry_2",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": null,
+        "usefulness": 8,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-086",
+        "case_id": "FTE-DOC-B-01",
+        "task_type": "documentation",
+        "repository_id": "cs_bookstore",
+        "language": "fa",
+        "embedding_arm": null,
+        "llm_arm": "qwen",
+        "execution_status": "failed",
+        "execution_provenance": "initial",
+        "correctness": null,
+        "groundedness": null,
+        "persian_readability": null,
+        "usefulness": null,
+        "hallucination": null
+      },
+      {
+        "blind_id": "FTE-R-087",
+        "case_id": "FTE-DOC-B-02",
+        "task_type": "documentation",
+        "repository_id": "cs_bookstore",
+        "language": "fa",
+        "embedding_arm": null,
+        "llm_arm": "qwen",
+        "execution_status": "failed",
+        "execution_provenance": "initial",
+        "correctness": null,
+        "groundedness": null,
+        "persian_readability": null,
+        "usefulness": null,
+        "hallucination": null
+      },
+      {
+        "blind_id": "FTE-R-088",
+        "case_id": "FTE-QA-B-EN-02",
+        "task_type": "qa",
+        "repository_id": "cs_bookstore",
+        "language": "en",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "glm",
+        "execution_status": "complete",
+        "execution_provenance": "retry_2",
+        "correctness": 9,
+        "groundedness": 9,
+        "persian_readability": null,
+        "usefulness": 9,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-089",
+        "case_id": "FTE-QA-H-FA-01",
+        "task_type": "qa",
+        "repository_id": "hospital_system",
+        "language": "fa",
+        "embedding_arm": "nomic",
+        "llm_arm": "qwen",
+        "execution_status": "complete",
+        "execution_provenance": "initial",
+        "correctness": 8,
+        "groundedness": 8,
+        "persian_readability": 0,
+        "usefulness": 4,
+        "hallucination": "خیر"
+      },
+      {
+        "blind_id": "FTE-R-090",
+        "case_id": "FTE-DOC-C-03",
+        "task_type": "documentation",
+        "repository_id": "codecompass",
+        "language": "fa",
+        "embedding_arm": null,
+        "llm_arm": "qwen",
+        "execution_status": "failed",
+        "execution_provenance": "initial",
+        "correctness": null,
+        "groundedness": null,
+        "persian_readability": null,
+        "usefulness": null,
+        "hallucination": null
+      }
+    ],
+    "limitations": [
+      "Scores come from one human reviewer and are interpreted descriptively.",
+      "Ten failed executions were retained as unavailable and were not assigned quality scores.",
+      "Qwen documentation quality is unavailable because all nine executions failed at the local provider path.",
+      "Seven QA outputs have provider-confirmed finish_reason=length; additional visually incomplete outputs are not reclassified as token-limit failures.",
+      "One GLM QA combination is unavailable, so some paired comparisons contain 11 rather than 12 cases."
+    ]
+  },
+  "reproducibility": {
+    "artifact_hashes": {
+      "benchmark_cases.json": "ec134348d3b0cb24e062b2d663a4521b5630dc449f4bb27e3bb1461a3536974f",
+      "freeze_manifest.json": "3032f88c17bd23eae170a4a97dfac385a46868b666d322ae088a33bfe20f5c67",
+      "retrieval_results.json": "2e5c36bfd9ed581674f4705fd3498d8e3d234f40bc1239a64fab7e39c191fa56",
+      "qa_results.json": "e96935f5d3903a734cec9e52dbfeac32bf3e60489244e6991b584246a1a12fd1",
+      "qa_recovery_results.json": "3e5bd12d1d4b87c5b5f8d05271b7e898b7ec9f97e45bffe3aacefa505c5fcfab",
+      "qa_glm_second_recovery_results.json": "3d26f8b9d63b227cd7a2ca4bfe2e696ee9937e1623f568a9dbab500b3fabdf60",
+      "documentation_results.json": "85b4fc6b448177e8cfb9771b94deaec8db4f27fa0328439893359d1620b90d90",
+      "documentation_qwen_recovery_results.json": "40fba2049fd386f69aa8414e7e0c3f334876d59b5165bada60d2acdd33405981",
+      "human_review_blinded.json": "715d64dc60f4fbe53b5768d12ee22d1ffb7ca93dac2a9748c555028f256cbbaf",
+      "blind_mapping.json": "cd2b3c09ad9ece447a1ddf923acb9f29457bec0df13af8eb1b1973b1c24fd225",
+      "human_review_scored.json": "4dbfb5b38259aad4bd189c3e5bfc18186718e6286ff48654874a94334057a97b",
+      "human_evaluation_summary.json": "5e447f000df58a4948219d85fd41e95a57b8bc4c978242a1448f826c7732ff9b"
+    },
+    "provider_calls_during_reporting": 0,
+    "retrieval_calls_during_reporting": 0,
+    "indexing_calls_during_reporting": 0,
+    "token_usage": "Not measured: provider responses did not expose token-usage fields in the saved artifacts."
+  }
+}

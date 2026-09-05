@@ -1,0 +1,26 @@
+{
+  "report_id": "final_thesis_evaluation_v1_publication_report",
+  "status": "complete",
+  "inputs": {
+    "benchmark_cases.json": "ec134348d3b0cb24e062b2d663a4521b5630dc449f4bb27e3bb1461a3536974f",
+    "freeze_manifest.json": "3032f88c17bd23eae170a4a97dfac385a46868b666d322ae088a33bfe20f5c67",
+    "retrieval_results.json": "2e5c36bfd9ed581674f4705fd3498d8e3d234f40bc1239a64fab7e39c191fa56",
+    "qa_results.json": "e96935f5d3903a734cec9e52dbfeac32bf3e60489244e6991b584246a1a12fd1",
+    "qa_recovery_results.json": "3e5bd12d1d4b87c5b5f8d05271b7e898b7ec9f97e45bffe3aacefa505c5fcfab",
+    "qa_glm_second_recovery_results.json": "3d26f8b9d63b227cd7a2ca4bfe2e696ee9937e1623f568a9dbab500b3fabdf60",
+    "documentation_results.json": "85b4fc6b448177e8cfb9771b94deaec8db4f27fa0328439893359d1620b90d90",
+    "documentation_qwen_recovery_results.json": "40fba2049fd386f69aa8414e7e0c3f334876d59b5165bada60d2acdd33405981",
+    "human_review_blinded.json": "715d64dc60f4fbe53b5768d12ee22d1ffb7ca93dac2a9748c555028f256cbbaf",
+    "blind_mapping.json": "cd2b3c09ad9ece447a1ddf923acb9f29457bec0df13af8eb1b1973b1c24fd225",
+    "human_review_scored.json": "4dbfb5b38259aad4bd189c3e5bfc18186718e6286ff48654874a94334057a97b",
+    "human_evaluation_summary.json": "5e447f000df58a4948219d85fd41e95a57b8bc4c978242a1448f826c7732ff9b"
+  },
+  "outputs": {
+    "final_thesis_evaluation_report_data.json": "c9a2fc17b564cd57da1428d9a0751f681354efeb02f4201fac15408868bb6eb7",
+    "final_thesis_evaluation_report.md": "2687a3bd378f27b8c5cb04268b3211a8c13c3903ec00271d482ef21d0c108e06",
+    "final_thesis_evaluation_report.pdf": "1680dbfaf25d5ae904ba4b8f9817b3ea4e78c83af3b8f3ad021691ed82205eae"
+  },
+  "provider_calls": 0,
+  "retrieval_calls": 0,
+  "indexing_calls": 0
+}

@@ -1,0 +1,245 @@
+{
+  "evaluation_id": "final_thesis_evaluation_v1",
+  "frozen_at_utc": "2026-09-04T22:56:48.703727+00:00",
+  "status": "frozen",
+  "benchmark": {
+    "path": "reports/evaluation/final_thesis_evaluation_v1/benchmark_cases.json",
+    "sha256": "ec134348d3b0cb24e062b2d663a4521b5630dc449f4bb27e3bb1461a3536974f",
+    "search_queries": 36,
+    "qa_cases": 12,
+    "documentation_cases": 9
+  },
+  "indexes": {
+    "nomic": {
+      "hospital_system": {
+        "identity_path": "data/indexes/m25_m10_representation_ablation/index_v1/hospital_system/identity.json",
+        "identity_sha256": "3143e968c74b4b7a0250025b24270a28c190fc4e48fbdc843a2da9abf75dd5f3",
+        "repository_id": "hospital_system",
+        "project_id": 1,
+        "representation_version": 1,
+        "snapshot": {
+          "repository_id": "hospital_system",
+          "commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633",
+          "files": 33,
+          "source_manifest_sha256": "bd91675f2ca42e57b9b12fa1b64c1e272c5e54e1cb0f5f149c6dce618eb4959c"
+        },
+        "files": 33,
+        "symbols": 409,
+        "chunks": 409,
+        "vectors": 409,
+        "chunk_ids_sha256": "f47a8c1a0230dded95b74c073defd29201a10b9cf9671acd2593e497653155f8",
+        "canonical_embedding_text_sha256": "72e705260d6a9c8b04d95e0be1f63168f162eebe20d010833fb31b2aa51a05bf",
+        "provider_input_sha256": "72e705260d6a9c8b04d95e0be1f63168f162eebe20d010833fb31b2aa51a05bf",
+        "embedding_model": "nomic-embed-text-local:latest",
+        "dimensions": 768,
+        "elapsed_seconds": 108.05
+      },
+      "cs_bookstore": {
+        "identity_path": "data/indexes/m25_m10_representation_ablation/index_v1/cs_bookstore/identity.json",
+        "identity_sha256": "2b558e613beeeb298606b07fbc44d24f29648ad94d3232b9b0ef921eb35b7aa0",
+        "repository_id": "cs_bookstore",
+        "project_id": 1,
+        "representation_version": 1,
+        "snapshot": {
+          "repository_id": "cs_bookstore",
+          "commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+          "files": 56,
+          "source_manifest_sha256": "2e2f647f35f9c752341c15eaf20a91af31b65dd245524b4a3ac6ada8af0fa05c"
+        },
+        "files": 56,
+        "symbols": 144,
+        "chunks": 144,
+        "vectors": 144,
+        "chunk_ids_sha256": "25a2d215e2ae4c6cd6be8b67445b59c3a21f6d3b489d5ea48849807e711f36a5",
+        "canonical_embedding_text_sha256": "ba6be212e7c5ff321bf6f18c36c5d1ab103dbdb10c736f1e88b0331dcb22decc",
+        "provider_input_sha256": "ba6be212e7c5ff321bf6f18c36c5d1ab103dbdb10c736f1e88b0331dcb22decc",
+        "embedding_model": "nomic-embed-text-local:latest",
+        "dimensions": 768,
+        "elapsed_seconds": 57.311
+      },
+      "codecompass": {
+        "identity_path": "data/indexes/m25_m10_representation_ablation/index_v1/codecompass/identity.json",
+        "identity_sha256": "af9e0d74d1114d60715f7e59d68efa79d0d6fd3826c4f480b0b816227a510aad",
+        "repository_id": "codecompass",
+        "project_id": 1,
+        "representation_version": 1,
+        "snapshot": {
+          "repository_id": "codecompass",
+          "commit": "4b9eba4df4cc7a5afca27ee3d4c60d578caec0f7",
+          "files": 100,
+          "source_manifest_sha256": "fc75e63befc5a6d6c3d0cf79ad3ba4ba06a2d1416da04c8e7b317a9a467b1aa2"
+        },
+        "files": 100,
+        "symbols": 1236,
+        "chunks": 1236,
+        "vectors": 1236,
+        "chunk_ids_sha256": "956fb0c2d29db713fe02846e5dab16c568cdedcf18968c4ddc8177eb55ccc3af",
+        "canonical_embedding_text_sha256": "5bd993718301484ba930339b909619de258df0f04b247eb355228ddd27cc6ead",
+        "provider_input_sha256": "5bd993718301484ba930339b909619de258df0f04b247eb355228ddd27cc6ead",
+        "embedding_model": "nomic-embed-text-local:latest",
+        "dimensions": 768,
+        "elapsed_seconds": 1052.248
+      }
+    },
+    "gemini_001": {
+      "hospital_system": {
+        "identity_path": "data/indexes/controlled_embedding_comparison_v1/gemini/hospital_system/identity.json",
+        "identity_sha256": "86bc8d07c104af881c56b8e5d3a12809dc2724a8032a585f1b3517a005a1a992",
+        "repository_id": "hospital_system",
+        "project_id": 1,
+        "source_snapshot": {
+          "repository_id": "hospital_system",
+          "commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633",
+          "files": 33,
+          "source_manifest_sha256": "bd91675f2ca42e57b9b12fa1b64c1e272c5e54e1cb0f5f149c6dce618eb4959c"
+        },
+        "files": 33,
+        "symbols": 409,
+        "chunks": 409,
+        "vectors": 409,
+        "chunk_ids_sha256": "f47a8c1a0230dded95b74c073defd29201a10b9cf9671acd2593e497653155f8",
+        "canonical_embedding_text_sha256": "72e705260d6a9c8b04d95e0be1f63168f162eebe20d010833fb31b2aa51a05bf",
+        "embedding_provider": "openai_compatible",
+        "embedding_model": "gemini-embedding-001",
+        "dimensions": 3072,
+        "elapsed_seconds": 38.438
+      },
+      "cs_bookstore": {
+        "identity_path": "data/indexes/controlled_embedding_comparison_v1/gemini/cs_bookstore/identity.json",
+        "identity_sha256": "def01468b259faa1dc354cf9015288d4d85f06e01d8c6caa4369985a3b536362",
+        "repository_id": "cs_bookstore",
+        "project_id": 1,
+        "source_snapshot": {
+          "repository_id": "cs_bookstore",
+          "commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+          "files": 56,
+          "source_manifest_sha256": "2e2f647f35f9c752341c15eaf20a91af31b65dd245524b4a3ac6ada8af0fa05c"
+        },
+        "files": 56,
+        "symbols": 144,
+        "chunks": 144,
+        "vectors": 144,
+        "chunk_ids_sha256": "25a2d215e2ae4c6cd6be8b67445b59c3a21f6d3b489d5ea48849807e711f36a5",
+        "canonical_embedding_text_sha256": "ba6be212e7c5ff321bf6f18c36c5d1ab103dbdb10c736f1e88b0331dcb22decc",
+        "embedding_provider": "openai_compatible",
+        "embedding_model": "gemini-embedding-001",
+        "dimensions": 3072,
+        "elapsed_seconds": 12.997
+      },
+      "codecompass": {
+        "identity_path": "data/indexes/controlled_embedding_comparison_v1/gemini/codecompass/identity.json",
+        "identity_sha256": "7d112fcfac25f6e1f7818103e6d26f81b2dff76f2fbe0bab020e987d7456a467",
+        "repository_id": "codecompass",
+        "project_id": 1,
+        "source_snapshot": {
+          "repository_id": "codecompass",
+          "commit": "4b9eba4df4cc7a5afca27ee3d4c60d578caec0f7",
+          "files": 100,
+          "source_manifest_sha256": "fc75e63befc5a6d6c3d0cf79ad3ba4ba06a2d1416da04c8e7b317a9a467b1aa2"
+        },
+        "files": 100,
+        "symbols": 1236,
+        "chunks": 1236,
+        "vectors": 1236,
+        "chunk_ids_sha256": "956fb0c2d29db713fe02846e5dab16c568cdedcf18968c4ddc8177eb55ccc3af",
+        "canonical_embedding_text_sha256": "5bd993718301484ba930339b909619de258df0f04b247eb355228ddd27cc6ead",
+        "embedding_provider": "openai_compatible",
+        "embedding_model": "gemini-embedding-001",
+        "dimensions": 3072,
+        "elapsed_seconds": 124.273
+      }
+    },
+    "gemini_2": {
+      "hospital_system": {
+        "identity_path": "data/indexes/gemini2_embedding_comparison_v1/controlled/hospital_system/identity.json",
+        "identity_sha256": "4f71937f757101e0372cd213b84fb07da07800c9a5e2a8020868100abc83bb53",
+        "repository_id": "hospital_system",
+        "project_id": 1,
+        "source_snapshot": {
+          "repository_id": "hospital_system",
+          "commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633",
+          "files": 33,
+          "source_manifest_sha256": "bd91675f2ca42e57b9b12fa1b64c1e272c5e54e1cb0f5f149c6dce618eb4959c"
+        },
+        "files": 33,
+        "symbols": 409,
+        "chunks": 409,
+        "vectors": 409,
+        "chunk_ids_sha256": "f47a8c1a0230dded95b74c073defd29201a10b9cf9671acd2593e497653155f8",
+        "canonical_embedding_text_sha256": "72e705260d6a9c8b04d95e0be1f63168f162eebe20d010833fb31b2aa51a05bf",
+        "embedding_model": "gemini-embedding-2",
+        "dimensions": 3072,
+        "elapsed_seconds": 49.598
+      },
+      "cs_bookstore": {
+        "identity_path": "data/indexes/gemini2_embedding_comparison_v1/controlled/cs_bookstore/identity.json",
+        "identity_sha256": "c5cd051d6103baefef3e9150fccf66b7983abfd325d0f98d7538443fb9067552",
+        "repository_id": "cs_bookstore",
+        "project_id": 1,
+        "source_snapshot": {
+          "repository_id": "cs_bookstore",
+          "commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+          "files": 56,
+          "source_manifest_sha256": "2e2f647f35f9c752341c15eaf20a91af31b65dd245524b4a3ac6ada8af0fa05c"
+        },
+        "files": 56,
+        "symbols": 144,
+        "chunks": 144,
+        "vectors": 144,
+        "chunk_ids_sha256": "25a2d215e2ae4c6cd6be8b67445b59c3a21f6d3b489d5ea48849807e711f36a5",
+        "canonical_embedding_text_sha256": "ba6be212e7c5ff321bf6f18c36c5d1ab103dbdb10c736f1e88b0331dcb22decc",
+        "embedding_model": "gemini-embedding-2",
+        "dimensions": 3072,
+        "elapsed_seconds": 20.455
+      },
+      "codecompass": {
+        "identity_path": "data/indexes/gemini2_embedding_comparison_v1/controlled/codecompass/identity.json",
+        "identity_sha256": "18c91508fd95c86f4aff8b75f39e7cba168efc06cb2f7ea926ba4d74317a5ab7",
+        "repository_id": "codecompass",
+        "project_id": 1,
+        "source_snapshot": {
+          "repository_id": "codecompass",
+          "commit": "4b9eba4df4cc7a5afca27ee3d4c60d578caec0f7",
+          "files": 100,
+          "source_manifest_sha256": "fc75e63befc5a6d6c3d0cf79ad3ba4ba06a2d1416da04c8e7b317a9a467b1aa2"
+        },
+        "files": 100,
+        "symbols": 1236,
+        "chunks": 1236,
+        "vectors": 1236,
+        "chunk_ids_sha256": "956fb0c2d29db713fe02846e5dab16c568cdedcf18968c4ddc8177eb55ccc3af",
+        "canonical_embedding_text_sha256": "5bd993718301484ba930339b909619de258df0f04b247eb355228ddd27cc6ead",
+        "embedding_model": "gemini-embedding-2",
+        "dimensions": 3072,
+        "elapsed_seconds": 186.328
+      }
+    }
+  },
+  "fixed": {
+    "retrieval_methods": [
+      "lexical",
+      "semantic",
+      "hybrid"
+    ],
+    "search_limit": 10,
+    "qa_method": "hybrid",
+    "qa_limit": 5,
+    "qa_context_chars": 6000,
+    "temperature": 0.0,
+    "qa_max_tokens": 1200,
+    "documentation_max_tokens": 2400,
+    "documentation_language": "fa"
+  },
+  "models": {
+    "embeddings": {
+      "nomic": "nomic-embed-text-local:latest",
+      "gemini_001": "gemini-embedding-001",
+      "gemini_2": "gemini-embedding-2"
+    },
+    "llms": {
+      "qwen": "qwen2.5-coder-3b-codecompass:latest",
+      "glm": "glm-5.3-flash"
+    }
+  },
+  "external_data_consent": "explicitly granted by project owner; no secret values stored"
+}

@@ -1,0 +1,47 @@
+{
+  "evaluation_id": "final_thesis_evaluation_v1",
+  "status": "ready_for_human_review",
+  "review_artifact": {
+    "path": "human_review_blinded.json",
+    "sha256": "715d64dc60f4fbe53b5768d12ee22d1ffb7ca93dac2a9748c555028f256cbbaf",
+    "records": 90,
+    "qa_records": 72,
+    "documentation_records": 18,
+    "scorable_records": 80,
+    "unavailable_records": 10,
+    "model_or_provider_identity_leaks": 0
+  },
+  "private_mapping": {
+    "path": "blind_mapping.json",
+    "sha256": "cd2b3c09ad9ece447a1ddf923acb9f29457bec0df13af8eb1b1973b1c24fd225",
+    "records": 90,
+    "instruction": "Do not inspect or use this mapping until human scoring is complete."
+  },
+  "scoring_policy": {
+    "primary_evaluator": "human",
+    "score_only_when_execution_status": "complete",
+    "unavailable_records": "Leave score fields null and retain the execution failure.",
+    "fields": [
+      "correctness_0_10",
+      "groundedness_0_10",
+      "persian_readability_0_10",
+      "usefulness_0_10",
+      "hallucination",
+      "notes"
+    ]
+  },
+  "execution_provenance": {
+    "qa": {
+      "initial": 52,
+      "retry_1": 9,
+      "retry_2": 11,
+      "usable": 71,
+      "unavailable": 1
+    },
+    "documentation": {
+      "initial": 18,
+      "usable": 9,
+      "unavailable": 9
+    }
+  }
+}
