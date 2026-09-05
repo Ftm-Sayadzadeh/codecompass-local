@@ -2,6 +2,8 @@ import json
 from collections import Counter
 from pathlib import Path
 
+import pytest
+
 from codecompass.storage import SQLiteMetadataStore
 
 
@@ -65,6 +67,16 @@ def test_final_thesis_benchmark_contract_and_targets() -> None:
     old_questions = _normalized_questions(json.loads(OLD_BENCHMARK.read_text(encoding="utf-8")))
     assert new_questions.isdisjoint(old_questions)
 
+
+def test_final_thesis_targets_match_local_index_snapshots() -> None:
+    repositories = ("hospital_system", "cs_bookstore", "codecompass")
+    if not all((INDEX_ROOT / repository / "metadata.sqlite").is_file() for repository in repositories):
+        pytest.skip("frozen local index snapshots are not included in the repository")
+
+    benchmark = json.loads(BENCHMARK.read_text(encoding="utf-8"))
+    search = benchmark["search_concepts"]
+    qa = benchmark["qa_cases"]
+    documentation = benchmark["documentation_cases"]
     positive_targets = [row for row in search]
     positive_targets += [row for row in qa if row["expected_behavior"] != "insufficient_evidence"]
     positive_targets += documentation
