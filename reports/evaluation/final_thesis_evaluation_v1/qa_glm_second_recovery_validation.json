@@ -1,0 +1,30 @@
+{
+  "status": "validated",
+  "selection": {
+    "eligible_glm_network_failures": 11,
+    "attempted": 11,
+    "unique": 11,
+    "recovered": 11,
+    "failed": 0
+  },
+  "final_qa_status": {
+    "original_complete": 51,
+    "first_recovery_complete": 9,
+    "second_glm_recovery_complete": 11,
+    "remaining_non_network_failure": 1,
+    "total_usable_answers": 71,
+    "total_cases": 72,
+    "usable_rate": 0.9861111111111112
+  },
+  "diagnosis": {
+    "result": "transient AvalAI transport failure",
+    "evidence": "TCP preflight passed and all 11 identical GLM requests succeeded on the final attempt without changing prompts, contexts, models, or generation settings",
+    "not_supported": ["GLM model-quality failure", "retrieval failure", "prompt failure", "CodeCompass pipeline failure"]
+  },
+  "artifact_integrity": {
+    "qa_results_sha256": "e96935f5d3903a734cec9e52dbfeac32bf3e60489244e6991b584246a1a12fd1",
+    "first_recovery_sha256": "3e5bd12d1d4b87c5b5f8d05271b7e898b7ec9f97e45bffe3aacefa505c5fcfab",
+    "second_recovery_sha256": "3d26f8b9d63b227cd7a2ca4bfe2e696ee9937e1623f568a9dbab500b3fabdf60",
+    "prior_artifacts_unchanged": true
+  }
+}

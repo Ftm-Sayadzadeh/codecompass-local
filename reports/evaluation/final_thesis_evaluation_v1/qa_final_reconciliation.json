@@ -1,0 +1,57 @@
+{
+  "status": "validated",
+  "provider_calls_during_reconciliation": 0,
+  "artifact_integrity": {
+    "qa_results": {
+      "role": "immutable original execution",
+      "sha256": "e96935f5d3903a734cec9e52dbfeac32bf3e60489244e6991b584246a1a12fd1",
+      "unchanged": true
+    },
+    "qa_recovery_results": {
+      "role": "separate retry-1 history",
+      "sha256": "3e5bd12d1d4b87c5b5f8d05271b7e898b7ec9f97e45bffe3aacefa505c5fcfab"
+    },
+    "qa_glm_second_recovery_results": {
+      "role": "separate retry-2 history",
+      "sha256": "3d26f8b9d63b227cd7a2ca4bfe2e696ee9937e1623f568a9dbab500b3fabdf60"
+    }
+  },
+  "execution_reliability": {
+    "overall": {
+      "initial_success": 51,
+      "recovered_by_retry_1": 9,
+      "recovered_by_retry_2": 11,
+      "final_failure": 1,
+      "total": 72
+    },
+    "qwen": {
+      "initial_success": 27,
+      "recovered_by_retry_1": 9,
+      "recovered_by_retry_2": 0,
+      "final_failure": 0,
+      "total": 36
+    },
+    "glm": {
+      "initial_success": 24,
+      "recovered_by_retry_1": 0,
+      "recovered_by_retry_2": 11,
+      "final_failure": 1,
+      "total": 36
+    }
+  },
+  "final_status": {
+    "usable_answers": 71,
+    "unavailable_answers": 1,
+    "usable_rate": 0.9861111111111112,
+    "unique_expected_combinations": 72,
+    "unique_reconciled_combinations": 72
+  },
+  "remaining_failure": {
+    "case_id": "FTE-QA-H-FA-02",
+    "repository_id": "hospital_system",
+    "embedding_arm": "gemini_001",
+    "llm_arm": "glm",
+    "error_type": "invalid_response_empty_content",
+    "classification": "provider/model-output failure; not retried by network recovery policy"
+  }
+}

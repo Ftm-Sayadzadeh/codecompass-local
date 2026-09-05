@@ -1,0 +1,330 @@
+{
+  "benchmark_id": "codecompass_final_thesis_evaluation_v1",
+  "status": "frozen_before_execution",
+  "design": {
+    "repositories": 3,
+    "search_concepts": 18,
+    "search_queries": 36,
+    "qa_cases": 12,
+    "documentation_cases": 9,
+    "languages": ["en", "fa"],
+    "difficulty_levels": ["easy", "medium", "hard"],
+    "search_methods": ["lexical", "semantic", "hybrid"],
+    "embedding_arms": ["nomic", "gemini_001", "gemini_2"],
+    "llm_arms": ["qwen", "glm"]
+  },
+  "repositories": [
+    {
+      "repository_id": "hospital_system",
+      "name": "Hospital-System",
+      "commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633",
+      "source_manifest_sha256": "bd91675f2ca42e57b9b12fa1b64c1e272c5e54e1cb0f5f149c6dce618eb4959c"
+    },
+    {
+      "repository_id": "cs_bookstore",
+      "name": "CS-Bookstore",
+      "commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+      "source_manifest_sha256": "2e2f647f35f9c752341c15eaf20a91af31b65dd245524b4a3ac6ada8af0fa05c"
+    },
+    {
+      "repository_id": "codecompass",
+      "name": "CodeCompass",
+      "commit": "4b9eba4df4cc7a5afca27ee3d4c60d578caec0f7",
+      "source_manifest_sha256": "fc75e63befc5a6d6c3d0cf79ad3ba4ba06a2d1416da04c8e7b317a9a467b1aa2"
+    }
+  ],
+  "search_concepts": [
+    {
+      "id": "FTE-S-H-01",
+      "repository_id": "hospital_system",
+      "difficulty": "easy",
+      "category": "implementation_location",
+      "queries": {
+        "en": "Where is deletion of a doctor by medical number implemented?",
+        "fa": "حذف پزشک بر اساس شماره نظام پزشکی در کجا پیاده‌سازی شده است؟"
+      },
+      "expected_target": {"relative_path": "data_access/doctors.py", "qualified_symbol": "Doctors.delete_doctor_med_num", "symbol_type": "method", "start_line": 145, "end_line": 152, "chunk_id": "fbe568773b4233f9dfd872da12f9ea9806c389df2c141c42ea8f1e05e9388eea"}
+    },
+    {
+      "id": "FTE-S-H-02",
+      "repository_id": "hospital_system",
+      "difficulty": "easy",
+      "category": "capability",
+      "queries": {
+        "en": "Which trie method checks whether any stored word begins with a prefix?",
+        "fa": "کدام متد در Trie بررسی می‌کند که واژه‌ای با یک پیشوند مشخص آغاز شده باشد؟"
+      },
+      "expected_target": {"relative_path": "data_structures/trie.py", "qualified_symbol": "Trie.starts_with", "symbol_type": "method", "start_line": 31, "end_line": 38, "chunk_id": "cacd8974f35c48875676e911c0089dd0cd3c240a9c2371ed16efe8d9b033925d"}
+    },
+    {
+      "id": "FTE-S-H-03",
+      "repository_id": "hospital_system",
+      "difficulty": "medium",
+      "category": "behavior",
+      "queries": {
+        "en": "How does the dynamic hash table grow when it has no capacity or reaches its fullness threshold?",
+        "fa": "جدول هش پویا هنگام نداشتن ظرفیت یا رسیدن به آستانه پرشدن چگونه بزرگ می‌شود؟"
+      },
+      "expected_target": {"relative_path": "data_structures/hash_table.py", "qualified_symbol": "DynamicHash.expand", "symbol_type": "method", "start_line": 141, "end_line": 151, "chunk_id": "8c02540f2433b1be7ce6e510a954d94f24360b0ebc2bd62016399e62392bb2f3"}
+    },
+    {
+      "id": "FTE-S-H-04",
+      "repository_id": "hospital_system",
+      "difficulty": "medium",
+      "category": "behavior",
+      "queries": {
+        "en": "Which method marks every available or booked slot on a day as canceled?",
+        "fa": "کدام متد همه بازه‌های آزاد یا رزروشده یک روز را لغوشده علامت می‌زند؟"
+      },
+      "expected_target": {"relative_path": "models/doctor.py", "qualified_symbol": "Schedule.cancel_appointment", "symbol_type": "method", "start_line": 81, "end_line": 87, "chunk_id": "20b496edbed8a60a5a573f08d2486158b2d36aab9eb4d8df3b2137bcca447e58"}
+    },
+    {
+      "id": "FTE-S-H-05",
+      "repository_id": "hospital_system",
+      "difficulty": "hard",
+      "category": "multi_step_flow",
+      "queries": {
+        "en": "Where does a doctor's day cancellation propagate canceled appointments to affected patients?",
+        "fa": "لغو برنامه یک روز پزشک در کجا به نوبت‌های بیماران متاثر منتقل می‌شود؟"
+      },
+      "expected_target": {"relative_path": "logic/management.py", "qualified_symbol": "Manage.doctor_cancel_appointment", "symbol_type": "method", "start_line": 92, "end_line": 104, "chunk_id": "94ae91e95f043d741abdc8f5d6995123610b4df86872e23eefb9ab1f69b53829"}
+    },
+    {
+      "id": "FTE-S-H-06",
+      "repository_id": "hospital_system",
+      "difficulty": "hard",
+      "category": "user_flow",
+      "queries": {
+        "en": "Which interface flow selects a doctor, displays the schedule, validates a slot, and creates an appointment?",
+        "fa": "کدام جریان رابط کاربری پزشک را انتخاب می‌کند، برنامه را نشان می‌دهد، بازه را می‌سنجد و نوبت می‌سازد؟"
+      },
+      "expected_target": {"relative_path": "presentation/patients_interface.py", "qualified_symbol": "PatientsInterface.make_appointment", "symbol_type": "method", "start_line": 90, "end_line": 131, "chunk_id": "d8c71321be63e3e0b878904a946cf0ca81f2a85e9343bea2f7c49d966eb7f744"}
+    },
+    {
+      "id": "FTE-S-B-01",
+      "repository_id": "cs_bookstore",
+      "difficulty": "easy",
+      "category": "validation",
+      "queries": {
+        "en": "Where does the blog ticket form reject a nonnumeric phone number?",
+        "fa": "فرم تیکت وبلاگ در کجا شماره تلفن غیرعددی را رد می‌کند؟"
+      },
+      "expected_target": {"relative_path": "blog/forms.py", "qualified_symbol": "TicketForm.clean_phone", "symbol_type": "method", "start_line": 20, "end_line": 27, "chunk_id": "6f1808581853cd638fbbd338fe14da07fe623aec9f6cc49c0773fe7eb24e0a31"}
+    },
+    {
+      "id": "FTE-S-B-02",
+      "repository_id": "cs_bookstore",
+      "difficulty": "easy",
+      "category": "side_effect",
+      "queries": {
+        "en": "Which post model method removes associated image files before deleting the database object?",
+        "fa": "کدام متد مدل پست پیش از حذف رکورد، فایل تصاویر مرتبط را از storage پاک می‌کند؟"
+      },
+      "expected_target": {"relative_path": "blog/models.py", "qualified_symbol": "Post.delete", "symbol_type": "method", "start_line": 74, "end_line": 78, "chunk_id": "d34b861a3ab8320c85a5880e9c1f057a6d9cdb9575c2e6fefb09fbdcb5d8d738"}
+    },
+    {
+      "id": "FTE-S-B-03",
+      "repository_id": "cs_bookstore",
+      "difficulty": "medium",
+      "category": "capability",
+      "queries": {
+        "en": "How are bookstore search results built from trigram similarity over title and description?",
+        "fa": "نتایج جست‌وجوی کتاب چگونه با شباهت سه‌حرفی عنوان و توضیحات ساخته می‌شوند؟"
+      },
+      "expected_target": {"relative_path": "store/views.py", "qualified_symbol": "book_search", "symbol_type": "function", "start_line": 71, "end_line": 91, "chunk_id": "6f54ce19c1e9f5d58a0ca1053c5f24e38a61f10cca17e9a786848247f452f8c6"}
+    },
+    {
+      "id": "FTE-S-B-04",
+      "repository_id": "cs_bookstore",
+      "difficulty": "medium",
+      "category": "pagination",
+      "queries": {
+        "en": "Where are books filtered by category and paginated with fallbacks for invalid or empty pages?",
+        "fa": "کتاب‌ها در کجا بر اساس دسته فیلتر و با مدیریت صفحه نامعتبر یا خالی صفحه‌بندی می‌شوند؟"
+      },
+      "expected_target": {"relative_path": "store/views.py", "qualified_symbol": "books_by_category", "symbol_type": "function", "start_line": 52, "end_line": 68, "chunk_id": "bfcfc54b68d830f69245ef2fca7da58f631d5739aeac4416afb09476ba7f1a5c"}
+    },
+    {
+      "id": "FTE-S-B-05",
+      "repository_id": "cs_bookstore",
+      "difficulty": "hard",
+      "category": "request_flow",
+      "queries": {
+        "en": "Which view binds a submitted comment to a published post before saving and rendering the confirmation page?",
+        "fa": "کدام view دیدگاه ارسال‌شده را پیش از ذخیره به یک پست منتشرشده متصل و صفحه تایید را render می‌کند؟"
+      },
+      "expected_target": {"relative_path": "blog/views.py", "qualified_symbol": "post_comment", "symbol_type": "function", "start_line": 57, "end_line": 74, "chunk_id": "fea0ab79f082464a2ca5f95d443f37ff86c106867ad6d768cdfaf9c61156e486"}
+    },
+    {
+      "id": "FTE-S-B-06",
+      "repository_id": "cs_bookstore",
+      "difficulty": "hard",
+      "category": "authentication",
+      "queries": {
+        "en": "Where does email-based authentication handle wrong passwords, missing users, and duplicate email matches?",
+        "fa": "احراز هویت ایمیلی در کجا رمز اشتباه، کاربر ناموجود و چند نتیجه برای ایمیل را مدیریت می‌کند؟"
+      },
+      "expected_target": {"relative_path": "users/authentication.py", "qualified_symbol": "EmailAuthBackend.authenticate", "symbol_type": "method", "start_line": 23, "end_line": 31, "chunk_id": "33ab926a2bc64b11ea4db759f19177cfaa74ba19f812c61083605f5ba0140803"}
+    },
+    {
+      "id": "FTE-S-C-01",
+      "repository_id": "codecompass",
+      "difficulty": "easy",
+      "category": "validation",
+      "queries": {
+        "en": "Which helper accepts only absolute HTTP or HTTPS provider base URLs without credentials or query data?",
+        "fa": "کدام helper فقط نشانی پایه مطلق HTTP یا HTTPS و بدون credential یا query را می‌پذیرد؟"
+      },
+      "expected_target": {"relative_path": "src/codecompass/_openai_compatible_http.py", "qualified_symbol": "validate_base_url", "symbol_type": "function", "start_line": 22, "end_line": 32, "chunk_id": "e1c9f24abcdfccce225cb25e8e1d4315b72af83acbfd5f4351a5d5aecade9c4f"}
+    },
+    {
+      "id": "FTE-S-C-02",
+      "repository_id": "codecompass",
+      "difficulty": "easy",
+      "category": "configuration",
+      "queries": {
+        "en": "Where are API database, Chroma, collection, and evaluation artifact paths loaded from environment variables?",
+        "fa": "مسیرهای پایگاه داده API، کروما، collection و artifactهای ارزیابی در کجا از متغیرهای محیطی خوانده می‌شوند؟"
+      },
+      "expected_target": {"relative_path": "src/codecompass/api/runtime.py", "qualified_symbol": "APISettings.from_environment", "symbol_type": "method", "start_line": 54, "end_line": 64, "chunk_id": "240f1ef3f8234cb6227478159604616f58621eb0dbb5f5efd0a561f44ef74d55"}
+    },
+    {
+      "id": "FTE-S-C-03",
+      "repository_id": "codecompass",
+      "difficulty": "medium",
+      "category": "output_validation",
+      "queries": {
+        "en": "Which documentation method parses JSON and enforces the exact generated-output schema?",
+        "fa": "کدام متد Documentation خروجی JSON را parse و دقیق بودن schema خروجی مدل را enforce می‌کند؟"
+      },
+      "expected_target": {"relative_path": "src/codecompass/documentation/service.py", "qualified_symbol": "FunctionDocumentationService._parse", "symbol_type": "method", "start_line": 377, "end_line": 400, "chunk_id": "d25924c4d5b755bfe3d856d87a58708baf68a6ba7cb32967d89fcd16e3ad1b87"}
+    },
+    {
+      "id": "FTE-S-C-04",
+      "repository_id": "codecompass",
+      "difficulty": "medium",
+      "category": "context_building",
+      "queries": {
+        "en": "Where are unique retrieved chunks packed into a source-code character budget while oversized chunks are counted as omitted?",
+        "fa": "قطعه‌های بازیابی‌شده یکتا در کجا با رعایت بودجه کاراکتر کد بسته‌بندی و موارد بزرگ به‌عنوان omitted شمرده می‌شوند؟"
+      },
+      "expected_target": {"relative_path": "src/codecompass/rag/context.py", "qualified_symbol": "RAGContextBuilder.build", "symbol_type": "method", "start_line": 12, "end_line": 28, "chunk_id": "f5e152a8790cf598b432c9b314440698f7d541974f800d4f1307a2cf4bf98db4"}
+    },
+    {
+      "id": "FTE-S-C-05",
+      "repository_id": "codecompass",
+      "difficulty": "hard",
+      "category": "reliability",
+      "queries": {
+        "en": "Which runtime check proves an earlier index snapshot still has identical chunk IDs, vector IDs, and vector generation?",
+        "fa": "کدام بررسی runtime ثابت می‌کند snapshot قبلی هنوز chunk ID، vector ID و نسل بردار یکسان دارد؟"
+      },
+      "expected_target": {"relative_path": "src/codecompass/api/runtime.py", "qualified_symbol": "APIRuntime._snapshot_preserved", "symbol_type": "method", "start_line": 338, "end_line": 359, "chunk_id": "2f04f3a7302aa7274eaa099dce09962150fb08fdc01812478f36ddaa038ce2ce"}
+    },
+    {
+      "id": "FTE-S-C-06",
+      "repository_id": "codecompass",
+      "difficulty": "hard",
+      "category": "trust_boundary",
+      "queries": {
+        "en": "Where does semantic retrieval reject an index built with a different provider, endpoint, model, or vector dimension?",
+        "fa": "بازیابی معنایی در کجا index ساخته‌شده با provider، endpoint، مدل یا ابعاد متفاوت را رد می‌کند؟"
+      },
+      "expected_target": {"relative_path": "src/codecompass/retrieval/semantic.py", "qualified_symbol": "SemanticRetriever._validate_embedding_identity", "symbol_type": "method", "start_line": 61, "end_line": 80, "chunk_id": "8fc67db43d9b37c99c2171843461822795f878f2142db4cdf45c7cb0549794e6"}
+    }
+  ],
+  "qa_cases": [
+    {
+      "id": "FTE-QA-H-FA-01", "repository_id": "hospital_system", "language": "fa", "difficulty": "medium",
+      "question": "Doctors.register_doctor پزشک جدید را چگونه در ساختارهای شهر، تخصص، doctors و signed_in ثبت می‌کند؟",
+      "expected_target": {"relative_path": "data_access/doctors.py", "qualified_symbol": "Doctors.register_doctor", "start_line": 42, "end_line": 61, "chunk_id": "394c463336ccde0db7e9b8ce41b74b4fc2bf68f919d47b2fca358a16595e430f"},
+      "expected_facts": ["creates a Doctor", "creates city DynamicHash when absent", "creates speciality SLL when absent", "adds national_id to speciality list", "stores doctor by national_id only when absent", "maps password to national_id", "returns true on insertion and false for duplicate national_id"],
+      "expected_behavior": "answer", "forbidden_claims": ["password hashing", "database transaction"]
+    },
+    {
+      "id": "FTE-QA-H-EN-01", "repository_id": "hospital_system", "language": "en", "difficulty": "medium",
+      "question": "How does Schedule.find_nearest choose and return the earliest available day and hour?",
+      "expected_target": {"relative_path": "models/doctor.py", "qualified_symbol": "Schedule.find_nearest", "start_line": 118, "end_line": 125, "chunk_id": "fe04e09a82bf32d670a2b63fbafc52ccb8f59fb56c35c154ed011a4e1f65d41e"},
+      "expected_facts": ["uses sort_days", "iterates sorted days present in schedule", "scans time indexes", "accepts values that are not None and not Not Available", "returns day and one-based hour", "has implicit None when no slot qualifies"],
+      "expected_behavior": "answer", "forbidden_claims": ["explicit exception", "returns False when unavailable"]
+    },
+    {
+      "id": "FTE-QA-H-FA-02", "repository_id": "hospital_system", "language": "fa", "difficulty": "hard",
+      "question": "Manage.doctor_cancel_appointment پس از لغو روز پزشک چگونه نوبت‌های بیماران متاثر را به‌روزرسانی می‌کند؟",
+      "expected_target": {"relative_path": "logic/management.py", "qualified_symbol": "Manage.doctor_cancel_appointment", "start_line": 92, "end_line": 104, "chunk_id": "94ae91e95f043d741abdc8f5d6995123610b4df86872e23eefb9ab1f69b53829"},
+      "expected_facts": ["gets doctor for current user", "decrements visits", "cancels doctor schedule day", "gets affected patient ids", "dequeues every patient id", "marks patient appointment canceled", "returns true when affected ids exist"],
+      "expected_behavior": "answer", "forbidden_claims": ["refund", "notification"]
+    },
+    {
+      "id": "FTE-QA-H-EN-02", "repository_id": "hospital_system", "language": "en", "difficulty": "hard",
+      "question": "How are JWT access tokens generated and verified for Hospital-System users?",
+      "expected_target": null, "expected_facts": [], "expected_behavior": "insufficient_evidence",
+      "forbidden_claims": ["invented JWT module", "invented token secret", "invented expiration policy"]
+    },
+    {
+      "id": "FTE-QA-B-FA-01", "repository_id": "cs_bookstore", "language": "fa", "difficulty": "medium",
+      "question": "تابع review_book هنگام دریافت POST معتبر چگونه review را به کتاب و کاربر متصل و ذخیره می‌کند؟",
+      "expected_target": {"relative_path": "store/views.py", "qualified_symbol": "review_book", "start_line": 95, "end_line": 107, "chunk_id": "b049cd3fc50eaf7207561f81dbe7c88abf916d7732b5f8831b41ac908f055ad4"},
+      "expected_facts": ["loads book by id and slug", "handles POST", "validates ReviewForm", "saves with commit false", "assigns book", "assigns request user", "saves review", "redirects to book URL"],
+      "expected_behavior": "answer", "forbidden_claims": ["anonymous review", "moderation workflow"]
+    },
+    {
+      "id": "FTE-QA-B-EN-01", "repository_id": "cs_bookstore", "language": "en", "difficulty": "medium",
+      "question": "How does the register view securely prepare and save a new user's password?",
+      "expected_target": {"relative_path": "users/views.py", "qualified_symbol": "register", "start_line": 35, "end_line": 45, "chunk_id": "6bce017ec5405b5a1b9875b630a02a9ec8fee65df72f2d41e2586b77a16492a8"},
+      "expected_facts": ["handles POST", "validates UserRegisterForm", "creates user with commit false", "calls set_password with cleaned password", "saves user", "renders completion template", "uses empty form for non-POST"],
+      "expected_behavior": "answer", "forbidden_claims": ["stores plaintext password", "sends verification email"]
+    },
+    {
+      "id": "FTE-QA-B-FA-02", "repository_id": "cs_bookstore", "language": "fa", "difficulty": "hard",
+      "question": "در post_comment دیدگاه چگونه ساخته و به پست منتشرشده متصل می‌شود و چه نکته مشکوکی در شرط اعتبارسنجی دیده می‌شود؟",
+      "expected_target": {"relative_path": "blog/views.py", "qualified_symbol": "post_comment", "start_line": 57, "end_line": 74, "chunk_id": "fea0ab79f082464a2ca5f95d443f37ff86c106867ad6d768cdfaf9c61156e486"},
+      "expected_facts": ["loads a published post", "builds CommentForm from POST", "uses form.is_valid without calling it", "saves with commit false", "assigns post", "saves comment", "renders comment template"],
+      "expected_behavior": "answer", "forbidden_claims": ["correctly invokes is_valid", "approval queue"]
+    },
+    {
+      "id": "FTE-QA-B-EN-02", "repository_id": "cs_bookstore", "language": "en", "difficulty": "hard",
+      "question": "How does CS-Bookstore process credit-card payments and issue refunds for canceled orders?",
+      "expected_target": null, "expected_facts": [], "expected_behavior": "insufficient_evidence",
+      "forbidden_claims": ["invented payment provider", "invented refund transaction", "invented card storage"]
+    },
+    {
+      "id": "FTE-QA-C-FA-01", "repository_id": "codecompass", "language": "fa", "difficulty": "medium",
+      "question": "GroundedQAService._focus_on_named_symbol چگونه نتیجه بازیابی را برای نام کامل، ریشه کلاس یا نام symbol محدود می‌کند؟",
+      "expected_target": {"relative_path": "src/codecompass/qa/service.py", "qualified_symbol": "GroundedQAService._focus_on_named_symbol", "start_line": 112, "end_line": 138, "chunk_id": "603131e159cf95cb4e373e71e36fd27722ef6368c2454a25f0714c0bc4a54f59"},
+      "expected_facts": ["prefers exact qualified names mentioned in question", "then checks root class names", "then checks non-dunder symbol names", "filters results only when a match set exists", "otherwise returns original result"],
+      "expected_behavior": "answer", "forbidden_claims": ["new retrieval call", "LLM-based reranking"]
+    },
+    {
+      "id": "FTE-QA-C-EN-01", "repository_id": "codecompass", "language": "en", "difficulty": "medium",
+      "question": "What does preflight_embedding check, and how are local Ollama model and provider failures classified?",
+      "expected_target": {"relative_path": "src/codecompass/indexing/coordinator.py", "qualified_symbol": "preflight_embedding", "start_line": 780, "end_line": 795, "chunk_id": "109dad8852834c260fb5a6691f30dee23f71c5baa91aaeec6b24f5f3d8e30cbf"},
+      "expected_facts": ["returns immediately for non-Ollama providers", "calls Ollama preflight", "maps ModelNotFound to embedding_model_unavailable", "maps other provider errors to embedding_provider_unavailable", "records preflight failure type"],
+      "expected_behavior": "answer", "forbidden_claims": ["preflights cloud providers", "downloads missing model"]
+    },
+    {
+      "id": "FTE-QA-C-FA-02", "repository_id": "codecompass", "language": "fa", "difficulty": "hard",
+      "question": "APIRuntime._snapshot_preserved برای اطمینان از سالم ماندن snapshot قبلی چه شناسه‌ها و نسل‌هایی را مقایسه می‌کند؟",
+      "expected_target": {"relative_path": "src/codecompass/api/runtime.py", "qualified_symbol": "APIRuntime._snapshot_preserved", "start_line": 338, "end_line": 359, "chunk_id": "2f04f3a7302aa7274eaa099dce09962150fb08fdc01812478f36ddaa038ce2ce"},
+      "expected_facts": ["requires snapshot", "compares sorted SQLite chunk ids", "compares vector ids", "accepts missing generation after id checks", "compares project vector generation", "compares active collection generation", "returns false on storage or vector errors"],
+      "expected_behavior": "answer", "forbidden_claims": ["repairs mismatches", "deletes old index"]
+    },
+    {
+      "id": "FTE-QA-C-EN-02", "repository_id": "codecompass", "language": "en", "difficulty": "hard",
+      "question": "How does CodeCompass automatically edit repository source files after answering a question?",
+      "expected_target": null, "expected_facts": [], "expected_behavior": "insufficient_evidence",
+      "forbidden_claims": ["invented source editing agent", "invented write operation", "invented commit workflow"]
+    }
+  ],
+  "documentation_cases": [
+    {"id": "FTE-DOC-H-01", "repository_id": "hospital_system", "language": "fa", "difficulty": "easy", "qualified_symbol": "DynamicArray.extend", "expected_target": {"relative_path": "data_structures/array.py", "start_line": 86, "end_line": 96, "chunk_id": "202f0a80303e680239f164bf30fa86a7452d1fb871f0000c84a4235c89f9c420"}},
+    {"id": "FTE-DOC-H-02", "repository_id": "hospital_system", "language": "fa", "difficulty": "medium", "qualified_symbol": "SLL.remove", "expected_target": {"relative_path": "data_structures/linked_list.py", "start_line": 173, "end_line": 190, "chunk_id": "a90509c97be9b9928468f63c807262d6b0f01b2316e8c3cbc302e918c9e84d17"}},
+    {"id": "FTE-DOC-H-03", "repository_id": "hospital_system", "language": "fa", "difficulty": "hard", "qualified_symbol": "Patients.find_nearest_appointment", "expected_target": {"relative_path": "data_access/patients.py", "start_line": 76, "end_line": 84, "chunk_id": "cda9cde936c398901d00043628667d9a1e44db595919396623b015f759b09b0d"}},
+    {"id": "FTE-DOC-B-01", "repository_id": "cs_bookstore", "language": "fa", "difficulty": "easy", "qualified_symbol": "CommentForm.clean_name", "expected_target": {"relative_path": "blog/forms.py", "start_line": 45, "end_line": 51, "chunk_id": "82ed47caefdd51b242f09859d1d8f4b25e6b7e2dfd40c032212672896f024738"}},
+    {"id": "FTE-DOC-B-02", "repository_id": "cs_bookstore", "language": "fa", "difficulty": "medium", "qualified_symbol": "edit_user", "expected_target": {"relative_path": "users/views.py", "start_line": 49, "end_line": 57, "chunk_id": "639840d07ff59d2c1bf8d2cd0ebd3894ced18dae6cf664ca8d765e9c2f6f1939"}},
+    {"id": "FTE-DOC-B-03", "repository_id": "cs_bookstore", "language": "fa", "difficulty": "hard", "qualified_symbol": "EmailAuthBackend.authenticate", "expected_target": {"relative_path": "users/authentication.py", "start_line": 23, "end_line": 31, "chunk_id": "33ab926a2bc64b11ea4db759f19177cfaa74ba19f812c61083605f5ba0140803"}},
+    {"id": "FTE-DOC-C-01", "repository_id": "codecompass", "language": "fa", "difficulty": "easy", "qualified_symbol": "PythonASTParser._imports", "expected_target": {"relative_path": "src/codecompass/parser/python_ast.py", "start_line": 38, "end_line": 64, "chunk_id": "bb895c1213b10665196a81aeb6d5babdfa06b3786936a36b8550821bc7609e6f"}},
+    {"id": "FTE-DOC-C-02", "repository_id": "codecompass", "language": "fa", "difficulty": "medium", "qualified_symbol": "CodeChunker._chunk", "expected_target": {"relative_path": "src/codecompass/chunker/service.py", "start_line": 136, "end_line": 168, "chunk_id": "805ee98fbd8dbacabe8f3cd50ec0059ecb3c4ab26631b2d80c7abd963720af26"}},
+    {"id": "FTE-DOC-C-03", "repository_id": "codecompass", "language": "fa", "difficulty": "hard", "qualified_symbol": "ChromaVectorIndex.replace_collection", "expected_target": {"relative_path": "src/codecompass/vector_index/chroma.py", "start_line": 246, "end_line": 259, "chunk_id": "343726f71497b3980508956d6988e7d86dfacc31048f57dd7719ce863f8dc3c7"}}
+  ]
+}
