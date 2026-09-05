@@ -1,145 +1,107 @@
-# AGENTS.md — CodeCompass Local
+# AGENTS.md - CodeCompass Local
 
 ## Mission
 
-Build a question-driven RAG system for understanding small and medium Python codebases.
-The primary user experience is Persian natural-language questioning over a local Python repository, followed by grounded answers that point to the real source file, symbol, and line range.
+Maintain a completed, local-first RAG system for understanding Python codebases through Persian and English questions. Preserve its central trust boundary: retrieval and generation may use models, but source identity, symbols, line ranges, and citations come from deterministic metadata.
 
-The university proposal is the primary source of truth for academic scope. `PROJECT_BRIEF.md` and `ROADMAP.md` define the currently approved implementation scope.
+## Source Priority
 
-## Source priority
+When project documents disagree, use this order:
 
-When two project documents appear to disagree, use this priority order:
+1. `docs/proposal.pdf` and `docs/PROPOSAL_SUMMARY.md` for university commitments.
+2. `PROJECT_BRIEF.md` for the final delivered academic and engineering scope.
+3. `PLANS.md` for final milestone status.
+4. `ROADMAP.md` for delivery history and release checkpoints.
+5. `docs/RESEARCH_NOTES_SUMMARY.md` and `docs/research-notes.docx` for non-binding research ideas.
 
-1. `docs/proposal.pdf` / `docs/PROPOSAL_SUMMARY.md` — university commitment and academic scope.
-2. `PROJECT_BRIEF.md` — approved product and engineering interpretation.
-3. `ROADMAP.md` — approved delivery order and feature priorities.
-4. `PLANS.md` — milestone execution plan and current status.
-5. `docs/research-notes.docx` / `docs/RESEARCH_NOTES_SUMMARY.md` — research and design notes; useful but not all ideas are mandatory.
+Do not expand scope from research notes or historical plans without explicit approval.
 
-Do not silently expand scope based on ideas found only in the research notes.
+## Current State
 
-## Development principles
+The thesis implementation and final evaluation are complete. The principal checkpoints are:
 
-- Work milestone by milestone.
-- Do not implement future milestones early unless explicitly approved.
-- Before a major implementation, inspect the repository and present a concise plan.
-- Prefer simple, explicit architecture over framework-heavy abstractions.
-- Keep modules focused and testable.
-- Use Python type hints for public functions and classes.
-- Add docstrings to public modules, classes, and functions where useful.
+- `v0.24.0-m24-complete`
+- `v0.25.0-m25-complete`
+- `v0.26.0-m26-complete`
+- `v1.0.0-thesis-evaluation-complete`
+- `v1.1.0-evaluation-dashboard`
+
+New work is maintenance-only unless the project owner explicitly approves another milestone.
+
+## Engineering Rules
+
+- Inspect the existing flow before editing it; prefer established modules and provider abstractions.
+- Keep changes narrowly scoped and avoid speculative abstractions or dependencies.
+- Use Python type hints for public interfaces and concise docstrings where they clarify behavior.
 - Use `pathlib` for filesystem paths.
-- Handle invalid input and file-reading errors explicitly.
+- Handle invalid input and file/provider errors explicitly.
 - Never read outside the repository selected by the user.
-- Never ingest `.env`, secret files, credentials, virtual environments, build output, or VCS internals.
-- Add automated tests for important behavior.
-- Run relevant tests after each implementation.
-- Do not hide failing tests.
-- Do not claim a feature is complete until its acceptance criteria pass.
-- Do not add dependencies without explaining why they are needed.
-- Avoid LangChain/LlamaIndex in the initial implementation; build the core pipeline explicitly so it is understandable and defensible.
-- Do not fine-tune models in the approved three-week plan.
-- Do not add TypeScript/JavaScript repository-analysis support in the Python MVP; the approved frontend is still React + Vite.
-- Do not implement a full call graph in the Python MVP.
-- Do not add cloud deployment, authentication, multi-user support, or a VS Code extension unless the core project is complete and an explicit stretch-goal decision is made.
+- Never index `.env`, credentials, VCS internals, virtual environments, caches, or build output.
+- Do not add authentication, cloud deployment, additional languages, full call graphs, autonomous coding, or multi-agent product features without explicit approval.
+- Do not use LangChain or LlamaIndex unless an approved requirement cannot be met cleanly by the explicit pipeline.
+- Do not commit or expose secrets, local absolute paths, temporary runtime files, or private benchmark projections.
+- Never revert unrelated user changes in a dirty worktree.
 
-## Academic reliability rules
+## Academic Reliability
 
-- Retrieval evidence must remain traceable to deterministic metadata.
-- File paths, symbol names, and line ranges shown as citations must come from the parser/index metadata, not from text invented by the LLM.
-- The LLM may explain retrieved evidence but must not fabricate source locations.
-- SQLite is the canonical source of project/code metadata. ChromaDB is a retrieval index keyed by stable chunk IDs, not the source of truth.
-- If retrieved evidence is insufficient, the answer should say that there is not enough evidence rather than guessing.
-- Evaluation results must be computed from saved ground truth and reproducible scripts; never hard-code favorable metrics.
-- Separate measured results from illustrative examples.
+- SQLite is canonical for project, file, symbol, chunk, and citation metadata.
+- ChromaDB is a retrieval index keyed by stable SQLite chunk IDs.
+- File paths, symbol names, source hashes, and line ranges must not come from LLM text.
+- If evidence is insufficient, return an explicit insufficient-evidence result rather than guessing.
+- Preserve embedding provider/model/dimension identity and validate it before semantic or hybrid retrieval.
+- Build and validate candidate indexes before activation; retain the previous valid index on handled failure.
+- Keep benchmark cases, prompts, contexts, generation settings, scores, and ground truth frozen during controlled comparisons.
+- Never overwrite raw experiment records. Retries must be separate attempts with preserved provenance.
+- Separate measured results, unavailable measurements, and failed executions.
+- Do not infer scores from execution success or convert unavailable outputs to zero.
+- Public artifacts must be sanitized through field-aware redaction, with provenance proving equivalence to private source artifacts.
 
-## MVP+ approved scope
+## Final Scope
 
-### Core / must finish
+The delivered system includes:
 
-- Python repository scanner.
-- Python AST parsing.
-- Function, async function, class, and method extraction.
-- Structure-aware function/method chunking.
-- Rich metadata with file path and line ranges.
-- SQLite metadata persistence.
-- Embedding provider abstraction.
-- `bge-m3` as the primary initial embedding model behind the provider abstraction.
-- ChromaDB vector index behind a small replaceable vector-index abstraction.
-- Local vector indexing and semantic retrieval.
-- Persian semantic search.
-- Keyword-search baseline.
-- Hybrid retrieval (vector + lexical).
-- RAG context construction.
-- Local LLM answer generation.
-- Verified file/symbol/line citations.
-- Function-level documentation generation.
-- FastAPI backend.
-- React + Vite frontend.
-- Monaco code explorer with clickable citations.
-- Evaluation dataset of approximately 30-50 Persian questions and retrieval metrics: Top-1, Top-3, MRR.
-- Comparison of keyword vs semantic vs hybrid retrieval.
-- End-to-end testing and final demo workflow.
+- Python scanning, AST parsing, structure-aware chunking, and incremental indexing.
+- SQLite metadata and Chroma vector persistence.
+- Ollama and OpenAI-compatible embedding/LLM providers.
+- Lexical, semantic, and hybrid retrieval.
+- Persian and English grounded QA.
+- Metadata-derived citations and Monaco source navigation.
+- Deterministic function facts plus model-rendered documentation.
+- FastAPI and React/Vite application surfaces.
+- Official and final-thesis evaluation dashboards.
+- Frozen retrieval, generation, reliability, human-review, and publication artifacts.
 
-### Should finish if core is stable
+## Testing
 
-- Incremental re-indexing using file hashes.
-- Indexing statistics.
-- Persisted generated documentation.
-- Evaluation dashboard.
-- Retrieval evidence/confidence indicator based on retrieval signals, not LLM self-confidence.
-- Search/index diagnostics useful for debugging and the final demo.
+Backend:
 
-### Stretch only
+```powershell
+python -m pytest
+```
 
-- Persian query expansion.
-- Mini multi-role review (Documentation, Maintainability, Security Hint).
-- Simple dependency/call visualization.
-- Embedding-model comparison.
-- Markdown/PDF export.
-- A second programming language.
+Frontend:
 
-## Current execution policy
+```powershell
+cd frontend
+npm test
+npm run typecheck
+npm run build
+```
 
-The project has an approximately 21-day implementation window.
-AI coding speed is not a reason to expand scope. The critical path is correctness, integration, evaluation, and a reliable demo.
+Normal tests must not require Ollama, paid providers, or network access. Add the smallest focused test that protects any changed behavior, then run the relevant suite. Do not hide failures or claim completion when required checks fail.
 
-If schedule slips, drop features in this order before weakening the core:
-
-1. Mini multi-role review.
-2. Dependency visualization.
-3. Export/report extras.
-4. Embedding-model comparison.
-5. Evaluation dashboard polish.
-6. Query expansion.
-7. Retrieval confidence UI.
-8. Incremental indexing polish.
-9. Persisted documentation polish.
-
-Do not drop Python structure-aware indexing, Persian semantic retrieval, keyword baseline, hybrid retrieval, verified citations, function documentation, retrieval evaluation, or grounded Q&A unless the project owner explicitly changes the approved scope.
-
-## Testing expectations
-
-Use `pytest` for backend tests.
-
-At minimum, maintain:
-
-- Unit tests for scanner, parser, chunker, metadata handling, ranking helpers, and context building.
-- Integration tests for indexing and retrieval.
-- A reproducible retrieval evaluation script over the Persian question set.
-- End-to-end smoke tests for index -> ask -> verified sources.
-
-## Codex behavior
+## Agent Workflow
 
 When asked for a plan:
 
-- Read the relevant project documents first.
-- Identify dependencies and risks.
-- Do not modify implementation files unless asked.
+- Read the relevant final project documents and implementation first.
+- Identify dependencies, frozen artifacts, and risks.
+- Do not edit implementation files unless asked.
 
 When asked to implement:
 
-- Implement only the approved milestone.
-- Run the relevant tests.
-- Summarize changed files, tests run, and any remaining risks.
-- Do not start the next milestone automatically.
+- Make only the approved change.
+- Preserve frozen benchmark and report inputs unless the request explicitly creates a new version.
+- Run relevant backend/frontend tests and `git diff --check`.
+- Report changed files, checks, and remaining limitations.
+- Do not commit, push, merge, tag, or begin another milestone unless explicitly requested.

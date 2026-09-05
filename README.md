@@ -1,30 +1,69 @@
 # CodeCompass Local
 
-CodeCompass is a bachelor's final project for structure-aware retrieval over Python codebases. It supports Persian and English questions, grounded answers, function documentation, and deterministic citations to indexed files, symbols, and line ranges.
+CodeCompass is a local-first system for understanding Python repositories through Persian or English questions. It combines deterministic code analysis, lexical and semantic retrieval, grounded answer generation, function documentation, and verified navigation to the exact source file, symbol, and line range.
 
-## Current State
+The project was developed as a bachelor's thesis and is complete. The latest release is [`v1.1.0-evaluation-dashboard`](https://github.com/Ftm-Sayadzadeh/codecompass-local/tree/v1.1.0-evaluation-dashboard).
 
-The complete Stable MVP workflow is implemented and released as `v1.0.0`:
+![CodeCompass workspace](docs/assets/codecompass-workspace.png)
 
-- Python repository scanning, AST parsing, structure-aware chunking, and SQLite metadata.
-- Ollama and OpenAI-compatible embedding and LLM providers.
-- Chroma vector indexing with embedding-identity compatibility checks and safe staged replacement.
-- Lexical, semantic, and hybrid retrieval with frozen production ranking configuration.
-- Grounded Q&A and structured Function Documentation with metadata-derived citations.
-- FastAPI backend with sanitized errors and read-only evaluation endpoints.
-- React + Vite single-page frontend with project setup, provider configuration, search, Q&A, documentation, evaluation, and Monaco source navigation.
-- Frozen retrieval and bilingual QA evaluation artifacts under `data/evaluation/` and `reports/evaluation/`.
+## What It Does
 
-M20 closed with documented provider limitations, M21 published the Stable MVP release, and M22–M23 added post-release UX hardening plus observable, recoverable indexing without changing frozen retrieval or evaluation results.
+- Scans local Python repositories while excluding secrets, virtual environments, VCS internals, and build output.
+- Extracts modules, classes, functions, async functions, methods, signatures, imports, and exact source ranges with Python AST.
+- Stores canonical metadata in SQLite and vectors in ChromaDB using stable chunk IDs.
+- Supports lexical, semantic, and hybrid retrieval for Persian and English queries.
+- Generates grounded answers from retrieved evidence and attaches citations from trusted metadata.
+- Generates function documentation by combining deterministic facts with model-written explanations.
+- Opens cited code directly in a Monaco-based source explorer.
+- Supports Ollama and OpenAI-compatible embedding and generation providers independently.
+- Exposes frozen official and final-thesis evaluation results in the UI.
 
-## Prerequisites
+## Architecture
 
-- Python 3.11 or newer.
-- Node.js `^20.19.0` or `>=22.12.0`.
-- Ollama for local embedding and optional local answer generation.
-- An installed embedding model compatible with the selected index. The evaluated local embedding model is `nomic-embed-text-local:latest` with 768 dimensions.
+```mermaid
+flowchart LR
+    R[Local Python repository] --> S[Scanner]
+    S --> A[Python AST parser]
+    A --> C[Structure-aware chunks]
+    C --> M[(SQLite metadata)]
+    C --> E[Embedding provider]
+    E --> V[(Chroma vector index)]
+    Q[Persian or English query] --> X[Lexical + semantic retrieval]
+    M --> X
+    V --> X
+    X --> H[Hybrid ranking]
+    H --> G[Context builder]
+    G --> L[LLM provider]
+    M --> Z[Verified citations]
+    L --> O[Grounded answer]
+    Z --> O
+```
 
-## Install
+SQLite remains the source of truth for file, symbol, chunk, and citation metadata. The LLM writes natural-language explanations; it does not author trusted paths, symbol identities, or line ranges.
+
+## Research Results
+
+The repository contains two complementary frozen evaluations:
+
+| Evaluation | Scope | Key result |
+|---|---|---|
+| Official bilingual retrieval benchmark | 60 questions, 30 concepts | Hybrid Top-1 63.3%, Top-3 78.3%, MRR@10 0.732 with the recorded Nomic local setup |
+| Final thesis evaluation | 3 repositories, 36 search queries, 72 QA combinations, 18 documentation executions | Gemini Embedding 2 semantic Top-3 94.4%; 71/72 usable QA outputs; 80/90 human-scored outputs |
+
+The final study found a model-dependent trade-off rather than a universal winner: Gemini Embedding 2 produced the strongest semantic retrieval, Gemini Embedding 001 led selected hybrid ranking metrics, and GLM 5.3 Flash produced stronger measured QA and Persian documentation quality than the evaluated local Qwen 3B setup. Missing executions were retained as unavailable and never converted into zero-valued quality scores.
+
+![Frozen evaluation dashboard](docs/assets/codecompass-final-evaluation.png)
+
+See the [publication report](reports/evaluation/final_thesis_evaluation_v1/final_thesis_evaluation_report.md) and [PDF](reports/evaluation/final_thesis_evaluation_v1/final_thesis_evaluation_report.pdf) for the complete methodology, case-level evidence, limitations, hashes, and human evaluation.
+
+## Requirements
+
+- Python 3.11 or newer
+- Node.js `^20.19.0` or `>=22.12.0`
+- Ollama when using local embedding or generation models
+- Enough disk space for SQLite and Chroma indexes
+
+## Installation
 
 From the repository root:
 
@@ -35,7 +74,9 @@ npm ci
 cd ..
 ```
 
-## Run the Application
+Automated tests use local fakes and require no paid API or external model service.
+
+## Run Locally
 
 Start the backend from the repository root:
 
@@ -45,22 +86,31 @@ $env:CODECOMPASS_CHROMA = "data/chroma"
 python -m uvicorn codecompass.api:create_app --factory --host 127.0.0.1 --port 8000
 ```
 
-MVP indexing safety assumes one backend process with one worker.
-
-In another terminal, start the frontend:
+Start the frontend in another terminal:
 
 ```powershell
 cd frontend
 npm run dev -- --host 127.0.0.1 --port 5173
 ```
 
-Open `http://127.0.0.1:5173/`. Vite proxies `/api` to the backend, so no development CORS configuration is required.
+Open [http://127.0.0.1:5173](http://127.0.0.1:5173). Vite proxies `/api` to the backend during development.
 
-Use **Provider settings** in the UI to configure embedding and LLM providers independently. API keys remain in browser memory and are cleared on refresh. Repository paths and API keys are not persisted by the frontend.
+Use **Repository** to select and index a local Python project. Use **Provider settings** to configure embedding and LLM providers independently. API keys are kept in browser memory for the current page session and are not persisted by the frontend.
 
-See [docs/final-demo-runbook.md](docs/final-demo-runbook.md) for the verified demo workflow and operational limitations.
+The verified walkthrough is documented in [docs/final-demo-runbook.md](docs/final-demo-runbook.md).
 
-## Test
+## Provider Configuration
+
+Supported provider types:
+
+- `ollama` for local models.
+- `openai_compatible` for endpoints implementing `/v1/embeddings` and `/v1/chat/completions` semantics.
+
+The provider, base URL, model, timeout, optional dimensions, and request-scoped API key can be supplied through the UI. Backend defaults can also be configured with `CODECOMPASS_PROVIDER`, `CODECOMPASS_BASE_URL`, `CODECOMPASS_API_KEY`, `CODECOMPASS_EMBEDDING_MODEL`, `CODECOMPASS_LLM_MODEL`, `CODECOMPASS_TIMEOUT_SECONDS`, and `CODECOMPASS_EMBEDDING_DIMENSIONS`.
+
+An index is compatible only with the embedding provider, model, and dimensions used to create it. CodeCompass validates this identity before semantic or hybrid retrieval. See [docs/providers.md](docs/providers.md) for examples and safety rules.
+
+## Tests
 
 Backend:
 
@@ -77,45 +127,50 @@ npm run typecheck
 npm run build
 ```
 
-Normal automated tests require no Ollama, paid API, or external network.
+## Evaluation Artifacts
 
-## Evaluation
+- [Final thesis evaluation](reports/evaluation/final_thesis_evaluation_v1/)
+- [Controlled Qwen vs GLM benchmark](reports/evaluation/controlled_benchmark_v1_public/)
+- [Embedding-model comparisons](reports/evaluation/controlled_embedding_comparison_v1/)
+- [M25 retrieval study](reports/evaluation/m25_final_research_report/)
+- [M26 documentation study](reports/evaluation/m26_final_evidence/)
+- [PDF reports](reports/evaluation/pdf/)
 
-Frozen evaluation results are stored as Markdown, CSV, JSON, and PDF projections:
+Frozen metrics describe specific datasets, model versions, providers, and execution environments. They are not per-answer confidence scores and do not establish universal model quality.
 
-- [Hospital-System bilingual QA](reports/evaluation/hospital_system_bilingual_qa_v1.md)
-- [CS-Bookstore local-vs-cloud bilingual QA](reports/evaluation/cs_bookstore_bilingual_qa_v1.md)
-- [Evaluation PDFs](reports/evaluation/pdf/)
-- [Retrieval validation reports](docs/validation/)
+## Reliability and Privacy
 
-Evaluation metrics describe frozen benchmark runs. They are not confidence scores for individual answers and do not establish universal model quality.
-
-## Reliability Boundaries
-
-- SQLite is the canonical source for project, file, symbol, chunk, and citation metadata.
-- Chroma is a retrieval index keyed by stable SQLite chunk IDs.
-- The LLM cannot author trusted file paths, identities, line ranges, or citation IDs.
-- Semantic and hybrid retrieval fail safely when the request embedding identity differs from the indexed identity. Lexical retrieval remains available.
-- Source navigation verifies repository containment and the current source hash.
-- API keys are request-scoped and must not be committed, logged, or stored in frontend persistence.
+- Repository reads are constrained to the user-selected root.
+- Secret files, `.env`, VCS internals, virtual environments, and build artifacts are excluded from indexing.
+- SQLite owns canonical metadata; Chroma is a replaceable retrieval index.
+- Citations are assembled from verified metadata after generation.
+- Re-indexing builds and validates a candidate before activation, preserving the previous valid index on handled failure.
+- Embedding identity mismatches fail safely; lexical retrieval remains available.
+- Provider errors are sanitized before reaching the UI or saved public artifacts.
+- External providers receive code or questions only when the user explicitly configures and invokes them.
 
 ## Known Limitations
 
-- Observable indexing jobs use SQLite-backed state and one in-process worker; multi-process job coordination is not supported.
-- Re-index preparation leaves the previous active metadata/vector index available, and handled failures do not activate incomplete candidates.
-- Local generation quality and latency depend strongly on the installed model and its chat template.
-- The frozen CS-Bookstore sample rated the evaluated local Qwen 3B configuration `NOT_READY` and GLM 5.3 Flash `READY_WITH_LIMITATIONS`; these findings apply only to that controlled sample.
-- In the recorded GLM 5.3 Flash diagnostic, an OpenAI-compatible Persian Function Documentation request returned no usable string content. CodeCompass failed closed and exposed only the safe `invalid_response_content` category; this observation is specific to that provider/model request.
-- The frontend production bundle includes Monaco and emits a non-blocking large-chunk warning during Vite build.
-- There is no authentication, multi-user support, GitHub cloning, upload, streaming, job queue, persistent chat history, or Ollama model discovery in the MVP.
+- Python repository analysis only.
+- One backend process and one worker are assumed for indexing jobs.
+- No authentication, multi-user collaboration, cloud deployment, GitHub cloning, upload workflow, persistent chat history, or VS Code extension.
+- Local generation quality and latency depend on hardware, model size, and chat-template compatibility.
+- The final Qwen documentation arm is unavailable because all nine recorded local-provider executions failed; this is an execution-availability result, not a zero quality score or a claim about the current UI.
+- The final QA set contains one unavailable GLM combination and seven usable outputs with provider-confirmed token-limit truncation.
+- The frontend production bundle includes Monaco and may emit a non-blocking large-chunk warning during Vite build.
 
 ## Project Documents
 
-1. `AGENTS.md` - repository engineering rules.
-2. `PROJECT_BRIEF.md` - approved scope and architecture.
-3. `ROADMAP.md` - delivery sequence and final gate.
-4. `PLANS.md` - milestone status tracker.
-5. `docs/PROPOSAL_SUMMARY.md` and `docs/proposal.pdf` - university scope.
-6. `docs/RESEARCH_NOTES_SUMMARY.md` - supporting research notes.
+- [PROJECT_BRIEF.md](PROJECT_BRIEF.md): final academic and engineering scope.
+- [ROADMAP.md](ROADMAP.md): completed delivery history and release checkpoints.
+- [PLANS.md](PLANS.md): final milestone ledger.
+- [AGENTS.md](AGENTS.md): repository maintenance rules for coding agents.
+- [Proposal summary](docs/PROPOSAL_SUMMARY.md) and [original proposal](docs/proposal.pdf): university commitments.
 
-The university proposal remains the primary source of truth. Stretch ideas do not expand the MVP unless explicitly approved.
+## Release Checkpoints
+
+- `v0.24.0-m24-complete`: incremental indexing and controlled benchmark foundation.
+- `v0.25.0-m25-complete`: controlled retrieval-improvement study.
+- `v0.26.0-m26-complete`: deterministic documentation facts and evaluation.
+- `v1.0.0-thesis-evaluation-complete`: frozen final thesis evaluation.
+- `v1.1.0-evaluation-dashboard`: dual official/final evaluation dashboard.
