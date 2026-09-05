@@ -235,6 +235,11 @@ def create_app(settings: APISettings | None = None) -> FastAPI:
         digest, data = runtime.evaluation(performance=True)
         return EvaluationResponse(artifact_sha256=digest, data=data)
 
+    @app.get("/evaluation/final-thesis", response_model=EvaluationResponse)
+    def final_thesis_evaluation(runtime: APIRuntime = Depends(get_runtime)) -> EvaluationResponse:
+        digest, data = runtime.final_thesis_evaluation()
+        return EvaluationResponse(artifact_sha256=digest, data=data)
+
     return app
 
 

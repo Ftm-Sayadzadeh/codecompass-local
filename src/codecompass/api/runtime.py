@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from codecompass.api.evaluation import project_artifact
+from codecompass.api.evaluation import project_artifact, project_final_thesis_artifact
 from codecompass.api.schemas import EmbeddingProviderOverride, ProviderOverride
 from codecompass.documentation import FunctionDocumentationService
 from codecompass.embeddings import EmbeddingIdentity, embedding_identity
@@ -47,6 +47,7 @@ class APISettings:
     collection_prefix: str = "codecompass-project"
     baseline_artifact: Path = Path("data/evaluation/results/official_baseline_v1.json")
     performance_artifact: Path = Path("data/evaluation/results/scalability_performance_v1.json")
+    final_thesis_artifact: Path = Path("reports/evaluation/final_thesis_evaluation_v1/final_thesis_evaluation_report_data.json")
     embedding_defaults: ProviderConfig = field(default_factory=ProviderConfig)
     llm_defaults: ProviderConfig = field(default_factory=ProviderConfig)
 
@@ -59,6 +60,7 @@ class APISettings:
             collection_prefix=os.getenv("CODECOMPASS_COLLECTION_PREFIX", "codecompass-project"),
             baseline_artifact=Path(os.getenv("CODECOMPASS_BASELINE_ARTIFACT", "data/evaluation/results/official_baseline_v1.json")),
             performance_artifact=Path(os.getenv("CODECOMPASS_PERFORMANCE_ARTIFACT", "data/evaluation/results/scalability_performance_v1.json")),
+            final_thesis_artifact=Path(os.getenv("CODECOMPASS_FINAL_THESIS_ARTIFACT", "reports/evaluation/final_thesis_evaluation_v1/final_thesis_evaluation_report_data.json")),
             embedding_defaults=defaults,
             llm_defaults=defaults,
         )
@@ -460,3 +462,6 @@ class APIRuntime:
     def evaluation(self, *, performance: bool) -> tuple[str, dict[str, Any]]:
         path = self.settings.performance_artifact if performance else self.settings.baseline_artifact
         return project_artifact(path, performance=performance)
+
+    def final_thesis_evaluation(self) -> tuple[str, dict[str, Any]]:
+        return project_final_thesis_artifact(self.settings.final_thesis_artifact)

@@ -95,17 +95,32 @@ def artifact(path: Path, *, performance: bool = False) -> None:
     path.write_text(json.dumps(value), encoding="utf-8")
 
 
+def final_thesis_artifact(path: Path) -> None:
+    path.write_text(json.dumps({
+        "evaluation_id": "final_thesis_evaluation_v1",
+        "design": {},
+        "setup": {"models": {}, "index_completeness": {"all_complete": True}},
+        "search": {"records": 324, "global": {}, "by_language": {}, "case_rows": ["private"]},
+        "qa": {"execution": {}, "final_status": {}, "quality": {"qa_by_llm": {}}, "paired_effects": {}, "runtime": {}},
+        "documentation": {},
+        "human_evaluation": {"overall": {}, "records": 90, "usable": 80, "unavailable": 10, "limitations": [], "case_rows": ["private"]},
+    }), encoding="utf-8")
+
+
 @pytest.fixture
 def api(tmp_path: Path, monkeypatch):
     baseline = tmp_path / "baseline.json"
     performance = tmp_path / "performance.json"
+    final_thesis = tmp_path / "final-thesis.json"
     artifact(baseline)
     artifact(performance, performance=True)
+    final_thesis_artifact(final_thesis)
     settings = APISettings(
         database_path=tmp_path / "metadata.sqlite",
         chroma_path=tmp_path / "chroma",
         baseline_artifact=baseline,
         performance_artifact=performance,
+        final_thesis_artifact=final_thesis,
         embedding_defaults=ProviderConfig(provider="ollama", embedding_model="fake-embed"),
         llm_defaults=ProviderConfig(provider="ollama", llm_model="fake-llm"),
     )
@@ -638,12 +653,16 @@ def test_evaluation_projections_exclude_raw_runs_and_handle_malformed(api) -> No
     client, runtime, _, _ = api
     summary = client.get("/evaluation/summary")
     performance = client.get("/evaluation/performance")
+    final_thesis = client.get("/evaluation/final-thesis")
 
     assert summary.status_code == 200
     assert summary.json()["scope"] == "benchmark_evaluation"
     assert summary.json()["not_per_answer_confidence"] is True
     assert "measured_runs" not in performance.text
     assert "descriptive measurements" in performance.text
+    assert final_thesis.status_code == 200
+    assert final_thesis.json()["data"]["human_evaluation"]["usable"] == 80
+    assert "case_rows" not in final_thesis.text
 
     runtime.settings.baseline_artifact.write_text("not json", encoding="utf-8")
     malformed = client.get("/evaluation/summary")
@@ -675,6 +694,7 @@ def test_swagger_has_only_intended_routes(api) -> None:
         "/projects/{project_id}/documentation",
         "/evaluation/summary",
         "/evaluation/performance",
+        "/evaluation/final-thesis",
     }
     schemas = client.get("/openapi.json").json()["components"]["schemas"]
     assert "file_id" in schemas["CitationResponse"]["properties"]

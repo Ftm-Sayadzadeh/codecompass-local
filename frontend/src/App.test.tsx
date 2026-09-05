@@ -45,6 +45,25 @@ const performance = {
     ],
   },
 };
+const finalThesisEvaluation = {
+  scope: "benchmark_evaluation", not_per_answer_confidence: true, artifact_sha256: "thesis",
+  data: {
+    evaluation_id: "final_thesis_evaluation_v1", index_complete: true,
+    design: { repositories: 3, search_queries: 36, qa_cases: 12, documentation_cases: 9 },
+    models: { embeddings: { nomic: "nomic", gemini_001: "gemini-embedding-001", gemini_2: "gemini-embedding-2" }, llms: { qwen: "Qwen", glm: "GLM" } },
+    search: { records: 324, global: Object.fromEntries(["nomic", "gemini_001", "gemini_2"].map((name, index) => [name, {
+      semantic: { cases: 36, hit_at_1: 10 + index, hit_at_3: 20 + index, hit_at_5: 25, hit_at_10: 30, mrr_at_10: .5 + index / 10 },
+      hybrid: { cases: 36, hit_at_1: 12, hit_at_3: 22, hit_at_5: 26, hit_at_10: 31, mrr_at_10: .6 },
+    }])) },
+    qa: {
+      execution: { overall: { initial_success: 51, recovered_by_retry_1: 9, recovered_by_retry_2: 11, final_failure: 1, total: 72 } },
+      quality: { qa_by_llm: Object.fromEntries(["qwen", "glm"].map((name, index) => [name, { scored_records: 35 + index, correctness_0_10: { n: 35, mean: 7 + index }, groundedness_0_10: { n: 35, mean: 7.5 + index }, persian_readability_0_10: { n: 17, mean: 5 + index * 3 }, usefulness_0_10: { n: 35, mean: 7 + index } }])) },
+      paired_effects: { glm_minus_qwen: { paired_cases: 35, treatment_minus_control: { correctness_0_10: { n: 35, mean: 1 }, persian_readability_0_10: { n: 17, mean: 2.8 } } } },
+    },
+    documentation: { execution: { expected_records: 18, actual_records: 18, unique_records: 18, glm_complete: 9, glm_failed: 0, qwen_complete: 0, qwen_failed: 9, citation_identity_mismatches: 0 }, final_status: { usable_documentation_outputs: 9, unavailable_documentation_outputs: 9, quality_interpretation: "Only available outputs are scored." }, quality: { by_llm: { glm: { scored_records: 9, correctness_0_10: { n: 9, mean: 6.8 }, groundedness_0_10: { n: 9, mean: 8.2 }, persian_readability_0_10: { n: 9, mean: 8.1 }, usefulness_0_10: { n: 9, mean: 8.1 } } } } },
+    human_evaluation: { overall: { scored_records: 80, correctness_0_10: { n: 80, mean: 7.4 }, groundedness_0_10: { n: 80, mean: 7.7 }, persian_readability_0_10: { n: 44, mean: 6.9 }, usefulness_0_10: { n: 80, mean: 7.4 } }, records: 90, usable: 80, unavailable: 10, limitations: [] },
+  },
+};
 
 function response(body: unknown, status = 200) {
   return Promise.resolve(new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } }));
@@ -63,6 +82,7 @@ function installApi(handler?: (path: string, init?: RequestInit) => Promise<Resp
     if (path === "/projects/index-jobs/active") return Promise.resolve(new Response(null, { status: 204 }));
     if (path === "/evaluation/summary") return response(evaluation);
     if (path === "/evaluation/performance") return response(performance);
+    if (path === "/evaluation/final-thesis") return response(finalThesisEvaluation);
     throw new Error(`Unhandled request: ${path}`);
   });
   vi.stubGlobal("fetch", fetchMock);
@@ -132,6 +152,12 @@ describe("CodeCompass SPA", () => {
     fireEvent.click(screen.getByRole("button", { name: "Compare Persian and English evaluation" }));
     expect(screen.getByRole("region", { name: "Persian retrieval results" })).toBeInTheDocument();
     expect(screen.getByRole("region", { name: "English retrieval results" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Final thesis evaluation" }));
+    expect(screen.getByText("3 repositories · 36 search queries · 90 human-review records")).toBeInTheDocument();
+    expect(screen.getByText("71/72")).toBeInTheDocument();
+    fireEvent.click(within(screen.getByLabelText("Final thesis evaluation section")).getByRole("button", { name: "Search" }));
+    expect(screen.getByText("Search by embedding arm")).toBeInTheDocument();
+    expect(screen.getByText("gemini-embedding-2")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Provider settings" }));
     expect(screen.getByRole("dialog", { name: "Provider settings" })).toBeInTheDocument();
     const defaults = screen.getAllByLabelText("Use backend defaults");

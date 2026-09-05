@@ -5,6 +5,7 @@ import type {
   EmbeddingOverride,
   EmbeddingState,
   EvaluationResponse,
+  FinalThesisEvaluationResponse,
   IndexJob,
   IndexResponse,
   Project,
@@ -140,4 +141,5 @@ export const api = {
     }),
   evaluation: () => request<EvaluationResponse>("/evaluation/summary"),
   performance: () => request<EvaluationResponse>("/evaluation/performance"),
+  finalThesisEvaluation: () => request<FinalThesisEvaluationResponse>("/evaluation/final-thesis"),
 };
