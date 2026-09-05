@@ -1,364 +1,78 @@
-# CodeCompass Local — 21-Day Roadmap
+# CodeCompass Local - Completed Roadmap
 
-## Guiding rule
+This roadmap is a retrospective record of the completed thesis project. The original 21-day plan evolved into controlled research milestones while preserving the proposal's core scope.
 
-Finish the critical path first. A feature is considered complete only when its acceptance criteria and relevant tests pass.
+## Phase 1 - Code Intelligence Foundation
 
-Hybrid retrieval is part of the core plan. Persian query expansion is stretch-only and must not block the core workflow.
+**Completed:** scanner, ignore rules, Python AST parsing, symbol extraction, structure-aware chunks, stable IDs, exact line ranges, SQLite metadata, indexing summaries, and integration tests.
 
----
+**Outcome:** a local Python repository can be converted into a persistent structural index whose symbols and source ranges remain traceable to canonical metadata.
 
-## Week 1 — Code Intelligence Engine
+## Phase 2 - Retrieval and Grounded Generation
 
-### Day 1 — Repository and engineering foundation
+**Completed:** provider abstraction, Chroma vector storage, lexical search, semantic search, hybrid RRF, Persian and English queries, context construction, LLM generation, insufficient-evidence handling, and metadata-derived citations.
 
-**Goals**
+**Outcome:** users can ask questions over indexed code and navigate from an answer or search result to verified source lines.
 
-- Initialize repository conventions.
-- Establish Python package structure.
-- Configure virtual environment/dependencies.
-- Configure pytest.
-- Add project documentation and Codex instructions.
+## Phase 3 - Product Surface
 
-**Acceptance criteria**
+**Completed:** FastAPI backend, React/Vite frontend, repository setup, provider configuration, indexing progress, file/symbol explorer, Ask, Search, Documentation, Monaco source view, responsive layouts, and safe error presentation.
 
-- Package imports successfully.
-- `pytest` runs successfully.
-- Repository structure is documented.
-- No AI/model dependency is required yet.
+**Outcome:** the full workflow is available through a single local web application without requiring direct database or CLI interaction.
 
-### Day 2 — Repository Scanner
+## Phase 4 - Reliability and Incremental Indexing
 
-**Implement**
+**Completed:** staged candidate index builds, embedding identity checks, vector completeness validation, incremental file-hash reuse, no-op indexing presentation, recoverable failures, and source-containment verification.
 
-- Validate repository path.
-- Recursively find Python source files.
-- Apply ignore rules.
-- Return project-relative POSIX paths.
-- Record file size and modification time.
-- Calculate SHA-256.
-- Continue safely on individual read errors.
-- Deterministic sorted output.
+**Checkpoint:** `v0.24.0-m24-complete`.
 
-**Acceptance criteria**
+## Phase 5 - M25 Retrieval Study
 
-- Scanner tests cover valid/invalid paths, ignored directories, Python/non-Python files, and deterministic output.
+**Completed:** baseline parity tooling, provenance-aware validation, deterministic identifier analysis, representation and Persian-normalization ablations, case-transition analysis, production validation, and a final research report.
 
-### Day 3 — Python AST Parser
+**Finding:** identifier-aware representation improved candidate discovery but introduced ranking trade-offs. The intervention was reported as a mixed result rather than tuned against the benchmark.
 
-**Implement**
+**Checkpoint:** `v0.25.0-m25-complete`.
 
-- Module parsing.
-- `FunctionDef`.
-- `AsyncFunctionDef`.
-- `ClassDef`.
-- Methods and parent class.
-- Imports.
-- Parameters.
-- Docstrings.
-- Start/end lines.
-- Safe syntax-error reporting.
+## Phase 6 - M26 Function Documentation
 
-**Acceptance criteria**
+**Completed:** deterministic extraction of identity, signature, parameters, return annotation, explicit raises, direct calls, and source citation; smaller LLM rendering responsibility; Qwen/GLM diagnostics; Persian rendering evaluation; human review; and a publication-quality report.
 
-- Parsed symbols and line ranges match manually checked fixtures.
+**Finding:** deterministic facts and citations improved reliability, while measured Persian prose quality remained strongly model-dependent.
 
-### Day 4 — Structure-aware Chunking
+**Checkpoint:** `v0.26.0-m26-complete`.
 
-**Implement**
+## Phase 7 - Final Thesis Evaluation
 
-- Function/method chunks.
-- Stable chunk IDs.
-- Rich metadata.
-- Embedding text representation builder.
-- No arbitrary fixed-size splitting for normal functions.
+**Completed:**
 
-**Acceptance criteria**
+- Three pinned repositories: Hospital-System, CS-Bookstore, and CodeCompass.
+- 36 bilingual search queries across easy, medium, and hard cases.
+- Three embedding arms: Nomic local, Gemini Embedding 001, and Gemini Embedding 2.
+- Two LLM arms: local Qwen 3B and GLM 5.3 Flash.
+- 72 QA combinations and 18 documentation executions.
+- Preserved retries, failures, truncations, hashes, and human scores.
+- Markdown/PDF publication report and dashboard projection.
 
-- Every indexed function/method maps back to the exact source range.
-- No normal function is split across unrelated chunks.
+**Finding:** Gemini Embedding 2 was strongest for semantic retrieval, but hybrid results showed configuration-dependent trade-offs. GLM produced stronger measured generation quality, while local Qwen retained privacy and offline-operation advantages. No model was declared universally superior.
 
-### Day 5 — SQLite Metadata Store
+**Checkpoints:** `v1.0.0-thesis-evaluation-complete` and `v1.1.0-evaluation-dashboard`.
 
-**Implement**
+## Final Gate
 
-- Projects.
-- Files.
-- Symbols.
-- Chunks.
-- Index runs.
-- Persistence APIs/repositories.
-
-**Acceptance criteria**
-
-- Metadata survives application restart.
-- A project can be inspected from the database after indexing.
-
-### Day 6 — Project Indexing Pipeline
-
-**Pipeline**
+The final workflow is complete:
 
 ```text
-Repo → Scanner → AST Parser → Chunker → SQLite
+Select repository
+-> index or incrementally refresh
+-> browse files and symbols
+-> search or ask in Persian/English
+-> inspect grounded output and verified citations
+-> open exact source lines
+-> generate function documentation from deterministic facts
+-> inspect frozen scientific evaluation results
 ```
 
-**Acceptance criteria**
+## Post-Thesis Scope
 
-- One command/service indexes a real Python repository.
-- Summary statistics are returned: files, classes, functions/methods, chunks, errors.
-
-### Day 7 — Week 1 hardening
-
-**Work**
-
-- Integration tests.
-- Error handling.
-- Real sample repository test.
-- Establish file-hash state needed for later incremental indexing.
-
-**Week 1 gate**
-
-A real Python repository can be converted into a persistent, inspectable structural index with correct symbols and source ranges.
-
----
-
-## Week 2 — Retrieval and RAG
-
-### Day 8 — Embedding Provider
-
-**Implement**
-
-- Provider interface.
-- Local runtime adapter.
-- `bge-m3` as the primary initial model.
-- Batch embedding support when useful.
-- Model configuration outside business logic.
-
-**Acceptance criteria**
-
-- Text is converted into valid vectors consistently.
-- Provider failures are surfaced clearly.
-
-### Day 9 — ChromaDB Vector Index
-
-**Implement**
-
-- Store chunk embeddings with project metadata.
-- Keep ChromaDB behind a small `VectorIndex` abstraction.
-- Project-scoped lookup.
-- Top-k vector retrieval.
-- Delete/rebuild project index.
-
-**Acceptance criteria**
-
-- Known related English queries retrieve plausible symbols from a sample repository.
-
-### Day 10 — Persian Semantic Search
-
-**Implement**
-
-- Persian query embedding.
-- Top-k retrieval response with score and source metadata.
-- Search endpoint/service without answer generation.
-
-**Acceptance criteria**
-
-- A manually defined Persian smoke set retrieves the expected file/symbol in Top-3 for most clear location questions.
-
-**Hard rule**
-
-Do not proceed to LLM answer generation if retrieval is clearly broken.
-
-### Day 11 — Keyword Baseline + Shared Retrieval Model
-
-**Implement**
-
-- Simple lexical search over symbol names, paths, docstrings, and/or code text.
-- Normalized result format.
-
-**Acceptance criteria**
-
-- Keyword and semantic modes can be evaluated using the same question set.
-- Keyword, semantic, and future hybrid results share the same result schema.
-
-### Day 12 — Early Retrieval Evaluation Core
-
-**Implement**
-
-- Evaluation data schema.
-- Top-1, Top-3, MRR computation.
-
-**Acceptance criteria**
-
-- Evaluation script produces reproducible metrics.
-- Keyword and semantic retrieval can be compared on the same Persian smoke set.
-
-**Schedule fallback**
-
-Do not add query expansion here. It is stretch-only.
-
-### Day 13 — Hybrid Retrieval + Context Builder
-
-**Implement**
-
-- Deterministic fusion of vector and lexical evidence.
-- Deduplicate retrieved evidence.
-- Enforce context size policy.
-- Include file/symbol/line metadata.
-- Build grounded answer prompt.
-
-**Acceptance criteria**
-
-- Keyword, semantic, and hybrid modes produce reproducible metrics.
-- Hybrid retrieval is deterministic for fixed inputs/configuration.
-- Context builder is independently unit-tested.
-
-### Day 14 — Local LLM + Grounded Q&A + Verified Citations
-
-**Implement**
-
-```text
-Persian question
-→ retrieve
-→ build context
-→ generate answer
-→ attach metadata-derived citations
-```
-
-- Local LLM adapter.
-
-**Acceptance criteria**
-
-- The LLM adapter can answer from a provided context.
-- Source file/symbol/line citations are never copied from unverified LLM text.
-- At least ten demo questions produce usable answers or explicitly report insufficient evidence.
-
-**Week 2 gate**
-
-A Persian question over an indexed Python repository produces retrieved code, a grounded Persian answer, and verifiable source citations.
-
----
-
-## Week 3 — Product Layer and Academic Evaluation
-
-### Day 15 — Function Documentation
-
-**Implement**
-
-- Select function/method.
-- Build documentation context.
-- Generate structured Persian documentation.
-- Store/retrieve generated documentation if practical.
-
-**Acceptance criteria**
-
-- Documentation is generated for at least ten representative symbols.
-- Source location is deterministic.
-
-### Day 16 — FastAPI Surface
-
-**Target API**
-
-- Projects.
-- Index/re-index.
-- Files.
-- Symbols.
-- Search.
-- Ask.
-- Documentation.
-
-**Acceptance criteria**
-
-- Core workflow is usable through API/Swagger.
-
-### Day 17 — React + Vite frontend foundation
-
-**Implement**
-
-- Project screen.
-- Index status/statistics.
-- Q&A screen.
-- Basic code/symbol browsing.
-- React + Vite app structure.
-
-**Acceptance criteria**
-
-- User can complete the main workflow without directly using CLI or Swagger.
-
-### Day 18 — Monaco Code Explorer + Clickable Citations
-
-**Implement**
-
-- Monaco code viewer.
-- Source navigation.
-- Highlight cited line range.
-- Retrieved-evidence panel.
-
-**Acceptance criteria**
-
-- Clicking a citation opens the correct file and visible source range.
-
-### Day 19 — Final evaluation set and results
-
-**Implement/complete**
-
-- 30–50 Persian questions where feasible.
-- Human ground truth.
-- Keyword vs semantic vs hybrid metrics.
-- Documentation review set.
-
-**Acceptance criteria**
-
-- Results can be regenerated from a command/script.
-- Raw question set and outputs are saved.
-
-### Day 20 — Reliability + high-value polish
-
-**Priority order**
-
-1. Fix bugs and weak core flows.
-2. Incremental indexing if stable.
-3. Evaluation dashboard if stable.
-4. Retrieval evidence indicator.
-5. Search/index diagnostics if stable.
-6. Only then consider a stretch feature.
-
-### Day 21 — Freeze and demo preparation
-
-**Complete**
-
-- End-to-end smoke test.
-- README/install instructions.
-- Error messages.
-- Demo repository and selected questions.
-- Save evaluation artifacts.
-- Tag stable MVP version.
-
-**Final gate**
-
-```text
-Add repo
-→ Index
-→ Ask Persian question
-→ Retrieve relevant code
-→ Grounded Persian answer
-→ Verified citation
-→ Open cited lines
-→ Generate function documentation
-→ Show retrieval evaluation
-```
-
----
-
-## Stretch backlog — only after the final gate passes
-
-Recommended order:
-
-1. Persian query expansion.
-2. Mini multi-role review.
-3. Simple dependency visualization.
-4. Embedding model comparison.
-5. Export report.
-6. Second programming language.
-
-Do not start a stretch goal before creating a stable MVP tag.
+No additional feature is required for the approved thesis. Future work must be explicitly approved, isolated from frozen artifacts, and evaluated on a newly versioned dataset. Authentication, multi-user deployment, additional languages, full call graphs, autonomous coding, and large multi-agent systems remain out of scope.
