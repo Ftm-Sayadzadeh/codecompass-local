@@ -1,0 +1,17 @@
+{
+  "evaluation_id": "final_thesis_evaluation_v1",
+  "status": "frozen_human_evaluation",
+  "inputs": {
+    "human_review_blinded.json": "715d64dc60f4fbe53b5768d12ee22d1ffb7ca93dac2a9748c555028f256cbbaf",
+    "human_review_scored.json": "4dbfb5b38259aad4bd189c3e5bfc18186718e6286ff48654874a94334057a97b",
+    "blind_mapping.json": "cd2b3c09ad9ece447a1ddf923acb9f29457bec0df13af8eb1b1973b1c24fd225"
+  },
+  "outputs": {
+    "human_review_scored_unblinded.json": "8079b54d2533b161c4ade85f9a8d33f0d00a2e04da5e1b71b58035ea0941c866",
+    "human_evaluation_summary.json": "5e447f000df58a4948219d85fd41e95a57b8bc4c978242a1448f826c7732ff9b",
+    "human_evaluation_summary.md": "aef898564dd847adc4d6fadd6644283c7e32f9c00a37aa4fd076a179eaa1a07e"
+  },
+  "provider_calls": 0,
+  "retrieval_calls": 0,
+  "indexing_calls": 0
+}

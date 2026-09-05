@@ -1,0 +1,725 @@
+{
+  "evaluation_id": "final_thesis_evaluation_v1",
+  "records": [
+    {
+      "blind_id": "FTE-R-001",
+      "task_type": "documentation",
+      "case_id": "FTE-DOC-B-03",
+      "embedding_arm": null,
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-002",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-EN-02",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "glm",
+      "execution_provenance": "retry_2"
+    },
+    {
+      "blind_id": "FTE-R-003",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-EN-01",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "qwen",
+      "execution_provenance": "retry_1"
+    },
+    {
+      "blind_id": "FTE-R-004",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-FA-02",
+      "embedding_arm": "nomic",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-005",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-EN-01",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-006",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-EN-01",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-007",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-EN-02",
+      "embedding_arm": "nomic",
+      "llm_arm": "glm",
+      "execution_provenance": "retry_2"
+    },
+    {
+      "blind_id": "FTE-R-008",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-EN-01",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "glm",
+      "execution_provenance": "retry_2"
+    },
+    {
+      "blind_id": "FTE-R-009",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-FA-01",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "glm",
+      "execution_provenance": "retry_2"
+    },
+    {
+      "blind_id": "FTE-R-010",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-FA-01",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-011",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-FA-01",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-012",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-FA-02",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-013",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-EN-02",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-014",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-FA-01",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-015",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-FA-01",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-016",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-EN-01",
+      "embedding_arm": "nomic",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-017",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-EN-02",
+      "embedding_arm": "nomic",
+      "llm_arm": "qwen",
+      "execution_provenance": "retry_1"
+    },
+    {
+      "blind_id": "FTE-R-018",
+      "task_type": "documentation",
+      "case_id": "FTE-DOC-H-02",
+      "embedding_arm": null,
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-019",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-FA-02",
+      "embedding_arm": "nomic",
+      "llm_arm": "glm",
+      "execution_provenance": "retry_2"
+    },
+    {
+      "blind_id": "FTE-R-020",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-FA-02",
+      "embedding_arm": "nomic",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-021",
+      "task_type": "documentation",
+      "case_id": "FTE-DOC-B-03",
+      "embedding_arm": null,
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-022",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-EN-02",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "glm",
+      "execution_provenance": "retry_2"
+    },
+    {
+      "blind_id": "FTE-R-023",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-EN-02",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-024",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-FA-02",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-025",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-FA-01",
+      "embedding_arm": "nomic",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-026",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-FA-01",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-027",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-FA-02",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-028",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-EN-01",
+      "embedding_arm": "nomic",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-029",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-EN-01",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-030",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-FA-02",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-031",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-FA-01",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-032",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-FA-01",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-033",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-FA-02",
+      "embedding_arm": "nomic",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-034",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-FA-02",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-035",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-FA-02",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-036",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-EN-01",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-037",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-EN-01",
+      "embedding_arm": "nomic",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-038",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-EN-02",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-039",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-EN-01",
+      "embedding_arm": "nomic",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-040",
+      "task_type": "documentation",
+      "case_id": "FTE-DOC-B-02",
+      "embedding_arm": null,
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-041",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-EN-02",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "qwen",
+      "execution_provenance": "retry_1"
+    },
+    {
+      "blind_id": "FTE-R-042",
+      "task_type": "documentation",
+      "case_id": "FTE-DOC-C-01",
+      "embedding_arm": null,
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-043",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-EN-01",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-044",
+      "task_type": "documentation",
+      "case_id": "FTE-DOC-H-01",
+      "embedding_arm": null,
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-045",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-EN-02",
+      "embedding_arm": "nomic",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-046",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-EN-02",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-047",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-FA-01",
+      "embedding_arm": "nomic",
+      "llm_arm": "glm",
+      "execution_provenance": "retry_2"
+    },
+    {
+      "blind_id": "FTE-R-048",
+      "task_type": "documentation",
+      "case_id": "FTE-DOC-H-02",
+      "embedding_arm": null,
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-049",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-FA-02",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "qwen",
+      "execution_provenance": "retry_1"
+    },
+    {
+      "blind_id": "FTE-R-050",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-EN-02",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-051",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-EN-01",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-052",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-EN-02",
+      "embedding_arm": "nomic",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-053",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-FA-02",
+      "embedding_arm": "nomic",
+      "llm_arm": "qwen",
+      "execution_provenance": "retry_1"
+    },
+    {
+      "blind_id": "FTE-R-054",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-FA-02",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-055",
+      "task_type": "documentation",
+      "case_id": "FTE-DOC-C-01",
+      "embedding_arm": null,
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-056",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-FA-01",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-057",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-EN-02",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "qwen",
+      "execution_provenance": "retry_1"
+    },
+    {
+      "blind_id": "FTE-R-058",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-FA-01",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-059",
+      "task_type": "documentation",
+      "case_id": "FTE-DOC-C-03",
+      "embedding_arm": null,
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-060",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-EN-01",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-061",
+      "task_type": "documentation",
+      "case_id": "FTE-DOC-H-01",
+      "embedding_arm": null,
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-062",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-EN-01",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-063",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-FA-01",
+      "embedding_arm": "nomic",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-064",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-FA-02",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "glm",
+      "execution_provenance": "retry_2"
+    },
+    {
+      "blind_id": "FTE-R-065",
+      "task_type": "documentation",
+      "case_id": "FTE-DOC-H-03",
+      "embedding_arm": null,
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-066",
+      "task_type": "documentation",
+      "case_id": "FTE-DOC-C-02",
+      "embedding_arm": null,
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-067",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-EN-01",
+      "embedding_arm": "nomic",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-068",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-FA-01",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "qwen",
+      "execution_provenance": "retry_1"
+    },
+    {
+      "blind_id": "FTE-R-069",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-FA-02",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "qwen",
+      "execution_provenance": "retry_1"
+    },
+    {
+      "blind_id": "FTE-R-070",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-EN-02",
+      "embedding_arm": "nomic",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-071",
+      "task_type": "documentation",
+      "case_id": "FTE-DOC-H-03",
+      "embedding_arm": null,
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-072",
+      "task_type": "documentation",
+      "case_id": "FTE-DOC-C-02",
+      "embedding_arm": null,
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-073",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-FA-02",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-074",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-EN-01",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-075",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-FA-02",
+      "embedding_arm": "nomic",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-076",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-EN-02",
+      "embedding_arm": "nomic",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-077",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-FA-01",
+      "embedding_arm": "nomic",
+      "llm_arm": "qwen",
+      "execution_provenance": "retry_1"
+    },
+    {
+      "blind_id": "FTE-R-078",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-FA-02",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "glm",
+      "execution_provenance": "retry_2"
+    },
+    {
+      "blind_id": "FTE-R-079",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-EN-01",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-080",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-EN-02",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-081",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-FA-01",
+      "embedding_arm": "nomic",
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-082",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-FA-01",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-083",
+      "task_type": "documentation",
+      "case_id": "FTE-DOC-B-01",
+      "embedding_arm": null,
+      "llm_arm": "glm",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-084",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-EN-02",
+      "embedding_arm": "gemini_001",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-085",
+      "task_type": "qa",
+      "case_id": "FTE-QA-C-EN-01",
+      "embedding_arm": "nomic",
+      "llm_arm": "glm",
+      "execution_provenance": "retry_2"
+    },
+    {
+      "blind_id": "FTE-R-086",
+      "task_type": "documentation",
+      "case_id": "FTE-DOC-B-01",
+      "embedding_arm": null,
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-087",
+      "task_type": "documentation",
+      "case_id": "FTE-DOC-B-02",
+      "embedding_arm": null,
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-088",
+      "task_type": "qa",
+      "case_id": "FTE-QA-B-EN-02",
+      "embedding_arm": "gemini_2",
+      "llm_arm": "glm",
+      "execution_provenance": "retry_2"
+    },
+    {
+      "blind_id": "FTE-R-089",
+      "task_type": "qa",
+      "case_id": "FTE-QA-H-FA-01",
+      "embedding_arm": "nomic",
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    },
+    {
+      "blind_id": "FTE-R-090",
+      "task_type": "documentation",
+      "case_id": "FTE-DOC-C-03",
+      "embedding_arm": null,
+      "llm_arm": "qwen",
+      "execution_provenance": "initial"
+    }
+  ]
+}
