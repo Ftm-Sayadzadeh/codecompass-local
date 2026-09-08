@@ -46,8 +46,11 @@ class APISettings:
     chroma_path: Path = Path("data/chroma")
     collection_prefix: str = "codecompass-project"
     baseline_artifact: Path = Path("data/evaluation/results/official_baseline_v1.json")
+    official_questions_artifact: Path = Path("data/evaluation/bilingual_benchmark_v1.json")
     performance_artifact: Path = Path("data/evaluation/results/scalability_performance_v1.json")
     final_thesis_artifact: Path = Path("reports/evaluation/final_thesis_evaluation_v1/final_thesis_evaluation_report_data.json")
+    final_thesis_questions_artifact: Path = Path("reports/evaluation/final_thesis_evaluation_v1/benchmark_cases.json")
+    final_thesis_review_artifact: Path = Path("reports/evaluation/final_thesis_evaluation_v1/human_review_scored_unblinded.json")
     embedding_defaults: ProviderConfig = field(default_factory=ProviderConfig)
     llm_defaults: ProviderConfig = field(default_factory=ProviderConfig)
 
@@ -59,8 +62,11 @@ class APISettings:
             chroma_path=Path(os.getenv("CODECOMPASS_CHROMA", "data/chroma")),
             collection_prefix=os.getenv("CODECOMPASS_COLLECTION_PREFIX", "codecompass-project"),
             baseline_artifact=Path(os.getenv("CODECOMPASS_BASELINE_ARTIFACT", "data/evaluation/results/official_baseline_v1.json")),
+            official_questions_artifact=Path(os.getenv("CODECOMPASS_OFFICIAL_QUESTIONS_ARTIFACT", "data/evaluation/bilingual_benchmark_v1.json")),
             performance_artifact=Path(os.getenv("CODECOMPASS_PERFORMANCE_ARTIFACT", "data/evaluation/results/scalability_performance_v1.json")),
             final_thesis_artifact=Path(os.getenv("CODECOMPASS_FINAL_THESIS_ARTIFACT", "reports/evaluation/final_thesis_evaluation_v1/final_thesis_evaluation_report_data.json")),
+            final_thesis_questions_artifact=Path(os.getenv("CODECOMPASS_FINAL_THESIS_QUESTIONS_ARTIFACT", "reports/evaluation/final_thesis_evaluation_v1/benchmark_cases.json")),
+            final_thesis_review_artifact=Path(os.getenv("CODECOMPASS_FINAL_THESIS_REVIEW_ARTIFACT", "reports/evaluation/final_thesis_evaluation_v1/human_review_scored_unblinded.json")),
             embedding_defaults=defaults,
             llm_defaults=defaults,
         )
@@ -461,7 +467,12 @@ class APIRuntime:
 
     def evaluation(self, *, performance: bool) -> tuple[str, dict[str, Any]]:
         path = self.settings.performance_artifact if performance else self.settings.baseline_artifact
-        return project_artifact(path, performance=performance)
+        questions = None if performance else self.settings.official_questions_artifact
+        return project_artifact(path, performance=performance, questions_path=questions)
 
     def final_thesis_evaluation(self) -> tuple[str, dict[str, Any]]:
-        return project_final_thesis_artifact(self.settings.final_thesis_artifact)
+        return project_final_thesis_artifact(
+            self.settings.final_thesis_artifact,
+            self.settings.final_thesis_questions_artifact,
+            self.settings.final_thesis_review_artifact,
+        )

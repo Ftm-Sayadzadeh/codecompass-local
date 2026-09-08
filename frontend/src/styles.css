@@ -231,8 +231,11 @@ button:disabled { cursor: not-allowed; opacity: 0.55; }
 .explorer-row svg { color: var(--blue); flex: 0 0 auto; }
 .explorer-row span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .file-row { position: relative; }
-.file-row.depth-1 { margin-left: 3px; width: calc(100% - 3px); padding-left: 9px; box-shadow: inset 1px 0 #dce7ef; }
-.file-row.depth-2 { margin-left: 6px; width: calc(100% - 6px); padding-left: 10px; box-shadow: inset 1px 0 #dce7ef; }
+.folder-node > summary { min-height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 8px; border-radius: 7px; color: #35433e; font-size: 12px; font-weight: 700; cursor: pointer; list-style: none; }
+.folder-node > summary::-webkit-details-marker { display: none; }
+.folder-node > summary:hover { background: #edf2f6; color: var(--text); }
+.folder-node > summary svg { color: var(--amber); flex: 0 0 auto; }
+.folder-children { margin-left: 15px; padding-left: 3px; border-left: 1px solid #dce7ef; }
 .file-row.selected { color: var(--green-dark); background: #e7f3f2; box-shadow: inset 3px 0 var(--green); font-weight: 700; }
 .file-row.selected svg { color: var(--green); }
 .explorer-list, .workspace-panel { scrollbar-width: thin; scrollbar-color: #aeb9c3 transparent; }
@@ -457,6 +460,28 @@ button:disabled { cursor: not-allowed; opacity: 0.55; }
 .comparison-row.method-semantic > span em { background: #8758c5; }
 .comparison-row.method-hybrid > span em { background: var(--green); }
 .evaluation-disclaimer { display: flex; align-items: center; gap: 7px; margin: 0; padding: 10px 16px; border-top: 1px solid var(--border); color: var(--muted); font-size: 10px; }
+.benchmark-questions { border-top: 1px solid var(--border); }
+.benchmark-questions > summary { padding: 12px 16px; color: var(--green-dark); font-size: 12px; font-weight: 750; cursor: pointer; }
+.benchmark-questions > summary small { margin-left: 8px; color: var(--muted); font-size: 9px; font-weight: 500; }
+.benchmark-question-list { max-height: 520px; overflow: auto; padding: 0 16px 14px; }
+.benchmark-question-list article { padding: 10px 0; border-top: 1px solid var(--border); }
+.benchmark-question-list article > div { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; color: var(--muted); font-size: 9px; }
+.benchmark-question-list article span { padding: 2px 6px; border-radius: 999px; background: var(--surface-muted); }
+.benchmark-question-list p { margin: 6px 0 0; color: var(--text); font-size: 12px; line-height: 1.55; }
+.qa-runs { display: grid !important; gap: 6px !important; margin-top: 10px; color: var(--text) !important; }
+.qa-runs > strong { font-size: 10px; }
+.qa-run { overflow: hidden; border: 1px solid var(--border); border-radius: 6px; background: #fbfcfd; }
+.qa-run > summary { display: grid; grid-template-columns: minmax(150px, 1fr) minmax(150px, 1fr) auto; align-items: center; gap: 8px; padding: 8px 10px; cursor: pointer; }
+.qa-run > summary span:last-child { color: var(--green-dark); font-weight: 750; }
+.qa-run.failed > summary span:last-child { color: var(--danger); }
+.qa-run-body { padding: 10px; border-top: 1px solid var(--border); }
+.qa-score-strip { display: flex !important; flex-wrap: wrap; gap: 6px !important; }
+.qa-score-strip span { border: 1px solid var(--border); background: white !important; }
+.qa-provenance { color: var(--muted) !important; font-size: 9px !important; }
+.qa-run-answer { max-height: 320px; overflow: auto; margin-top: 8px; padding: 10px; border-radius: 5px; background: var(--surface-muted); color: var(--text); font-size: 11px; line-height: 1.65; white-space: pre-wrap; }
+.qa-unavailable { padding: 10px; border-radius: 5px; background: #fff2f1; color: var(--danger) !important; }
+.qa-run-citations { display: grid !important; gap: 5px !important; margin-top: 10px; }
+.qa-run-citations code { overflow-wrap: anywhere; color: var(--blue-dark); font-size: 9px; }
 .evaluation-loading { padding: 20px 0; color: var(--muted); }
 .evaluation-datasets { width: fit-content; min-width: 340px; margin: 0 0 10px; background: #dce3e9; }
 .thesis-sections { min-width: 500px; }

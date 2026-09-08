@@ -101,6 +101,8 @@ class GroundedQAService:
                 RetrievalQuery(request.question, request.project_id, request.retrieval_limit)
             )
         except RetrievalError as error:
+            if error.stage in {"embedding_configuration_mismatch", "vector_index_state_invalid"}:
+                raise
             raise QAError("retrieval", error.message) from error
 
     def _search(self, method: RetrievalMethod) -> SearchFn:

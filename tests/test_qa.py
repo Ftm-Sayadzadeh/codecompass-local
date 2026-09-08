@@ -182,6 +182,17 @@ def test_retrieval_failure_raises_qa_error() -> None:
     assert raised.value.message == "missing project"
 
 
+def test_actionable_retrieval_failure_is_preserved() -> None:
+    retrieval = FakeRetrievalService(
+        error=RetrievalError("embedding_configuration_mismatch", "re-index required")
+    )
+
+    with pytest.raises(RetrievalError) as raised:
+        service(retrieval=retrieval).answer(QARequest("Question", 1))
+
+    assert raised.value.stage == "embedding_configuration_mismatch"
+
+
 def test_context_failure_raises_qa_error() -> None:
     context_builder = FakeContextBuilder(error=ContextBuildError("bad budget"))
 

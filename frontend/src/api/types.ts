@@ -213,6 +213,38 @@ export interface MetricAggregate {
   };
 }
 
+export interface BenchmarkQuestion {
+  id: string;
+  task: "search" | "qa";
+  repository: string;
+  language: "en" | "fa";
+  category?: string;
+  difficulty?: string;
+  question: string;
+}
+
+export interface BenchmarkQaDetail {
+  case_id: string;
+  embedding_arm: string;
+  llm_arm: string;
+  execution_provenance: string;
+  execution_status: string;
+  answer: string | null;
+  citations: Array<{
+    source_file: string;
+    qualified_symbol: string;
+    start_line: number;
+    end_line: number;
+  }>;
+  human_scores: {
+    correctness_0_10: number | null;
+    groundedness_0_10: number | null;
+    persian_readability_0_10: number | null;
+    usefulness_0_10: number | null;
+    hallucination: string | null;
+  };
+}
+
 export interface EvaluationResponse {
   scope: "benchmark_evaluation";
   not_per_answer_confidence: true;
@@ -223,6 +255,8 @@ export interface EvaluationResponse {
     aggregates?: MetricAggregate[];
     measurement_context?: string;
     ranking_consistency?: Record<string, unknown>;
+    questions_artifact_sha256?: string;
+    questions?: BenchmarkQuestion[];
   };
 }
 
@@ -277,6 +311,10 @@ export interface FinalThesisEvaluationResponse {
       unavailable: number;
       limitations: string[];
     };
+    questions_artifact_sha256?: string;
+    questions?: BenchmarkQuestion[];
+    qa_details_artifact_sha256?: string;
+    qa_details?: BenchmarkQaDetail[];
   };
 }
 
