@@ -107,20 +107,91 @@ def final_thesis_artifact(path: Path) -> None:
     }), encoding="utf-8")
 
 
+def official_questions_artifact(path: Path) -> None:
+    path.write_text(json.dumps([{
+        "id": "official-en",
+        "repository_name": "example/repo",
+        "language": "en",
+        "category": "function_behavior",
+        "question": "How does the example work?",
+        "expected": [{"relative_path": "private.py"}],
+    }]), encoding="utf-8")
+
+
+def final_questions_artifact(path: Path) -> None:
+    path.write_text(json.dumps({
+        "search_concepts": [{
+            "id": "FTE-S-1",
+            "repository_id": "example",
+            "difficulty": "easy",
+            "category": "implementation_location",
+            "queries": {"en": "Where is it?", "fa": "کجا پیاده‌سازی شده است؟"},
+            "expected_target": {"relative_path": "private.py"},
+        }],
+        "qa_cases": [{
+            "id": "FTE-QA-1",
+            "repository_id": "example",
+            "language": "fa",
+            "difficulty": "medium",
+            "question": "چگونه کار می‌کند؟",
+            "expected_facts": ["private fact"],
+        }],
+    }), encoding="utf-8")
+
+
+def final_review_artifact(path: Path) -> None:
+    path.write_text(json.dumps({
+        "evaluation_id": "final_thesis_evaluation_v1",
+        "records": [{
+            "task_type": "qa",
+            "case_id": "FTE-QA-1",
+            "embedding_arm": "gemini_2",
+            "llm_arm": "glm",
+            "execution_provenance": "retry_2",
+            "execution_status": "complete",
+            "generated_output": "Grounded frozen answer.",
+            "evidence": [{
+                "text": "private source code",
+                "citation": {"file_path": "src/example.py", "qualified_symbol": "example", "line_start": 1, "line_end": 3},
+            }],
+            "human_scores": {
+                "correctness_0_10": 9,
+                "groundedness_0_10": 8,
+                "persian_readability_0_10": 7,
+                "usefulness_0_10": 8,
+                "hallucination": "خیر",
+                "notes": "private reviewer note",
+            },
+        }, {
+            "task_type": "documentation",
+            "case_id": "FTE-DOC-1",
+        }],
+    }), encoding="utf-8")
+
+
 @pytest.fixture
 def api(tmp_path: Path, monkeypatch):
     baseline = tmp_path / "baseline.json"
     performance = tmp_path / "performance.json"
     final_thesis = tmp_path / "final-thesis.json"
+    official_questions = tmp_path / "official-questions.json"
+    final_questions = tmp_path / "final-questions.json"
+    final_review = tmp_path / "final-review.json"
     artifact(baseline)
     artifact(performance, performance=True)
     final_thesis_artifact(final_thesis)
+    official_questions_artifact(official_questions)
+    final_questions_artifact(final_questions)
+    final_review_artifact(final_review)
     settings = APISettings(
         database_path=tmp_path / "metadata.sqlite",
         chroma_path=tmp_path / "chroma",
         baseline_artifact=baseline,
+        official_questions_artifact=official_questions,
         performance_artifact=performance,
         final_thesis_artifact=final_thesis,
+        final_thesis_questions_artifact=final_questions,
+        final_thesis_review_artifact=final_review,
         embedding_defaults=ProviderConfig(provider="ollama", embedding_model="fake-embed"),
         llm_defaults=ProviderConfig(provider="ollama", llm_model="fake-llm"),
     )
@@ -317,6 +388,13 @@ def test_search_embedding_compatibility_and_legacy_behavior(api) -> None:
     )
     assert mismatch.status_code == 409
     assert mismatch.json()["error"]["code"] == "embedding_configuration_mismatch"
+
+    ask_mismatch = client.post(
+        f"/projects/{project_id}/ask",
+        json={"question": "shared", "method": "hybrid", "embedding": {"model": "other"}},
+    )
+    assert ask_mismatch.status_code == 409
+    assert ask_mismatch.json()["error"]["code"] == "embedding_configuration_mismatch"
 
     collection = runtime.collection(project_id)._ready()
     binding = {key: value for key, value in collection.metadata.items() if not key.startswith("codecompass:embedding_")}
@@ -658,11 +736,40 @@ def test_evaluation_projections_exclude_raw_runs_and_handle_malformed(api) -> No
     assert summary.status_code == 200
     assert summary.json()["scope"] == "benchmark_evaluation"
     assert summary.json()["not_per_answer_confidence"] is True
+    assert summary.json()["data"]["questions"] == [{
+        "id": "official-en",
+        "task": "search",
+        "repository": "example/repo",
+        "language": "en",
+        "category": "function_behavior",
+        "question": "How does the example work?",
+    }]
     assert "measured_runs" not in performance.text
     assert "descriptive measurements" in performance.text
     assert final_thesis.status_code == 200
     assert final_thesis.json()["data"]["human_evaluation"]["usable"] == 80
+    assert len(final_thesis.json()["data"]["questions"]) == 3
+    assert final_thesis.json()["data"]["qa_details"] == [{
+        "case_id": "FTE-QA-1",
+        "embedding_arm": "gemini_2",
+        "llm_arm": "glm",
+        "execution_provenance": "retry_2",
+        "execution_status": "complete",
+        "answer": "Grounded frozen answer.",
+        "citations": [{"source_file": "src/example.py", "qualified_symbol": "example", "start_line": 1, "end_line": 3}],
+        "human_scores": {"correctness_0_10": 9, "groundedness_0_10": 8, "persian_readability_0_10": 7, "usefulness_0_10": 8, "hallucination": "خیر"},
+    }]
     assert "case_rows" not in final_thesis.text
+    assert "private.py" not in summary.text
+    assert "private fact" not in final_thesis.text
+    assert "private source code" not in final_thesis.text
+    assert "private reviewer note" not in final_thesis.text
+
+    runtime.settings.official_questions_artifact.write_text("{}", encoding="utf-8")
+    invalid_questions = client.get("/evaluation/summary")
+    assert invalid_questions.status_code == 503
+    assert invalid_questions.json()["error"]["code"] == "evaluation_unavailable"
+    official_questions_artifact(runtime.settings.official_questions_artifact)
 
     runtime.settings.baseline_artifact.write_text("not json", encoding="utf-8")
     malformed = client.get("/evaluation/summary")

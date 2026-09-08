@@ -19,6 +19,7 @@ const evaluation = {
   artifact_sha256: "baseline",
   data: {
     benchmark: { questions: 60, concepts: 30 },
+    questions: [{ id: "official-en", task: "search", repository: "example/repo", language: "en", category: "function_behavior", question: "How does escaping work?" }],
     aggregates: [
       { slice: { kind: "global_micro", value: "all" }, method: "lexical", questions: 60, top_1: 0.43, top_3: 0.71, mrr_at_10: 0.58 },
       { slice: { kind: "global_micro", value: "all" }, method: "semantic", questions: 60, top_1: 0.35, top_3: 0.65, mrr_at_10: 0.5 },
@@ -62,6 +63,15 @@ const finalThesisEvaluation = {
     },
     documentation: { execution: { expected_records: 18, actual_records: 18, unique_records: 18, glm_complete: 9, glm_failed: 0, qwen_complete: 0, qwen_failed: 9, citation_identity_mismatches: 0 }, final_status: { usable_documentation_outputs: 9, unavailable_documentation_outputs: 9, quality_interpretation: "Only available outputs are scored." }, quality: { by_llm: { glm: { scored_records: 9, correctness_0_10: { n: 9, mean: 6.8 }, groundedness_0_10: { n: 9, mean: 8.2 }, persian_readability_0_10: { n: 9, mean: 8.1 }, usefulness_0_10: { n: 9, mean: 8.1 } } } } },
     human_evaluation: { overall: { scored_records: 80, correctness_0_10: { n: 80, mean: 7.4 }, groundedness_0_10: { n: 80, mean: 7.7 }, persian_readability_0_10: { n: 44, mean: 6.9 }, usefulness_0_10: { n: 80, mean: 7.4 } }, records: 90, usable: 80, unavailable: 10, limitations: [] },
+    questions: [{ id: "FTE-QA-1", task: "qa", repository: "codecompass", language: "fa", difficulty: "medium", question: "بازیابی ترکیبی چگونه کار می‌کند؟" }],
+    qa_details: [{
+      case_id: "FTE-QA-1", embedding_arm: "gemini_2", llm_arm: "glm", execution_provenance: "retry_2", execution_status: "complete", answer: "Grounded frozen answer.",
+      citations: [{ source_file: "src/example.py", qualified_symbol: "example", start_line: 1, end_line: 3 }],
+      human_scores: { correctness_0_10: 9, groundedness_0_10: 8, persian_readability_0_10: 7, usefulness_0_10: 8, hallucination: "خیر" },
+    }, {
+      case_id: "FTE-QA-1", embedding_arm: "nomic", llm_arm: "qwen", execution_provenance: "initial", execution_status: "failed", answer: null, citations: [],
+      human_scores: { correctness_0_10: null, groundedness_0_10: null, persian_readability_0_10: null, usefulness_0_10: null, hallucination: null },
+    }],
   },
 };
 
@@ -108,6 +118,10 @@ describe("CodeCompass SPA", () => {
     expect(screen.queryByText("PY")).not.toBeInTheDocument();
     expect(screen.queryByText("Where is input validation handled?")).not.toBeInTheDocument();
     expect(screen.queryByText("منطق اصلی پروژه کجاست؟")).not.toBeInTheDocument();
+    const explorer = screen.getByLabelText("Project explorer");
+    expect(within(explorer).getByText("src")).toBeInTheDocument();
+    expect(within(explorer).getByText("markupsafe")).toBeInTheDocument();
+    expect(within(explorer).getByRole("button", { name: file.relative_path })).toHaveTextContent("__init__.py");
 
     fireEvent.click(screen.getByRole("tab", { name: "Search" }));
     expect(screen.getByLabelText("Search indexed code").closest(".workspace-panel")).toHaveClass("empty");
@@ -146,6 +160,8 @@ describe("CodeCompass SPA", () => {
     expect(screen.queryByText("Frozen scientific evidence")).not.toBeInTheDocument();
     expect(screen.getByText("Best measured").closest(".method-label")).toHaveTextContent("hybrid");
     expect(screen.getByText("283.1 ms")).toBeInTheDocument();
+    fireEvent.click(screen.getByText(/View 1 benchmark questions/));
+    expect(screen.getByText("How does escaping work?")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Show Persian evaluation" }));
     expect(screen.getAllByText("56.7%").length).toBeGreaterThan(0);
     expect(screen.getByText("Persian Top-3").nextSibling).toHaveTextContent("76.7%");
@@ -155,9 +171,16 @@ describe("CodeCompass SPA", () => {
     fireEvent.click(screen.getByRole("button", { name: "Final thesis evaluation" }));
     expect(screen.getByText("3 repositories · 36 search queries · 90 human-review records")).toBeInTheDocument();
     expect(screen.getByText("71/72")).toBeInTheDocument();
+    fireEvent.click(screen.getByText(/View 1 benchmark questions/));
+    expect(screen.getByText("بازیابی ترکیبی چگونه کار می‌کند؟")).toBeInTheDocument();
+    const qaRuns = screen.getByText("2 evaluated configurations").parentElement!;
+    fireEvent.click(within(qaRuns).getByText("gemini-embedding-2"));
+    expect(within(qaRuns).getByText("Grounded frozen answer.")).toBeInTheDocument();
+    expect(within(qaRuns).getByText("src/example.py:1-3 · example")).toBeInTheDocument();
+    expect(within(qaRuns).getByText("9.00/10")).toBeInTheDocument();
     fireEvent.click(within(screen.getByLabelText("Final thesis evaluation section")).getByRole("button", { name: "Search" }));
     expect(screen.getByText("Search by embedding arm")).toBeInTheDocument();
-    expect(screen.getByText("gemini-embedding-2")).toBeInTheDocument();
+    expect(screen.getAllByText("gemini-embedding-2").length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole("button", { name: "Provider settings" }));
     expect(screen.getByRole("dialog", { name: "Provider settings" })).toBeInTheDocument();
     const defaults = screen.getAllByLabelText("Use backend defaults");

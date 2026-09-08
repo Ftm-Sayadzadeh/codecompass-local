@@ -1,7 +1,7 @@
 import { Activity, BarChart3, CheckCircle2, ChevronDown, ChevronUp, Gauge, Info, Snowflake } from "lucide-react";
 import { useState } from "react";
 
-import type { EvaluationResponse, FinalThesisEvaluationResponse, MetricAggregate, ThesisQuality, ThesisRankMetrics } from "../api/types";
+import type { BenchmarkQaDetail, BenchmarkQuestion, EvaluationResponse, FinalThesisEvaluationResponse, MetricAggregate, ThesisQuality, ThesisRankMetrics } from "../api/types";
 import { ErrorMessage } from "./ErrorMessage";
 
 type Perspective = "all" | "fa" | "en" | "compare";
@@ -39,12 +39,70 @@ function score(value: number | null | undefined) {
   return value == null ? "Unavailable" : value.toFixed(2);
 }
 
+function scoreOutOfTen(value: number | null) {
+  return value == null ? "Unavailable" : `${value.toFixed(2)}/10`;
+}
+
 function QualityRow({ name, quality }: { name: string; quality: ThesisQuality }) {
   return (
     <div className="thesis-table-row">
       <strong>{name}</strong><span data-label="Scored">{quality.scored_records}</span><span data-label="Correctness">{score(quality.correctness_0_10.mean)}</span>
       <span data-label="Groundedness">{score(quality.groundedness_0_10.mean)}</span><span data-label="Persian readability">{score(quality.persian_readability_0_10.mean)}</span><span data-label="Usefulness">{score(quality.usefulness_0_10.mean)}</span>
     </div>
+  );
+}
+
+function QaRun({ run, models }: { run: BenchmarkQaDetail; models: FinalThesisEvaluationResponse["data"]["models"] }) {
+  const persian = Boolean(run.answer && /[\u0600-\u06ff]/.test(run.answer));
+  return (
+    <details className={`qa-run ${run.execution_status}`}>
+      <summary>
+        <strong>{models.llms[run.llm_arm] ?? run.llm_arm}</strong>
+        <span>{models.embeddings[run.embedding_arm] ?? run.embedding_arm}</span>
+        <span>{run.execution_status}</span>
+      </summary>
+      <div className="qa-run-body">
+        <div className="qa-score-strip">
+          <span>Correctness <strong>{scoreOutOfTen(run.human_scores.correctness_0_10)}</strong></span>
+          <span>Groundedness <strong>{scoreOutOfTen(run.human_scores.groundedness_0_10)}</strong></span>
+          <span>Readability <strong>{scoreOutOfTen(run.human_scores.persian_readability_0_10)}</strong></span>
+          <span>Usefulness <strong>{scoreOutOfTen(run.human_scores.usefulness_0_10)}</strong></span>
+          <span>Hallucination <strong>{run.human_scores.hallucination ?? "Unavailable"}</strong></span>
+        </div>
+        <p className="qa-provenance">Execution: {run.execution_provenance.replaceAll("_", " ")}</p>
+        {run.answer ? <div className="qa-run-answer" dir={persian ? "rtl" : "ltr"}>{run.answer}</div> : <p className="qa-unavailable">No usable answer was produced in this frozen run.</p>}
+        {run.citations.length ? <div className="qa-run-citations"><strong>Retrieved evidence</strong>{run.citations.map((citation, index) => (
+          <code key={`${citation.source_file}:${citation.start_line}:${index}`}>{citation.source_file}:{citation.start_line}-{citation.end_line} · {citation.qualified_symbol}</code>
+        ))}</div> : null}
+      </div>
+    </details>
+  );
+}
+
+function BenchmarkQuestions({ questions, qaDetails, models }: {
+  questions: BenchmarkQuestion[] | undefined;
+  qaDetails?: BenchmarkQaDetail[];
+  models?: FinalThesisEvaluationResponse["data"]["models"];
+}) {
+  if (!questions?.length) return null;
+  const displayed = qaDetails
+    ? [...questions].sort((a, b) => Number(b.task === "qa") - Number(a.task === "qa"))
+    : questions;
+  const qaCount = questions.filter((item) => item.task === "qa").length;
+  return (
+    <details className="benchmark-questions">
+      <summary>View {questions.length} benchmark questions{qaDetails ? <small>{qaCount} QA questions include evaluated answers</small> : null}</summary>
+      <div className="benchmark-question-list">
+        {displayed.map((item) => {
+          const runs = qaDetails?.filter((run) => run.case_id === item.id) ?? [];
+          return <article key={item.id}>
+            <div><code>{item.id}</code><span>{item.repository}</span><span>{item.task}</span><span>{item.language.toUpperCase()}</span>{item.difficulty ? <span>{item.difficulty}</span> : null}{item.category ? <span>{item.category}</span> : null}</div>
+            <p dir={item.language === "fa" ? "rtl" : "ltr"}>{item.question}</p>
+            {models && runs.length ? <div className="qa-runs"><strong>{runs.length} evaluated configurations</strong>{runs.map((run) => <QaRun key={`${run.case_id}:${run.embedding_arm}:${run.llm_arm}`} run={run} models={models} />)}</div> : null}
+          </article>;
+        })}
+      </div>
+    </details>
   );
 }
 
@@ -122,6 +180,7 @@ function FinalThesisView({ result }: { result: FinalThesisEvaluationResponse }) 
         <p className="measured-note">Final usable QA answers: {execution.total - execution.final_failure}/{execution.total}. Documentation: {data.documentation.final_status.usable_documentation_outputs} usable and {data.documentation.final_status.unavailable_documentation_outputs} unavailable.</p>
       </section> : null}
 
+      <BenchmarkQuestions questions={data.questions} qaDetails={data.qa_details} models={data.models} />
       <p className="evaluation-disclaimer"><Info size={14} /> Human-reviewed, fixed-dataset measurements. Missing executions are reported separately from measured quality.</p>
     </div>
   );
@@ -263,6 +322,7 @@ export function EvaluationPanel({ summary, performance, finalThesis, loading, er
               </section>
             </div>
           )}
+          <BenchmarkQuestions questions={summary.data.questions} />
           <p className="evaluation-disclaimer"><Info size={14} /> Fixed-dataset measurements for system evaluation; they do not represent confidence or quality for an individual answer.</p>
         </div>
         ) : <FinalThesisView result={finalThesis} />}
