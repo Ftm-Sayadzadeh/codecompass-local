@@ -1,0 +1,1718 @@
+{
+  "evaluation_id": "whole_repo_rag_ablation_v1_quality",
+  "status": "complete",
+  "judge_model": "glm-5.3-flash",
+  "rubric": "blind fact entailment and unsupported-claim review",
+  "records": [
+    {
+      "blind_id": "WRA-Q-001",
+      "fact_hits": [
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Explicitly shows curr_day += 1 followed by save_day(); avoids both forbidden claims (persisted, no argument) and honestly flags the unverified Manage-to-DayManager link instead of guessing."
+    },
+    {
+      "blind_id": "WRA-Q-002",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Covers retrieval-service construction with embedding compatibility, bounded context building, LLM receiving question plus labeled blocks, citations built from block metadata rather than model text, and APIRuntime.citation_chunks rehydration from SQLite; explicitly states paths/lines must not be invented, contradicting neither forbidden claim."
+    },
+    {
+      "blind_id": "WRA-Q-003",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 8,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "All field names, types, and defaults match with line-level evidence; available=True, inventory/price/off/new_price default 0. It never states that the model does not auto-compute new_price, though it presents new_price as a plain stored field and contradicts no forbidden claim."
+    },
+    {
+      "blind_id": "WRA-Q-004",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 6,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Book FKs to Category and Author, Image FK with related_name images, and Review linking Book plus settings.AUTH_USER_MODEL are all correct. The Order model was not retrieved, so the User/created/paid facts are absent and the no-Book-relation fact is only reported as not-seen/insufficient evidence rather than affirmed; no forbidden claims made."
+    },
+    {
+      "blind_id": "WRA-Q-005",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 3,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Claims insufficient evidence and omits Manage.save_data delegation, File-helper serialization, and DayManager.save_day persistence; no DB claim stated either. Honest and grounded but does not deliver the expected design."
+    },
+    {
+      "blind_id": "WRA-Q-006",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 9,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "All field types and defaults correct (available BooleanField True; inventory/price/off/new_price PositiveIntegerField 0); does not explicitly state that new_price is not auto-computed; no forbidden claims."
+    },
+    {
+      "blind_id": "WRA-Q-007",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Covers id+slug 404 lookup, active-only newest-first reviews, auth-gated ReviewForm, and detail.html rendering with template/context evidence; asserts the opposites of both forbidden claims."
+    },
+    {
+      "blind_id": "WRA-Q-008",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 9,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Full trace: runtime.retrieval per method/config, GroundedQAService retrieval plus budgeted context, prompt-assembly-then-generate, citations from context metadata, and citation_chunks rehydration from SQLite; explicitly rules out invented paths and whole-repo prompts; meta text about agent steps is cosmetic."
+    },
+    {
+      "blind_id": "WRA-Q-009",
+      "fact_hits": [
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Correctly reports insufficient evidence: no hashing/salting found, shows plaintext assignment and raw-password lookup, and explicitly avoids any bcrypt/PBKDF2 claim."
+    },
+    {
+      "blind_id": "WRA-Q-010",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 9,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "All weights (3/2/1/1), case-insensitive deduplicated tokenization, and weighted-overlap sum match; it explicitly denies BM25/cosine. Minor internal inconsistency in the optional test-arithmetic remark ('3×3 + …' vs score 10.0)."
+    },
+    {
+      "blind_id": "WRA-Q-011",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Lists available=True, inventory=0, and price/off/new_price as plain PositiveIntegerField(default=0), corroborated by the migration; no claim of new_price computation and inventory default is 0, not 1."
+    },
+    {
+      "blind_id": "WRA-Q-012",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 2,
+      "groundedness_0_10": 6,
+      "unsupported_material_claim": false,
+      "note": "Non-answer: returns a generic repository overview instead of the cancellation flow. Only the archived-canceled-appointments detail overlaps an expected fact; today-rejection, patient-record removal/doctor id, visit-count decrement, and slot restoration are all absent."
+    },
+    {
+      "blind_id": "WRA-Q-013",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        false,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 7,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Correctly covers Book FKs to Category/Author, Image.related_name='images', and Review linking Book and AUTH_USER_MODEL, and states no Book-Order relation; but it claims no Order model was retrieved, so the Order-User/created/paid fact is missing."
+    },
+    {
+      "blind_id": "WRA-Q-014",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Complete Persian walkthrough: method/embedding-specific retrieval service, bounded context in GroundedQAService, prompt+context to LLM, citations derived from context metadata, and rehydration via runtime.citation_chunks; no invented paths or full-repo-prompt claim."
+    },
+    {
+      "blind_id": "WRA-Q-015",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 1,
+      "groundedness_0_10": 6,
+      "unsupported_material_claim": false,
+      "note": "Non-answer: generic architecture overview that never mentions Patients.auto_reservation, find_nearest_appointment/the Node, writing the appointment to the patient, or removing schedule availability; heap usage is only hedged speculation."
+    },
+    {
+      "blind_id": "WRA-Q-016",
+      "fact_hits": [
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Shows the guarded 'if not self.slug: slugify(self.title)' with super().save(), explicitly states the slug is not overwritten on later saves, and cites the admin prepopulation; no UUID or always-regenerate claim."
+    },
+    {
+      "blind_id": "WRA-Q-017",
+      "fact_hits": [
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 8,
+      "groundedness_0_10": 5,
+      "unsupported_material_claim": true,
+      "note": "Core claim (Python-only .py indexing via Python AST parser) matches the expected fact and avoids both forbidden claims. However, the answer cites an 'AGENTS.md line 42' quotation about TypeScript/JavaScript MVP support that does not appear in the actual AGENTS.md, plus several exact line-level quotations (PROJECT_BRIEF.md:289, RESEARCH_NOTES_SUMMARY.md:81, scanner/parser line numbers) that cannot be verified. Expected behavior was insufficient_evidence, yet the answer asserts definitively."
+    },
+    {
+      "blind_id": "WRA-Q-018",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 4,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Correctly describes the weighted token-overlap summation (fact 5) and never claims BM25 or cosine similarity. Omits case-insensitive/unique-set tokenization detail and explicitly states the weight values (3/2/1/1) are not visible, so facts 1-4 miss, though it honestly reports the evidence gap rather than guessing."
+    },
+    {
+      "blind_id": "WRA-Q-019",
+      "fact_hits": [
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 1,
+      "groundedness_0_10": 7,
+      "unsupported_material_claim": false,
+      "note": "Non-answer: provides only a generic repository overview and never explains that DayManager.next_day increments curr_day or calls save_day; ends by asking how to proceed. No forbidden claims made, and the overview is broadly consistent with other records, but both expected facts are missed."
+    },
+    {
+      "blind_id": "WRA-Q-020",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "All field types and defaults match exactly (available BooleanField default True; inventory/price/off/new_price PositiveIntegerField default 0); new_price is presented as a stored field, not computed in save. Minor flaws: stray meta-sentence at the start and unverifiable line/template details."
+    },
+    {
+      "blind_id": "WRA-Q-021",
+      "fact_hits": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 4,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Only fact 1 hit: Manage.save_data delegating to doctors, patients, cities, specialities. The File-helper serialization, DayManager/save_day persistence, and absence of database persistence are all explicitly declared unknown rather than answered. No Django ORM or single-JSON-file claims."
+    },
+    {
+      "blind_id": "WRA-Q-022",
+      "fact_hits": [
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Both facts exact: empty dequeue returns the string 'Queue is empty.'; non-empty dequeue increments front and returns the item at the previous front index. Explicitly states no exception is raised and elements are not physically shifted."
+    },
+    {
+      "blind_id": "WRA-Q-023",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "All four facts covered: get_object_or_404 by id and slug, active-only reviews ordered newest first, ReviewForm only for authenticated users (else None), rendering in store/detail.html. Both forbidden claims actively avoided. Minor unverifiable template line details."
+    },
+    {
+      "blind_id": "WRA-Q-024",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "All four facts covered: patient resolved via patient_id, find_nearest_appointment builds a Node(doctor, day, hour), appointment written to the patient, and remove_availability called on the selected doctor's schedule. Explicitly notes doctor's Appointments is not updated, avoiding the forbidden claim; no user prompting claimed."
+    },
+    {
+      "blind_id": "WRA-Q-025",
+      "fact_hits": [
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Correctly returns insufficient evidence: no hashing/salting implementation found; bcrypt/PBKDF2 mentioned only as absent algorithms, not asserted."
+    },
+    {
+      "blind_id": "WRA-Q-026",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 8,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "All field types and defaults match; answer does not explicitly state that new_price is not automatically computed by the model, though it never claims otherwise."
+    },
+    {
+      "blind_id": "WRA-Q-027",
+      "fact_hits": [
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Covers curr_day increment plus immediate save_day persistence with file overwrite detail; explicitly contradicts both forbidden claims."
+    },
+    {
+      "blind_id": "WRA-Q-028",
+      "fact_hits": [
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Empty-slug check, slugify(title), and super().save() delegation all shown with code; explicitly states slug left unchanged if already set."
+    },
+    {
+      "blind_id": "WRA-Q-029",
+      "fact_hits": [
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Model save logic fully covered and correctly framed as conditional on empty slug; admin prepopulated_fields is supplementary grounded detail."
+    },
+    {
+      "blind_id": "WRA-Q-030",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "All four facts covered: id+slug 404 lookup, active-only newest-first reviews, authenticated-only form, and store/detail.html rendering."
+    },
+    {
+      "blind_id": "WRA-Q-031",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "All five relational facts covered with related_name detail; explicitly denies order-line items and any Order-Book relation, uses ForeignKey not many-to-many."
+    },
+    {
+      "blind_id": "WRA-Q-032",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "All component roles and SQLite-as-citation-authority covered; explicitly states Chroma is not the citation source and the LLM does not establish citations."
+    },
+    {
+      "blind_id": "WRA-Q-033",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "All five facts covered with line citations; explicitly denies Order-Book relation and M2M. Extra claim about empty cart app is specific but plausible."
+    },
+    {
+      "blind_id": "WRA-Q-034",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "All facts covered with precise citations; correctly gates ReviewForm on authentication and filters active reviews newest-first."
+    },
+    {
+      "blind_id": "WRA-Q-035",
+      "fact_hits": [
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 9,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Correctly states no hashing/salting exists and no bcrypt/PBKDF2 claims. Asserts plaintext storage definitively rather than as absence of evidence, though claims are code-cited."
+    },
+    {
+      "blind_id": "WRA-Q-036",
+      "fact_hits": [
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 9,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Matches expected absence-of-hashing fact with cited evidence; no bcrypt/PBKDF2 claims. Plaintext assertion slightly oversteps the insufficient-evidence framing."
+    },
+    {
+      "blind_id": "WRA-Q-037",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "All four facts covered end-to-end; avoids claiming a doctor Appointments record or a user prompt for hour selection."
+    },
+    {
+      "blind_id": "WRA-Q-038",
+      "fact_hits": [
+        false,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 5,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Misses the superuser requirement and asserts no permission checks are visible, contradicting ground truth; form binding, save, and redirect are correct. Permission claim is hedged to shown code, avoiding the forbidden assertion literally."
+    },
+    {
+      "blind_id": "WRA-Q-039",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "All facts covered; cites the superuser decorator, per-view forms, save, and redirect. No forbidden claims, unlike its English counterpart."
+    },
+    {
+      "blind_id": "WRA-Q-040",
+      "fact_hits": [
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Both facts covered: empty queue returns the string, non-empty case increments front and returns previous-front item via pointer; no exception or shifting claims."
+    },
+    {
+      "blind_id": "WRA-Q-041",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Covers all four facts with file/line citations; explicitly denies doctor Appointments recording and hour prompting, and adds a useful bug note about early return."
+    },
+    {
+      "blind_id": "WRA-Q-042",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "All roles and the SQLite citation authority are stated with doc and code citations; explicitly rejects Chroma as source of truth and LLM-fabricated citations."
+    },
+    {
+      "blind_id": "WRA-Q-043",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Complete flow: get_patient_obj(patient_id), Node(doctor, day, hour) via MinHeap, patient update, schedule availability removal; explicitly contrasts with doctor.appointments path."
+    },
+    {
+      "blind_id": "WRA-Q-044",
+      "fact_hits": [
+        true,
+        true,
+        false,
+        false,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 6,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Well-cited on staging, failure preservation, and completeness validation, but omits repository rescan/file-snapshot matching and the before_commit SQLite activation mechanism."
+    },
+    {
+      "blind_id": "WRA-Q-045",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Accurately describes id+slug 404 lookup, active-only newest-first reviews, authenticated-only form, and template; explicitly notes anonymous users get None."
+    },
+    {
+      "blind_id": "WRA-Q-046",
+      "fact_hits": [
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Correct insufficient-support response: shows scanner only accepts .py and only a Python AST parser exists; explicitly denies tree-sitter and Java indexing."
+    },
+    {
+      "blind_id": "WRA-Q-047",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "All four facts present; appropriately flags that find_nearest_appointment internals were not in context while conveying the doctor/day/hour result, and denies the forbidden claims."
+    },
+    {
+      "blind_id": "WRA-Q-048",
+      "fact_hits": [
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Correctly reports no salt/hash implementation with concrete plain-text storage evidence and clarifies DynamicHash is a data-structure hash, not password hashing; no bcrypt/PBKDF2 claims."
+    },
+    {
+      "blind_id": "WRA-Q-049",
+      "fact_hits": [
+        false,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 4,
+      "groundedness_0_10": 8,
+      "unsupported_material_claim": false,
+      "note": "Gets form save and users:profile redirect for book/author, but misses the superuser requirement and covers only two of four add views; category/image handling reported as out of context. It hedges on access control rather than asserting the forbidden claim."
+    },
+    {
+      "blind_id": "WRA-Q-050",
+      "fact_hits": [
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 2,
+      "groundedness_0_10": 8,
+      "unsupported_material_claim": false,
+      "note": "Correctly locates DayManager (singleton) and its call sites, but states the next_day/get_curr_day bodies were not retrieved; neither the increment nor the save_day persistence is conveyed, and it explicitly declines to conclude in-memory-only behavior."
+    },
+    {
+      "blind_id": "WRA-Q-051",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Comprehensive and accurate: per-component save_data through the File helper, central Manage.save_data trigger, DayManager persisting Days.txt immediately on next_day, flat text files with no database; no Django ORM or single-JSON claims."
+    },
+    {
+      "blind_id": "WRA-Q-052",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 1,
+      "groundedness_0_10": 7,
+      "unsupported_material_claim": false,
+      "note": "Generic repository overview only; none of the cancellation logic (same-day rejection, doctor id yield, visit-count decrement, slot restoration, canceled-appointment record) is addressed, though nothing forbidden is claimed."
+    },
+    {
+      "blind_id": "WRA-Q-053",
+      "fact_hits": [
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Matches insufficient-evidence behavior: reports no charging/refund implementation with concrete search evidence (stub cart, unused paid flag, no payment views) and flags the one unverified area; Stripe appears only as an implementation suggestion, not a claim."
+    },
+    {
+      "blind_id": "WRA-Q-054",
+      "fact_hits": [
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 1,
+      "groundedness_0_10": 7,
+      "unsupported_material_claim": false,
+      "note": "Same generic overview pattern as WRA-Q-052; DayManager is named but the increment and save_day mechanics requested by the question are entirely absent."
+    },
+    {
+      "blind_id": "WRA-Q-055",
+      "fact_hits": [
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Correctly concludes the feature is absent with line-level evidence (empty cart app, only the paid flag and price fields, no payment/cancel URLs, no wallet fields); no Stripe or refund-method claims."
+    },
+    {
+      "blind_id": "WRA-Q-056",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "All relations match: Book FKs to Category and Author, Image FK to Book with related_name images, Review links Book and settings.AUTH_USER_MODEL, Order has a user FK with created/paid and no Book relation; explicitly rejects M2M and order-line claims."
+    },
+    {
+      "blind_id": "WRA-Q-057",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Complete Persian answer: same-day rejection conveyed via the today != day condition, patient appointment removal with doctor id retrieval, visit decrement, slot restoration, and doctor canceled-appointments entry all stated with code paths."
+    },
+    {
+      "blind_id": "WRA-Q-058",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Explicitly states same-day cancellation returns False (rejection), patient cancellation yields doctor_id, and all three doctor-side updates; no forbidden claims."
+    },
+    {
+      "blind_id": "WRA-Q-059",
+      "fact_hits": [
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Correctly reports the empty-queue string return (explicitly not an exception) and the front-increment removal returning the old front element, explicitly denying element shifting."
+    },
+    {
+      "blind_id": "WRA-Q-060",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Covers staging/validation, rescans with snapshot matching, before_commit activation in the SQLite transaction, and rollback/discard plus reserved-project cleanup, with file and line citations; denies both forbidden behaviors."
+    },
+    {
+      "blind_id": "WRA-Q-061",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 3,
+      "groundedness_0_10": 8,
+      "unsupported_material_claim": false,
+      "note": "Generic project overview rather than the persistence design: Manage.save_data delegation, File-helper serialization by the data-access components, and DayManager curr_day/save_day are never explained; only the absence of database persistence is indirectly supported (pure-Python, file_handling.py). Grounded but largely non-responsive."
+    },
+    {
+      "blind_id": "WRA-Q-062",
+      "fact_hits": [
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 1,
+      "groundedness_0_10": 8,
+      "unsupported_material_claim": false,
+      "note": "Entirely off-topic: describes the overall hospital system architecture and only mentions Queue exists, but never answers the empty-queue return value or the non-empty dequeue mechanism; content itself is grounded with hedged speculation only."
+    },
+    {
+      "blind_id": "WRA-Q-063",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Accurately assigns SQLite canonical metadata/citation authority, Chroma as vector index keyed by chunk ids, embeddings for query/chunk vectorization, LLM restricted to context-based generation, and SQLite hydration of citation fields; the tool-step caveat is transparent hedging, not an unsupported claim."
+    },
+    {
+      "blind_id": "WRA-Q-064",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Lists all default ignored directories and .env patterns, confirms only .py files are eligible, and details that directory and file symlinks are skipped with root-escape prevention, backed by cited code lines and tests; both forbidden claims are contradicted."
+    },
+    {
+      "blind_id": "WRA-Q-065",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "All four facts covered: superuser-only decorators, ModelForm binding per view, save(), redirect to users:profile. No forbidden claims."
+    },
+    {
+      "blind_id": "WRA-Q-066",
+      "fact_hits": [
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 9,
+      "note": "next_day increments curr_day and calls save_day to persist; file-based persistence stated, contradicting both forbidden claims. Extra cleanup-chain detail is cited but unverifiable."
+    },
+    {
+      "blind_id": "WRA-Q-067",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 4,
+      "groundedness_0_10": 9,
+      "note": "Describes the four-field weighted-sum mechanism correctly, but declines to give the numeric weights (3/2/1/1) and case-insensitive unique-token tokenization, claiming insufficient evidence; no forbidden claims made."
+    },
+    {
+      "blind_id": "WRA-Q-068",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "note": "Covers .py-only eligibility, .env/.env.* exclusion, full ignored-dir list, no symlink following for files and dirs, and root-containment check, all with file/line citations."
+    },
+    {
+      "blind_id": "WRA-Q-069",
+      "fact_hits": [
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "note": "Correctly returns insufficient evidence: no charging/refund logic, only a paid flag, empty cart stubs. Avoids both forbidden claims."
+    },
+    {
+      "blind_id": "WRA-Q-070",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 9,
+      "note": "Covers Manage.save_data coordinating all four stores, File helper I/O, DayManager persisting curr_day in its own file via save_day/next_day, and explicitly no database. Contains a stray meta line about max agent steps, but no unsupported code claims."
+    },
+    {
+      "blind_id": "WRA-Q-071",
+      "fact_hits": [
+        true,
+        false,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 8,
+      "groundedness_0_10": 9,
+      "note": "Same-day rejection, visit decrement, slot restoration, and canceled-record creation all covered; the patient-side appointment removal is not asserted (answer disclaims internal detail), only that cancel_appointment yields the doctor id."
+    },
+    {
+      "blind_id": "WRA-Q-072",
+      "fact_hits": [
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "note": "Slug generated only when empty via slugify(title), parent save delegated; explicitly states slug is untouched when already set. Admin prepopulation detail is consistent and cited."
+    },
+    {
+      "blind_id": "WRA-Q-073",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        false,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 6,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Correctly identifies SQLite as the authoritative citation metadata source (with fields/hydration) and Chroma's store/search role, but claims insufficient evidence for the LLM role, missing that the LLM generates answers only from selected context. Query-side embedding only implicit. No forbidden claims; honest about evidence gaps."
+    },
+    {
+      "blind_id": "WRA-Q-074",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Complete and precise: same-day guard (today != day), patient slot cleared with doctor id yielded, visits decremented, slot restored to Available, cancellation logged in doctor's canceled appointments. No forbidden claims."
+    },
+    {
+      "blind_id": "WRA-Q-075",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "All field weights (3/2/1/1), lowercase unique-token scoring, and weighted overlap sum are stated with file/line citations. No BM25 or cosine claims."
+    },
+    {
+      "blind_id": "WRA-Q-076",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Full trace: method/embedding-config retrieval selection, GroundedQAService bounded context, LLM prompt generation, metadata-derived citations rehydrated via runtime.citation_chunks. Explicitly contradicts both forbidden claims."
+    },
+    {
+      "blind_id": "WRA-Q-077",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Covers Manage.save_data delegation to all four components, File-helper text serialization per component, separate DayManager/Day.txt persistence via save_day, and the text-file-only (no DB) architecture. No forbidden claims."
+    },
+    {
+      "blind_id": "WRA-Q-078",
+      "fact_hits": [
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Correctly shows slug is generated only when empty, via slugify(title), delegating to super().save(); explicitly notes an existing slug is untouched. Admin prepopulation is grounded supplementary detail."
+    },
+    {
+      "blind_id": "WRA-Q-079",
+      "fact_hits": [
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 0,
+      "groundedness_0_10": 5,
+      "unsupported_material_claim": false,
+      "note": "Complete non-answer: returns a generic repository overview and never addresses the queue dequeue behavior (empty-queue return string or front-increment removal). No forbidden claims made, but neither expected fact is covered; overview specifics are unverifiable."
+    },
+    {
+      "blind_id": "WRA-Q-080",
+      "fact_hits": [
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Correctly returns an explicit insufficient-evidence result, noting only the Order.paid boolean field exists and no charging/refund logic is present. No fabricated Stripe or refund claims."
+    },
+    {
+      "blind_id": "WRA-Q-081",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 8,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "States only superuser can add and covers form binding, save, and redirect to users:profile with line citations, but explicitly evidences only the author/category/image views; the book add view is never individually shown."
+    },
+    {
+      "blind_id": "WRA-Q-082",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 9,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Thoroughly covers pre-activation candidate preparation and verification, rescan snapshot comparison, before_commit activation, and discard/rollback on failure; cleanup of a newly reserved project after failure is not mentioned."
+    },
+    {
+      "blind_id": "WRA-Q-083",
+      "fact_hits": [
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Exactly matches both expected behaviors with quoted code; no exception or element-shifting claims."
+    },
+    {
+      "blind_id": "WRA-Q-084",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "All relationships covered with line citations; correctly reports the absence of any Order-Book relation and OrderItem model."
+    },
+    {
+      "blind_id": "WRA-Q-085",
+      "fact_hits": [
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Correctly returns insufficient evidence, describing only the paid flag and admin toggle; Stripe is mentioned only as a hypothetical example, not as an implementation."
+    },
+    {
+      "blind_id": "WRA-Q-086",
+      "fact_hits": [
+        true,
+        false,
+        false,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 6,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Covers .py-only eligibility, symlink non-following, and root containment with tests, but never names .env/.env.* exclusions or the default-excluded directory categories (VCS, virtualenv, cache, build, IDE, coverage, node_modules), noting those rules were absent from context."
+    },
+    {
+      "blind_id": "WRA-Q-087",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Covers id+slug lookup with 404, active-only reviews ordered newest first, authenticated-only ReviewForm, and rendering in store/detail.html."
+    },
+    {
+      "blind_id": "WRA-Q-088",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 9,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Lists all five fields with correct types and defaults, but does not state that the model code does not automatically compute new_price."
+    },
+    {
+      "blind_id": "WRA-Q-089",
+      "fact_hits": [
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Correctly returns an explicit insufficient-evidence answer; states no charging/refund implementation exists, describes only the paid flag, never mentions Stripe or a refund method."
+    },
+    {
+      "blind_id": "WRA-Q-090",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Covers all four facts: superuser-only guards, ModelForm usage with form.save(), valid-form save, and redirect to users:profile; explicitly refutes both forbidden claims with cited file/line evidence."
+    },
+    {
+      "blind_id": "WRA-Q-091",
+      "fact_hits": [
+        true,
+        false,
+        false,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 7,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Correctly covers .py-only eligibility, symlink non-following, and resolve-inside-root, but omits the specific .env exclusion and default directory exclusion list, honestly stating those details were not in retrieved context."
+    },
+    {
+      "blind_id": "WRA-Q-092",
+      "fact_hits": [
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Accurately shows slug generated via slugify(title) only when empty, with save delegated to super(); explicitly denies per-save regeneration and no UUID claim appears."
+    }
+  ],
+  "attempts": [
+    {
+      "batch_offset": 0,
+      "latency_seconds": 88.44,
+      "session_id": "ses_f7a8d5fc5ffenjnqMdKr9CvMRG",
+      "tokens": {
+        "total": 9827,
+        "input": 4658,
+        "output": 445,
+        "reasoning": 4724,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "raw_sha256": "242af2bce8630ae21c31a96d55de08d930ffd21ad1998500cc2f6b7464d8da78"
+    },
+    {
+      "batch_offset": 4,
+      "latency_seconds": 84.693,
+      "session_id": "ses_f7a8c0668ffeDGykzt3WTc0DVl",
+      "tokens": {
+        "total": 7313,
+        "input": 3510,
+        "output": 399,
+        "reasoning": 3404,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "raw_sha256": "88c608923a26c8848b2ff892a6aef1c2df66f33e9e0e90272e2a28e601d0ae40"
+    },
+    {
+      "batch_offset": 8,
+      "latency_seconds": 108.337,
+      "session_id": "ses_f7a891d7fffezphuHBlCyST8TC",
+      "tokens": {
+        "total": 11950,
+        "input": 3964,
+        "output": 810,
+        "reasoning": 5128,
+        "cache_read": 2048,
+        "cache_write": 0
+      },
+      "raw_sha256": "54450ba643446c3516996ed562853057717095dbf9b168199ba463eda627adfb"
+    },
+    {
+      "batch_offset": 16,
+      "latency_seconds": 119.624,
+      "session_id": "ses_f7a877624ffehs8y6n5dVuNOAn",
+      "tokens": {
+        "total": 12900,
+        "input": 5945,
+        "output": 931,
+        "reasoning": 6024,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "raw_sha256": "b1091f4bc21864712fcf0703050f81632394a6f7b2caead4ca15f40e53eca24a"
+    },
+    {
+      "batch_offset": 24,
+      "latency_seconds": 47.199,
+      "session_id": "ses_f7a85a0e1ffe78g5dPFUG0mMGm",
+      "tokens": {
+        "total": 7716,
+        "input": 4957,
+        "output": 647,
+        "reasoning": 2112,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "raw_sha256": "7a1d767367accb146333b635b15a1f7217c39c83651389dac2d514d666e197b4"
+    },
+    {
+      "batch_offset": 32,
+      "latency_seconds": 118.406,
+      "session_id": "ses_f7a84e970ffemZ7KEYSlCP6bx9",
+      "tokens": {
+        "total": 11782,
+        "input": 5735,
+        "output": 667,
+        "reasoning": 5380,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "raw_sha256": "0dc4bd0170038b18ba1ab65ff96de4bc267c9ad7019d5d49a58b03475b99e57c"
+    },
+    {
+      "batch_offset": 40,
+      "latency_seconds": 131.975,
+      "session_id": "ses_f7a7cfa01ffezywvNUT3KNp3pn",
+      "tokens": {
+        "total": 13975,
+        "input": 168,
+        "output": 686,
+        "reasoning": 6977,
+        "cache_read": 6144,
+        "cache_write": 0
+      },
+      "judge_config": "opencode_judge_recovery_config.json",
+      "raw_sha256": "c8192569145e8dba420490c201ec1552667f6105e5f6ef178db9a17fe164cc17"
+    },
+    {
+      "batch_offset": 48,
+      "latency_seconds": 147.056,
+      "session_id": "ses_f7a7af677ffe0RcoI1FF80D2XD",
+      "tokens": {
+        "total": 14017,
+        "input": 6323,
+        "output": 783,
+        "reasoning": 6911,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "judge_config": "opencode_judge_recovery_config.json",
+      "raw_sha256": "23aadbf9ef71447d7ab6eb764d1de5cd72871208632d6d3ad7136d5cfea5ce31"
+    },
+    {
+      "batch_offset": 56,
+      "latency_seconds": 106.368,
+      "session_id": "ses_f7a78b7cbffei7XmPSKX3KIcfm",
+      "tokens": {
+        "total": 11816,
+        "input": 5621,
+        "output": 786,
+        "reasoning": 5409,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "judge_config": "opencode_judge_recovery_config.json",
+      "raw_sha256": "61ad7a0cf2379aafd67d325318a796ba76998b3ea8563d4894637cb0e5cde94a"
+    },
+    {
+      "batch_offset": 64,
+      "latency_seconds": 89.893,
+      "session_id": "ses_f7a77185bffej9z9xPD3P2AfhV",
+      "tokens": {
+        "total": 12174,
+        "input": 6177,
+        "output": 688,
+        "reasoning": 5309,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "judge_config": "opencode_judge_recovery_config.json",
+      "raw_sha256": "2cacb83889dcab9ec46edb3256e98abe61275983d88c26d9a821f8714c01d633"
+    },
+    {
+      "batch_offset": 72,
+      "latency_seconds": 95.477,
+      "session_id": "ses_f7a75b954ffeqQ3yZPdlWsLVyC",
+      "tokens": {
+        "total": 10373,
+        "input": 5894,
+        "output": 773,
+        "reasoning": 3706,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "judge_config": "opencode_judge_recovery_config.json",
+      "raw_sha256": "87b172ac115f0f83be8991e57c9653026f4feccd43ef2402ce83d2f4e78314f3"
+    },
+    {
+      "batch_offset": 80,
+      "latency_seconds": 103.089,
+      "session_id": "ses_f7a7443f9ffezp0CePPaNCN6Kk",
+      "tokens": {
+        "total": 11882,
+        "input": 5389,
+        "output": 696,
+        "reasoning": 5797,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "judge_config": "opencode_judge_recovery_config.json",
+      "raw_sha256": "7e36989538867ba2459f96dc4acfb28cca83c3e8ad81fb69d994448f52fafc63"
+    },
+    {
+      "batch_offset": 88,
+      "latency_seconds": 39.93,
+      "session_id": "ses_f7a72af85ffeYaZZn5wQXw6n3b",
+      "tokens": {
+        "total": 4931,
+        "input": 3441,
+        "output": 365,
+        "reasoning": 1125,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "judge_config": "opencode_judge_recovery_config.json",
+      "raw_sha256": "e1056c5f03004054e8fd989c9aa156794f9d16b9a57065e84f4c7169c6cc4cad"
+    }
+  ]
+}

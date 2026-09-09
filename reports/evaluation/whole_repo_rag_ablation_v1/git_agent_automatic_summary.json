@@ -1,0 +1,47 @@
+{
+  "evaluation_id": "whole_repo_rag_ablation_v1_git_agent",
+  "status": "generation_complete_quality_review_pending",
+  "initial_execution": {
+    "questions": 36,
+    "complete": 33,
+    "failed": 3,
+    "success_rate": 0.9167
+  },
+  "recovery": {
+    "attempted": 3,
+    "recovered": 3,
+    "effective_complete": 36,
+    "effective_success_rate": 1.0
+  },
+  "effective_successful_outputs": {
+    "latency_median_seconds": 37.409,
+    "latency_p95_seconds": 62.076,
+    "tokens": {
+      "total": 1526795,
+      "input": 528658,
+      "output": 29759,
+      "reasoning": 9914,
+      "cache_read": 958464
+    },
+    "tool_calls": {
+      "glob": 50,
+      "grep": 66,
+      "read": 216,
+      "todowrite": 1
+    }
+  },
+  "all_39_attempts": {
+    "estimated_cost_usd": 0.068483,
+    "pricing_basis": "frozen AvalAI GLM pricing; input $0.075/M, cached input $0.015/M, output and reasoning $0.25/M"
+  },
+  "by_repository": {
+    "hospital_system": {"complete": 12, "median_seconds": 30.902, "estimated_effective_cost_usd": 0.015179},
+    "cs_bookstore": {"complete": 12, "median_seconds": 39.959, "estimated_effective_cost_usd": 0.017167},
+    "codecompass": {"complete": 12, "median_seconds": 55.686, "estimated_effective_cost_usd": 0.031599}
+  },
+  "quality": {
+    "status": "pending_blind_review",
+    "reason": "Independent judge models returned HTTP 403; direct GLM judging returned HTTP 400 or reasoning-only empty content. These failures were not converted to scores."
+  },
+  "interpretation": "Git-agent access makes the large CodeCompass repository operationally answerable, but it is a separate tool-using baseline and does not isolate the causal effect of embeddings."
+}

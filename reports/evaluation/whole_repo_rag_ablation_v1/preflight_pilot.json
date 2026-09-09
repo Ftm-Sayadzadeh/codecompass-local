@@ -1,0 +1,92 @@
+{
+  "evaluation_id": "whole_repo_rag_ablation_v1",
+  "status": "ready_for_freeze_and_paid_execution",
+  "created_at_utc": "2026-09-08T19:29:51.096933+00:00",
+  "network_model_calls": 0,
+  "benchmark_sha256": "0cc4d63e55be43fe9527be3ce087c2dbac45b7a7b5a24c8a0034bf4b223dbc79",
+  "checks": {
+    "benchmark_contract": "passed",
+    "no_exact_overlap_with_final_thesis_qa": "passed",
+    "repository_commits_and_manifests": "passed",
+    "repositories_clean": "passed",
+    "gemini_2_index_identity": "passed",
+    "gold_citations_in_canonical_sqlite": "passed",
+    "whole_repo_context_capacity": "passed"
+  },
+  "repositories": [
+    {
+      "repository_id": "hospital_system",
+      "commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633",
+      "source_manifest_sha256": "bd91675f2ca42e57b9b12fa1b64c1e272c5e54e1cb0f5f149c6dce618eb4959c",
+      "files": 33,
+      "source_bytes": 86853,
+      "indexed_chunks": 409,
+      "embedding_model": "gemini-embedding-2",
+      "embedding_dimensions": 3072,
+      "whole_repo_context_chars": 85256,
+      "estimated_input_tokens_low": 21614,
+      "estimated_input_tokens_high": 28919,
+      "fits_published_input_limit": true
+    },
+    {
+      "repository_id": "cs_bookstore",
+      "commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+      "source_manifest_sha256": "2e2f647f35f9c752341c15eaf20a91af31b65dd245524b4a3ac6ada8af0fa05c",
+      "files": 56,
+      "source_bytes": 67344,
+      "indexed_chunks": 144,
+      "embedding_model": "gemini-embedding-2",
+      "embedding_dimensions": 3072,
+      "whole_repo_context_chars": 65861,
+      "estimated_input_tokens_low": 16766,
+      "estimated_input_tokens_high": 22454,
+      "fits_published_input_limit": true
+    },
+    {
+      "repository_id": "codecompass",
+      "commit": "4b9eba4df4cc7a5afca27ee3d4c60d578caec0f7",
+      "source_manifest_sha256": "fc75e63befc5a6d6c3d0cf79ad3ba4ba06a2d1416da04c8e7b317a9a467b1aa2",
+      "files": 100,
+      "source_bytes": 833129,
+      "indexed_chunks": 1236,
+      "embedding_model": "gemini-embedding-2",
+      "embedding_dimensions": 3072,
+      "whole_repo_context_chars": 817100,
+      "estimated_input_tokens_low": 204575,
+      "estimated_input_tokens_high": 272867,
+      "fits_published_input_limit": true
+    }
+  ],
+  "execution_plan": {
+    "main_questions": 36,
+    "arms": 4,
+    "main_llm_calls": 144,
+    "unique_query_embeddings": 36,
+    "stability_llm_calls": 96,
+    "maximum_llm_calls": 240
+  },
+  "token_and_cost_envelope": {
+    "estimate_method": "source characters / 4 to source characters / 3 plus prompt allowance",
+    "main_input_tokens_low": 3109860,
+    "main_input_tokens_high": 4160880,
+    "main_output_token_cap": 172800,
+    "stability_input_tokens_low": 2073240,
+    "stability_input_tokens_high": 2773920,
+    "stability_output_token_cap": 115200,
+    "query_embedding_tokens_high": 1682,
+    "main_cost_usd_ceiling_range": [
+      0.27644,
+      0.355266
+    ],
+    "full_cost_usd_ceiling_range": [
+      0.461068,
+      0.592446
+    ],
+    "prompt_cache_discount_assumed": false
+  },
+  "notes": [
+    "Token counts are a conservative character-based range until provider usage fields are returned.",
+    "The cost ceiling assumes every response consumes all 1200 allowed output tokens and no prompt-cache discount.",
+    "Actual per-request cost must be reconciled from AvalAI request IDs/transactions after execution."
+  ]
+}

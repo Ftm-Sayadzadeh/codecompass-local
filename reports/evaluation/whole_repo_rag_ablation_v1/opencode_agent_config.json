@@ -1,0 +1,47 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "avalai": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "AvalAI",
+      "options": {
+        "baseURL": "https://api.avalai.ir/v1",
+        "apiKey": "{env:CODECOMPASS_AGENT_GLM_API_KEY}"
+      },
+      "models": {
+        "glm-5.3-flash": {
+          "name": "GLM 5.3 Flash",
+          "limit": {
+            "context": 991000,
+            "output": 2400
+          }
+        }
+      }
+    }
+  },
+  "agent": {
+    "repo-qa": {
+      "description": "Read-only repository question answering for a controlled evaluation",
+      "mode": "primary",
+      "model": "avalai/glm-5.3-flash",
+      "temperature": 0,
+      "steps": 8,
+      "prompt": "Answer only from files in the current repository. Use read, glob, grep, and list to inspect enough evidence before answering. Do not use prior knowledge to fill gaps. If evidence is insufficient, say so explicitly. Keep the final answer under 250 words and answer in the question's language.",
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "edit": "deny",
+        "bash": "deny",
+        "task": "deny",
+        "external_directory": "deny",
+        "webfetch": "deny",
+        "websearch": "deny",
+        "lsp": "deny",
+        "skill": "deny",
+        "question": "deny"
+      }
+    }
+  }
+}

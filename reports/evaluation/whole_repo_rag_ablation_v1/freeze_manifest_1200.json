@@ -1,0 +1,98 @@
+{
+  "evaluation_id": "whole_repo_rag_ablation_v1",
+  "status": "frozen",
+  "frozen_at_utc": "2026-09-08T19:56:09.099827+00:00",
+  "benchmark_sha256": "6d40142b2c267819fae44ff6b06edac1d886351ea0e7b615d900462408e4d958",
+  "preflight_sha256": "6a76eea7efe963dfb80b9636dc2d69a1e6864b36e4d158d9ab99e4a9fddf1014",
+  "fixed": {
+    "concepts": 18,
+    "questions": 36,
+    "languages": [
+      "en",
+      "fa"
+    ],
+    "concepts_per_repository": 6,
+    "case_mix_per_repository": {
+      "local": 2,
+      "cross_file": 2,
+      "global": 1,
+      "negative": 1
+    },
+    "arms": [
+      "whole_repo",
+      "lexical",
+      "semantic_gemini_2",
+      "hybrid_gemini_2"
+    ],
+    "llm_model": "glm-5.3-flash",
+    "thinking_mode": "disabled",
+    "temperature": 0.0,
+    "max_output_tokens": 1200,
+    "retrieval_limit": 5,
+    "rag_context_chars": 6000,
+    "primary_comparisons": [
+      "semantic_gemini_2-minus-lexical",
+      "hybrid_gemini_2-minus-lexical",
+      "hybrid_gemini_2-minus-whole_repo"
+    ],
+    "quality_metrics": [
+      "fact_recall",
+      "claim_precision",
+      "f1",
+      "correctness_0_10",
+      "groundedness_0_10",
+      "usefulness_0_10",
+      "readability_0_10",
+      "hallucination",
+      "insufficient_evidence_accuracy",
+      "completeness"
+    ],
+    "efficiency_metrics": [
+      "input_tokens",
+      "cached_input_tokens",
+      "output_tokens",
+      "reasoning_tokens",
+      "exact_cost",
+      "latency_median",
+      "latency_p95",
+      "failure_rate",
+      "truncation_rate"
+    ],
+    "statistics": {
+      "unit": "bilingual concept mean",
+      "paired_bootstrap_samples": 10000,
+      "seed": 2601,
+      "confidence_interval": 0.95,
+      "noninferiority_margin_f1_points": 5
+    },
+    "stability": {
+      "concepts": 6,
+      "questions": 12,
+      "additional_runs_per_arm": 2,
+      "additional_llm_calls": 96
+    },
+    "pricing_snapshot": {
+      "source": "https://api.avalai.ir/public/models",
+      "captured_on": "2026-09-08",
+      "glm_max_input_tokens": 991000,
+      "glm_input_usd_per_million": 0.075,
+      "glm_cached_input_usd_per_million": 0.015,
+      "glm_output_usd_per_million": 0.25,
+      "embedding_input_usd_per_million": 0.2
+    }
+  },
+  "indexes": {
+    "hospital_system": {
+      "identity_path": "data/indexes/gemini2_embedding_comparison_v1/controlled/hospital_system/identity.json",
+      "identity_sha256": "4f71937f757101e0372cd213b84fb07da07800c9a5e2a8020868100abc83bb53"
+    },
+    "cs_bookstore": {
+      "identity_path": "data/indexes/gemini2_embedding_comparison_v1/controlled/cs_bookstore/identity.json",
+      "identity_sha256": "c5cd051d6103baefef3e9150fccf66b7983abfd325d0f98d7538443fb9067552"
+    },
+    "codecompass": {
+      "identity_path": "data/indexes/gemini2_embedding_comparison_v1/controlled/codecompass/identity.json",
+      "identity_sha256": "18c91508fd95c86f4aff8b75f39e7cba168efc06cb2f7ea926ba4d74317a5ab7"
+    }
+  }
+}

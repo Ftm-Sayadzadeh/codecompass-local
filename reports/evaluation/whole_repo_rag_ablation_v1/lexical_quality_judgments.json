@@ -1,0 +1,604 @@
+{
+  "evaluation_id": "whole_repo_rag_ablation_v1_lexical_quality",
+  "status": "complete",
+  "judge_model": "glm-5.3-flash",
+  "rubric": "blind fact entailment and unsupported-claim review",
+  "records": [
+    {
+      "blind_id": "WRA-L-001",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 1,
+      "groundedness_0_10": 8,
+      "unsupported_material_claim": false,
+      "note": "Clean abstention with no fabrication, but an answer describing the cancellation flow (today-check, appointment removal, visit decrement, slot restore, canceled list) was expected; all facts missed, no forbidden claims."
+    },
+    {
+      "blind_id": "WRA-L-002",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 3,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Partial: plausibly describes Chroma's vector-index/staging role, but never establishes chunk-id keying, and correctly hedges SQLite, embeddings, LLM, and citation authority as unevidenced; no forbidden claims."
+    },
+    {
+      "blind_id": "WRA-L-003",
+      "fact_hits": [
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Matches expected insufficient-evidence behavior; accurately summarizes retrieved blog/store snippets and explicitly denies any charging, refund, Order, or gateway logic; no forbidden claims."
+    },
+    {
+      "blind_id": "WRA-L-004",
+      "fact_hits": [
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 4,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Partial: correctly reports Image→Book and Review→Book FKs with related_name 'images'/'reviews' and cascade, but Book's Category/Author FKs, Review–User link, and both Order facts are left as unevidenced; no forbidden claims."
+    },
+    {
+      "blind_id": "WRA-L-005",
+      "fact_hits": [
+        false,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 2,
+      "groundedness_0_10": 5,
+      "unsupported_material_claim": true,
+      "note": "Answers via admin prepopulated_fields and asserts models.py contains no slug logic, contradicting the expected Post.save empty-slug/slugify/parent-save mechanism; the blanket negative claim about models.py is unsupported by ground truth."
+    },
+    {
+      "blind_id": "WRA-L-006",
+      "fact_hits": [
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 9,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Appropriate insufficiency refusal with accurate per-chunk analysis (snapshot manifest, repo validation); omits the Python-only/.py/AST fact but makes no forbidden claims about other languages."
+    },
+    {
+      "blind_id": "WRA-L-007",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 2,
+      "groundedness_0_10": 8,
+      "unsupported_material_claim": false,
+      "note": "Abstained where a view/template answer (id+slug 404 lookup, active reviews newest-first, auth-gated form, detail.html) was expected; only grounded descriptions of ReviewForm and the Review model are provided."
+    },
+    {
+      "blind_id": "WRA-L-008",
+      "fact_hits": [
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 1,
+      "groundedness_0_10": 8,
+      "unsupported_material_claim": false,
+      "note": "Clean refusal, but expected DayManager.next_day increment plus save_day persistence facts; all missed, no forbidden claims, no fabricated hospital-domain behavior."
+    },
+    {
+      "blind_id": "WRA-L-009",
+      "fact_hits": [
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Full answer covering all three facts: slug generated only when empty, slugify applied to title, parent save delegated; explicitly avoids both forbidden claims with citation."
+    },
+    {
+      "blind_id": "WRA-L-010",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 1,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Expected a full persistence-design answer but returned insufficient evidence; only specialities file loading via File helper partially aligns. No forbidden claims made."
+    },
+    {
+      "blind_id": "WRA-L-011",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "All five expected facts covered: same-day rejection returning False, appointment removal yielding doctor id, visits decremented, slot restored, canceled entry recorded; no forbidden claims."
+    },
+    {
+      "blind_id": "WRA-L-012",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 0,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Expected a full answer with weights but returned insufficient evidence; none of the five facts present, though no forbidden claims (BM25/cosine) either."
+    },
+    {
+      "blind_id": "WRA-L-013",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 0,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Expected a full answer on superuser-only add views and redirect but returned insufficient evidence; only model definitions discussed, no forbidden claims."
+    },
+    {
+      "blind_id": "WRA-L-014",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 0,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Expected a full answer on permission and post-submit behavior but returned insufficient evidence, accurately describing the profile view instead; no forbidden claims."
+    },
+    {
+      "blind_id": "WRA-L-015",
+      "fact_hits": [
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Correct insufficient-evidence response stating no payment charging or refund implementation exists; explicitly avoids claiming Stripe or a refund method on Order."
+    },
+    {
+      "blind_id": "WRA-L-016",
+      "fact_hits": [
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 0,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Expected a full answer on dequeue behavior but returned insufficient evidence; no facts covered and no forbidden claims (exception or element shifting) made."
+    },
+    {
+      "blind_id": "WRA-L-017",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 0,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Declined with insufficient evidence, but an answer exists; retrieval missed the lexical scoring code. No hallucination or forbidden claims."
+    },
+    {
+      "blind_id": "WRA-L-018",
+      "fact_hits": [
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Correctly states empty dequeue returns 'Queue is empty.' and non-empty increments front and returns the previous-front item; accurately describes pointer-based removal without shifting."
+    },
+    {
+      "blind_id": "WRA-L-019",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 0,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Insufficient-evidence response, but expected answer content (exclusions, symlink handling) exists; retrieval failure, no unsupported claims."
+    },
+    {
+      "blind_id": "WRA-L-020",
+      "fact_hits": [
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 0,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Declined due to missing DayManager.next_day context; expected answer exists, so retrieval failure. Honest about what retrieved code does."
+    },
+    {
+      "blind_id": "WRA-L-021",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 0,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Reports empty context and declines; expected auto_reservation answer exists, so retrieval failure with no hallucination."
+    },
+    {
+      "blind_id": "WRA-L-022",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Lists all Book fields with correct types and defaults; presents new_price as a plain stored field with no computation claim, matching expected facts."
+    },
+    {
+      "blind_id": "WRA-L-023",
+      "fact_hits": [
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Correct insufficient-evidence response; explicitly finds no hashing/salting code. Mentions bcrypt/PBKDF2 only as hypothetical examples, not claims."
+    },
+    {
+      "blind_id": "WRA-L-024",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 0,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Declined due to missing auto_reservation code; expected answer exists, so retrieval failure. Honest summary of retrieved but irrelevant context."
+    },
+    {
+      "blind_id": "WRA-L-025",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 3,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Retrieval missed the Book model; answer honestly reports insufficient evidence and identifies only partial entities, hitting no expected facts but avoiding both forbidden claims."
+    },
+    {
+      "blind_id": "WRA-L-026",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 4,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Missing evidence for SQLite/Chroma/embedding roles, but correctly conveys that LLM output is bound to supplied evidence and citation fields come from extracted metadata, not the model; SQLite never explicitly named."
+    },
+    {
+      "blind_id": "WRA-L-027",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 2,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Empty context; explicit insufficient-evidence refusal is the correct safe behavior but delivers none of the persistence-architecture facts."
+    },
+    {
+      "blind_id": "WRA-L-028",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 8,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Accurately reports all field types and defaults with file/line grounding; omits the fact that new_price is not auto-computed, but makes no forbidden claim."
+    },
+    {
+      "blind_id": "WRA-L-029",
+      "fact_hits": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 10,
+      "groundedness_0_10": 10,
+      "unsupported_material_claim": false,
+      "note": "Fully covers 404-by-id+slug, active-only newest-first reviews, authenticated-only ReviewForm, and template rendering; explicitly rules out both forbidden claims."
+    },
+    {
+      "blind_id": "WRA-L-030",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 2,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Retrieved context is unrelated; answer correctly declares insufficient evidence about scanner exclusions and symlinks and avoids the forbidden claims."
+    },
+    {
+      "blind_id": "WRA-L-031",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 3,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "No reindex-swap evidence retrieved; answer honestly declines the specific mechanism while accurately summarizing related snapshot-integrity guards from context."
+    },
+    {
+      "blind_id": "WRA-L-032",
+      "fact_hits": [
+        false,
+        false,
+        false,
+        true,
+        true
+      ],
+      "forbidden_hits": [
+        false,
+        false
+      ],
+      "correctness_0_10": 4,
+      "groundedness_0_10": 9,
+      "unsupported_material_claim": false,
+      "note": "Retrieval-selection and GroundedQAService steps missing; correctly describes citation rehydration via APIRuntime.citation_chunks and metadata-derived citations, explicitly denying model-invented paths."
+    }
+  ],
+  "attempts": [
+    {
+      "batch_offset": 0,
+      "latency_seconds": 138.275,
+      "session_id": "ses_f7a6e0669ffeZX5ZV2ajuNDKJv",
+      "tokens": {
+        "total": 11751,
+        "input": 4820,
+        "output": 755,
+        "reasoning": 6176,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "judge_config": "opencode_judge_recovery_config.json",
+      "raw_sha256": "5e1fb09d9e17d06e405106968b11a47457286991dc6790f64a130e1347a9389f"
+    },
+    {
+      "batch_offset": 8,
+      "latency_seconds": 38.998,
+      "session_id": "ses_f7a6bea43ffeC85QW2or765xi0",
+      "tokens": {
+        "total": 6873,
+        "input": 4138,
+        "output": 653,
+        "reasoning": 2082,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "judge_config": "opencode_judge_recovery_config.json",
+      "raw_sha256": "f56c9d5b09caa9ce5af7dd2fe17cec26b0fe1f82388e6791440f24057ce5becb"
+    },
+    {
+      "batch_offset": 16,
+      "latency_seconds": 47.514,
+      "session_id": "ses_f7a6b5228ffe9fGzhEgO71gSb7",
+      "tokens": {
+        "total": 6496,
+        "input": 4050,
+        "output": 636,
+        "reasoning": 1810,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "judge_config": "opencode_judge_recovery_config.json",
+      "raw_sha256": "fefdcc72a277d9ebdd15ce5f522282c138cc4d2c17a57f2c5c28213a5cb290ff"
+    },
+    {
+      "batch_offset": 24,
+      "latency_seconds": 73.239,
+      "session_id": "ses_f7a6a986effeb4chl1Dm3O0AlN",
+      "tokens": {
+        "total": 9707,
+        "input": 5086,
+        "output": 681,
+        "reasoning": 3940,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "judge_config": "opencode_judge_recovery_config.json",
+      "raw_sha256": "fc442456770e74dfc6c198753169169e9296c637dacd0fecdc6e16ae0d60329c"
+    }
+  ]
+}

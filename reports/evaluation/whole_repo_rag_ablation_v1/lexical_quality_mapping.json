@@ -1,0 +1,197 @@
+{
+  "evaluation_id": "whole_repo_rag_ablation_v1_lexical_quality",
+  "records": [
+    {
+      "blind_id": "WRA-L-001",
+      "case_id": "WRA-H-03-FA",
+      "concept_id": "WRA-H-03",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-002",
+      "case_id": "WRA-C-05-EN",
+      "concept_id": "WRA-C-05",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-003",
+      "case_id": "WRA-B-06-FA",
+      "concept_id": "WRA-B-06",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-004",
+      "case_id": "WRA-B-05-EN",
+      "concept_id": "WRA-B-05",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-005",
+      "case_id": "WRA-B-01-FA",
+      "concept_id": "WRA-B-01",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-006",
+      "case_id": "WRA-C-06-EN",
+      "concept_id": "WRA-C-06",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-007",
+      "case_id": "WRA-B-03-FA",
+      "concept_id": "WRA-B-03",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-008",
+      "case_id": "WRA-H-01-FA",
+      "concept_id": "WRA-H-01",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-009",
+      "case_id": "WRA-B-01-EN",
+      "concept_id": "WRA-B-01",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-010",
+      "case_id": "WRA-H-05-EN",
+      "concept_id": "WRA-H-05",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-011",
+      "case_id": "WRA-H-03-EN",
+      "concept_id": "WRA-H-03",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-012",
+      "case_id": "WRA-C-02-EN",
+      "concept_id": "WRA-C-02",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-013",
+      "case_id": "WRA-B-04-FA",
+      "concept_id": "WRA-B-04",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-014",
+      "case_id": "WRA-B-04-EN",
+      "concept_id": "WRA-B-04",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-015",
+      "case_id": "WRA-B-06-EN",
+      "concept_id": "WRA-B-06",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-016",
+      "case_id": "WRA-H-02-EN",
+      "concept_id": "WRA-H-02",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-017",
+      "case_id": "WRA-C-02-FA",
+      "concept_id": "WRA-C-02",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-018",
+      "case_id": "WRA-H-02-FA",
+      "concept_id": "WRA-H-02",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-019",
+      "case_id": "WRA-C-01-EN",
+      "concept_id": "WRA-C-01",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-020",
+      "case_id": "WRA-H-01-EN",
+      "concept_id": "WRA-H-01",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-021",
+      "case_id": "WRA-H-04-FA",
+      "concept_id": "WRA-H-04",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-022",
+      "case_id": "WRA-B-02-EN",
+      "concept_id": "WRA-B-02",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-023",
+      "case_id": "WRA-H-06-FA",
+      "concept_id": "WRA-H-06",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-024",
+      "case_id": "WRA-H-04-EN",
+      "concept_id": "WRA-H-04",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-025",
+      "case_id": "WRA-B-05-FA",
+      "concept_id": "WRA-B-05",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-026",
+      "case_id": "WRA-C-05-FA",
+      "concept_id": "WRA-C-05",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-027",
+      "case_id": "WRA-H-05-FA",
+      "concept_id": "WRA-H-05",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-028",
+      "case_id": "WRA-B-02-FA",
+      "concept_id": "WRA-B-02",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-029",
+      "case_id": "WRA-B-03-EN",
+      "concept_id": "WRA-B-03",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-030",
+      "case_id": "WRA-C-01-FA",
+      "concept_id": "WRA-C-01",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-031",
+      "case_id": "WRA-C-04-EN",
+      "concept_id": "WRA-C-04",
+      "arm": "lexical"
+    },
+    {
+      "blind_id": "WRA-L-032",
+      "case_id": "WRA-C-03-FA",
+      "concept_id": "WRA-C-03",
+      "arm": "lexical"
+    }
+  ]
+}

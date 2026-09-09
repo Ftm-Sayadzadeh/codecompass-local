@@ -1,0 +1,557 @@
+{
+  "evaluation_id": "whole_repo_rag_ablation_v1_quality",
+  "records": [
+    {
+      "blind_id": "WRA-Q-001",
+      "case_id": "WRA-H-01-EN",
+      "concept_id": "WRA-H-01",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-002",
+      "case_id": "WRA-C-03-FA",
+      "concept_id": "WRA-C-03",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-003",
+      "case_id": "WRA-B-02-EN",
+      "concept_id": "WRA-B-02",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-004",
+      "case_id": "WRA-B-05-FA",
+      "concept_id": "WRA-B-05",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-005",
+      "case_id": "WRA-H-05-EN",
+      "concept_id": "WRA-H-05",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-006",
+      "case_id": "WRA-B-02-FA",
+      "concept_id": "WRA-B-02",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-007",
+      "case_id": "WRA-B-03-EN",
+      "concept_id": "WRA-B-03",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-008",
+      "case_id": "WRA-C-03-EN",
+      "concept_id": "WRA-C-03",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-009",
+      "case_id": "WRA-H-06-EN",
+      "concept_id": "WRA-H-06",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-010",
+      "case_id": "WRA-C-02-EN",
+      "concept_id": "WRA-C-02",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-011",
+      "case_id": "WRA-B-02-EN",
+      "concept_id": "WRA-B-02",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-012",
+      "case_id": "WRA-H-03-FA",
+      "concept_id": "WRA-H-03",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-013",
+      "case_id": "WRA-B-05-EN",
+      "concept_id": "WRA-B-05",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-014",
+      "case_id": "WRA-C-03-FA",
+      "concept_id": "WRA-C-03",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-015",
+      "case_id": "WRA-H-04-FA",
+      "concept_id": "WRA-H-04",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-016",
+      "case_id": "WRA-B-01-FA",
+      "concept_id": "WRA-B-01",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-017",
+      "case_id": "WRA-C-06-EN",
+      "concept_id": "WRA-C-06",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-018",
+      "case_id": "WRA-C-02-EN",
+      "concept_id": "WRA-C-02",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-019",
+      "case_id": "WRA-H-01-EN",
+      "concept_id": "WRA-H-01",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-020",
+      "case_id": "WRA-B-02-FA",
+      "concept_id": "WRA-B-02",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-021",
+      "case_id": "WRA-H-05-FA",
+      "concept_id": "WRA-H-05",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-022",
+      "case_id": "WRA-H-02-FA",
+      "concept_id": "WRA-H-02",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-023",
+      "case_id": "WRA-B-03-FA",
+      "concept_id": "WRA-B-03",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-024",
+      "case_id": "WRA-H-04-FA",
+      "concept_id": "WRA-H-04",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-025",
+      "case_id": "WRA-H-06-FA",
+      "concept_id": "WRA-H-06",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-026",
+      "case_id": "WRA-B-02-FA",
+      "concept_id": "WRA-B-02",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-027",
+      "case_id": "WRA-H-01-EN",
+      "concept_id": "WRA-H-01",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-028",
+      "case_id": "WRA-B-01-EN",
+      "concept_id": "WRA-B-01",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-029",
+      "case_id": "WRA-B-01-EN",
+      "concept_id": "WRA-B-01",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-030",
+      "case_id": "WRA-B-03-FA",
+      "concept_id": "WRA-B-03",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-031",
+      "case_id": "WRA-B-05-EN",
+      "concept_id": "WRA-B-05",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-032",
+      "case_id": "WRA-C-05-EN",
+      "concept_id": "WRA-C-05",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-033",
+      "case_id": "WRA-B-05-FA",
+      "concept_id": "WRA-B-05",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-034",
+      "case_id": "WRA-B-03-EN",
+      "concept_id": "WRA-B-03",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-035",
+      "case_id": "WRA-H-06-FA",
+      "concept_id": "WRA-H-06",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-036",
+      "case_id": "WRA-H-06-EN",
+      "concept_id": "WRA-H-06",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-037",
+      "case_id": "WRA-H-04-EN",
+      "concept_id": "WRA-H-04",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-038",
+      "case_id": "WRA-B-04-EN",
+      "concept_id": "WRA-B-04",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-039",
+      "case_id": "WRA-B-04-FA",
+      "concept_id": "WRA-B-04",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-040",
+      "case_id": "WRA-H-02-FA",
+      "concept_id": "WRA-H-02",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-041",
+      "case_id": "WRA-H-04-EN",
+      "concept_id": "WRA-H-04",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-042",
+      "case_id": "WRA-C-05-FA",
+      "concept_id": "WRA-C-05",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-043",
+      "case_id": "WRA-H-04-EN",
+      "concept_id": "WRA-H-04",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-044",
+      "case_id": "WRA-C-04-FA",
+      "concept_id": "WRA-C-04",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-045",
+      "case_id": "WRA-B-03-EN",
+      "concept_id": "WRA-B-03",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-046",
+      "case_id": "WRA-C-06-FA",
+      "concept_id": "WRA-C-06",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-047",
+      "case_id": "WRA-H-04-FA",
+      "concept_id": "WRA-H-04",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-048",
+      "case_id": "WRA-H-06-FA",
+      "concept_id": "WRA-H-06",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-049",
+      "case_id": "WRA-B-04-FA",
+      "concept_id": "WRA-B-04",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-050",
+      "case_id": "WRA-H-01-FA",
+      "concept_id": "WRA-H-01",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-051",
+      "case_id": "WRA-H-05-EN",
+      "concept_id": "WRA-H-05",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-052",
+      "case_id": "WRA-H-03-EN",
+      "concept_id": "WRA-H-03",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-053",
+      "case_id": "WRA-B-06-EN",
+      "concept_id": "WRA-B-06",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-054",
+      "case_id": "WRA-H-01-FA",
+      "concept_id": "WRA-H-01",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-055",
+      "case_id": "WRA-B-06-FA",
+      "concept_id": "WRA-B-06",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-056",
+      "case_id": "WRA-B-05-FA",
+      "concept_id": "WRA-B-05",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-057",
+      "case_id": "WRA-H-03-FA",
+      "concept_id": "WRA-H-03",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-058",
+      "case_id": "WRA-H-03-EN",
+      "concept_id": "WRA-H-03",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-059",
+      "case_id": "WRA-H-02-EN",
+      "concept_id": "WRA-H-02",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-060",
+      "case_id": "WRA-C-04-EN",
+      "concept_id": "WRA-C-04",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-061",
+      "case_id": "WRA-H-05-EN",
+      "concept_id": "WRA-H-05",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-062",
+      "case_id": "WRA-H-02-FA",
+      "concept_id": "WRA-H-02",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-063",
+      "case_id": "WRA-C-05-EN",
+      "concept_id": "WRA-C-05",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-064",
+      "case_id": "WRA-C-01-EN",
+      "concept_id": "WRA-C-01",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-065",
+      "case_id": "WRA-B-04-EN",
+      "concept_id": "WRA-B-04",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-066",
+      "case_id": "WRA-H-01-FA",
+      "concept_id": "WRA-H-01",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-067",
+      "case_id": "WRA-C-02-FA",
+      "concept_id": "WRA-C-02",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-068",
+      "case_id": "WRA-C-01-FA",
+      "concept_id": "WRA-C-01",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-069",
+      "case_id": "WRA-B-06-EN",
+      "concept_id": "WRA-B-06",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-070",
+      "case_id": "WRA-H-05-FA",
+      "concept_id": "WRA-H-05",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-071",
+      "case_id": "WRA-H-03-FA",
+      "concept_id": "WRA-H-03",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-072",
+      "case_id": "WRA-B-01-FA",
+      "concept_id": "WRA-B-01",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-073",
+      "case_id": "WRA-C-05-FA",
+      "concept_id": "WRA-C-05",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-074",
+      "case_id": "WRA-H-03-EN",
+      "concept_id": "WRA-H-03",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-075",
+      "case_id": "WRA-C-02-FA",
+      "concept_id": "WRA-C-02",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-076",
+      "case_id": "WRA-C-03-EN",
+      "concept_id": "WRA-C-03",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-077",
+      "case_id": "WRA-H-05-FA",
+      "concept_id": "WRA-H-05",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-078",
+      "case_id": "WRA-B-01-EN",
+      "concept_id": "WRA-B-01",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-079",
+      "case_id": "WRA-H-02-EN",
+      "concept_id": "WRA-H-02",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-080",
+      "case_id": "WRA-B-06-FA",
+      "concept_id": "WRA-B-06",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-081",
+      "case_id": "WRA-B-04-FA",
+      "concept_id": "WRA-B-04",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-082",
+      "case_id": "WRA-C-04-FA",
+      "concept_id": "WRA-C-04",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-083",
+      "case_id": "WRA-H-02-EN",
+      "concept_id": "WRA-H-02",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-084",
+      "case_id": "WRA-B-05-EN",
+      "concept_id": "WRA-B-05",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-085",
+      "case_id": "WRA-B-06-EN",
+      "concept_id": "WRA-B-06",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-086",
+      "case_id": "WRA-C-01-EN",
+      "concept_id": "WRA-C-01",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-087",
+      "case_id": "WRA-B-03-FA",
+      "concept_id": "WRA-B-03",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-088",
+      "case_id": "WRA-B-02-EN",
+      "concept_id": "WRA-B-02",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-089",
+      "case_id": "WRA-B-06-FA",
+      "concept_id": "WRA-B-06",
+      "arm": "whole_repo"
+    },
+    {
+      "blind_id": "WRA-Q-090",
+      "case_id": "WRA-B-04-EN",
+      "concept_id": "WRA-B-04",
+      "arm": "git_agent_opencode"
+    },
+    {
+      "blind_id": "WRA-Q-091",
+      "case_id": "WRA-C-01-FA",
+      "concept_id": "WRA-C-01",
+      "arm": "semantic_gemini_2"
+    },
+    {
+      "blind_id": "WRA-Q-092",
+      "case_id": "WRA-B-01-FA",
+      "concept_id": "WRA-B-01",
+      "arm": "semantic_gemini_2"
+    }
+  ]
+}

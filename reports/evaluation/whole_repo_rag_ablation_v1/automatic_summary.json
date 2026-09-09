@@ -1,0 +1,86 @@
+{
+  "evaluation_id": "whole_repo_rag_ablation_v1",
+  "status": "awaiting_human_review",
+  "effective_records": 144,
+  "review_records": 120,
+  "arms": {
+    "whole_repo": {
+      "total": 36,
+      "complete": 23,
+      "failed": 1,
+      "unavailable": 12,
+      "recovered": 0,
+      "prompt_tokens": 401289,
+      "completion_tokens": 20340,
+      "reasoning_tokens": 11499,
+      "reported_cost_usd": 0.029142,
+      "all_attempts_with_usage": 23,
+      "all_attempts_reported_cost_usd": 0.029142,
+      "latency_median_seconds": 26.083,
+      "latency_p95_seconds": 40.543,
+      "context_gold_evidence_recall_all_positive_cases": 1.0
+    },
+    "lexical": {
+      "total": 36,
+      "complete": 32,
+      "failed": 4,
+      "unavailable": 0,
+      "recovered": 0,
+      "prompt_tokens": 31441,
+      "completion_tokens": 17110,
+      "reasoning_tokens": 8439,
+      "reported_cost_usd": 0.006422,
+      "all_attempts_with_usage": 32,
+      "all_attempts_reported_cost_usd": 0.006422,
+      "latency_median_seconds": 14.209,
+      "latency_p95_seconds": 27.066,
+      "context_gold_evidence_recall_all_positive_cases": 0.2222
+    },
+    "semantic_gemini_2": {
+      "total": 36,
+      "complete": 33,
+      "failed": 3,
+      "unavailable": 0,
+      "recovered": 0,
+      "prompt_tokens": 27306,
+      "completion_tokens": 25620,
+      "reasoning_tokens": 13703,
+      "reported_cost_usd": 0.006867,
+      "all_attempts_with_usage": 33,
+      "all_attempts_reported_cost_usd": 0.006867,
+      "latency_median_seconds": 15.999,
+      "latency_p95_seconds": 30.884,
+      "context_gold_evidence_recall_all_positive_cases": 0.6472
+    },
+    "hybrid_gemini_2": {
+      "total": 36,
+      "complete": 32,
+      "failed": 4,
+      "unavailable": 0,
+      "recovered": 1,
+      "prompt_tokens": 35512,
+      "completion_tokens": 23339,
+      "reasoning_tokens": 12052,
+      "reported_cost_usd": 0.007086,
+      "all_attempts_with_usage": 33,
+      "all_attempts_reported_cost_usd": 0.008144,
+      "latency_median_seconds": 16.762,
+      "latency_p95_seconds": 27.811,
+      "context_gold_evidence_recall_all_positive_cases": 0.5667
+    }
+  },
+  "retrieval_comparisons": {
+    "semantic_gemini_2_minus_lexical": {
+      "mean_delta": 0.425,
+      "ci95_low": 0.2833,
+      "ci95_high": 0.5694,
+      "concepts": 15
+    },
+    "hybrid_gemini_2_minus_lexical": {
+      "mean_delta": 0.3444,
+      "ci95_low": 0.2167,
+      "ci95_high": 0.4778,
+      "concepts": 15
+    }
+  }
+}

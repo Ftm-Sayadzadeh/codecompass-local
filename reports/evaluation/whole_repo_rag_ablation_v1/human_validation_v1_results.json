@@ -1,0 +1,82 @@
+{
+  "evaluation_id": "whole_repo_rag_human_validation_v1",
+  "review": {
+    "reviewer": "independent_anonymous_human",
+    "blinded_to_method_labels": true,
+    "completed_at": "2026-09-09",
+    "unique_responses": 54,
+    "pairs_per_comparison": 12,
+    "missing_ratings": 0,
+    "answer_type": {
+      "absence": 8,
+      "unmarked": 46
+    }
+  },
+  "provenance": {
+    "completed_workbook": "human_validation_v1_private/blind_human_review_v2_completed.xlsx",
+    "completed_workbook_sha256": "3bcc5588148920ce7a4e0fad7ebd73943db70705c00f62e70a859deffbad0012",
+    "mapping": "human_validation_v1_private/blind_mapping.json",
+    "sample_manifest": "human_validation_v1_sample_manifest.json"
+  },
+  "analysis": {
+    "quality_definition": "Arithmetic mean of fact_coverage, correctness, groundedness, and completeness for each response.",
+    "confidence_interval": "Paired response-level bootstrap percentile interval with 20000 deterministic resamples.",
+    "hypothesis_test": "Two-sided exact paired sign-flip test on score differences.",
+    "unavailable_handling": "Unavailable outputs were not assigned zero; human comparisons include only the predeclared paired sample."
+  },
+  "comparisons": {
+    "semantic_vs_whole_repo": {
+      "positive_arm": "semantic_gemini_2",
+      "baseline_arm": "whole_repo",
+      "pairs": 12,
+      "metrics": {
+        "fact_coverage": {"semantic_mean": 8.417, "whole_mean": 10.0, "delta": -1.583, "ci95": [-3.417, -0.167], "p_exact": 0.125},
+        "correctness": {"semantic_mean": 8.917, "whole_mean": 10.0, "delta": -1.083, "ci95": [-2.667, 0.0], "p_exact": 0.25},
+        "groundedness": {"semantic_mean": 8.75, "whole_mean": 9.917, "delta": -1.167, "ci95": [-2.5, -0.167], "p_exact": 0.094},
+        "completeness": {"semantic_mean": 8.25, "whole_mean": 9.917, "delta": -1.667, "ci95": [-3.5, -0.25], "p_exact": 0.063},
+        "quality": {"semantic_mean": 8.583, "whole_mean": 9.958, "delta": -1.375, "ci95": [-2.979, -0.187], "p_exact": 0.031, "wins_ties_losses": [1, 4, 7]}
+      },
+      "overall_result": {
+        "semantic": {"complete": 10, "partial": 1, "incorrect": 1, "insufficient": 0},
+        "whole": {"complete": 12, "partial": 0, "incorrect": 0, "insufficient": 0}
+      }
+    },
+    "semantic_vs_lexical": {
+      "positive_arm": "semantic_gemini_2",
+      "baseline_arm": "lexical",
+      "pairs": 12,
+      "metrics": {
+        "fact_coverage": {"semantic_mean": 8.417, "lexical_mean": 3.417, "delta": 5.0, "ci95": [2.833, 7.167], "p_exact": 0.004},
+        "correctness": {"semantic_mean": 9.25, "lexical_mean": 6.0, "delta": 3.25, "ci95": [1.75, 4.833], "p_exact": 0.004},
+        "groundedness": {"semantic_mean": 9.083, "lexical_mean": 5.333, "delta": 3.75, "ci95": [1.833, 5.75], "p_exact": 0.008},
+        "completeness": {"semantic_mean": 8.333, "lexical_mean": 3.333, "delta": 5.0, "ci95": [2.75, 7.167], "p_exact": 0.004},
+        "quality": {"semantic_mean": 8.771, "lexical_mean": 4.521, "delta": 4.25, "ci95": [2.396, 6.104], "p_exact": 0.004, "wins_ties_losses": [9, 3, 0]}
+      },
+      "overall_result": {
+        "semantic": {"complete": 10, "partial": 2, "incorrect": 0, "insufficient": 0},
+        "lexical": {"complete": 3, "partial": 1, "incorrect": 7, "insufficient": 1}
+      }
+    },
+    "semantic_vs_git_agent": {
+      "positive_arm": "semantic_gemini_2",
+      "baseline_arm": "git_agent_opencode",
+      "pairs": 12,
+      "metrics": {
+        "fact_coverage": {"semantic_mean": 8.417, "agent_mean": 7.833, "delta": 0.583, "ci95": [-1.667, 2.917], "p_exact": 0.875},
+        "correctness": {"semantic_mean": 9.25, "agent_mean": 8.0, "delta": 1.25, "ci95": [-0.333, 3.0], "p_exact": 0.25},
+        "groundedness": {"semantic_mean": 9.083, "agent_mean": 7.917, "delta": 1.167, "ci95": [-0.25, 2.667], "p_exact": 0.219},
+        "completeness": {"semantic_mean": 8.333, "agent_mean": 7.583, "delta": 0.75, "ci95": [-1.5, 3.0], "p_exact": 0.625},
+        "quality": {"semantic_mean": 8.771, "agent_mean": 7.833, "delta": 0.938, "ci95": [-0.875, 2.938], "p_exact": 0.309, "wins_ties_losses": [7, 3, 2]}
+      },
+      "overall_result": {
+        "semantic": {"complete": 10, "partial": 2, "incorrect": 0, "insufficient": 0},
+        "agent": {"complete": 9, "partial": 0, "incorrect": 3, "insufficient": 0}
+      }
+    }
+  },
+  "limitations": [
+    "A single independent human reviewer was used, so inter-rater agreement is unavailable.",
+    "The human validation is a balanced 12-pair sample per comparison, not a rating of every generated response.",
+    "Whole-repository quality is conditional on successful, reviewable outputs and does not represent unavailable large-repository executions."
+  ]
+}

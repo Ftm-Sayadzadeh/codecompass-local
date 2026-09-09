@@ -1,0 +1,93 @@
+{
+  "evaluation_id": "whole_repo_rag_ablation_v1",
+  "status": "provider_unavailable_after_three_failures",
+  "records": [
+    {
+      "case_id": "WRA-H-01-EN",
+      "repository_id": "hospital_system",
+      "language": "en",
+      "arm": "whole_repo",
+      "repetition": 1,
+      "execution_status": "failed",
+      "elapsed_seconds": 23.859598,
+      "answer": null,
+      "llm_attempt": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "69ea68de380dbab1b7b7185e82c26aec0e00584b0caa60b464159275f2d751dd",
+        "status": "failed",
+        "latency_seconds": 23.858122,
+        "raw_response_sanitized": null,
+        "error": {
+          "type": "LLMProviderError",
+          "provider_error_type": "HTTPError",
+          "message": "OpenAI-compatible request failed with HTTP 400"
+        }
+      },
+      "error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      }
+    },
+    {
+      "case_id": "WRA-H-01-EN",
+      "repository_id": "hospital_system",
+      "language": "en",
+      "arm": "lexical",
+      "repetition": 1,
+      "execution_status": "failed",
+      "elapsed_seconds": 24.043185,
+      "answer": null,
+      "llm_attempt": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "6afa26b332dcfa20acb03f06a5cb0dac2a10b1df772330518aacc612eac3c013",
+        "status": "failed",
+        "latency_seconds": 24.041783,
+        "raw_response_sanitized": null,
+        "error": {
+          "type": "LLMProviderError",
+          "provider_error_type": "HTTPError",
+          "message": "OpenAI-compatible request failed with HTTP 400"
+        }
+      },
+      "error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      }
+    },
+    {
+      "case_id": "WRA-H-01-EN",
+      "repository_id": "hospital_system",
+      "language": "en",
+      "arm": "semantic_gemini_2",
+      "repetition": 1,
+      "execution_status": "failed",
+      "elapsed_seconds": 22.638529,
+      "answer": null,
+      "llm_attempt": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "638bd9667b5810663a161ea067052b61a6c7a9fa8a59ce73c30d6a42de667d23",
+        "status": "failed",
+        "latency_seconds": 22.636764,
+        "raw_response_sanitized": null,
+        "error": {
+          "type": "LLMProviderError",
+          "provider_error_type": "HTTPError",
+          "message": "OpenAI-compatible request failed with HTTP 400"
+        }
+      },
+      "error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      }
+    }
+  ],
+  "concepts": [
+    "WRA-H-01",
+    "WRA-H-03",
+    "WRA-B-01",
+    "WRA-B-03",
+    "WRA-C-01",
+    "WRA-C-03"
+  ],
+  "additional_runs_per_arm": 2
+}
