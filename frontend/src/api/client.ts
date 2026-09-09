@@ -1,6 +1,7 @@
 import type {
   ApiErrorBody,
   AskResponse,
+  ContextStrategyEvaluationResponse,
   DocumentationResponse,
   EmbeddingOverride,
   EmbeddingState,
@@ -62,6 +63,7 @@ function compact<T extends Record<string, unknown>>(value: T): Partial<T> {
 
 export function providerOverride(value: ProviderState): ProviderOverride | undefined {
   if (value.useBackendDefault) return undefined;
+  if (value.preset) return { preset: value.preset };
   return compact({
     provider: value.provider,
     base_url: value.baseUrl.trim() || undefined,
@@ -142,4 +144,5 @@ export const api = {
   evaluation: () => request<EvaluationResponse>("/evaluation/summary"),
   performance: () => request<EvaluationResponse>("/evaluation/performance"),
   finalThesisEvaluation: () => request<FinalThesisEvaluationResponse>("/evaluation/final-thesis"),
+  contextStrategyEvaluation: () => request<ContextStrategyEvaluationResponse>("/evaluation/context-strategy"),
 };

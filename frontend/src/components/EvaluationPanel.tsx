@@ -1,7 +1,7 @@
 import { Activity, BarChart3, CheckCircle2, ChevronDown, ChevronUp, Gauge, Info, Snowflake } from "lucide-react";
 import { useState } from "react";
 
-import type { BenchmarkQaDetail, BenchmarkQuestion, EvaluationResponse, FinalThesisEvaluationResponse, MetricAggregate, ThesisQuality, ThesisRankMetrics } from "../api/types";
+import type { BenchmarkQaDetail, BenchmarkQuestion, ContextStrategyEvaluationResponse, EvaluationResponse, FinalThesisEvaluationResponse, MetricAggregate, ThesisQuality, ThesisRankMetrics } from "../api/types";
 import { ErrorMessage } from "./ErrorMessage";
 
 type Perspective = "all" | "fa" | "en" | "compare";
@@ -35,19 +35,21 @@ function hitPercent(metric: ThesisRankMetrics, key: "hit_at_1" | "hit_at_3" | "h
   return `${(metric[key] / (metric.cases ?? metric.n ?? 1) * 100).toFixed(1)}%`;
 }
 
-function score(value: number | null | undefined) {
-  return value == null ? "Unavailable" : value.toFixed(2);
+function tenPointPercent(value: number | null | undefined) {
+  return value == null ? "Unavailable" : `${(value * 10).toFixed(1)}%`;
 }
 
-function scoreOutOfTen(value: number | null) {
-  return value == null ? "Unavailable" : `${value.toFixed(2)}/10`;
+function percentagePoints(value: number | null | undefined) {
+  if (value == null) return "Unavailable";
+  const points = value * 10;
+  return `${points > 0 ? "+" : ""}${points.toFixed(1)} pp`;
 }
 
 function QualityRow({ name, quality }: { name: string; quality: ThesisQuality }) {
   return (
     <div className="thesis-table-row">
-      <strong>{name}</strong><span data-label="Scored">{quality.scored_records}</span><span data-label="Correctness">{score(quality.correctness_0_10.mean)}</span>
-      <span data-label="Groundedness">{score(quality.groundedness_0_10.mean)}</span><span data-label="Persian readability">{score(quality.persian_readability_0_10.mean)}</span><span data-label="Usefulness">{score(quality.usefulness_0_10.mean)}</span>
+      <strong>{name}</strong><span data-label="Scored">{quality.scored_records}</span><span data-label="Correctness">{tenPointPercent(quality.correctness_0_10.mean)}</span>
+      <span data-label="Groundedness">{tenPointPercent(quality.groundedness_0_10.mean)}</span><span data-label="Persian readability">{tenPointPercent(quality.persian_readability_0_10.mean)}</span><span data-label="Usefulness">{tenPointPercent(quality.usefulness_0_10.mean)}</span>
     </div>
   );
 }
@@ -63,10 +65,10 @@ function QaRun({ run, models }: { run: BenchmarkQaDetail; models: FinalThesisEva
       </summary>
       <div className="qa-run-body">
         <div className="qa-score-strip">
-          <span>Correctness <strong>{scoreOutOfTen(run.human_scores.correctness_0_10)}</strong></span>
-          <span>Groundedness <strong>{scoreOutOfTen(run.human_scores.groundedness_0_10)}</strong></span>
-          <span>Readability <strong>{scoreOutOfTen(run.human_scores.persian_readability_0_10)}</strong></span>
-          <span>Usefulness <strong>{scoreOutOfTen(run.human_scores.usefulness_0_10)}</strong></span>
+          <span>Correctness <strong>{tenPointPercent(run.human_scores.correctness_0_10)}</strong></span>
+          <span>Groundedness <strong>{tenPointPercent(run.human_scores.groundedness_0_10)}</strong></span>
+          <span>Readability <strong>{tenPointPercent(run.human_scores.persian_readability_0_10)}</strong></span>
+          <span>Usefulness <strong>{tenPointPercent(run.human_scores.usefulness_0_10)}</strong></span>
           <span>Hallucination <strong>{run.human_scores.hallucination ?? "Unavailable"}</strong></span>
         </div>
         <p className="qa-provenance">Execution: {run.execution_provenance.replaceAll("_", " ")}</p>
@@ -132,7 +134,7 @@ function FinalThesisView({ result }: { result: FinalThesisEvaluationResponse }) 
         <div className="scientific-summary">
           <div><span>Gemini 2 semantic Top-3</span><strong>{hitPercent(gemini2, "hit_at_3")}</strong></div>
           <div><span>Usable QA outputs</span><strong>{execution.total - execution.final_failure}/{execution.total}</strong></div>
-          <div><span>GLM Persian readability</span><strong>{score(qa.glm.persian_readability_0_10.mean)}/10</strong></div>
+          <div><span>GLM Persian readability</span><strong>{tenPointPercent(qa.glm.persian_readability_0_10.mean)}</strong></div>
           <div><span>Human-scored outputs</span><strong>{data.human_evaluation.usable}/{data.human_evaluation.records}</strong></div>
         </div>
         <div className="thesis-overview">
@@ -158,7 +160,7 @@ function FinalThesisView({ result }: { result: FinalThesisEvaluationResponse }) 
           <div className="thesis-table-head"><span>LLM</span><span>Scored</span><span>Correctness</span><span>Groundedness</span><span>Persian readability</span><span>Usefulness</span></div>
           {Object.entries(qa).map(([name, quality]) => <QualityRow key={name} name={data.models.llms[name] ?? name} quality={quality} />)}
         </div>
-        <p className="measured-note">Paired GLM minus Qwen effect: +{data.qa.paired_effects.glm_minus_qwen.treatment_minus_control.correctness_0_10.mean?.toFixed(2)} correctness and +{data.qa.paired_effects.glm_minus_qwen.treatment_minus_control.persian_readability_0_10.mean?.toFixed(2)} Persian readability.</p>
+        <p className="measured-note">Paired GLM minus Qwen effect: {percentagePoints(data.qa.paired_effects.glm_minus_qwen.treatment_minus_control.correctness_0_10.mean)} correctness and {percentagePoints(data.qa.paired_effects.glm_minus_qwen.treatment_minus_control.persian_readability_0_10.mean)} Persian readability.</p>
       </section> : null}
 
       {section === "documentation" ? <section className="thesis-section">
@@ -166,8 +168,8 @@ function FinalThesisView({ result }: { result: FinalThesisEvaluationResponse }) 
         <div className="scientific-summary compact-summary">
           <div><span>GLM complete</span><strong>{data.documentation.execution.glm_complete}/9</strong></div>
           <div><span>Citation mismatches</span><strong>{data.documentation.execution.citation_identity_mismatches}</strong></div>
-          <div><span>Groundedness</span><strong>{score(documentation.groundedness_0_10.mean)}/10</strong></div>
-          <div><span>Persian readability</span><strong>{score(documentation.persian_readability_0_10.mean)}/10</strong></div>
+          <div><span>Groundedness</span><strong>{tenPointPercent(documentation.groundedness_0_10.mean)}</strong></div>
+          <div><span>Persian readability</span><strong>{tenPointPercent(documentation.persian_readability_0_10.mean)}</strong></div>
         </div>
         <div className="availability-note"><strong>Qwen result in this frozen evaluation: unavailable</strong><span>All 9 benchmark executions failed at the local-provider HTTP path. This records execution availability, not Qwen documentation quality or the current product status.</span></div>
       </section> : null}
@@ -182,6 +184,67 @@ function FinalThesisView({ result }: { result: FinalThesisEvaluationResponse }) 
 
       <BenchmarkQuestions questions={data.questions} qaDetails={data.qa_details} models={data.models} />
       <p className="evaluation-disclaimer"><Info size={14} /> Human-reviewed, fixed-dataset measurements. Missing executions are reported separately from measured quality.</p>
+    </div>
+  );
+}
+
+function ContextStrategyView({ result }: { result: ContextStrategyEvaluationResponse }) {
+  const comparisons = [
+    ["Semantic vs Whole repository", result.data.comparisons.semantic_vs_whole_repo, "whole_mean"],
+    ["Semantic vs Lexical", result.data.comparisons.semantic_vs_lexical, "lexical_mean"],
+    ["Semantic vs Git Agent", result.data.comparisons.semantic_vs_git_agent, "agent_mean"],
+  ] as const;
+  const lexical = result.data.comparisons.semantic_vs_lexical.metrics.quality;
+  const agent = result.data.comparisons.semantic_vs_git_agent.metrics.quality;
+  const whole = result.data.comparisons.semantic_vs_whole_repo.metrics.quality;
+  return (
+    <div className="evaluation-surface thesis-surface">
+      <div className="evaluation-toolbar">
+        <div className="benchmark-identity">
+          <span className="frozen-badge"><Snowflake size={14} /> Blind human evaluation</span>
+          <div><strong>Repository context strategy</strong><small>{result.data.review.unique_responses} independently scored responses · {result.data.review.pairs_per_comparison} paired questions per comparison</small></div>
+        </div>
+      </div>
+      <div className="experiment-purpose">
+        <strong>Research question</strong>
+        <span>Which way of supplying repository evidence to the same GLM gives the best balance of answer quality, cost, speed, and scalability?</span>
+      </div>
+      <div className="scientific-summary">
+        <div><span>Embedding gain vs lexical</span><strong>{percentagePoints(lexical.delta)}</strong></div>
+        <div><span>Semantic vs Agent</span><strong>{percentagePoints(agent.delta)}</strong><small>p = {agent.p_exact.toFixed(3)}</small></div>
+        <div><span>Whole-repo advantage</span><strong>{percentagePoints(-whole.delta)}</strong><small>successful outputs only</small></div>
+        <div><span>Missing human ratings</span><strong>{result.data.review.missing_ratings}</strong></div>
+      </div>
+      <section className="thesis-section">
+        <div className="benchmark-heading"><div><h3>Human-scored answer quality</h3><p>Quality is the mean of fact coverage, correctness, groundedness, and completeness. Scores are displayed as percentages.</p></div><CheckCircle2 size={18} /></div>
+        <div className="thesis-table quality-comparison">
+          <div className="thesis-table-head"><span>Comparison</span><span>Semantic</span><span>Other method</span><span>Difference</span><span>95% CI</span><span>Exact p</span></div>
+          {comparisons.map(([label, comparison, baseline]) => {
+            const metric = comparison.metrics.quality;
+            return <div className="thesis-table-row" key={label}>
+              <strong>{label}</strong><span data-label="Semantic">{tenPointPercent(metric.semantic_mean)}</span><span data-label="Other method">{tenPointPercent(metric[baseline])}</span><span data-label="Difference">{percentagePoints(metric.delta)}</span><span data-label="95% CI">{percentagePoints(metric.ci95[0])} to {percentagePoints(metric.ci95[1])}</span><span data-label="Exact p">{metric.p_exact.toFixed(3)}</span>
+            </div>;
+          })}
+        </div>
+        <div className="experiment-findings" aria-label="Experiment questions and conclusions">
+          <article>
+            <strong>1 · Selected context or whole repository?</strong>
+            <p><b>Question:</b> Is RAG-selected context more accurate than sending all source files directly to GLM?</p>
+            <p><b>Conclusion:</b> Not on successful small-repository outputs: Whole Repository scored 99.6% versus 85.8% (p = 0.031). This does not prove Whole Repository is generally better: Semantic RAG used about 95% fewer prompt tokens, had lower median latency (16.0s vs 26.1s), and still ran when the large-repository input was unavailable.</p>
+          </article>
+          <article>
+            <strong>2 · Does embedding add value?</strong>
+            <p><b>Question:</b> Does semantic retrieval improve final answers beyond retrieval based only on lexical token overlap?</p>
+            <p><b>Conclusion:</b> Yes in this benchmark. Semantic RAG scored 87.7% versus 45.2%, a significant +42.5 pp gain (95% CI +24.0 to +61.0; p = 0.004).</p>
+          </article>
+          <article>
+            <strong>3 · Does a tool-using Git Agent help?</strong>
+            <p><b>Question:</b> Does cloning the repository and letting OpenCode/GLM inspect it with tools produce better answers than Semantic RAG?</p>
+            <p><b>Conclusion:</b> Better quality was not demonstrated: Semantic RAG scored 87.7% versus 78.3%, and the difference was not significant (p = 0.309). The Agent enabled dynamic large-repository access, but its median latency was 2.34× higher and its cost was about 8.5–10× higher.</p>
+          </article>
+        </div>
+      </section>
+      <p className="evaluation-disclaimer"><Info size={14} /> One independent reviewer scored anonymized outputs. Inter-rater agreement is unavailable.</p>
     </div>
   );
 }
@@ -223,15 +286,16 @@ function LanguageComparison({ label, metrics }: { label: string; metrics: Metric
   );
 }
 
-export function EvaluationPanel({ summary, performance, finalThesis, loading, error }: {
+export function EvaluationPanel({ summary, performance, finalThesis, contextStrategy, loading, error }: {
   summary: EvaluationResponse | null;
   performance: EvaluationResponse | null;
   finalThesis: FinalThesisEvaluationResponse | null;
+  contextStrategy: ContextStrategyEvaluationResponse | null;
   loading: boolean;
   error: unknown;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const [dataset, setDataset] = useState<"official" | "thesis">("official");
+  const [dataset, setDataset] = useState<"official" | "thesis" | "context">("official");
   const [perspective, setPerspective] = useState<Perspective>("all");
   const overall = qualityMetrics(summary, "all");
   const persian = qualityMetrics(summary, "fa");
@@ -258,10 +322,11 @@ export function EvaluationPanel({ summary, performance, finalThesis, loading, er
       </header>
       {expanded && loading ? <div className="evaluation-loading">Loading evaluation artifacts...</div> : null}
       {expanded && error ? <ErrorMessage error={error} /> : null}
-      {expanded && summary && performance && finalThesis ? <>
+      {expanded && summary && performance && finalThesis && contextStrategy ? <>
         <div className="segmented evaluation-datasets" aria-label="Evaluation dataset">
           <button type="button" className={dataset === "official" ? "active" : ""} aria-pressed={dataset === "official"} onClick={() => setDataset("official")}>Official retrieval</button>
           <button type="button" className={dataset === "thesis" ? "active" : ""} aria-pressed={dataset === "thesis"} onClick={() => setDataset("thesis")}>Final thesis evaluation</button>
+          <button type="button" className={dataset === "context" ? "active" : ""} aria-pressed={dataset === "context"} onClick={() => setDataset("context")}>Context strategy experiment</button>
         </div>
         {dataset === "official" ? (
         <div className="evaluation-surface">
@@ -325,7 +390,7 @@ export function EvaluationPanel({ summary, performance, finalThesis, loading, er
           <BenchmarkQuestions questions={summary.data.questions} />
           <p className="evaluation-disclaimer"><Info size={14} /> Fixed-dataset measurements for system evaluation; they do not represent confidence or quality for an individual answer.</p>
         </div>
-        ) : <FinalThesisView result={finalThesis} />}
+        ) : dataset === "thesis" ? <FinalThesisView result={finalThesis} /> : <ContextStrategyView result={contextStrategy} />}
       </> : null}
     </section>
   );
