@@ -74,6 +74,19 @@ const finalThesisEvaluation = {
     }],
   },
 };
+const contextStrategyEvaluation = {
+  scope: "benchmark_evaluation", not_per_answer_confidence: true, artifact_sha256: "context-strategy",
+  data: {
+    evaluation_id: "whole_repo_rag_human_validation_v1",
+    review: { reviewer: "independent_anonymous_human", blinded_to_method_labels: true, completed_at: "2026-09-09", unique_responses: 54, pairs_per_comparison: 12, missing_ratings: 0 },
+    comparisons: {
+      semantic_vs_whole_repo: { pairs: 12, metrics: { quality: { semantic_mean: 8.583, whole_mean: 9.958, delta: -1.375, ci95: [-2.979, -.187], p_exact: .031 } } },
+      semantic_vs_lexical: { pairs: 12, metrics: { quality: { semantic_mean: 8.771, lexical_mean: 4.521, delta: 4.25, ci95: [2.396, 6.104], p_exact: .004 } } },
+      semantic_vs_git_agent: { pairs: 12, metrics: { quality: { semantic_mean: 8.771, agent_mean: 7.833, delta: .938, ci95: [-.875, 2.938], p_exact: .309 } } },
+    },
+    limitations: ["single reviewer"],
+  },
+};
 
 function response(body: unknown, status = 200) {
   return Promise.resolve(new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } }));
@@ -93,6 +106,7 @@ function installApi(handler?: (path: string, init?: RequestInit) => Promise<Resp
     if (path === "/evaluation/summary") return response(evaluation);
     if (path === "/evaluation/performance") return response(performance);
     if (path === "/evaluation/final-thesis") return response(finalThesisEvaluation);
+    if (path === "/evaluation/context-strategy") return response(contextStrategyEvaluation);
     throw new Error(`Unhandled request: ${path}`);
   });
   vi.stubGlobal("fetch", fetchMock);
@@ -177,14 +191,19 @@ describe("CodeCompass SPA", () => {
     fireEvent.click(within(qaRuns).getByText("gemini-embedding-2"));
     expect(within(qaRuns).getByText("Grounded frozen answer.")).toBeInTheDocument();
     expect(within(qaRuns).getByText("src/example.py:1-3 · example")).toBeInTheDocument();
-    expect(within(qaRuns).getByText("9.00/10")).toBeInTheDocument();
+    expect(within(qaRuns).getByText("90.0%")).toBeInTheDocument();
     fireEvent.click(within(screen.getByLabelText("Final thesis evaluation section")).getByRole("button", { name: "Search" }));
     expect(screen.getByText("Search by embedding arm")).toBeInTheDocument();
     expect(screen.getAllByText("gemini-embedding-2").length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole("button", { name: "Context strategy experiment" }));
+    expect(screen.getByText("Repository context strategy")).toBeInTheDocument();
+    expect(screen.getAllByText("+42.5 pp").length).toBeGreaterThan(0);
+    expect(screen.getByText("85.8%")).toBeInTheDocument();
+    expect(screen.getByText("3 · Does a tool-using Git Agent help?")).toBeInTheDocument();
+    expect(screen.getByText(/median latency was 2.34× higher/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Provider settings" }));
     expect(screen.getByRole("dialog", { name: "Provider settings" })).toBeInTheDocument();
-    const defaults = screen.getAllByLabelText("Use backend defaults");
-    fireEvent.click(defaults[1]);
+    fireEvent.change(screen.getByLabelText("LLM model preset"), { target: { value: "custom" } });
     const providers = screen.getAllByLabelText("Provider");
     fireEvent.change(providers[1], { target: { value: "openai_compatible" } });
     const key = screen.getByLabelText("API key");
@@ -204,9 +223,8 @@ describe("CodeCompass SPA", () => {
     await ready();
 
     fireEvent.click(screen.getByRole("button", { name: "Provider settings" }));
-    const defaults = screen.getAllByLabelText("Use backend defaults");
-    fireEvent.click(defaults[0]);
-    fireEvent.click(defaults[1]);
+    fireEvent.change(screen.getByLabelText("Embedding model preset"), { target: { value: "custom" } });
+    fireEvent.change(screen.getByLabelText("LLM model preset"), { target: { value: "custom" } });
     const models = screen.getAllByLabelText("Model");
     fireEvent.change(models[0], { target: { value: "embed-custom" } });
     fireEvent.change(models[1], { target: { value: "llm-custom" } });
@@ -224,9 +242,9 @@ describe("CodeCompass SPA", () => {
     expect(screen.getAllByLabelText("Model")[1]).toHaveValue("llm-custom");
 
     fireEvent.click(screen.getAllByRole("button", { name: "Reset to backend defaults" })[1]);
-    expect(screen.getAllByLabelText("Use backend defaults")[0]).not.toBeChecked();
+    expect(screen.getByLabelText("Embedding model preset")).toHaveValue("custom");
     expect(screen.getAllByLabelText("Model")[0]).toHaveValue("embed-custom");
-    expect(screen.getAllByLabelText("Use backend defaults")[1]).toBeChecked();
+    expect(screen.getByLabelText("LLM model preset")).toHaveValue("backend_default");
     expect(screen.getAllByLabelText("Model")[1]).toHaveValue("");
   });
 
@@ -236,8 +254,8 @@ describe("CodeCompass SPA", () => {
     render(<App />);
     await ready();
     fireEvent.click(screen.getByRole("button", { name: "Provider settings" }));
-    expect(screen.getAllByLabelText("Use backend defaults")).toHaveLength(2);
-    for (const checkbox of screen.getAllByLabelText("Use backend defaults")) expect(checkbox).toBeChecked();
+    expect(screen.getByLabelText("Embedding model preset")).toHaveValue("backend_default");
+    expect(screen.getByLabelText("LLM model preset")).toHaveValue("backend_default");
   });
 
   it("rejects invalid persisted numeric preferences and restores valid values", () => {
@@ -381,7 +399,7 @@ describe("CodeCompass SPA", () => {
     const budget = screen.getByLabelText("Answer token budget");
     fireEvent.change(budget, { target: { value: "1024" } });
     fireEvent.click(screen.getByRole("button", { name: "Provider settings" }));
-    fireEvent.click(screen.getAllByLabelText("Use backend defaults")[1]);
+    fireEvent.change(screen.getByLabelText("LLM model preset"), { target: { value: "custom" } });
     fireEvent.change(screen.getAllByLabelText("Model")[1], { target: { value: "another-model" } });
     expect(budget).toHaveValue(1024);
     fireEvent.click(screen.getByRole("button", { name: "Ask CodeCompass" }));

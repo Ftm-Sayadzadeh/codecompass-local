@@ -95,7 +95,7 @@ npm run dev -- --host 127.0.0.1 --port 5173
 
 Open [http://127.0.0.1:5173](http://127.0.0.1:5173). Vite proxies `/api` to the backend during development.
 
-Use **Repository** to select and index a local Python project. Use **Provider settings** to configure embedding and LLM providers independently. API keys are kept in browser memory for the current page session and are not persisted by the frontend.
+Use **Repository** to select and index a local Python project. **Provider settings** includes dropdown presets for the three evaluated embedding models and two LLMs. Preset credentials are read from the project-root `.env` file and never sent to the browser; custom request-scoped API keys remain memory-only. Re-index after changing the embedding preset.
 
 The verified walkthrough is documented in [docs/final-demo-runbook.md](docs/final-demo-runbook.md).
 

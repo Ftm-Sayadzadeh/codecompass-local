@@ -6,6 +6,7 @@ describe("provider request configuration", () => {
   it("keeps backend defaults empty and embedding/LLM overrides independent", () => {
     expect(providerOverride({
       useBackendDefault: true,
+      preset: "",
       provider: "ollama",
       baseUrl: "",
       model: "",
@@ -15,6 +16,7 @@ describe("provider request configuration", () => {
 
     const embedding = embeddingOverride({
       useBackendDefault: false,
+      preset: "",
       provider: "ollama",
       baseUrl: "http://embedding.internal",
       model: "embed-model",
@@ -24,6 +26,7 @@ describe("provider request configuration", () => {
     });
     const llm = providerOverride({
       useBackendDefault: false,
+      preset: "",
       provider: "openai_compatible",
       baseUrl: "https://llm.example/v1",
       model: "chat-model",
@@ -45,5 +48,17 @@ describe("provider request configuration", () => {
       api_key: "DUMMY_FRONTEND_TEST_KEY",
       timeout_seconds: 90,
     });
+
+    expect(providerOverride({ ...defaultState, useBackendDefault: false, preset: "glm" })).toEqual({ preset: "glm" });
   });
 });
+
+const defaultState = {
+  useBackendDefault: true,
+  preset: "",
+  provider: "ollama" as const,
+  baseUrl: "",
+  model: "",
+  apiKey: "",
+  timeoutSeconds: "",
+};

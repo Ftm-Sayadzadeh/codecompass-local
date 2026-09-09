@@ -10,9 +10,13 @@ import tokenize
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
-from codecompass.api.evaluation import project_artifact, project_final_thesis_artifact
+from codecompass.api.evaluation import (
+    project_artifact,
+    project_context_strategy_artifact,
+    project_final_thesis_artifact,
+)
 from codecompass.api.schemas import EmbeddingProviderOverride, ProviderOverride
 from codecompass.documentation import FunctionDocumentationService
 from codecompass.embeddings import EmbeddingIdentity, embedding_identity
@@ -51,24 +55,29 @@ class APISettings:
     final_thesis_artifact: Path = Path("reports/evaluation/final_thesis_evaluation_v1/final_thesis_evaluation_report_data.json")
     final_thesis_questions_artifact: Path = Path("reports/evaluation/final_thesis_evaluation_v1/benchmark_cases.json")
     final_thesis_review_artifact: Path = Path("reports/evaluation/final_thesis_evaluation_v1/human_review_scored_unblinded.json")
+    context_strategy_artifact: Path = Path("reports/evaluation/whole_repo_rag_ablation_v1/human_validation_v1_results.json")
     embedding_defaults: ProviderConfig = field(default_factory=ProviderConfig)
     llm_defaults: ProviderConfig = field(default_factory=ProviderConfig)
+    provider_environment: Mapping[str, str] = field(default_factory=dict, repr=False)
 
     @classmethod
     def from_environment(cls) -> "APISettings":
-        defaults = ProviderConfig.from_environment()
+        values = _project_environment(Path(os.environ.get("CODECOMPASS_ENV_FILE", ".env")))
+        defaults = ProviderConfig.from_environment(environment=values)
         return cls(
-            database_path=Path(os.getenv("CODECOMPASS_DATABASE", "data/codecompass.sqlite")),
-            chroma_path=Path(os.getenv("CODECOMPASS_CHROMA", "data/chroma")),
-            collection_prefix=os.getenv("CODECOMPASS_COLLECTION_PREFIX", "codecompass-project"),
-            baseline_artifact=Path(os.getenv("CODECOMPASS_BASELINE_ARTIFACT", "data/evaluation/results/official_baseline_v1.json")),
-            official_questions_artifact=Path(os.getenv("CODECOMPASS_OFFICIAL_QUESTIONS_ARTIFACT", "data/evaluation/bilingual_benchmark_v1.json")),
-            performance_artifact=Path(os.getenv("CODECOMPASS_PERFORMANCE_ARTIFACT", "data/evaluation/results/scalability_performance_v1.json")),
-            final_thesis_artifact=Path(os.getenv("CODECOMPASS_FINAL_THESIS_ARTIFACT", "reports/evaluation/final_thesis_evaluation_v1/final_thesis_evaluation_report_data.json")),
-            final_thesis_questions_artifact=Path(os.getenv("CODECOMPASS_FINAL_THESIS_QUESTIONS_ARTIFACT", "reports/evaluation/final_thesis_evaluation_v1/benchmark_cases.json")),
-            final_thesis_review_artifact=Path(os.getenv("CODECOMPASS_FINAL_THESIS_REVIEW_ARTIFACT", "reports/evaluation/final_thesis_evaluation_v1/human_review_scored_unblinded.json")),
+            database_path=Path(values.get("CODECOMPASS_DATABASE", "data/codecompass.sqlite")),
+            chroma_path=Path(values.get("CODECOMPASS_CHROMA", "data/chroma")),
+            collection_prefix=values.get("CODECOMPASS_COLLECTION_PREFIX", "codecompass-project"),
+            baseline_artifact=Path(values.get("CODECOMPASS_BASELINE_ARTIFACT", "data/evaluation/results/official_baseline_v1.json")),
+            official_questions_artifact=Path(values.get("CODECOMPASS_OFFICIAL_QUESTIONS_ARTIFACT", "data/evaluation/bilingual_benchmark_v1.json")),
+            performance_artifact=Path(values.get("CODECOMPASS_PERFORMANCE_ARTIFACT", "data/evaluation/results/scalability_performance_v1.json")),
+            final_thesis_artifact=Path(values.get("CODECOMPASS_FINAL_THESIS_ARTIFACT", "reports/evaluation/final_thesis_evaluation_v1/final_thesis_evaluation_report_data.json")),
+            final_thesis_questions_artifact=Path(values.get("CODECOMPASS_FINAL_THESIS_QUESTIONS_ARTIFACT", "reports/evaluation/final_thesis_evaluation_v1/benchmark_cases.json")),
+            final_thesis_review_artifact=Path(values.get("CODECOMPASS_FINAL_THESIS_REVIEW_ARTIFACT", "reports/evaluation/final_thesis_evaluation_v1/human_review_scored_unblinded.json")),
+            context_strategy_artifact=Path(values.get("CODECOMPASS_CONTEXT_STRATEGY_ARTIFACT", "reports/evaluation/whole_repo_rag_ablation_v1/human_validation_v1_results.json")),
             embedding_defaults=defaults,
             llm_defaults=defaults,
+            provider_environment=values,
         )
 
 
@@ -93,6 +102,8 @@ class APIRuntime:
         )
 
     def embedding_config(self, override: EmbeddingProviderOverride | None) -> ProviderConfig:
+        if override and override.preset:
+            return self._embedding_preset(override.preset)
         default = self.settings.embedding_defaults
         provider = override.provider if override and override.provider else default.provider
         same_provider = provider == default.provider
@@ -109,6 +120,8 @@ class APIRuntime:
         )
 
     def llm_config(self, override: ProviderOverride | None) -> ProviderConfig:
+        if override and override.preset:
+            return self._llm_preset(override.preset)
         default = self.settings.llm_defaults
         provider = override.provider if override and override.provider else default.provider
         same_provider = provider == default.provider
@@ -118,6 +131,52 @@ class APIRuntime:
             api_key=(override.api_key.get_secret_value() if override and override.api_key else default.api_key if same_provider else None),
             llm_model=(override.model if override and override.model else default.llm_model),
             timeout_seconds=(override.timeout_seconds if override and override.timeout_seconds else default.timeout_seconds),
+        )
+
+    def _embedding_preset(self, name: str) -> ProviderConfig:
+        values = self.settings.provider_environment
+        timeout = self.settings.embedding_defaults.timeout_seconds
+        if name == "nomic":
+            return ProviderConfig(
+                provider=OLLAMA,
+                base_url=values.get("CODECOMPASS_NOMIC_BASE_URL", "http://127.0.0.1:11434"),
+                embedding_model=values.get("CODECOMPASS_NOMIC_EMBEDDING_MODEL", "nomic-embed-text-local:latest"),
+                timeout_seconds=timeout,
+            )
+        prefixes = {
+            "gemini_001": "CODECOMPASS_EMBEDDING_COMPARE",
+            "gemini_2": "CODECOMPASS_GEMINI2_EMBEDDING",
+        }
+        prefix = prefixes.get(name)
+        if prefix is None:
+            raise ValueError("Unknown embedding preset")
+        return ProviderConfig(
+            provider="openai_compatible",
+            base_url=_required(values, f"{prefix}_BASE_URL"),
+            api_key=_required(values, f"{prefix}_API_KEY"),
+            embedding_model=_required(values, f"{prefix}_MODEL"),
+            embedding_dimensions=int(_required(values, f"{prefix}_DIMENSIONS")),
+            timeout_seconds=timeout,
+        )
+
+    def _llm_preset(self, name: str) -> ProviderConfig:
+        values = self.settings.provider_environment
+        timeout = self.settings.llm_defaults.timeout_seconds
+        if name == "qwen":
+            return ProviderConfig(
+                provider=OLLAMA,
+                base_url=values.get("CODECOMPASS_QWEN_BASE_URL", "http://127.0.0.1:11434"),
+                llm_model=values.get("CODECOMPASS_QWEN_LLM_MODEL", "qwen2.5-coder-3b-codecompass:latest"),
+                timeout_seconds=timeout,
+            )
+        if name != "glm":
+            raise ValueError("Unknown LLM preset")
+        return ProviderConfig(
+            provider="openai_compatible",
+            base_url=_required(values, "CODECOMPASS_COMPARE_BASE_URL"),
+            api_key=_required(values, "CODECOMPASS_COMPARE_API_KEY"),
+            llm_model=_required(values, "CODECOMPASS_COMPARE_MODEL"),
+            timeout_seconds=timeout,
         )
 
     def identity(self, config: ProviderConfig) -> EmbeddingIdentity:
@@ -476,3 +535,31 @@ class APIRuntime:
             self.settings.final_thesis_questions_artifact,
             self.settings.final_thesis_review_artifact,
         )
+
+    def context_strategy_evaluation(self) -> tuple[str, dict[str, Any]]:
+        return project_context_strategy_artifact(self.settings.context_strategy_artifact)
+
+
+def _project_environment(path: Path) -> dict[str, str]:
+    """Read project-local dotenv values without mutating the process environment."""
+    values: dict[str, str] = {}
+    try:
+        if path.is_file():
+            for raw in path.read_text(encoding="utf-8-sig").splitlines():
+                line = raw.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    key, value = line.split("=", 1)
+                    key = key.strip()
+                    if key.startswith("CODECOMPASS_"):
+                        values[key] = value.strip().strip("\"'")
+    except OSError as error:
+        raise ValueError("Provider environment file could not be read") from error
+    values.update({key: value for key, value in os.environ.items() if key.startswith("CODECOMPASS_")})
+    return values
+
+
+def _required(values: Mapping[str, str], name: str) -> str:
+    value = values.get(name)
+    if not value:
+        raise ValueError(f"Missing provider preset setting: {name}")
+    return value

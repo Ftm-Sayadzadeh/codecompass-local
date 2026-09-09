@@ -23,6 +23,10 @@ The shared runtime configuration accepts:
 
 API keys are read at runtime, excluded from configuration representations, and never written to artifacts. Do not put credentials in command arguments or base URLs.
 
+The web API also reads a project-root `.env` file at startup. Provider settings offers named presets for Nomic, Gemini Embedding 001, Gemini Embedding 2, Qwen, and GLM. The browser sends only the selected preset name; URLs and API keys remain on the backend. Copy `.env.example` to `.env` and fill the remote-provider values before starting the backend.
+
+Selecting another embedding preset changes the required vector identity, so re-index the repository after switching embedding models. LLM presets take effect on the next answer or documentation request without re-indexing.
+
 ## Ollama
 
 Existing commands remain valid without provider migration:

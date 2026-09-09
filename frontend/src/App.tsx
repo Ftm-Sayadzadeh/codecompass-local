@@ -4,6 +4,7 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react"
 import { api, embeddingOverride, providerOverride } from "./api/client";
 import type {
   AskResponse,
+  ContextStrategyEvaluationResponse,
   DocumentationResponse,
   EvaluationResponse,
   FinalThesisEvaluationResponse,
@@ -121,6 +122,7 @@ export default function App() {
   const [evaluation, setEvaluation] = useState<EvaluationResponse | null>(null);
   const [performance, setPerformance] = useState<EvaluationResponse | null>(null);
   const [finalThesisEvaluation, setFinalThesisEvaluation] = useState<FinalThesisEvaluationResponse | null>(null);
+  const [contextStrategyEvaluation, setContextStrategyEvaluation] = useState<ContextStrategyEvaluationResponse | null>(null);
   const [evaluationLoading, setEvaluationLoading] = useState(true);
   const [evaluationError, setEvaluationError] = useState<unknown>(null);
 
@@ -167,8 +169,8 @@ export default function App() {
     }).catch((error) => {
       if (active) { setProjectError(error); setProjectLoading(false); }
     });
-    void Promise.all([api.evaluation(), api.performance(), api.finalThesisEvaluation()]).then(([summary, measured, thesis]) => {
-      if (active) { setEvaluation(summary); setPerformance(measured); setFinalThesisEvaluation(thesis); }
+    void Promise.all([api.evaluation(), api.performance(), api.finalThesisEvaluation(), api.contextStrategyEvaluation()]).then(([summary, measured, thesis, contextStrategy]) => {
+      if (active) { setEvaluation(summary); setPerformance(measured); setFinalThesisEvaluation(thesis); setContextStrategyEvaluation(contextStrategy); }
     }).catch((error) => { if (active) setEvaluationError(error); }).finally(() => { if (active) setEvaluationLoading(false); });
     return () => { active = false; };
   }, [loadProject]);
@@ -360,7 +362,7 @@ export default function App() {
         </section>
       ) : null}
 
-      <EvaluationPanel summary={evaluation} performance={performance} finalThesis={finalThesisEvaluation} loading={evaluationLoading} error={evaluationError} />
+      <EvaluationPanel summary={evaluation} performance={performance} finalThesis={finalThesisEvaluation} contextStrategy={contextStrategyEvaluation} loading={evaluationLoading} error={evaluationError} />
       <ProviderSettings
         open={settingsOpen}
         embedding={embedding}

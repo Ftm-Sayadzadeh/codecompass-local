@@ -240,6 +240,11 @@ def create_app(settings: APISettings | None = None) -> FastAPI:
         digest, data = runtime.final_thesis_evaluation()
         return EvaluationResponse(artifact_sha256=digest, data=data)
 
+    @app.get("/evaluation/context-strategy", response_model=EvaluationResponse)
+    def context_strategy_evaluation(runtime: APIRuntime = Depends(get_runtime)) -> EvaluationResponse:
+        digest, data = runtime.context_strategy_evaluation()
+        return EvaluationResponse(artifact_sha256=digest, data=data)
+
     return app
 
 

@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 from codecompass.api import APISettings, create_app
 from codecompass.api import app as api_app
 from codecompass.api import runtime as api_runtime
+from codecompass.api.schemas import EmbeddingProviderOverride, ProviderOverride
 from codecompass.embeddings import EmbeddingProviderError, EmbeddingResult, OllamaEmbeddingProvider
 from codecompass.llm import LLMProviderError, LLMResponse
 from codecompass.providers import ProviderConfig
@@ -169,6 +170,21 @@ def final_review_artifact(path: Path) -> None:
     }), encoding="utf-8")
 
 
+def context_strategy_artifact(path: Path) -> None:
+    path.write_text(json.dumps({
+        "evaluation_id": "whole_repo_rag_human_validation_v1",
+        "review": {"reviewer": "independent_anonymous_human", "unique_responses": 54},
+        "analysis": {"quality_definition": "mean of four scores"},
+        "comparisons": {
+            "semantic_vs_whole_repo": {"pairs": 12},
+            "semantic_vs_lexical": {"pairs": 12},
+            "semantic_vs_git_agent": {"pairs": 12},
+        },
+        "limitations": ["single reviewer"],
+        "provenance": {"completed_workbook": "private.xlsx"},
+    }), encoding="utf-8")
+
+
 @pytest.fixture
 def api(tmp_path: Path, monkeypatch):
     baseline = tmp_path / "baseline.json"
@@ -177,12 +193,14 @@ def api(tmp_path: Path, monkeypatch):
     official_questions = tmp_path / "official-questions.json"
     final_questions = tmp_path / "final-questions.json"
     final_review = tmp_path / "final-review.json"
+    context_strategy = tmp_path / "context-strategy.json"
     artifact(baseline)
     artifact(performance, performance=True)
     final_thesis_artifact(final_thesis)
     official_questions_artifact(official_questions)
     final_questions_artifact(final_questions)
     final_review_artifact(final_review)
+    context_strategy_artifact(context_strategy)
     settings = APISettings(
         database_path=tmp_path / "metadata.sqlite",
         chroma_path=tmp_path / "chroma",
@@ -192,6 +210,7 @@ def api(tmp_path: Path, monkeypatch):
         final_thesis_artifact=final_thesis,
         final_thesis_questions_artifact=final_questions,
         final_thesis_review_artifact=final_review,
+        context_strategy_artifact=context_strategy,
         embedding_defaults=ProviderConfig(provider="ollama", embedding_model="fake-embed"),
         llm_defaults=ProviderConfig(provider="ollama", llm_model="fake-llm"),
     )
@@ -732,6 +751,7 @@ def test_evaluation_projections_exclude_raw_runs_and_handle_malformed(api) -> No
     summary = client.get("/evaluation/summary")
     performance = client.get("/evaluation/performance")
     final_thesis = client.get("/evaluation/final-thesis")
+    context_strategy = client.get("/evaluation/context-strategy")
 
     assert summary.status_code == 200
     assert summary.json()["scope"] == "benchmark_evaluation"
@@ -747,6 +767,9 @@ def test_evaluation_projections_exclude_raw_runs_and_handle_malformed(api) -> No
     assert "measured_runs" not in performance.text
     assert "descriptive measurements" in performance.text
     assert final_thesis.status_code == 200
+    assert context_strategy.status_code == 200
+    assert context_strategy.json()["data"]["comparisons"]["semantic_vs_lexical"]["pairs"] == 12
+    assert "provenance" not in context_strategy.text
     assert final_thesis.json()["data"]["human_evaluation"]["usable"] == 80
     assert len(final_thesis.json()["data"]["questions"]) == 3
     assert final_thesis.json()["data"]["qa_details"] == [{
@@ -802,6 +825,7 @@ def test_swagger_has_only_intended_routes(api) -> None:
         "/evaluation/summary",
         "/evaluation/performance",
         "/evaluation/final-thesis",
+        "/evaluation/context-strategy",
     }
     schemas = client.get("/openapi.json").json()["components"]["schemas"]
     assert "file_id" in schemas["CitationResponse"]["properties"]
@@ -810,3 +834,44 @@ def test_swagger_has_only_intended_routes(api) -> None:
     assert "file_id" in schemas["DocumentationCitationResponse"]["properties"]
     assert "finish_reason" in schemas["AskResponse"]["properties"]
     assert "finish_reason" not in schemas["AskResponse"]["required"]
+
+
+def test_provider_presets_resolve_project_dotenv_without_exposing_secrets(api, tmp_path: Path, monkeypatch) -> None:
+    for name in (
+        "CODECOMPASS_GEMINI2_EMBEDDING_BASE_URL",
+        "CODECOMPASS_GEMINI2_EMBEDDING_API_KEY",
+        "CODECOMPASS_GEMINI2_EMBEDDING_MODEL",
+        "CODECOMPASS_GEMINI2_EMBEDDING_DIMENSIONS",
+        "CODECOMPASS_COMPARE_BASE_URL",
+        "CODECOMPASS_COMPARE_API_KEY",
+        "CODECOMPASS_COMPARE_MODEL",
+    ):
+        monkeypatch.delenv(name, raising=False)
+    env = tmp_path / ".env"
+    env.write_text(
+        "CODECOMPASS_GEMINI2_EMBEDDING_PROVIDER=openai_compatible\n"
+        "CODECOMPASS_GEMINI2_EMBEDDING_BASE_URL=https://embedding.example/v1\n"
+        "CODECOMPASS_GEMINI2_EMBEDDING_API_KEY=embedding-secret\n"
+        "CODECOMPASS_GEMINI2_EMBEDDING_MODEL=gemini-embedding-2\n"
+        "CODECOMPASS_GEMINI2_EMBEDDING_DIMENSIONS=3072\n"
+        "CODECOMPASS_COMPARE_BASE_URL=https://llm.example/v1\n"
+        "CODECOMPASS_COMPARE_API_KEY=llm-secret\n"
+        "CODECOMPASS_COMPARE_MODEL=glm-5.3-flash\n",
+        encoding="utf-8",
+    )
+    monkeypatch.chdir(tmp_path)
+    settings = APISettings.from_environment()
+    runtime = api[1]
+    runtime.settings = settings
+
+    embedding = runtime.embedding_config(EmbeddingProviderOverride(preset="gemini_2"))
+    llm = runtime.llm_config(ProviderOverride(preset="glm"))
+    assert (embedding.embedding_model, embedding.embedding_dimensions, embedding.api_key) == (
+        "gemini-embedding-2", 3072, "embedding-secret"
+    )
+    assert (llm.llm_model, llm.api_key) == ("glm-5.3-flash", "llm-secret")
+    assert "secret" not in repr(settings)
+    with pytest.raises(ValueError):
+        ProviderOverride(preset="glm", model="ambiguous")
+    with pytest.raises(ValueError, match="Unknown LLM preset"):
+        runtime.llm_config(ProviderOverride(preset="unknown"))

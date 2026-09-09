@@ -14,12 +14,24 @@ interface Props {
   onClose: () => void;
 }
 
+const embeddingPresets = [
+  { value: "nomic", label: "Nomic Embed (local)" },
+  { value: "gemini_001", label: "Gemini Embedding 001" },
+  { value: "gemini_2", label: "Gemini Embedding 2" },
+];
+
+const llmPresets = [
+  { value: "qwen", label: "Qwen 2.5 Coder (local)" },
+  { value: "glm", label: "GLM 5.3 Flash" },
+];
+
 function ProviderFields<T extends ProviderState>({
   id,
   title,
   value,
   onChange,
   onReset,
+  presets,
   dimensions,
 }: {
   id: string;
@@ -27,10 +39,16 @@ function ProviderFields<T extends ProviderState>({
   value: T;
   onChange: (value: T) => void;
   onReset: () => void;
+  presets: Array<{ value: string; label: string }>;
   dimensions?: boolean;
 }) {
   const [showKey, setShowKey] = useState(false);
   const set = (patch: Partial<T>) => onChange({ ...value, ...patch });
+  const mode = value.useBackendDefault ? "backend_default" : value.preset || "custom";
+  const selectMode = (next: string) => {
+    if (next === "backend_default") set({ useBackendDefault: true, preset: "", apiKey: "" } as Partial<T>);
+    else set({ useBackendDefault: false, preset: next === "custom" ? "" : next, apiKey: "" } as Partial<T>);
+  };
   return (
     <section className="provider-section" aria-labelledby={`${id}-title`}>
       <div className="section-heading">
@@ -41,16 +59,19 @@ function ProviderFields<T extends ProviderState>({
         <Settings2 size={17} aria-hidden="true" />
       </div>
 
-      <label className="check-row">
-        <input
-          type="checkbox"
-          checked={value.useBackendDefault}
-          onChange={(event) => set({ useBackendDefault: event.target.checked } as Partial<T>)}
-        />
-        Use backend defaults
+      <label className="preset-control">
+        {id === "embedding" ? "Embedding model" : "LLM model"}
+        <select aria-label={`${id === "embedding" ? "Embedding" : "LLM"} model preset`} value={mode} onChange={(event) => selectMode(event.target.value)}>
+          <option value="backend_default">Backend default</option>
+          {presets.map((preset) => <option key={preset.value} value={preset.value}>{preset.label}</option>)}
+          <option value="custom">Custom configuration</option>
+        </select>
       </label>
 
-      <fieldset disabled={value.useBackendDefault} className="provider-fields">
+      {value.preset ? <p className="privacy-note"><KeyRound size={15} /> Credentials are read by the backend from the project .env file.</p> : null}
+      {id === "embedding" && value.preset ? <p className="measurement-context">Changing embedding model requires re-indexing the repository.</p> : null}
+
+      <fieldset disabled={mode !== "custom"} className={`provider-fields${value.preset ? " preset-hidden" : ""}`}>
         <label>
           Provider
           <select value={value.provider} onChange={(event) => set({ provider: event.target.value } as Partial<T>)}>
@@ -140,11 +161,11 @@ export function ProviderSettings(props: Props) {
         </button>
       </header>
       <div className="settings-grid">
-        <ProviderFields id="embedding" title="Embedding provider" value={props.embedding} onChange={props.onEmbeddingChange} onReset={props.onResetEmbedding} dimensions />
-        <ProviderFields id="llm" title="LLM provider" value={props.llm} onChange={props.onLlmChange} onReset={props.onResetLlm} />
+        <ProviderFields id="embedding" title="Embedding provider" value={props.embedding} onChange={props.onEmbeddingChange} onReset={props.onResetEmbedding} presets={embeddingPresets} dimensions />
+        <ProviderFields id="llm" title="LLM provider" value={props.llm} onChange={props.onLlmChange} onReset={props.onResetLlm} presets={llmPresets} />
       </div>
       <footer>
-        <p className="privacy-note"><KeyRound size={15} /> Non-sensitive settings persist in this browser. API keys stay in memory and are forgotten on refresh.</p>
+        <p className="privacy-note"><KeyRound size={15} /> Preset secrets stay on the backend. Custom API keys remain memory-only.</p>
         <button className="primary-button" type="button" onClick={props.onClose}>Done</button>
       </footer>
     </dialog>

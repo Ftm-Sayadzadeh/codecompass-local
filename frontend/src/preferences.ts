@@ -4,6 +4,7 @@ const STORAGE_KEY = "codecompass.preferences.v1";
 
 export const defaultEmbedding: EmbeddingState = {
   useBackendDefault: true,
+  preset: "",
   provider: "ollama",
   baseUrl: "",
   model: "",
@@ -14,6 +15,7 @@ export const defaultEmbedding: EmbeddingState = {
 
 export const defaultLlm: ProviderState = {
   useBackendDefault: true,
+  preset: "",
   provider: "ollama",
   baseUrl: "",
   model: "",
@@ -52,6 +54,7 @@ function providerState(value: unknown, fallback: ProviderState): ProviderState {
   const saved = record(value);
   return {
     useBackendDefault: typeof saved.useBackendDefault === "boolean" ? saved.useBackendDefault : fallback.useBackendDefault,
+    preset: text(saved.preset, fallback.preset),
     provider: provider(saved.provider, fallback.provider),
     baseUrl: text(saved.baseUrl, fallback.baseUrl),
     model: text(saved.model, fallback.model),
@@ -80,6 +83,7 @@ export function savePreferences(value: Preferences): void {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       embedding: {
         useBackendDefault: value.embedding.useBackendDefault,
+        preset: value.embedding.preset,
         provider: value.embedding.provider,
         baseUrl: value.embedding.baseUrl,
         model: value.embedding.model,
@@ -88,6 +92,7 @@ export function savePreferences(value: Preferences): void {
       },
       llm: {
         useBackendDefault: value.llm.useBackendDefault,
+        preset: value.llm.preset,
         provider: value.llm.provider,
         baseUrl: value.llm.baseUrl,
         model: value.llm.model,

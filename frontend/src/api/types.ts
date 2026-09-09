@@ -3,6 +3,7 @@ export type RetrievalMethod = "lexical" | "semantic" | "hybrid";
 
 export interface ProviderState {
   useBackendDefault: boolean;
+  preset: string;
   provider: ProviderName;
   baseUrl: string;
   model: string;
@@ -15,6 +16,7 @@ export interface EmbeddingState extends ProviderState {
 }
 
 export interface ProviderOverride {
+  preset?: string;
   provider?: ProviderName;
   base_url?: string;
   model?: string;
@@ -315,6 +317,52 @@ export interface FinalThesisEvaluationResponse {
     questions?: BenchmarkQuestion[];
     qa_details_artifact_sha256?: string;
     qa_details?: BenchmarkQaDetail[];
+  };
+}
+
+export interface ContextStrategyMetric {
+  semantic_mean: number;
+  whole_mean?: number;
+  lexical_mean?: number;
+  agent_mean?: number;
+  delta: number;
+  ci95: [number, number];
+  p_exact: number;
+  wins_ties_losses?: [number, number, number];
+}
+
+export interface ContextStrategyComparison {
+  pairs: number;
+  metrics: {
+    fact_coverage: ContextStrategyMetric;
+    correctness: ContextStrategyMetric;
+    groundedness: ContextStrategyMetric;
+    completeness: ContextStrategyMetric;
+    quality: ContextStrategyMetric;
+  };
+  overall_result: Record<string, { complete: number; partial: number; incorrect: number; insufficient: number }>;
+}
+
+export interface ContextStrategyEvaluationResponse {
+  scope: "benchmark_evaluation";
+  not_per_answer_confidence: true;
+  artifact_sha256: string;
+  data: {
+    evaluation_id: string;
+    review: {
+      reviewer: string;
+      blinded_to_method_labels: boolean;
+      completed_at: string;
+      unique_responses: number;
+      pairs_per_comparison: number;
+      missing_ratings: number;
+    };
+    comparisons: {
+      semantic_vs_whole_repo: ContextStrategyComparison;
+      semantic_vs_lexical: ContextStrategyComparison;
+      semantic_vs_git_agent: ContextStrategyComparison;
+    };
+    limitations: string[];
   };
 }
 

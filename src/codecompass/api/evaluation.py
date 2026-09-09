@@ -98,6 +98,39 @@ def project_final_thesis_artifact(
     return hashlib.sha256(raw).hexdigest(), projection
 
 
+def project_context_strategy_artifact(path: Path) -> tuple[str, dict[str, Any]]:
+    """Return the sanitized blind-human comparison summary."""
+    try:
+        raw = path.read_bytes()
+        value = json.loads(raw)
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise EvaluationArtifactError("Context strategy evaluation artifact is unavailable") from error
+    if not isinstance(value, dict) or value.get("evaluation_id") != "whole_repo_rag_human_validation_v1":
+        raise EvaluationArtifactError("Context strategy evaluation artifact is invalid")
+    review = value.get("review")
+    analysis = value.get("analysis")
+    comparisons = value.get("comparisons")
+    limitations = value.get("limitations")
+    if not isinstance(review, dict) or not isinstance(analysis, dict) or not isinstance(comparisons, dict) or not isinstance(limitations, list):
+        raise EvaluationArtifactError("Context strategy evaluation artifact is incomplete")
+    required = ("semantic_vs_whole_repo", "semantic_vs_lexical", "semantic_vs_git_agent")
+    if any(not isinstance(comparisons.get(name), dict) for name in required):
+        raise EvaluationArtifactError("Context strategy evaluation artifact is incomplete")
+    return hashlib.sha256(raw).hexdigest(), {
+        "evaluation_id": value["evaluation_id"],
+        "review": {
+            key: review.get(key)
+            for key in ("reviewer", "blinded_to_method_labels", "completed_at", "unique_responses", "pairs_per_comparison", "missing_ratings")
+        },
+        "analysis": {
+            key: analysis.get(key)
+            for key in ("quality_definition", "confidence_interval", "hypothesis_test", "unavailable_handling")
+        },
+        "comparisons": {name: comparisons[name] for name in required},
+        "limitations": limitations,
+    }
+
+
 def project_official_questions(path: Path) -> tuple[str, list[dict[str, str]]]:
     """Return public question fields from the official retrieval benchmark."""
     raw, value = _read_questions(path)

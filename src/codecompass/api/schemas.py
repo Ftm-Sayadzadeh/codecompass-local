@@ -22,11 +22,21 @@ class ErrorEnvelope(StrictModel):
 
 
 class ProviderOverride(StrictModel):
+    preset: str | None = Field(default=None, min_length=1, max_length=40)
     provider: Literal["ollama", "openai_compatible"] | None = None
     base_url: str | None = None
     model: str | None = None
     api_key: SecretStr | None = Field(default=None, repr=False)
     timeout_seconds: float | None = Field(default=None, gt=0, le=600)
+
+    @model_validator(mode="after")
+    def preset_is_exclusive(self) -> "ProviderOverride":
+        if self.preset and any(
+            value is not None
+            for value in (self.provider, self.base_url, self.model, self.api_key, self.timeout_seconds, getattr(self, "dimensions", None))
+        ):
+            raise ValueError("A provider preset cannot be combined with manual settings")
+        return self
 
 
 class EmbeddingProviderOverride(ProviderOverride):
