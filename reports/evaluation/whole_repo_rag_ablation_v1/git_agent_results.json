@@ -1,0 +1,3882 @@
+{
+  "evaluation_id": "whole_repo_rag_ablation_v1_git_agent",
+  "status": "complete",
+  "configuration": {
+    "tool": "opencode",
+    "model": "avalai/glm-5.3-flash",
+    "agent_steps": 8,
+    "permissions": "read/glob/grep/list only",
+    "one_fresh_session_per_question": true
+  },
+  "records": [
+    {
+      "case_id": "WRA-H-01-EN",
+      "concept_id": "WRA-H-01",
+      "repository_id": "hospital_system",
+      "repository_url": "https://github.com/AvaGhiasian/Hospital-System.git",
+      "repository_commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633",
+      "language": "en",
+      "scope": "local",
+      "question": "How is the current hospital day advanced and persisted?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "DayManager.next_day increments curr_day by one",
+        "It then calls save_day to persist the new value"
+      ],
+      "forbidden_claims": [
+        "The day is changed only in memory",
+        "The method accepts the next day as an argument"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 31.432,
+      "session_id": "ses_f7ac0fedeffeZ2PZ18uLhXwev8",
+      "answer": "## Repository Overview: Hospital-System\n\nA **command-line hospital appointment management system** written in pure Python (no external dependencies), implementing a 3-phase academic final project (bilingual English/Persian README): doctor record management → appointment booking → automatic fastest-appointment booking.\n\n### Architecture (`main.py` wires 3 layers)\n- **presentation/** — CLI menus and role panels (`commands.py`, `admin_interface.py`, `doctors_interface.py`, `patients_interface.py`)\n- **logic/** — business rules: `management.py` (`Manage` facade for admin/doctor/patient ops), `day_manager.py` (current-day tracking), `user_session.py`\n- **data_access/** — persistence for doctors, patients, cities, specialities (text files in `test_files/`)\n\n### Domain models (`models/`)\n- `doctor.py` — `Doctor`, `Schedule` (12 slots/day, days 1–7 window), `Appointments` (with cancellation tracking)\n- `patient.py`, `appointment.py`\n\n### Notable constraint\nIt appears to be a data-structures exercise — it **avoids built-in Python collections** in favor of hand-rolled ones in `data_structures/`: `Array`, `DynamicHash` (hash table), `Queue`, `Stack`, `LinkedList`, `Heap`, `Tree`, `Trie`. Sorting uses hand-written algorithms in `tools/sorts.py` (insertion, bubble, selection).\n\n### Key features\n- Role-based panels: admin (add cities/specialities, delete doctors/patients), doctor (set/cancel appointments, view patient records), patient (search doctors by city/speciality, book/cancel, auto-reservation finding the earliest free slot via `Schedule.find_nearest()` sorted with insertion sort)\n- Simulated day progression (`next_day`), file-based save/load\n\nHow would you like to proceed — code review, feature implementation, or documentation?",
+      "finish_reason": "stop",
+      "model_calls": 6,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*.md"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\README.md"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\main.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_access"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\logic"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\models"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\presentation"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_structures"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\tools"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\logic\\management.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\models\\appointment.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\models\\doctor.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\presentation\\commands.py",
+            "limit": 120
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "test_files/*"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\tools\\sorts.py",
+            "limit": 60
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 30870,
+        "input": 15630,
+        "output": 780,
+        "reasoning": 124,
+        "cache_read": 14336,
+        "cache_write": 0
+      },
+      "raw_sha256": "70f2f4ca06ec7e8f9f4341a4d30fb4d7ef697048cd2968aad5ccc801d773cfc6",
+      "error": null
+    },
+    {
+      "case_id": "WRA-H-01-FA",
+      "concept_id": "WRA-H-01",
+      "repository_id": "hospital_system",
+      "repository_url": "https://github.com/AvaGhiasian/Hospital-System.git",
+      "repository_commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633",
+      "language": "fa",
+      "scope": "local",
+      "question": "روز جاری بیمارستان چگونه جلو می‌رود و ذخیره می‌شود؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "DayManager.next_day increments curr_day by one",
+        "It then calls save_day to persist the new value"
+      ],
+      "forbidden_claims": [
+        "The day is changed only in memory",
+        "The method accepts the next day as an argument"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 31.428,
+      "session_id": "ses_f7ac082fcffeOCG17Z77eU3PnY",
+      "answer": "This is the **Hospital-System** repository — a Python command-line hospital/appointment management system, apparently built as a final course project (the README describes requirements in English and Persian).\n\n## Purpose\nA centralized medical system for scheduling doctor appointments and maintaining patient records, with three role-based panels:\n- **Doctor panel**: register, login, view patient records, register/cancel appointments, view appointment history and canceled appointments\n- **Patient panel**: register, login, browse/search doctors (sorted), book/cancel appointments, view history, automatic booking (earliest available slot by specialty + city)\n- **Admin panel**: display/search doctors (by specialty), add cities/specialties, delete patients/doctors, list patients\n\n## Architecture (`main.py` wires it up)\nLayered design with dependency injection:\n- **`models/`** – domain classes: `Doctor` (with `Schedule` and `Appointments`), `Patient`, `Appointment`\n- **`data_access/`** – repositories for doctors, patients, cities, specialties (persisted to text files; `test_files/` holds seed data like `Doctors.txt`, `Cities.txt`)\n- **`logic/`** – `Manage` (business rules), `UserSession`, `DayManager` (current-day tracking, 7-day scheduling window)\n- **`presentation/`** – CLI interfaces per role (`admin_interface.py`, `doctors_interface.py`, `patients_interface.py`) plus `commands.py` and a generic `CLI.py`\n- **`data_structures/`** – hand-rolled primitives instead of built-ins: Array, Queue, Stack, Linked List, Heap, Tree, Trie, dynamic Hash Table (a Trie likely powers doctor search; a Heap may support earliest-appointment lookup)\n- **`tools/`** – file handling and custom sorts (e.g., `insertion_sort`)\n\n## Notable details\nNo external dependencies; it's a pure-Python educational project emphasizing custom data structures, with a git repo but no tests or CI. To run it: `python main.py`.",
+      "finish_reason": "stop",
+      "model_calls": 5,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*.md"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\README.md"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\main.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_access"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\logic"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\presentation"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\models"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_structures"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\tools"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\models\\doctor.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\test_files"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\logic\\management.py",
+            "limit": 80
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 19678,
+        "input": 8556,
+        "output": 736,
+        "reasoning": 146,
+        "cache_read": 10240,
+        "cache_write": 0
+      },
+      "raw_sha256": "adf259503139ccc6494330b11517694534fe64806e823f0e27be04d9ac30f6cb",
+      "error": null
+    },
+    {
+      "case_id": "WRA-H-02-EN",
+      "concept_id": "WRA-H-02",
+      "repository_id": "hospital_system",
+      "repository_url": "https://github.com/AvaGhiasian/Hospital-System.git",
+      "repository_commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633",
+      "language": "en",
+      "scope": "local",
+      "question": "What does the array-backed queue return when dequeuing an empty queue, and how does it remove a non-empty item?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "An empty queue returns the string Queue is empty.",
+        "A non-empty dequeue increments front and returns the item at the previous front index"
+      ],
+      "forbidden_claims": [
+        "It raises an exception for an empty queue",
+        "It shifts every array element"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 36.974,
+      "session_id": "ses_f7ac008ccffeMju3tKPbvchACh",
+      "answer": "This is the **Hospital-System** repository — a Python command-line hospital appointment management system (appears to be a university final project, with the spec written in English and Persian in the README).\n\n## Overview\n\n**Architecture** — a classic 3-layer design, wired together in `main.py`:\n\n- **`data_access/`** – Persistence layer: `doctors.py`, `patients.py`, `specialities.py`, `cities.py`, with text-file storage in **`test_files/`** (`Doctors.txt`, `Patients.txt`, `Cities.txt`, `Specialties.txt`, `Days.txt`).\n- **`logic/`** – Business layer: `management.py` (`Manage` facade coordinating all data access), `user_session.py` (login sessions), and `day_manager.py` (a Singleton `DayManager` simulating hospital days, persisted to file).\n- **`presentation/`** – CLI layer: `commands.py` (command loops: `Start`, `AdminCommands`, `DoctorsCommands`, `PatientsCommands`), `CLI.py` (menus), plus `admin_interface.py`, `doctors_interface.py`, `patients_interface.py`.\n- **`models/`** – Domain objects: `Doctor` (with `Schedule` and `Appointments` inner classes), `Patient`, `Appointment`.\n- **`data_structures/`** – Hand-rolled data structures instead of built-ins: `Array`, `DynamicHash` (hash table), `Queue`, `Stack`, `Linked List`, `Heap`, `Trie`, and a `Tree` — plus a custom `insertion_sort` in `tools/sorts.py`.\n\n**Features by role** (matching the 3 project phases in the README):\n- **Admin:** list/search doctors, filter by specialty, add cities/specialties, delete patients/doctors, list patients, advance to the next day.\n- **Doctor:** register/login, view patient records, set/cancel appointments, view history and canceled appointments.\n- **Patient:** register/login, list and sort doctors (Trie-based search), book/cancel appointments, view history, and automatic booking of the earliest free slot by specialty + city (the \"queue improvement\" mechanism).\n\nPersistence is plain text files; each save/load uses `tools/file_handling.py`. There's no test suite, dependency manifest, or CI — it runs directly via `python main.py`.",
+      "finish_reason": "stop",
+      "model_calls": 5,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\README.md"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\main.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\presentation\\commands.py",
+            "limit": 80
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\logic\\management.py",
+            "limit": 60
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_structures\\__init__.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\models\\doctor.py",
+            "limit": 50
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\logic\\day_manager.py",
+            "limit": 60
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 23017,
+        "input": 11785,
+        "output": 740,
+        "reasoning": 252,
+        "cache_read": 10240,
+        "cache_write": 0
+      },
+      "raw_sha256": "8dbe1accc7a26b6cb1a08a779b9efa7217d9f55fbc4874a90a298e4a909dba28",
+      "error": null
+    },
+    {
+      "case_id": "WRA-H-02-FA",
+      "concept_id": "WRA-H-02",
+      "repository_id": "hospital_system",
+      "repository_url": "https://github.com/AvaGhiasian/Hospital-System.git",
+      "repository_commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633",
+      "language": "fa",
+      "scope": "local",
+      "question": "صفِ مبتنی بر آرایه هنگام dequeue از صف خالی چه برمی‌گرداند و در حالت غیرخالی چگونه عضو را حذف می‌کند؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "An empty queue returns the string Queue is empty.",
+        "A non-empty dequeue increments front and returns the item at the previous front index"
+      ],
+      "forbidden_claims": [
+        "It raises an exception for an empty queue",
+        "It shifts every array element"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 30.005,
+      "session_id": "ses_f7abf780effe1Uja5husQrHBrR",
+      "answer": "This is a **Python-based Hospital Appointment Scheduling System** — a command-line application implementing a course final project (written in English and Persian in the README).\n\n## Overview\n\n**Purpose:** A centralized medical system for appointment booking, patient record keeping, and doctor management, built in three phases: (1) doctor/manager panels, (2) appointment booking + patient panel, (3) a \"fastest available appointment\" finder by specialty + city.\n\n**Architecture** (`main.py` wires it together in 3 layers):\n\n| Layer | Files | Role |\n|---|---|---|\n| **Presentation** (UI) | `CLI.py`, `commands.py`, `admin_interface.py`, `doctors_interface.py`, `patients_interface.py` | Role-based CLI panels: Admin, Doctor, Patient |\n| **Logic** | `management.py` (`Manage`), `user_session.py`, `day_manager.py` | Business rules for admin/doctor/patient operations |\n| **Data Access** | `cities.py`, `doctors.py`, `patients.py`, `specialities.py` | Storage/retrieval for each entity |\n\n**Domain models** (`models/`): `doctor.py`, `patient.py`, `appointment.py`.\n\n**Custom data structures** (`data_structures/`): The project avoids built-ins and hand-rolls `Array`, `DynamicHash` (hash table), `Heap` (MaxHeap, used with priority logic), `LinkedList`, `Queue`, `Stack`, `Tree`, and `Trie` (prefix search — likely for doctor name/specialty search; `TrieNode` uses `DynamicHash` for children).\n\n**Notable details:**\n- Admin panel: add city/specialty, delete patients/doctors, list & search doctors by specialty.\n- Doctor panel: register/login, view patient records, book/cancel appointments, view history.\n- Patient panel: search doctors, book/cancel appointments, and **automatic booking** of the first free slot by specialty + city.\n- Entry point: `main.py` → `Start(admin_commands, doctor_commands, patient_commands).run()`.\n- Also includes `tools/` (e.g., `insertion_sort`), `test_files/`, and a `LICENSE.md`.\n\nWant me to dive deeper into any specific part (e.g., the auto-booking logic, or how the Trie/Heap are used)?",
+      "finish_reason": "stop",
+      "model_calls": 5,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*.md"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\README.md"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\main.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_access"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\logic"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\presentation"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\models"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_structures"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\logic\\management.py",
+            "limit": 80
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_structures\\trie.py",
+            "limit": 50
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_structures\\heap.py",
+            "limit": 50
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 18852,
+        "input": 7704,
+        "output": 796,
+        "reasoning": 112,
+        "cache_read": 10240,
+        "cache_write": 0
+      },
+      "raw_sha256": "0f58b3739608908e7208f601680700c40166a19921712e76831110ccc2f37480",
+      "error": null
+    },
+    {
+      "case_id": "WRA-H-03-EN",
+      "concept_id": "WRA-H-03",
+      "repository_id": "hospital_system",
+      "repository_url": "https://github.com/AvaGhiasian/Hospital-System.git",
+      "repository_commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633",
+      "language": "en",
+      "scope": "cross_file",
+      "question": "When a patient cancels a future appointment, which patient and doctor records are updated?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Cancellation is rejected when the appointment day is today",
+        "The patient appointment is removed and yields the doctor id",
+        "The doctor's visit count is decremented",
+        "The schedule slot is restored to Available",
+        "The cancellation is recorded in the doctor's canceled appointments"
+      ],
+      "forbidden_claims": [
+        "Same-day cancellation is accepted",
+        "The doctor record is left unchanged"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 27.065,
+      "session_id": "ses_f7abf033bffezOyDaw7ZD5s1jc",
+      "answer": "This is the **Hospital-System** repository — a Python command-line hospital appointment management system (appears to be a university final project; the README is in English and Persian).\n\n## Purpose\nA centralized medical system for scheduling doctor appointments and maintaining patient records, built across three phases:\n1. Doctor registration/login with role-based panels\n2. Appointment booking, doctor search, and a patient panel\n3. An \"auto appointment reservation\" mechanism that finds the earliest free slot for a given specialty + city\n\n## Architecture (from `main.py`)\nA layered design:\n- **`presentation/`** — CLI menus (`CLI.py`) and interfaces for admin, doctor, and patient panels, plus a `Start` command dispatcher\n- **`logic/`** — `Manage` (business logic), `UserSession`, `DayManager` (simulated \"next day\" progression)\n- **`data_access/`** — `Doctors`, `Patients`, `Specialities`, `Cities` repositories that load/save data from `test_files/*.txt`\n- **`models/`** — `Doctor`, `Patient`, `Appointment` classes\n- **`data_structures/`** — hand-rolled structures: `DynamicHash`, `DynamicArray`, `SLL` (linked list), `Queue`, `Stack`, `Trie` (used for doctor name search), `heap`, `tree`\n- **`tools/`** — file handling and sorting (e.g., `insertion_sort` for \"sorted doctor display\")\n\n## Notable implementation details\n- Data persists to plain text files (e.g., `Doctors.txt`, dash-delimited fields)\n- Doctors are indexed by national ID, with a nested hash table of city → specialty → linked list of doctor IDs — enabling the fast \"first empty appointment by specialty/city\" lookup\n- Admins can add cities/specialties and delete doctors/patients; doctors manage appointment times; patients book, cancel, and auto-reserve appointments\n\nRun it with: `python main.py`",
+      "finish_reason": "stop",
+      "model_calls": 4,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "*"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\README.md"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\main.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\presentation\\CLI.py",
+            "limit": 80
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\logic\\management.py",
+            "limit": 80
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_structures\\trie.py",
+            "limit": 50
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_access\\doctors.py",
+            "limit": 60
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 17233,
+        "input": 10220,
+        "output": 634,
+        "reasoning": 235,
+        "cache_read": 6144,
+        "cache_write": 0
+      },
+      "raw_sha256": "8ddc76ee07d7068837abfa41f402df0e3837506f61e97a42661bf2f41a37ed5c",
+      "error": null
+    },
+    {
+      "case_id": "WRA-H-03-FA",
+      "concept_id": "WRA-H-03",
+      "repository_id": "hospital_system",
+      "repository_url": "https://github.com/AvaGhiasian/Hospital-System.git",
+      "repository_commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633",
+      "language": "fa",
+      "scope": "cross_file",
+      "question": "وقتی بیمار یک نوبت آینده را لغو می‌کند، چه رکوردهایی در سمت بیمار و پزشک به‌روزرسانی می‌شوند؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Cancellation is rejected when the appointment day is today",
+        "The patient appointment is removed and yields the doctor id",
+        "The doctor's visit count is decremented",
+        "The schedule slot is restored to Available",
+        "The cancellation is recorded in the doctor's canceled appointments"
+      ],
+      "forbidden_claims": [
+        "Same-day cancellation is accepted",
+        "The doctor record is left unchanged"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 28.447,
+      "session_id": "ses_f7abe9961ffeioRRwyM4GhiHHr",
+      "answer": "This repository is the **Hospital-System** project (final project, described in English/Persian in the README) — a terminal-based hospital appointment management system written in pure Python.\n\n## Overview\n\n**Entry point:** `main.py` wires up a layered architecture and runs a CLI app (`Start.run()`) with three user roles: Admin, Doctor, and Patient.\n\n**Architecture (layered):**\n- **`presentation/`** – CLI menus (`CLI.py`) and role-based interfaces/commands: `admin_interface.py`, `doctors_interface.py`, `patients_interface.py`, `commands.py`.\n- **`logic/`** – Business logic: `management.py` (`Manage` facade for admin/doctor/patient operations), `user_session.py`, and `day_manager.py` (simulates the current day so schedules can advance; menu even has a \"Next day\" option).\n- **`models/`** – Domain classes: `doctor.py` (with `Schedule` and `Appointments` for availability tracking, cancellations), `patient.py`, `appointment.py`.\n- **`data_access/`** – Repositories for `doctors`, `patients`, `cities`, `specialities`.\n- **`data_structures/`** – Hand-built data structures instead of built-ins: `array.py`, `hash_table.py` (`DynamicHash`), `heap.py`, `linked_list.py`, `queue.py`, `stack.py`, `tree.py`, `trie.py` (used for prefix name search of doctors).\n- **`tools/`, `test_files/`** – Sorting utilities (e.g., `insertion_sort`) and test assets.\n\n**Key features (matching the README phases):**\n1. Doctor/admin panels (registration, login, records).\n2. Patient panel: doctor search/display, booking, viewing/canceling appointments.\n3. Fast auto-booking: after entering specialty + city, finds the earliest free slot (schedule hashes days to 12 time slots; nearest free slot found via sorted days).\n\n**Notable details:** Doctors' schedules only allow booking up to 7 days ahead; canceled appointments are archived per doctor; everything is in-memory (no database).",
+      "finish_reason": "stop",
+      "model_calls": 5,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*.md"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\README.md"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\main.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_access"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\logic"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\presentation"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\models"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_structures"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\models\\doctor.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_structures\\trie.py",
+            "limit": 60
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\presentation\\CLI.py",
+            "limit": 80
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\logic\\management.py",
+            "limit": 80
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 20522,
+        "input": 7318,
+        "output": 778,
+        "reasoning": 138,
+        "cache_read": 12288,
+        "cache_write": 0
+      },
+      "raw_sha256": "b3384b71776dc8a2c61b1985a242f0d9e1f6431792cf152dfcc7ab39b0b38e76",
+      "error": null
+    },
+    {
+      "case_id": "WRA-H-04-EN",
+      "concept_id": "WRA-H-04",
+      "repository_id": "hospital_system",
+      "repository_url": "https://github.com/AvaGhiasian/Hospital-System.git",
+      "repository_commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633",
+      "language": "en",
+      "scope": "cross_file",
+      "question": "How does automatic reservation choose a doctor slot and update the selected patient and doctor?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Patients.auto_reservation resolves the patient by id",
+        "It asks find_nearest_appointment for a Node containing doctor, day, and hour",
+        "It writes the appointment to the patient",
+        "It removes availability from the selected doctor's schedule"
+      ],
+      "forbidden_claims": [
+        "It records the appointment in the doctor's Appointments object",
+        "It prompts the user to select the hour"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "failed",
+      "latency_seconds": 451.995,
+      "session_id": "ses_f7abe296affeao06y7azG9SJqU",
+      "answer": "",
+      "finish_reason": "tool-calls",
+      "model_calls": 2,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*.md"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\README.md"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\main.py"
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 4190,
+        "input": 1980,
+        "output": 84,
+        "reasoning": 78,
+        "cache_read": 2048,
+        "cache_write": 0
+      },
+      "raw_sha256": "57be386198178162398da03a0d16138ac418e6136d3d0e330769a2aa3186a4f1",
+      "error": {
+        "type": "timeout",
+        "seconds": 300
+      }
+    },
+    {
+      "case_id": "WRA-H-04-FA",
+      "concept_id": "WRA-H-04",
+      "repository_id": "hospital_system",
+      "repository_url": "https://github.com/AvaGhiasian/Hospital-System.git",
+      "repository_commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633",
+      "language": "fa",
+      "scope": "cross_file",
+      "question": "رزرو خودکار چگونه زمان پزشک را انتخاب می‌کند و بیمار و پزشک انتخاب‌شده را به‌روزرسانی می‌کند؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Patients.auto_reservation resolves the patient by id",
+        "It asks find_nearest_appointment for a Node containing doctor, day, and hour",
+        "It writes the appointment to the patient",
+        "It removes availability from the selected doctor's schedule"
+      ],
+      "forbidden_claims": [
+        "It records the appointment in the doctor's Appointments object",
+        "It prompts the user to select the hour"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 21.951,
+      "session_id": "ses_f7ab743feffeX6h8xrTenqrEZF",
+      "answer": "This is a Python-based **Hospital Appointment Scheduling System** — a layered, console-driven application. Here's an overview based on the code:\n\n## Architecture (3 layers, wired in `main.py`)\n\n**1. Presentation layer** (`presentation/`)\n- `commands.py` — CLI entry point (`Start`, `AdminCommands`, `DoctorsCommands`, `PatientsCommands`)\n- `admin_interface.py`, `doctors_interface.py`, `patients_interface.py` — role-specific panels\n\n**2. Logic layer** (`logic/`)\n- `management.py` — `Manage`, core business operations\n- `user_session.py` — `UserSession`, tracks the logged-in user\n- `day_manager.py` — appointment/queue logic\n\n**3. Data access layer** (`data_access/`)\n- `doctors.py`, `patients.py`, `specialities.py`, `cities.py` — persistence wrappers (text files in `test_files/`: `Doctors.txt`, `Patients.txt`, `Specialties.txt`, `Cities.txt`, `Days.txt`)\n\n**Custom data structures** (`data_structures/`)\nHand-rolled instead of built-ins: `trie.py` (prefix search), `tree.py`, `heap.py` (priority queue for appointments), `hash_table.py`, `linked_list.py`, `queue.py`, `stack.py`, `array.py` — plus sorting utilities in `tools/sorts.py` and `file_handling.py`.\n\n## Features (per README, in English & Persian)\n- **Doctors panel**: register/login, view patient records, add/cancel appointments, view history & canceled appointments\n- **Patients panel**: register/login, list/sort/search doctors, book/cancel appointments, view history, **automatic booking** (Phase 3: finds the earliest free slot by specialty + city, likely using the heap)\n- **Admin panel**: show/search doctors (by specialty), add cities/specialties, delete patients/doctors, list patients\n\nIt's a three-phase course final project with no external dependencies — run it via `python main.py`.",
+      "finish_reason": "stop",
+      "model_calls": 3,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "*"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\README.md"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\main.py"
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 9913,
+        "input": 5204,
+        "output": 506,
+        "reasoning": 107,
+        "cache_read": 4096,
+        "cache_write": 0
+      },
+      "raw_sha256": "a67e907f63391fb16360163297dc5a8821c630e6f5ccbfd579cbaa6540e865a1",
+      "error": null
+    },
+    {
+      "case_id": "WRA-H-05-EN",
+      "concept_id": "WRA-H-05",
+      "repository_id": "hospital_system",
+      "repository_url": "https://github.com/AvaGhiasian/Hospital-System.git",
+      "repository_commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633",
+      "language": "en",
+      "scope": "global",
+      "question": "What is the repository's persistence design for doctors, patients, cities, specialities, and the current day?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Manage.save_data delegates persistence to doctors, patients, cities, and specialities",
+        "Those data-access components serialize to files through the File helper",
+        "DayManager persists curr_day separately when next_day calls save_day",
+        "No database-backed persistence is implemented"
+      ],
+      "forbidden_claims": [
+        "Django ORM is used",
+        "All state is stored in one JSON file"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 25.99,
+      "session_id": "ses_f7ab6ee18ffeNmGzStS1ZLi1DR",
+      "answer": "This is a Python CLI-based **Hospital Appointment Management System** (a university final project, described in English and Persian in `README.md`). Here's an overview:\n\n## Purpose\nA centralized medical system with three role-based panels:\n- **Doctors** – register/login, view patient records, set/cancel appointments, view appointment history & canceled appointments\n- **Patients** – register/login, browse/search doctors, book/cancel appointments, view history, automatic (fastest-available) booking\n- **Admin/Manager** – list/search doctors, filter by specialty, add cities/specialties, delete patients/doctors, list patients\n\n## Architecture (`main.py` wires it up)\n- **`models/`** – Domain objects: `Doctor`, `Patient`, `Appointment` (e.g., `Doctor` holds a `Schedule` with 12 time slots per day and an `Appointments` collection)\n- **`data_access/`** – Repositories: `Doctors`, `Patients`, `Cities`, `Specialities`\n- **`logic/`** – `Manage` (business logic facade), `UserSession`, `DayManager` (simulated day progression)\n- **`presentation/`** – CLI menus (`commands.py`, `CLI.py`) plus `DoctorsInterface`, `PatientsInterface`, `AdminInterface`\n- **`data_structures/`** – Hand-rolled structures instead of built-ins: `Array`, `DynamicHash`, `Queue`, `Stack`, `LinkedList`, `Heap`, `Trie`, `Tree` (Trie/heap likely support doctor search and \"first empty appointment\" lookup)\n- **`tools/`** – `sorts.py` (insertion sort), `file_handling.py` (persistence; `save_data()` called on menu exit)\n\nIt follows a layered design (data access → logic → UI), is pure-Python with no external dependencies, and includes a `test_files/` folder and a `LICENSE.md`.",
+      "finish_reason": "stop",
+      "model_calls": 5,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "*.md"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\README.md"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\main.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\logic\\management.py",
+            "limit": 80
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\models\\doctor.py",
+            "limit": 60
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\presentation\\commands.py",
+            "limit": 80
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 19693,
+        "input": 10651,
+        "output": 600,
+        "reasoning": 250,
+        "cache_read": 8192,
+        "cache_write": 0
+      },
+      "raw_sha256": "9bf5e83743fe42de12955d69de3ba1578ca732f0ac707bf879520cf4229d0831",
+      "error": null
+    },
+    {
+      "case_id": "WRA-H-05-FA",
+      "concept_id": "WRA-H-05",
+      "repository_id": "hospital_system",
+      "repository_url": "https://github.com/AvaGhiasian/Hospital-System.git",
+      "repository_commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633",
+      "language": "fa",
+      "scope": "global",
+      "question": "معماری ماندگاری داده برای پزشکان، بیماران، شهرها، تخصص‌ها و روز جاری در کل مخزن چگونه است؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Manage.save_data delegates persistence to doctors, patients, cities, and specialities",
+        "Those data-access components serialize to files through the File helper",
+        "DayManager persists curr_day separately when next_day calls save_day",
+        "No database-backed persistence is implemented"
+      ],
+      "forbidden_claims": [
+        "Django ORM is used",
+        "All state is stored in one JSON file"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 40.276,
+      "session_id": "ses_f7ab54650ffeFbqhEZtwYSdYYy",
+      "answer": "**حداکثر مراحل مجاز برای این ایجنت به پایان رسیده است** — بنابراین پاسخ را صرفاً بر اساس شواهد جمع‌آوری‌شده ارائه می‌دهم:\n\n## معماری ماندگاری داده (Persistence Architecture)\n\nمعماری، لایه‌ای سه‌سطحی است (لایه دسترسی به داده → منطق → ارائه) که در `main.py:12-33` سیم‌کشی شده و ماندگاری از نوع **فایل‌های متنی مسطح (Flat Text Files)** است، بدون هیچ نوع دیتابیسی.\n\n**۱. پزشکان (Doctors):** در حافظه در `DynamicHash` (کلید: شناسه ملی) نگهداری می‌شوند، به همراه ایندکس‌های کمکی برای ورود به سیستم و شهر↔تخصص→IDها (`data_access/doctors.py:11-13`). ماندگاری از طریق مسیر `\"test_files/Doctors.txt\"` با فرمت جدا شده با `-` انجام می‌شود: بارگذاری در `load_data` (خطوط ۱۹-۳۰) و بازنویسی کامل در `save_data` (خطوط ۳۲-۴۰).\n\n**۲. بیماران (Patients):** الگوی مشابهی با `DynamicHash` (کلید: شناسه ملی) در `data_access/patients.py:12-13`؛ بارگذاری/ذخیره‌سازی از `\"test_files/Patients.txt\"` (خطوط ۲۲-۴۲).\n\n**۳. شهرها (Cities):** در یک ساختار داده **Trie** نگهداری می‌شوند (`data_access/cities.py:7`)؛ که از `\"test_files/Cities.txt\"` بارگذاری (خطوط ۱۰-۱۶) و از طریق `get_all_words()` ذخیره می‌شوند (خطوط ۱۸-۲۵).\n\n**۴. تخصص‌ها (Specialities):** کاملاً مشابه، یک Trie که در `\"test_files/Specialties.txt\"` پایدار می‌شود (`data_access/specialities.py:7-25`).\n\n**۵. روز جاری (Current Day):** به صورت **Singleton** مدیریت می‌شود (`logic/day_manager.py:4-13`)، که یک عدد صحیح را در `\"test_files/Days.txt\"` نگه می‌دارد — که در حال حاضر حاوی `1` است. `load_day` (خطوط ۱۸-۲۲)، `save_day` (خطوط ۲۴-۲۵)، `next_day` (خطوط ۲۷-۲۹). این مقدار، قواعد زمان‌بندی (`logic/management.py:84-85, 176-177`) را هدایت می‌کند و برای پاک‌سازی زمان‌بندی‌های خارج از محدوده، رویداد `next_day` را به پزشکان منتشر می‌کند (`logic/management.py:202-203`، `data_access/doctors.py:166-170`).\n\n**۶. هماهنگی:** `Manage.save_data()` (`logic/management.py:196-200`) هر چهار فایل را با هم مجدداً می‌نویسد، که از هنگام خروج فراخوانی می‌شود (`presentation/commands.py:17, 73, 120`). ورودی/خروجی فایل ابتدایی از طریق پوشش `File` در `tools/file_handling.py:8-35` انجام می‌شود.\n\n**کارهای ناقص:** خواندن دقیق زمان‌بندی‌ها / فایل‌های نوبت‌های مربوط به هر پزشک.",
+      "finish_reason": "stop",
+      "model_calls": 8,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*.sln"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\README.md"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_access"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\models"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_access\\doctors.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_access\\patients.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_access\\cities.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_access\\specialities.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\tools\\file_handling.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "next_day|save_data|load_data|current|today",
+            "path": "D:\\code-compass\\sample-repos\\Hospital-System\\logic"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\logic\\day_manager.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\logic\\management.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\main.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "test_files/*"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\test_files\\Days.txt"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "path": "D:\\code-compass\\sample-repos\\Hospital-System\\presentation",
+            "pattern": "save_data|next_day"
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 56255,
+        "input": 20130,
+        "output": 1253,
+        "reasoning": 56,
+        "cache_read": 34816,
+        "cache_write": 0
+      },
+      "raw_sha256": "3df93ce7fb08eafd46edd28f3be6cda8bede6a095a5b53861f8d2497bc65da6f",
+      "error": null
+    },
+    {
+      "case_id": "WRA-H-06-EN",
+      "concept_id": "WRA-H-06",
+      "repository_id": "hospital_system",
+      "repository_url": "https://github.com/AvaGhiasian/Hospital-System.git",
+      "repository_commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633",
+      "language": "en",
+      "scope": "negative",
+      "question": "How are user passwords salted and hashed before they are stored?",
+      "expected_behavior": "insufficient_evidence",
+      "expected_facts": [
+        "No password hashing or salting implementation is present in the indexed Python code"
+      ],
+      "forbidden_claims": [
+        "Passwords are hashed with bcrypt",
+        "Passwords are hashed with PBKDF2"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 30.377,
+      "session_id": "ses_f7ab4a902ffePQE6KJkHWPcJJt",
+      "answer": "**They aren't.** Based on a full inspection of this repository, user passwords are neither salted nor hashed — they are stored and persisted as plaintext.\n\n**Evidence:**\n\n1. **No cryptographic code exists anywhere.** A repo-wide search for `hashlib`, `bcrypt`, `sha*`, `md5`, `salt`, `pbkdf`, `argon`, `scrypt`, `encrypt`, `crypt` returns zero results. There is also no `requirements.txt` or dependency manifest for such libraries. Every occurrence of \"hash\" refers to the custom hash-table data structure (`data_structures/hash_table.py`, e.g. `DynamicHash`), not cryptography.\n\n2. **Registration stores the raw password.** In `data_access/patients.py:44-49`, `register_patient()` passes the password straight into the `Patient` object and indexes it directly:\n   ```python\n   patient = Patient(first_name, last_name, national_id, phone_num, password, ...)\n   self.signed_in[patient.password] = patient.national_id\n   ```\n   The `Patient` model just assigns it verbatim — `models/patient.py:11`: `self.password = password` (same in `models/doctor.py:19`).\n\n3. **Passwords are written to disk unhashed.** `data_access/patients.py:40-41` persists them:\n   ```python\n   line = (f\"...{patient.phone_num}-{patient.password}-{patient.gender}...\")\n   ```\n   Visible in `test_files/Patients.txt:73`: `...-CWqgvdreg-Female-Ahvaz-748991`, and similarly in `test_files/Doctors.txt` (e.g. line 39, `...-jpEziNfst`).\n\n4. **Login compares plaintext.** `data_access/patients.py:54-55` looks up the raw password string as a hash-table key (`self.signed_in[password]`), which only works because nothing was transformed.\n\nSo the system does not apply any salting or hashing before storage.",
+      "finish_reason": "stop",
+      "model_calls": 5,
+      "tool_calls": [
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "password",
+            "include": "*.{cs,java,py,js,ts,php}"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*{Password,password,Auth,auth,Hash,hash}*"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_access\\patients.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "hashlib|bcrypt|sha\\d+|md5|salt|pbkdf|argon|scrypt|encrypt|hashpw|crypt"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "(?i)hash|salt|digest|encode"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\models\\patient.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/requirements*.txt"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_structures\\hash_table.py",
+            "limit": 100
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 25364,
+        "input": 11882,
+        "output": 646,
+        "reasoning": 548,
+        "cache_read": 12288,
+        "cache_write": 0
+      },
+      "raw_sha256": "19d0ae959252b1e4df860b76307a34df13a3910eb684992721d301ede17caa33",
+      "error": null
+    },
+    {
+      "case_id": "WRA-H-06-FA",
+      "concept_id": "WRA-H-06",
+      "repository_id": "hospital_system",
+      "repository_url": "https://github.com/AvaGhiasian/Hospital-System.git",
+      "repository_commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633",
+      "language": "fa",
+      "scope": "negative",
+      "question": "گذرواژه کاربران پیش از ذخیره چگونه salt و hash می‌شود؟",
+      "expected_behavior": "insufficient_evidence",
+      "expected_facts": [
+        "No password hashing or salting implementation is present in the indexed Python code"
+      ],
+      "forbidden_claims": [
+        "Passwords are hashed with bcrypt",
+        "Passwords are hashed with PBKDF2"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 36.836,
+      "session_id": "ses_f7ab43271ffef0bESJb41jT5Aa",
+      "answer": "## پاسخ\n\n**پیش از ذخیره‌سازی هیچ salt یا hashی روی گذرواژه انجام نمی‌شود.** در این مخزن، گذرواژه‌ها به‌صورت **متن ساده (plaintext)** ذخیره و مدیریت می‌شوند و هیچ الگوریتمی مانند bcrypt، SHA یا MD5 — و هیچ مکانیزم salt — در هیچ فایلی وجود ندارد.\n\n### شواهد\n\n1. **ذخیره‌سازی مستقیم گذرواژه در مدل** — `models/patient.py:11`:\n   ```python\n   self.password = password   # بدون هیچ تغییر\n   ```\n   و همین‌طور `models/doctor.py:19` (`self.password = password`).\n\n2. **ثبت‌نام بدون هش** — `data_access/patients.py:44-49`: گذرواژه خام مستقیماً به‌عنوان کلید `DynamicHash` استفاده می‌شود:\n   ```python\n   self.signed_in[patient.password] = patient.national_id\n   ```\n   الگوی مشابه در `data_access/doctors.py:59`.\n\n3. **ذخیره در فایل به‌صورت متن ساده** — `data_access/patients.py:40-42`:\n   ```python\n   line = (f\"...-{patient.password}-...\")\n   file.append(line)\n   ```\n   (مشابه در `data_access/doctors.py:39`) — یعنی گذرواژه خام در `test_files/Patients.txt` نوشته می‌شود.\n\n4. **عدم وجود importهای مربوطه** — جستجوی سراسری برای `salt`، `hashlib`، `bcrypt`، `sha`، `md5`، `digest`، `encode` هیچ نتیجه‌ای در فایل‌های مربوط به گذرواژه نداشت. تنها «hash» موجود در پروژه مربوط به ساختار داده `DynamicHash` در `data_structures/hash_table.py` است (جداول هش برای نگاشت کلید→مقدار)، که هیچ ربطی به رمزنگاری گذرواژه ندارد.\n\n**نتیجه:** فرضِ «salt و hash شدن پیش از ذخیره» در این کدبیس صادق نیست؛ گذرواژه‌ها بدون تغییر ذخیره می‌شوند.",
+      "finish_reason": "stop",
+      "model_calls": 4,
+      "tool_calls": [
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "salt"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "hash|md5|sha256|bcrypt|SHA|MD5"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "password|Password|pass_word|passwd"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\models\\patient.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_access\\patients.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "encode|digest|hashlib|secrets|os\\.urandom|getrandbits"
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 16656,
+        "input": 9663,
+        "output": 666,
+        "reasoning": 183,
+        "cache_read": 6144,
+        "cache_write": 0
+      },
+      "raw_sha256": "37342500fc7ce9371c6a7b23c101eafdb370ef3c44a2aff00444d61004a85cc5",
+      "error": null
+    },
+    {
+      "case_id": "WRA-B-01-EN",
+      "concept_id": "WRA-B-01",
+      "repository_id": "cs_bookstore",
+      "repository_url": "https://github.com/AvaGhiasian/CS-Bookstore.git",
+      "repository_commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+      "language": "en",
+      "scope": "local",
+      "question": "How is a blog post slug populated when the post is saved?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Post.save only generates a slug when slug is empty",
+        "It applies slugify to the title",
+        "It delegates the actual save to the parent model"
+      ],
+      "forbidden_claims": [
+        "The slug is regenerated on every save",
+        "The slug is a random UUID"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 29.788,
+      "session_id": "ses_f7ab3a281ffel5XIwRa00RWZd5",
+      "answer": "The blog post slug is populated in two complementary ways:\n\n## 1. Model-level: automatic slugification on save\n\n**`blog/models.py`, lines 69–72** — the `Post` model overrides `save()`:\n\n```python\ndef save(self, *args, **kwargs):\n    if not self.slug:\n        self.slug = slugify(self.title)\n    super().save(*args, **kwargs)\n```\n\n- `slugify` is imported at **line 5**: `from django.template.defaultfilters import slugify`\n- The `slug` field itself is defined at **line 41**: `slug = models.SlugField(max_length=250, verbose_name=\"اسلاگ\")`\n- Logic: if the post is saved without a slug, it is generated by slugifying the `title` (line 71). If a slug was already provided, it is left untouched.\n\n## 2. Admin-level: JavaScript prepopulation in the form\n\n**`blog/admin.py`, line 33** — the `PostAdmin` class:\n\n```python\nprepopulated_fields = {\"slug\": ['title']}  # auto generating slug\n```\n\nIn the Django admin, the slug field is auto-filled in the browser from the `title` as the user types, so the model's `save()` fallback typically only kicks in when a post is created outside the admin (or if the slug field is cleared).\n\n**Summary:** On save, an empty `slug` is populated with `slugify(self.title)` (`blog/models.py:69-72`); the admin also prepopulates the slug field from the title in the form (`blog/admin.py:33`).",
+      "finish_reason": "stop",
+      "model_calls": 3,
+      "tool_calls": [
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*blog*"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "*.py",
+            "pattern": "slug"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\blog\\models.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\blog\\admin.py"
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 10450,
+        "input": 7853,
+        "output": 451,
+        "reasoning": 98,
+        "cache_read": 2048,
+        "cache_write": 0
+      },
+      "raw_sha256": "9ffb8c5c87e265b4e2f5c3ffce231e34435c3400cb245432592e7d716b5d7539",
+      "error": null
+    },
+    {
+      "case_id": "WRA-B-01-FA",
+      "concept_id": "WRA-B-01",
+      "repository_id": "cs_bookstore",
+      "repository_url": "https://github.com/AvaGhiasian/CS-Bookstore.git",
+      "repository_commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+      "language": "fa",
+      "scope": "local",
+      "question": "هنگام ذخیره پست وبلاگ، slug چگونه مقداردهی می‌شود؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Post.save only generates a slug when slug is empty",
+        "It applies slugify to the title",
+        "It delegates the actual save to the parent model"
+      ],
+      "forbidden_claims": [
+        "The slug is regenerated on every save",
+        "The slug is a random UUID"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 33.183,
+      "session_id": "ses_f7ab32d3affeU7ohc9GgVU3QVu",
+      "answer": "## پاسخ\n\nهنگام ذخیره‌ی پست وبلاگ، اسلاگ (slug) به‌صورت **خودکار از روی عنوان (title)** ساخته می‌شود — البته فقط اگر قبلاً مقداری نداشته باشد.\n\n### شواهد از کد\n\n**۱. متد `save` در مدل `Post`** — `blog/models.py` (خطوط ۶۹ تا ۷۲):\n\n```python\ndef save(self, *args, **kwargs):\n    if not self.slug:\n        self.slug = slugify(self.title)\n    super().save(*args, **kwargs)\n```\n\nیعنی قبل از فراخوانی `super().save()`، چک می‌شود که آیا `slug` خالی است؛ اگر خالی باشد، مقدار آن برابر با خروجی تابع `slugify(self.title)` قرار می‌گیرد. تابع `slugify` هم در بالای همان فایل (خط ۵) ایمپورت شده است:\n\n```python\nfrom django.template.defaultfilters import slugify\n```\n\nفیلد مربوطه یک `SlugField` با حداکثر طول ۲۵۰ است (`blog/models.py`، خط ۴۱):\n\n```python\nslug = models.SlugField(max_length=250, verbose_name=\"اسلاگ\")\n```\n\n**۲. پنل مدیریت** — `blog/admin.py` (خط ۳۳):\n\n```python\nprepopulated_fields = {\"slug\": ['title']}  # auto generating slug\n```\n\nاین یعنی در فرم ادمین، فیلد «اسلاگ» از روی فیلد «عنوان» به‌صورت زنده (با جاوااسکریپت) پیش‌پر می‌شود.\n\n### نکته\n\n- اگر اسلاگ از قبل پر شده باشد (مثلاً توسط ادمین)، **دوباره بازنویسی نمی‌شود** و همان مقدار باقی می‌ماند (چون شرط `if not self.slug` فقط در حالت خالی عمل می‌کند).\n- همان الگو در مدل `Book` اپ `store` هم تکرار شده است (`store/models.py`، خطوط ۶۷ تا ۷۱)، اما سؤال مربوط به پست وبلاگ بود.\n- توجه: `slugify` پیش‌فرض جنگو نویسه‌های فارسی را به URL-safe تبدیل نمی‌کند، پس برای عناوین فارسی ممکن است اسلاگ خالی یا نامناسب تولید شود.",
+      "finish_reason": "stop",
+      "model_calls": 3,
+      "tool_calls": [
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*post*"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "slug"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\blog\\models.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\blog\\admin.py"
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 12040,
+        "input": 9167,
+        "output": 658,
+        "reasoning": 167,
+        "cache_read": 2048,
+        "cache_write": 0
+      },
+      "raw_sha256": "60b3baa8b068d059ba4a432550ade57a1ff2897c76778c453a977f8a992e89a4",
+      "error": null
+    },
+    {
+      "case_id": "WRA-B-02-EN",
+      "concept_id": "WRA-B-02",
+      "repository_id": "cs_bookstore",
+      "repository_url": "https://github.com/AvaGhiasian/CS-Bookstore.git",
+      "repository_commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+      "language": "en",
+      "scope": "local",
+      "question": "Which fields and defaults represent whether a book can be sold, its stock, original price, discount, and discounted price?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "available is a BooleanField defaulting to true",
+        "inventory is a PositiveIntegerField defaulting to zero",
+        "price, off, and new_price are PositiveIntegerField values defaulting to zero",
+        "The model code does not automatically compute new_price"
+      ],
+      "forbidden_claims": [
+        "new_price is computed in Book.save",
+        "inventory defaults to one"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 23.867,
+      "session_id": "ses_f7ab2ac8dffeLH8bInOqDVq8C0",
+      "answer": "The relevant fields are all defined on the `Book` model in `store/models.py`:\n\n| Concept | Field | Definition | Evidence |\n|---|---|---|---|\n| Can be sold | `available` | `models.BooleanField(default=True)` | store/models.py line 46 |\n| Stock | `inventory` | `models.PositiveIntegerField(default=0, verbose_name='موجودی')` — «موجودی» means stock | line 47 |\n| Original price | `price` | `models.PositiveIntegerField(default=0, verbose_name='قیمت')` — «قیمت» means price | line 48 |\n| Discount | `off` | `models.PositiveIntegerField(default=0, verbose_name='تخفیف')` — «تخفیف» means discount | line 50 |\n| Discounted price | `new_price` | `models.PositiveIntegerField(default=0, verbose_name='قیمت پس از تخفیف')` — «قیمت پس از تخفیف» means \"price after discount\" | line 51 |\n\nSummary of defaults:\n- `available` defaults to `True` (books are sellable by default).\n- `inventory`, `price`, `off`, and `new_price` all default to `0`.\n\nThe Persian `verbose_name` labels confirm the semantics: موجودی (inventory/stock) at line 47, قیمت (price) at line 48, تخفیف (discount) at line 50, and قیمت پس از تخفیف (price after discount) at line 51 — all inside `class Book(models.Model)` beginning at line 40.",
+      "finish_reason": "stop",
+      "model_calls": 4,
+      "tool_calls": [
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*book*"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "path": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore",
+            "pattern": "can_be_sold|is_available|stock"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "store/models.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "store/*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\models.py"
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 12654,
+        "input": 7899,
+        "output": 461,
+        "reasoning": 198,
+        "cache_read": 4096,
+        "cache_write": 0
+      },
+      "raw_sha256": "1fb14bf78a747d9ccf4944934787b34c7f7672090db76f3aa042258a6765bfa6",
+      "error": null
+    },
+    {
+      "case_id": "WRA-B-02-FA",
+      "concept_id": "WRA-B-02",
+      "repository_id": "cs_bookstore",
+      "repository_url": "https://github.com/AvaGhiasian/CS-Bookstore.git",
+      "repository_commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+      "language": "fa",
+      "scope": "local",
+      "question": "قابل‌فروش بودن کتاب، موجودی، قیمت اصلی، تخفیف و قیمت پس از تخفیف با چه فیلدها و مقادیر پیش‌فرضی نمایش داده می‌شوند؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "available is a BooleanField defaulting to true",
+        "inventory is a PositiveIntegerField defaulting to zero",
+        "price, off, and new_price are PositiveIntegerField values defaulting to zero",
+        "The model code does not automatically compute new_price"
+      ],
+      "forbidden_claims": [
+        "new_price is computed in Book.save",
+        "inventory defaults to one"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "failed",
+      "latency_seconds": 52.565,
+      "session_id": "ses_f7ab24ed0ffeNyjgifckemNNec",
+      "answer": "",
+      "finish_reason": "stop",
+      "model_calls": 8,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*.html"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "*.py",
+            "pattern": "available|original_price|discount|sale_price|sell"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\models.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "*.html",
+            "pattern": "available|inventory|off|new_price|price"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\templates\\store\\detail.html",
+            "offset": 1,
+            "limit": 80
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "*.html",
+            "pattern": "موجود|ناموجود|inventory"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\templates\\store\\index.html",
+            "limit": 100
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\templates\\store\\all_books.html",
+            "limit": 40
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\migrations\\0001_initial.py",
+            "limit": 70,
+            "offset": 30
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\admin.py"
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 47682,
+        "input": 17407,
+        "output": 965,
+        "reasoning": 638,
+        "cache_read": 28672,
+        "cache_write": 0
+      },
+      "raw_sha256": "a0c65a659723eccd3171cab92774ce05961d421386178384e227fe53af166732",
+      "error": {
+        "type": "empty_answer"
+      }
+    },
+    {
+      "case_id": "WRA-B-03-EN",
+      "concept_id": "WRA-B-03",
+      "repository_id": "cs_bookstore",
+      "repository_url": "https://github.com/AvaGhiasian/CS-Bookstore.git",
+      "repository_commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+      "language": "en",
+      "scope": "cross_file",
+      "question": "What data does the book detail page load, and when does it expose the review form?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "The book is selected by id and slug or returns 404",
+        "Only active reviews are loaded and newest reviews come first",
+        "ReviewForm is supplied only for an authenticated user",
+        "The book, form, and reviews are rendered in store/detail.html"
+      ],
+      "forbidden_claims": [
+        "Anonymous users receive an enabled ReviewForm",
+        "Inactive reviews are included"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 35.52,
+      "session_id": "ses_f7ab181cbffeRsVSf4WE1aBUhH",
+      "answer": "## Book detail page\n\n**View — `store/views.py`, `book_detail` (lines 40–49)**, routed at `store/urls.py` line 9 (`books/<int:pk>/<slug:slug>/`):\n\n- Loads the book: `get_object_or_404(Book, id=pk, slug=slug)` (line 41).\n- Loads its reviews: `book.reviews.filter(active=True).order_by('-created')` (line 42).\n- Builds context with `book`, `form`, `reviews` (lines 44–48) and renders `\"store/detail.html\"` (line 49).\n\nThe `form` is a `ReviewForm` (`store/forms.py` lines 6–13) — a ModelForm over `Review` with fields `rating` (a 1–5 ⭐ select) and `body` (a textarea).\n\n## When the review form is exposed\n\nThe form is gated on authentication in **two places**:\n\n1. **Backend** — `store/views.py` line 46:\n   ```python\n   'form': ReviewForm() if request.user.is_authenticated else None,\n   ```\n   Anonymous users get `form=None` in the context.\n\n2. **Template** — `store/templates/store/detail.html` lines 53–64:\n   - `{% if user.is_authenticated %}` → renders the \"ثبت نظر\" form posting via `method=\"post\"` to `{% url 'store:review_book' book.pk book.slug %}` with `{% csrf_token %}` and `{{ form.as_p }}` (lines 53–59).\n   - `{% else %}` → shows a login prompt linking to `users:login` with `?next={{ request.path }}` (lines 60–64).\n\nThe `review_book` endpoint itself is additionally protected with `@login_required` (views.py lines 94–95) and handles the POST by saving the review with `book` and `request.user`, then redirecting back to the detail page (lines 98–105).",
+      "finish_reason": "stop",
+      "model_calls": 6,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\views.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\urls.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\forms.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "templates/store/detail.html"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/detail.html"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\templates\\store\\detail.html"
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 30990,
+        "input": 15658,
+        "output": 660,
+        "reasoning": 336,
+        "cache_read": 14336,
+        "cache_write": 0
+      },
+      "raw_sha256": "b9988e97fce4482effede65c0c4dd963d151b5e5fbd8a974f62c15bac1186e2e",
+      "error": null
+    },
+    {
+      "case_id": "WRA-B-03-FA",
+      "concept_id": "WRA-B-03",
+      "repository_id": "cs_bookstore",
+      "repository_url": "https://github.com/AvaGhiasian/CS-Bookstore.git",
+      "repository_commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+      "language": "fa",
+      "scope": "cross_file",
+      "question": "صفحه جزئیات کتاب چه داده‌هایی را بارگذاری می‌کند و فرم نظر را چه زمانی نمایش می‌دهد؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "The book is selected by id and slug or returns 404",
+        "Only active reviews are loaded and newest reviews come first",
+        "ReviewForm is supplied only for an authenticated user",
+        "The book, form, and reviews are rendered in store/detail.html"
+      ],
+      "forbidden_claims": [
+        "Anonymous users receive an enabled ReviewForm",
+        "Inactive reviews are included"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 50.547,
+      "session_id": "ses_f7ab0f6bfffes4OCMbGjtZGE8F",
+      "answer": "## پاسخ\n\n**داده‌های بارگذاری‌شده** — در ویوی `book_detail` (فایل `store/views.py`، خطوط ۴۰ تا ۴۹):\n\n1. **`book`**: شیء کتاب با `get_object_or_404(Book, id=pk, slug=slug)` (خط ۴۱)\n2. **`reviews`**: نظرات تأییدشدهٔ کتاب، `book.reviews.filter(active=True).order_by('-created')` (خط ۴۲)\n3. **`form`**: نمونهٔ `ReviewForm` فقط اگر کاربر وارد شده باشد؛ در غیر این صورت `None` (خط ۴۶: `'form': ReviewForm() if request.user.is_authenticated else None`)\n\nسپس این context به قالب `store/detail.html` رندر می‌شود (خط ۴۹).\n\n**آنچه قالب نمایش می‌دهد** (`store/templates/store/detail.html`):\n- تصویر اول کتاب (خط ۸)، عنوان (۱۱)، نویسنده (۱۲)، دسته‌بندی (۱۳)، تعداد صفحات (۱۴)، وزن (۱۵)\n- قیمت با در نظر گرفتن تخفیف: اگر `book.off > 0` باشد قیمت قدیمی و `new_price` نمایش داده می‌شود (خطوط ۱۷–۲۴)\n- توضیحات کتاب (خطوط ۲۶–۲۹) و فهرست نظرات با نام کاربری، تاریخ، امتیاز و متن (خطوط ۳۶–۴۹)\n\n**زمان نمایش فرم نظر** — شرط `{% if user.is_authenticated %}` در خط ۵۳:\n- اگر کاربر وارد شده باشد، فرم ثبت نظر (متد POST به آدرس `store:review_book`) با `{{ form.as_p }}` نمایش داده می‌شود (خطوط ۵۴–۵۹)\n- در غیر این صورت به‌جای فرم، پیام «برای ثبت نظر وارد حساب خود شوید» با لینک ورود و `?next={{ request.path }}` نشان داده می‌شود (خطوط ۶۰–۶۴)\n\nبنابراین نمایش فرم هم در ویو (ساخت `ReviewForm` تنها برای کاربر احراز هویت‌شده، views.py خط ۴۶) و هم در قالب (شرط `user.is_authenticated`، خط ۵۳) کنترل می‌شود.",
+      "finish_reason": "stop",
+      "model_calls": 5,
+      "tool_calls": [
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*book*detail*"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/templates/**/*.html"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\templates\\store\\detail.html"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "store/views*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "path": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\views.py",
+            "pattern": "def book_detail|def review_book|context|form"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\views.py",
+            "limit": 75,
+            "offset": 30
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 23515,
+        "input": 12325,
+        "output": 726,
+        "reasoning": 224,
+        "cache_read": 10240,
+        "cache_write": 0
+      },
+      "raw_sha256": "69d0131fa9208cbf81595ad87ea1ff4d2cb3d7dabb0056df6aff6443958131cb",
+      "error": null
+    },
+    {
+      "case_id": "WRA-B-04-EN",
+      "concept_id": "WRA-B-04",
+      "repository_id": "cs_bookstore",
+      "repository_url": "https://github.com/AvaGhiasian/CS-Bookstore.git",
+      "repository_commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+      "language": "en",
+      "scope": "cross_file",
+      "question": "Who may add books, authors, categories, and images from the profile area, and what happens after a valid submission?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "All four add views require the user to be a superuser",
+        "Each POST binds the corresponding ModelForm",
+        "A valid form is saved",
+        "The response redirects to users:profile"
+      ],
+      "forbidden_claims": [
+        "Any authenticated user can add catalog data",
+        "The views write model fields directly without forms"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 37.553,
+      "session_id": "ses_f7ab03078ffehK3wR6SHIgfw1D",
+      "answer": "**Who may add them:** Only superusers (admins).\n\n- The profile template shows these admin links only when `{% if request.user.is_superuser %}` — \"افزودن نویسنده\" (add author), \"افزودن کتاب\" (add book), \"افزودن دسته بندی\" (add category), and \"افزودن تصویر کتاب\" (add book image), linking to `users:add_author`, `users:add_book`, `users:add_category`, `users:add_image` (`users/templates/users/profile.html` lines 42–58); non-superusers get no such links (lines 59–61).\n- Each view is additionally guarded server-side with `@user_passes_test(lambda user: user.is_superuser)` — `add_book` (`users/views.py` line 106), `add_author` (line 118), `add_category` (line 130), `add_image` (line 142).\n\n**Routes (profile area):** `profile/books/add/`, `profile/author/add/`, `profile/category/add/`, `profile/image/add/` (`users/urls.py` lines 37–40).\n\n**After a valid submission:** The form is saved and the user is redirected back to the profile page. This identical pattern appears in all four views:\n\n- `add_book`: `book_form.save()` then `return redirect('users:profile')` (`users/views.py` lines 110–112)\n- `add_author`: `author_form.save()` then `redirect('users:profile')` (lines 122–124)\n- `add_category`: `category_form.save()` then `redirect('users:profile')` (lines 134–136)\n- `add_image`: `image_form.save()` (accepting `request.POST, request.FILES`) then `redirect('users:profile')` (lines 146–148)\n\nIf the form is invalid or the request is GET, the corresponding template (`store/add_book.html`, etc.) is simply re-rendered with the form (lines 114–115, 126–127, 138–139, 150–151).",
+      "finish_reason": "stop",
+      "model_calls": 4,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "add_book|add_author|add_category|add_image"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\users\\views.py",
+            "limit": 100,
+            "offset": 80
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\users\\templates\\users\\profile.html",
+            "limit": 80
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\users\\urls.py"
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 13993,
+        "input": 8948,
+        "output": 640,
+        "reasoning": 309,
+        "cache_read": 4096,
+        "cache_write": 0
+      },
+      "raw_sha256": "bc646d07d047f9db33d3cfbb9543197dd1a894552d08c913e88251354b991ac9",
+      "error": null
+    },
+    {
+      "case_id": "WRA-B-04-FA",
+      "concept_id": "WRA-B-04",
+      "repository_id": "cs_bookstore",
+      "repository_url": "https://github.com/AvaGhiasian/CS-Bookstore.git",
+      "repository_commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+      "language": "fa",
+      "scope": "cross_file",
+      "question": "چه کسی می‌تواند از بخش پروفایل کتاب، نویسنده، دسته‌بندی و تصویر اضافه کند و پس از ارسال معتبر چه رخ می‌دهد؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "All four add views require the user to be a superuser",
+        "Each POST binds the corresponding ModelForm",
+        "A valid form is saved",
+        "The response redirects to users:profile"
+      ],
+      "forbidden_claims": [
+        "Any authenticated user can add catalog data",
+        "The views write model fields directly without forms"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 37.266,
+      "session_id": "ses_f7aaf9dd6ffebAqw2emjCAKxq5",
+      "answer": "## پاسخ\n\n**چه کسی؟** فقط **superuser** (کاربر ابرکاربر).\n\n**شواهد:**\n- `users/views.py` خطوط ۱۱۸، ۱۳۰ و ۱۴۲: هر سه ویو `add_author`، `add_category` و `add_image` با دکوراتور `@user_passes_test(lambda user: user.is_superuser)` محافظت شده‌اند (خط ۵ هم ایمپورت `user_passes_test` را نشان می‌دهد).\n- `users/urls.py` خطوط ۳۸–۴۰: مسیرهای `profile/author/add/`، `profile/category/add/` و `profile/image/add/` به همین ویوها متصل‌اند.\n\n**پس از ارسال معتبر چه رخ می‌دهد؟** رکورد جدید در دیتابیس ذخیره و کاربر به صفحه پروفایل هدایت (redirect) می‌شود:\n\n- `add_author` (خطوط ۱۲۰–۱۲۴): `AuthorForm` اعتبارسنجی → `author_form.save()` → `return redirect('users:profile')`\n- `add_category` (خطوط ۱۳۲–۱۳۶): `CategoryForm` اعتبارسنجی → `category_form.save()` → `redirect('users:profile')`\n- `add_image` (خطوط ۱۴۴–۱۴۸): `ImageForm(request.POST, request.FILES)` اعتبارسنجی → `image_form.save()` → `redirect('users:profile')`\n\nاگر فرم نامعتبر باشد، همان قالب (مثلاً `store/add_author.html`) با خطاها دوباره رندر می‌شود (خطوط ۱۲۵–۱۲۷ و مشابه).",
+      "finish_reason": "stop",
+      "model_calls": 5,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "author|category|image",
+            "include": "**/urls.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\users\\urls.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "users/views*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "users/views.py",
+            "pattern": "def add_author|def add_category|def add_image|def add_book|login_required|is_staff|is_superuser|staff_member"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\users\\views.py",
+            "offset": 100,
+            "limit": 70
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 15329,
+        "input": 6487,
+        "output": 599,
+        "reasoning": 51,
+        "cache_read": 8192,
+        "cache_write": 0
+      },
+      "raw_sha256": "6bfbe5db27ea3706b92a97b5017cca08834fd9c9249fc9d18854754f7e9e0734",
+      "error": null
+    },
+    {
+      "case_id": "WRA-B-05-EN",
+      "concept_id": "WRA-B-05",
+      "repository_id": "cs_bookstore",
+      "repository_url": "https://github.com/AvaGhiasian/CS-Bookstore.git",
+      "repository_commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+      "language": "en",
+      "scope": "global",
+      "question": "What are the main store-domain entities and how are books related to categories, authors, images, reviews, and orders?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Book has foreign keys to Category and Author",
+        "Image has a foreign key to Book with related_name images",
+        "Review links a Book and the configured User model",
+        "Order links a User and tracks created and paid",
+        "Order has no relation to Book in this code"
+      ],
+      "forbidden_claims": [
+        "Order contains order-line items",
+        "Book and Author have a many-to-many relationship"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 46.537,
+      "session_id": "ses_f7aaf0ceeffeRrJ6ecZ06H78y9",
+      "answer": "## Main store-domain entities (`store/models.py`)\n\nThe `store` app defines six models — **Category, Author, Book, Image, Review, Order** — registered in `store/admin.py:8-49`. A custom `User` (`users/models.py:7`, extending `AbstractUser`) is referenced via `settings.AUTH_USER_MODEL`.\n\n**Book is the central entity** (`store/models.py:40-76`) with title, slug, price, inventory, discount (`off`, `new_price`), page count, publish date, etc.\n\n## Relationships (all single `ForeignKey`s, `on_delete=CASCADE`)\n\n| Relation | Evidence | Reverse accessor |\n|---|---|---|\n| **Book → Category** | `store/models.py:41` — `category = models.ForeignKey(Category, related_name='books', ...)` | `category.books` (used in `store/views.py:54`) |\n| **Book → Author** | `store/models.py:42` — `author = models.ForeignKey(Author, related_name='books', ...)`; raw_id_fields in `store/admin.py:15` | `author.books` |\n| **Image → Book** | `store/models.py:80` — `book = models.ForeignKey(Book, related_name=\"images\", ...)`; file uploads to `product_images/%Y/%m/%d` (line 81) | `book.images` |\n| **Review → Book** | `store/models.py:96` — `book = models.ForeignKey(Book, related_name=\"reviews\", ...)`; also `Review → User` (line 97) and 1–5 rating choices (line 98) | `book.reviews` (used in `store/views.py:42`) |\n| **Order → User only** | `store/models.py:116-119` — `Order` has `user` FK, `created`, `paid`; **no FK to Book** | — |\n\n## Notable gap\n\nDespite the question, **there is no Book↔Order relation**: no `OrderItem` model exists, and `cart/models.py` is empty (only the Django stub comment). Orders track only the user and payment status, so books are linked to orders only indirectly (nothing in the code) — books relate directly to categories, authors, images, and reviews via the four foreign keys above.",
+      "finish_reason": "stop",
+      "model_calls": 7,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\models.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\cart\\models.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\admin.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "OrderItem|order|Order",
+            "path": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store",
+            "include": "*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "Book|Order",
+            "path": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\forms.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\cart\\views.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\views.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "path": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\users\\models.py",
+            "pattern": "class|Model"
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 45766,
+        "input": 17796,
+        "output": 875,
+        "reasoning": 471,
+        "cache_read": 26624,
+        "cache_write": 0
+      },
+      "raw_sha256": "21bc6e31d38c7cfa784017638d946be62e1f90f0d561b269e1c2aeef4292b445",
+      "error": null
+    },
+    {
+      "case_id": "WRA-B-05-FA",
+      "concept_id": "WRA-B-05",
+      "repository_id": "cs_bookstore",
+      "repository_url": "https://github.com/AvaGhiasian/CS-Bookstore.git",
+      "repository_commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+      "language": "fa",
+      "scope": "global",
+      "question": "موجودیت‌های اصلی دامنه فروشگاه چیست و کتاب‌ها چه رابطه‌ای با دسته‌بندی، نویسنده، تصویر، نظر و سفارش دارند؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Book has foreign keys to Category and Author",
+        "Image has a foreign key to Book with related_name images",
+        "Review links a Book and the configured User model",
+        "Order links a User and tracks created and paid",
+        "Order has no relation to Book in this code"
+      ],
+      "forbidden_claims": [
+        "Order contains order-line items",
+        "Book and Author have a many-to-many relationship"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 43.518,
+      "session_id": "ses_f7aae5768ffe0WmvSFcyrEwkb1",
+      "answer": "## موجودیت‌های اصلی دامنه فروشگاه (اپ `store`)\n\nبر اساس `store/models.py` شش موجودیت اصلی تعریف شده‌اند:\n\n1. **Category** (دسته‌بندی): `name` و `slug` یکتا — خطوط ۹–۱۱\n2. **Author** (نویسنده): `name` و `bio` — خطوط ۲۸–۳۰\n3. **Book** (کتاب): موجودیت مرکزی با فیلدهای `title`، `slug`، `description`، `price`، `off`، `inventory`، `weight`، `page_num` و... — خطوط ۴۰–۵۵\n4. **Image** (تصویر): `file` (ImageField) و اطلاعات توصیفی — خطوط ۷۹–۸۴\n5. **Review** (نظر): `rating` (۱ تا ۵)، `body`، `active` — خطوط ۹۵–۱۰۲\n6. **Order** (سفارش): `user`، `created`، `paid` — خطوط ۱۱۶–۱۱۹\n\n## روابط کتاب‌ها\n\n| رابطه | نوع | شواهد |\n|---|---|---|\n| Book ← Category | ForeignKey با `on_delete=CASCADE` و `related_name='books'` | خط ۴۱ |\n| Book ← Author | ForeignKey با `CASCADE` و `related_name='books'` | خط ۴۲ |\n| Image ← Book | ForeignKey با `CASCADE` و `related_name='images'` (هر کتاب چند تصویر) | خط ۸۰ |\n| Review ← Book | ForeignKey با `CASCADE` و `related_name='reviews'` + FK به `AUTH_USER_MODEL` | خطوط ۹۶–۹۷ |\n| Order ← User | ForeignKey به `AUTH_USER_MODEL` | خط ۱۱۷ |\n\n## نکته مهم درباره رابطه کتاب–سفارش\n\nبا وجود جست‌وجوی کامل مخزن، **هیچ مدل `OrderItem` یا ForeignKey از `Order` به `Book` وجود ندارد**؛ مدل `Order` (خطوط ۱۱۶–۱۲۶) فقط کاربر و وضعیت پرداخت را ذخیره می‌کند و اپ `cart` خالی است (`cart/models.py` و `cart/views.py` فقط کامنت دارند). بنابراین رابطه‌ی Book–Order هنوز پیاده‌سازی نشده است.",
+      "finish_reason": "stop",
+      "model_calls": 7,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*.java"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/models.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\models.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\cart\\models.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\users\\models.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "OrderItem|order",
+            "include": "*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\cart\\views.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "*.py",
+            "path": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store",
+            "pattern": "Order|Cart|request.session"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\admin.py"
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 29186,
+        "input": 11505,
+        "output": 914,
+        "reasoning": 383,
+        "cache_read": 16384,
+        "cache_write": 0
+      },
+      "raw_sha256": "6fb6d662cbd3d1be1e9342aac2fabcaf07f0e388347416c2997047204babe7d2",
+      "error": null
+    },
+    {
+      "case_id": "WRA-B-06-EN",
+      "concept_id": "WRA-B-06",
+      "repository_id": "cs_bookstore",
+      "repository_url": "https://github.com/AvaGhiasian/CS-Bookstore.git",
+      "repository_commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+      "language": "en",
+      "scope": "negative",
+      "question": "How does the application charge a credit card and refund a canceled order?",
+      "expected_behavior": "insufficient_evidence",
+      "expected_facts": [
+        "No payment charging or refund implementation is present in the indexed Python code"
+      ],
+      "forbidden_claims": [
+        "Stripe handles payments",
+        "A refund method is implemented on Order"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "failed",
+      "latency_seconds": 42.437,
+      "session_id": "ses_f7aadaceaffe6q9x3W1u1Q9Sc9",
+      "answer": "",
+      "finish_reason": "stop",
+      "model_calls": 8,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "*.py",
+            "pattern": "refund|Refund|charge|Charge|payment|Payment|stripe|zarinpal|merchant|sandbox"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\cart\\views.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "*.py",
+            "pattern": "card|credit|cancel|Cancel|pay|Pay|order|Order"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\cart\\models.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\models.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\cart\\urls.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\views.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "templates/**/*",
+            "pattern": "credit|card|Charge|charge|refund|پرداخت|بانک|درگاه"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "*.py",
+            "pattern": "OrderItem|order\\.paid|paid=True|canceled|cancelled"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\requirements.txt"
+          },
+          "status": "error"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": ".*",
+            "path": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\requirements.txt"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\cs_bookstore\\urls.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "templates/**/*.html"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "stripe|zarinpal|payment|checkout|credit|refund",
+            "path": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\README.md"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\README.md"
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 55277,
+        "input": 19741,
+        "output": 595,
+        "reasoning": 125,
+        "cache_read": 34816,
+        "cache_write": 0
+      },
+      "raw_sha256": "6f11a0db271792034aa31a89516a97ca3058a49e07b11d6a24e282c29e049389",
+      "error": {
+        "type": "empty_answer"
+      }
+    },
+    {
+      "case_id": "WRA-B-06-FA",
+      "concept_id": "WRA-B-06",
+      "repository_id": "cs_bookstore",
+      "repository_url": "https://github.com/AvaGhiasian/CS-Bookstore.git",
+      "repository_commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+      "language": "fa",
+      "scope": "negative",
+      "question": "برنامه چگونه کارت بانکی را شارژ و مبلغ سفارش لغوشده را بازپرداخت می‌کند؟",
+      "expected_behavior": "insufficient_evidence",
+      "expected_facts": [
+        "No payment charging or refund implementation is present in the indexed Python code"
+      ],
+      "forbidden_claims": [
+        "Stripe handles payments",
+        "A refund method is implemented on Order"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 57.039,
+      "session_id": "ses_f7aad0712ffe3RPQjSacDKBGba",
+      "answer": "**حداکثر تعداد گام‌های مجاز برای این عامل (agent) به پایان رسیده است**؛ بنابراین پاسخ بر اساس همان شواهد جمع‌آوری‌شده ارائه می‌شود.\n\n## یافته‌های جست‌وجو در مخزن (Repository)\n\nبرای پاسخ به این پرسش، کل ساختار پروژه بررسی شد (یک پروژه Django با اپ‌های `store`، `cart`، `users`، `blog`):\n\n1. **مدل سفارش (Order Model)** (`store/models.py`، خطوط ۱۱۶–۱۲۶): فیلد `paid = models.BooleanField(default=False)` در خط ۱۱۹ تنها اثر مرتبط با پرداخت است.\n2. **مدل کاربر (User Model)** (`users/models.py`، خطوط ۱–۱۲): کاربر فقط فیلدهای `date_of_birth`، `bio`، `photo`، `job`، `phone` دارد — **هیچ فیلد کیف پول (Wallet)، موجودی (Balance) یا کارت بانکی وجود ندارد**.\n3. **اپ سبد خرید (Cart app)** (`cart/models.py`، `cart/views.py`، `cart/urls.py`): هر سه فایل خالی هستند؛ `urlpatterns` در `cart/urls.py` (خطوط ۷–۹) خالی است.\n4. **مسیرهای فروشگاه (Store URLs)** (`store/urls.py`، خطوط ۶–۱۴): تنها مسیرهای موجود، فهرست کتاب، جزئیات، دسته‌بندی، جست‌وجو و ثبت نظر (Review) هستند — **هیچ مسیری برای پرداخت (Checkout)، لغو (Cancel) یا بازپرداخت (Refund) وجود ندارد**.\n5. **نمای‌ها (Views)** (`store/views.py`، خطوط ۱–۱۰۷): هیچ منطق پرداخت، شارژ کارت یا بازپرداخت یافت نشد.\n6. **جست‌وجوهای سراسری (Greps)** برای واژه‌های `charge`، `refund`، `wallet`، `bank`، `card`، `پرداخت`، `لغو`، `cancel`، `checkout`: تنها نتایج، فایل‌های LICENSE، نام کلاس‌های CSS (`product-card`) و `list_filter = [..., 'paid']` در `store/admin.py` (خطوط ۴۵–۴۹) بودند.\n\n## نتیجه‌گیری\n\n**این قابلیت در مخزن وجود ندارد.** برنامه هیچ مکانیزمی برای شارژ کارت بانکی یا بازپرداخت مبلغ سفارش لغوشده پیاده‌سازی نکرده است. تنها پیش‌نیازهای مربوط به پرداخت عبارتند از فیلد `paid` در مدل `Order` (`store/models.py`:119) و فیلدهای قیمت `price`/`new_price` در مدل `Book` (`store/models.py`:48–51)؛ اپ `cart` به‌طور کامل خالی (is-atill) است.\n\n**گام‌های پیشنهادی بعدی:** بررسی تاریخچه گیت (git) خارج از `commit` پین‌شده، یا شاخه‌های دیگر (تانزیت در صورت وجود)، یا اضافه‌کردن منطق پرداخت/بازپرداخت در `cart` و `store`.",
+      "finish_reason": "stop",
+      "model_calls": 8,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "charge|refund|Charge|Refund"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "wallet|کیف|کارت|bank|card"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\models.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "balance|credit|money|price|Order|order",
+            "path": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\views.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\users\\models.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\views.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\cart\\models.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\cart\\views.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "path": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore",
+            "pattern": "پرداخت|بازپرداخت|لغو|cancel|checkout|payment|پول|تومان",
+            "include": "*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "path": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore",
+            "pattern": "OrderItem|Order\\.|paid",
+            "include": "*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\cart\\urls.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\urls.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\cs_bookstore\\urls.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "cart/**/*"
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 78632,
+        "input": 21706,
+        "output": 1351,
+        "reasoning": 279,
+        "cache_read": 55296,
+        "cache_write": 0
+      },
+      "raw_sha256": "2158ec08c1c2f1e69267ecbc82800ffa9f6205f633be2f038b379347b4c90b48",
+      "error": null
+    },
+    {
+      "case_id": "WRA-C-01-EN",
+      "concept_id": "WRA-C-01",
+      "repository_id": "codecompass",
+      "repository_url": "https://github.com/Ftm-Sayadzadeh/codecompass-local.git",
+      "repository_commit": "4b9eba4df4cc7a5afca27ee3d4c60d578caec0f7",
+      "language": "en",
+      "scope": "local",
+      "question": "Which files and directories are excluded by the repository scanner, and how are symlinks handled?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Only .py files are eligible",
+        ".env and .env.* are excluded",
+        "VCS, virtualenv, cache, build, IDE, coverage, and node_modules directories are excluded by default",
+        "Directory and file symlinks are not followed",
+        "Resolved files must remain inside the selected root"
+      ],
+      "forbidden_claims": [
+        "The scanner follows symlinks",
+        "All text files are scanned"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 25.87,
+      "session_id": "ses_f7aac285affeJu0FyZsKEatR4C",
+      "answer": "## Excluded files and directories\n\n**Ignored directories** — defined in `src/codecompass/scanner/ignore.py` lines 5–20 (`DEFAULT_IGNORED_DIRS`):\n`.git`, `.venv`, `venv`, `__pycache__`, `.pytest_cache`, `.mypy_cache`, `build`, `dist`, `node_modules`, `coverage`, `.idea`, `.vscode`.\n\nThese are enforced in `src/codecompass/scanner/service.py` lines 95–96 (`_walkable_dirs`): any `dirname in self.ignored_dirs` is removed from `os.walk`'s directory list, so it is never descended into.\n\n**Ignored files** — `ignore.py` line 22 (`DEFAULT_IGNORED_FILE_PATTERNS`): `.env` and `.env.*` (fnmatch patterns, checked via `is_ignored_file` at lines 25–27). This is applied in `service.py` line 109 (`_skip_file`).\n\n**Other file-level exclusions** — `service.py` lines 107–109 (`_skip_file`): a file is skipped if it is a symlink, its suffix is not `.py`, or its name matches an ignore pattern. So only regular `.py` files are indexed.\n\n## Symlink handling\n\n- **Symlinked directories**: skipped — `service.py` lines 98–99 check `path.is_symlink()` and do not add the directory to the walkable list; `os.walk` itself uses `followlinks=False` (line 43).\n- **Symlinked files**: skipped — `service.py` line 109 returns `True` from `_skip_file` for any symlink.\n- **Escape prevention (defense-in-depth)**: after resolving with `path.resolve(strict=True)` (line 52), if the resolved path is outside the root (`_is_inside`, lines 137–142) or still resolves to a symlink (line 53), it is skipped. This prevents reading files that point outside the repository.\n\n**Tests confirming this**: `tests/test_scanner.py` lines 142–154 (`test_symlink_files_and_directories_are_skipped`) and lines 157–166 (`test_symlink_to_outside_repository_is_not_read`, asserting an empty scan result).",
+      "finish_reason": "stop",
+      "model_calls": 5,
+      "tool_calls": [
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*scan*"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "symlink|is_symlink"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "src/codecompass/scanner/*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\scanner\\service.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\scanner\\ignore.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\tests\\test_scanner.py",
+            "limit": 50,
+            "offset": 130
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 25051,
+        "input": 12049,
+        "output": 656,
+        "reasoning": 58,
+        "cache_read": 12288,
+        "cache_write": 0
+      },
+      "raw_sha256": "a8fb80e541dbbcb3e2a87ea24a03672d675ff113c2e0bd822acb4576cc2ae7f3",
+      "error": null
+    },
+    {
+      "case_id": "WRA-C-01-FA",
+      "concept_id": "WRA-C-01",
+      "repository_id": "codecompass",
+      "repository_url": "https://github.com/Ftm-Sayadzadeh/codecompass-local.git",
+      "repository_commit": "4b9eba4df4cc7a5afca27ee3d4c60d578caec0f7",
+      "language": "fa",
+      "scope": "local",
+      "question": "اسکنر مخزن چه فایل‌ها و پوشه‌هایی را کنار می‌گذارد و با symlinkها چگونه رفتار می‌کند؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Only .py files are eligible",
+        ".env and .env.* are excluded",
+        "VCS, virtualenv, cache, build, IDE, coverage, and node_modules directories are excluded by default",
+        "Directory and file symlinks are not followed",
+        "Resolved files must remain inside the selected root"
+      ],
+      "forbidden_claims": [
+        "The scanner follows symlinks",
+        "All text files are scanned"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 29.114,
+      "session_id": "ses_f7aabc33bffeGjVJDpsnulPjjf",
+      "answer": "## رفتار اسکنر مخزن (`RepositoryScanner`)\n\n**فایل‌های کنار گذاشته‌شده** — در `src/codecompass/scanner/ignore.py`:\n\n- **فقط فایل‌های `.py`** پذیرفته می‌شوند؛ بقیه پسوندها رد می‌شوند (`service.py:109` — `path.suffix != \".py\"`).\n- **الگوهای فایل محرمانه/محیطی**: `\".env\"` و `\".env.*\"` (`ignore.py:22`) که با `fnmatch` بررسی می‌شوند (`ignore.py:25-27`).\n\n**پوشه‌های نادیده‌گرفته‌شده** — `DEFAULT_IGNORED_DIRS` در `ignore.py:5-20`:\n`.git`، `.venv`، `venv`، `__pycache__`، `.pytest_cache`، `.mypy_cache`، `build`، `dist`، `node_modules`، `coverage`، `.idea`، `.vscode`\n\nاین پوشه‌ها در حین پیمایش (`os.walk` با `topdown=True`) هرس می‌شوند: `service.py:45` و `service.py:95-96` (`if dirname in self.ignored_dirs: continue`). تست مربوطه: `tests/test_scanner.py:61-78` و `tests/test_scanner.py:51` برای فایل‌های غیرپایتونی/`.env`.\n\n**رفتار با symlinkها** — اسکنر هرگز آن‌ها را دنبال نمی‌کند:\n\n1. `os.walk(..., followlinks=False)` در `service.py:43` — پیمایش دایرکتوری‌های لینک‌شده متوقف می‌شود.\n2. **پوشه‌های symlink**: در `_walkable_dirs` رد می‌شوند (`service.py:98-99`).\n3. **فایل‌های symlink**: در `_skip_file` رد می‌شوند (`service.py:109`).\n4. **حلقه فرار از ریشه (root escape)**: حتی پس از `resolve(strict=True)`، اگر مسیر داخل ریشه نباشد (`_is_inside`، `service.py:137-142`) یا خودش symlink باشد، رد می‌شود (`service.py:53`). همین بررسی برای پوشه‌ها در `service.py:100-102` انجام می‌شود.\n\nتست‌های `tests/test_scanner.py:142-152` (رد شدن فایل و پوشه symlink) و `tests/test_scanner.py:157-165` (خوانده نشدن symlink خارج از مخزن) این رفتارها را پوشش می‌دهند. خطاهای `OSError` هم بجای توقف، در `ScanResult.errors` ثبت می‌شوند (`service.py:39-41, 67-68`).",
+      "finish_reason": "stop",
+      "model_calls": 3,
+      "tool_calls": [
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/scan*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "*.py",
+            "pattern": "symlink|SKIP|skip|ignore"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\scanner\\ignore.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\scanner\\service.py"
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 15029,
+        "input": 5964,
+        "output": 768,
+        "reasoning": 105,
+        "cache_read": 8192,
+        "cache_write": 0
+      },
+      "raw_sha256": "856615913b4bf0d780118a536e28a869f65673be85a1c7b67b94684d6e0912f4",
+      "error": null
+    },
+    {
+      "case_id": "WRA-C-02-EN",
+      "concept_id": "WRA-C-02",
+      "repository_id": "codecompass",
+      "repository_url": "https://github.com/Ftm-Sayadzadeh/codecompass-local.git",
+      "repository_commit": "4b9eba4df4cc7a5afca27ee3d4c60d578caec0f7",
+      "language": "en",
+      "scope": "local",
+      "question": "How does lexical retrieval score a chunk, including the relative weights of symbol name, file path, code, and embedding text?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Query and fields are tokenized case-insensitively into unique token sets",
+        "qualified_name has weight 3",
+        "source_file has weight 2",
+        "code and embedding_text each have weight 1",
+        "The score sums weighted exact token overlaps"
+      ],
+      "forbidden_claims": [
+        "It uses BM25",
+        "It uses cosine similarity"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 61.767,
+      "session_id": "ses_f7aab518fffeGhopCgHP1h7V0K",
+      "answer": "## How lexical retrieval scores a chunk\n\nThe scorer lives in `src/codecompass/retrieval/lexical.py` (`LexicalRetriever._score`, lines 49–60). It is a deterministic token-overlap count, not BM25/TF-IDF:\n\n**Field weights** (`lexical.py`, lines 11–16):\n| Field | Weight | Source of field value (lines 50–55) |\n|---|---|---|\n| `qualified_name` (symbol name) | **3** | `chunk.qualified_name or \"\"` |\n| `source_file` (file path) | **2** | `chunk.relative_path` |\n| `code` | **1** | `chunk.code` |\n| `embedding_text` | **1** | `chunk.embedding_text` |\n\n**Scoring formula** (lines 56–60): the query text is lowercased and split into `\\w+` tokens (line 10, line 35, deduplicated via `set`); each chunk field is likewise tokenized and deduplicated (line 58), and the score is:\n\n```\nscore = Σ_field  FIELD_WEIGHTS[field] × |{query terms present in that field's token set}|\n```\n\nSo each *distinct* query term matching in the qualified name contributes 3, in the file path 2, in code or embedding text 1 each; chunks with score 0 are dropped (line 39), and results are sorted by `(-score, source_file, start_line, chunk_id)` (line 81) with `limit` applied (line 41).\n\n**Verification in tests**: `tests/test_retrieval.py`, `test_lexical_retrieval_uses_weighted_fields_and_citation_metadata` (lines 124–138): query `\"create_access_token auth jwt_token\"` matches the qualified name (`create_access_token` = 3), path `app/auth.py` (`auth` = 2), and code (`jwt_token` = 1)… total `score == 10.0` (line 131), consistent with 3×3 + … — i.e., the weights sum to 10 across the matched fields.\n\n**Weight propagation**: the same `FIELD_WEIGHTS` is exported in evaluation snapshots in `src/codecompass/evaluation/baseline.py` (line 210) and `performance.py` (line 205), and mirrors `lexical_field_weights` in `data/evaluation/retrieval_improvement_protocol_v1.json` (line 37).",
+      "finish_reason": "stop",
+      "model_calls": 6,
+      "tool_calls": [
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*keyword*"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*retriev*"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "lexical"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "src/**/*"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "field_weight|symbol_weight|path_weight|bm25|tfidf|Tfidf",
+            "include": "*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\retrieval\\lexical.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "*.py",
+            "path": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\evaluation",
+            "pattern": "FIELD_WEIGHTS"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "*.py",
+            "path": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\tests",
+            "pattern": "FIELD_WEIGHTS|qualified_name.*3|weight"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\tests\\test_retrieval.py",
+            "limit": 60,
+            "offset": 110
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 55721,
+        "input": 15818,
+        "output": 819,
+        "reasoning": 172,
+        "cache_read": 38912,
+        "cache_write": 0
+      },
+      "raw_sha256": "92739fd1da2126f2c99dc1e47b1726561595a461231e33dfc069ca95ee2e872e",
+      "error": null
+    },
+    {
+      "case_id": "WRA-C-02-FA",
+      "concept_id": "WRA-C-02",
+      "repository_id": "codecompass",
+      "repository_url": "https://github.com/Ftm-Sayadzadeh/codecompass-local.git",
+      "repository_commit": "4b9eba4df4cc7a5afca27ee3d4c60d578caec0f7",
+      "language": "fa",
+      "scope": "local",
+      "question": "بازیابی واژگانی امتیاز هر chunk را با چه وزن‌هایی برای نام نماد، مسیر فایل، کد و متن embedding محاسبه می‌کند؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Query and fields are tokenized case-insensitively into unique token sets",
+        "qualified_name has weight 3",
+        "source_file has weight 2",
+        "code and embedding_text each have weight 1",
+        "The score sums weighted exact token overlaps"
+      ],
+      "forbidden_claims": [
+        "It uses BM25",
+        "It uses cosine similarity"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 28.441,
+      "session_id": "ses_f7aaa6051ffe2DM2vJpj38Ckol",
+      "answer": "## پاسخ\n\nبازیابی واژگانی (Lexical) در فایل `src/codecompass/retrieval/lexical.py` امتیاز هر chunk را با وزن‌های ثابت زیر محاسبه می‌کند (خطوط ۱۱ تا ۱۶):\n\n```python\nFIELD_WEIGHTS = {\n    \"qualified_name\": 3,\n    \"source_file\": 2,\n    \"code\": 1,\n    \"embedding_text\": 1,\n}\n```\n\n| فیلد | وزن |\n|---|---|\n| نام نماد (نام کاملاً واجد شرایط / `qualified_name`) | **۳** |\n| مسیر فایل (`source_file` / `relative_path`) | **۲** |\n| کد (`code`) | **۱** |\n| متن embedding (`embedding_text`) | **۱** |\n\n**نحوه‌ی محاسبه** (خطوط ۴۹ تا ۶۰): برای هر فیلد، متن به توکن‌های یکتا و lowercase تبدیل می‌شود (خط ۶۲-۶۳ با regex `\\w+`)، سپس تعداد ترم‌های کوئری موجود در آن فیلد شمرده شده و در وزن فیلد ضرب می‌شود:\n\n```python\nscore += FIELD_WEIGHTS[field] * sum(1 for term in terms if term in tokens)\n```\n\nامتیاز نهایی جمع وزن‌دار چهار فیلد است. این وزن‌ها با مستندات پروژه هم‌خوانی است — مثلاً `docs/validation/final-retrieval-validation-report.md` (خط ۷) و `docs/validation/official-baseline-retrieval-report.md` (خط ۲۲) همان «نام کاملاً واجد شرایط ۳، مسیر فایل ۲، کد ۱، متن embedding ۱» را تأیید می‌کنند. تست مربوطه نیز در `tests/test_retrieval.py` خط ۱۲۴ (`test_lexical_retrieval_uses_weighted_fields_and_citation_metadata`) پوشش داده شده است.",
+      "finish_reason": "stop",
+      "model_calls": 4,
+      "tool_calls": [
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "lexical"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "weight"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "src/codecompass/**/*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "field_weight|FIELD_WEIGHT|qualified_name",
+            "include": "*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\retrieval\\lexical.py"
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 44744,
+        "input": 17488,
+        "output": 560,
+        "reasoning": 72,
+        "cache_read": 26624,
+        "cache_write": 0
+      },
+      "raw_sha256": "be0c551551409982f3d5fdda024a1cb2b10214cab2ccfa2aa2f44ac2a3c45b35",
+      "error": null
+    },
+    {
+      "case_id": "WRA-C-03-EN",
+      "concept_id": "WRA-C-03",
+      "repository_id": "codecompass",
+      "repository_url": "https://github.com/Ftm-Sayadzadeh/codecompass-local.git",
+      "repository_commit": "4b9eba4df4cc7a5afca27ee3d4c60d578caec0f7",
+      "language": "en",
+      "scope": "cross_file",
+      "question": "Trace an API question from retrieval selection through answer generation and trusted citation hydration.",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "The ask route creates a retrieval service for the selected method and embedding configuration",
+        "GroundedQAService retrieves chunks and builds bounded context",
+        "The LLM receives the question and retrieved context",
+        "QA citations are created from context metadata rather than parsed from model text",
+        "The API rehydrates cited chunk metadata through APIRuntime.citation_chunks"
+      ],
+      "forbidden_claims": [
+        "The model invents file paths and line numbers",
+        "The entire repository is always sent to the LLM"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 49.125,
+      "session_id": "ses_f7aa9f0caffe8GNeFCKgRpTKAY",
+      "answer": "**Maximum steps for this agent have been reached** — no further tool calls are possible, so I'll summarize the trace with the evidence gathered so far.\n\n## What was traced (with evidence)\n\n**1. API entry — `POST /projects/{project_id}/ask`**\n`src/codecompass/api/app.py:205-211` — the `ask` endpoint builds a `RetrievalService` via `runtime.retrieval(...)` (line 207), constructs `GroundedQAService` with `RAGContextBuilder`, `QAPromptBuilder`, and an LLM provider (line 208), calls `service.answer(QARequest(...))` (line 209), then hydrates citations via `runtime.citation_chunks(project_id, ...)` (line 210) and returns an `AskResponse` (line 211). `AskRequest` is validated in `src/codecompass/api/schemas.py:62-67` (question, method ∈ {lexical, semantic, hybrid}, max_tokens, embedding/llm overrides).\n\n**2. Retrieval selection**\n`src/codecompass/api/runtime.py:120-129` — `APIRuntime.retrieval()` verifies the project and vector generation (only when method ≠ lexical), then constructs `RetrievalService`. `src/codecompass/retrieval/service.py:12-36` dispatches to `search_lexical` / `search_semantic` / `search_hybrid`. Hybrid fusion uses RRF with `RRF_K = 60` (`src/codecompass/retrieval/hybrid.py:11, 22-38`).\n\n**3. Answer generation**\n`src/codecompass/qa/service.py:43-84` — `GroundedQAService.answer()` validates, retrieves (`_retrieve`, lines 98-104), re-ranks with `_focus_on_named_symbol` (112-138), builds context, derives citations from context metadata (`_citations`, 146-158), returns `NO_EVIDENCE_ANSWER` when context is empty (50-60), else calls `llm_provider.generate(LLMRequest(...))` (64-71). Prompt assembly forbids inventing paths/symbols/lines in `src/codecompass/qa/prompt.py:7-17`.\n\n**4. Context building**\n`src/codecompass/rag/context.py:12-28` — deterministic dedup + sort by `(-score, source_file, start_line, chunk_id)` with a character budget.\n\n**5. Trusted citation hydration**\n`src/codecompass/api/runtime.py:444-458` — `citation_chunks()` reloads chunks from canonical SQLite (`get_chunks_by_chunk_ids`, `storage/sqlite.py:618`), fails with `citation_metadata_missing` on any mismatch. `_citation()` maps `StoredChunk` → `CitationResponse` at `app.py:251-261`.\n\n## Remaining work\n- Not yet read: `qa/service.py` lines beyond context assembly vs. tests, `retrieval/lexical.py`, `retrieval/semantic.py` bodies, `storage/sqlite.py:618+` implementation, and `tests/test_api.py` / `test_qa.py` for behavioral confirmation.\n- Recommendation: inspect those files next to complete end-to-end verification.",
+      "finish_reason": "stop",
+      "model_calls": 8,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\api\\app.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\api\\runtime.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\retrieval\\service.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\retrieval\\models.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\qa\\service.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\rag\\context.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\qa\\prompt.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\qa\\models.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\api\\schemas.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\retrieval\\hybrid.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "def get_chunks_by_chunk_ids",
+            "path": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\storage\\sqlite.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "get_chunks_by_chunk_ids|citation",
+            "path": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\retrieval\\semantic.py"
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 136762,
+        "input": 30926,
+        "output": 1267,
+        "reasoning": 121,
+        "cache_read": 104448,
+        "cache_write": 0
+      },
+      "raw_sha256": "867cad1a6cb671ef20082d52bf6426a1eecace0b5b216eb7c16d97f496def626",
+      "error": null
+    },
+    {
+      "case_id": "WRA-C-03-FA",
+      "concept_id": "WRA-C-03",
+      "repository_id": "codecompass",
+      "repository_url": "https://github.com/Ftm-Sayadzadeh/codecompass-local.git",
+      "repository_commit": "4b9eba4df4cc7a5afca27ee3d4c60d578caec0f7",
+      "language": "fa",
+      "scope": "cross_file",
+      "question": "مسیر یک سؤال API را از انتخاب روش بازیابی تا تولید پاسخ و تکمیل citation قابل‌اعتماد توضیح بده.",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "The ask route creates a retrieval service for the selected method and embedding configuration",
+        "GroundedQAService retrieves chunks and builds bounded context",
+        "The LLM receives the question and retrieved context",
+        "QA citations are created from context metadata rather than parsed from model text",
+        "The API rehydrates cited chunk metadata through APIRuntime.citation_chunks"
+      ],
+      "forbidden_claims": [
+        "The model invents file paths and line numbers",
+        "The entire repository is always sent to the LLM"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 62.076,
+      "session_id": "ses_f7aa92fedffeU29718J85VkamP",
+      "answer": "**نکته:** حداکثر تعداد گام‌های مجاز این ایجنت پر شده است، بنابراین پاسخ را صرفاً بر اساس فایل‌هایی که تا این لحظه با موفقیت بررسی شدند ارائه می‌دهم (فایل‌های `api/app.py`، `api/runtime.py`، `api/schemas.py`، `retrieval/service.py`، `retrieval/lexical.py`، `retrieval/semantic.py`، `retrieval/hybrid.py`، `rag/context.py`، `qa/service.py`، `qa/prompt.py`).\n\n---\n\n## مسیر یک سؤال API: از انتخاب روش بازیابی تا پاسخ و citation\n\n### ۱. ورودی درخواست و انتخاب روش بازیابی\n- کلاینت `POST /projects/{project_id}/ask` را با `AskRequest` صدا می‌زند. فیلد `method` با `Literal[\"lexical\", \"semantic\", \"hybrid\"]` و مقدار پیش‌فرض `\"hybrid\"` در `api/schemas.py:62-67` تعریف شده و فقط همین سه روش مجاز است.\n- در هندلر `ask` (`api/app.py:205-211`): ابتدا `runtime.retrieval(...)` با پارامتر `compatible=body.method != \"lexical\"` ساخته می‌شود؛ یعنی برای روش‌های semantic/hybrid سازگاری شناسه امبدینگ الزامی است و برای lexical نه (چون امبدینگ لازم ندارد).\n- `APIRuntime.retrieval` (`api/runtime.py:120-129`): پروژه را با `require_project` بررسی می‌کند، در حالت compatible با `require_vector_generation` (خط ۲۸۵-۲۸۷) صحت نسل (generation) ایندکس برداری را می‌سنجد و سپس `RetrievalService` را با store، امبدینگ‌پروایدر و کالکشن Chroma می‌سازد.\n\n### ۲. اجرای روش بازیابی انتخابی\n- اگر متد به‌صورت پارامتری در QA می‌بود، `GroundedQAService._search` (`qa/service.py:106-110`) با `getattr(self.retrieval_service, f\"search_{method}\")` متد را داینامیک انتخاب می‌کند و `_retrieve` (خط ۹۸-۱۰۴) یک `RetrievalQuery` می‌سازد و اجرا می‌کند.\n- `RetrievalService` (`retrieval/service.py:12-36`) سه متد `search_lexical`، `search_semantic` و `search_hybrid` دارد:\n  - **Lexical** (`retrieval/lexical.py:25-41`): توکن‌یزیشن regex و امتیازدهی وزن‌دار روی فیلدها (`FIELD_WEIGHTS` خط ۱۱-۱۶: qualified_name=۳، source_file=۲، code/embedding_text=۱)، مرتب‌سازی قطعی (خط ۸۱-۸۲).\n  - **Semantic** (`retrieval/semantic.py:28-59`): اعتبارسنجی هویت امبدینگ (خط ۶۱-۸۰، خطای `embedding_configuration_mismatch`)، تولید امبدینگ پرسش، جستجوی برداری در Chroma، سپس hydrate کردن متادیتای citation از SQLite (`get_chunk_by_chunk_id` خط ۵۳) — SQLite منبع حقیقت است، نه Chroma.\n  - **Hybrid** (`retrieval/hybrid.py:22-38`): اجرای هر دو و ادغام با Reciprocal Rank Fusion با `RRF_K = 60` (خط ۱۱ و ۳۲)، مرتب‌سازی قطعی و برش به limit.\n\n### ۳. تمرکز روی نماد و ساخت کانتکست RAG\n- `_focus_on_named_symbol` (`qa/service.py:112-138`): اگر سؤال به qualified_name یا نام نمادِ موجود در نتایج اشاره کند، نتایج به همان نمادها فیلتر می‌شود.\n- `RAGContextBuilder.build` (`rag/context.py:12-28`): نتایج را یکتا و بر اساس امتیاز مرتب می‌کند (خط ۳۰-۴۱)، بلوک‌های `ContextBlock` با citation ساخت‌یافته (source_file، qualified_name، start_line/end_line — خط ۴۳-۵۶) می‌سازد و بلوک‌های خارج از بودجه کاراکتر را حذف و در `omitted_count` می‌شمارد.\n\n### ۴. تولید پاسخ grounded\n- در `GroundedQAService.answer` (`qa/service.py:43-84`): اگر هیچ بلوکی نباشد، پاسخ `NO_EVIDENCE_ANSWER` بدون citation و بدون فراخوانی LLM برگردانده می‌شود (خط ۵۰-۶۰) — یعنی «عدم شواهد کافی» بدون حدس.\n- `QAPromptBuilder` (`qa/prompt.py:7-25`): system prompt صریحاً می‌گوید فقط از کانتکست پاسخ بده، «مسیر فایل، نماد یا شماره خط اختراع نکن» (خط ۱۷) و در صورت ناکافی بودن شواهد همان را بگو (خط ۱۰). هر بلوک با برچسب `[S{n}]` و متادیتای file/symbol/lines به پرامپت اضافه می‌شود (خط ۲۹-۴۲).\n- پاسخ LLM در `QAAnswer` با `citations` ساخته‌شده از خود بلوک‌ها (نه متن LLM) برگردانده می‌شود (`_citations` و `_citation`، خط ۱۴۶-۱۵۸).\n\n### ۵. تکمیل citation قابل‌اعتماد\n- در هندلر `ask` (`api/app.py:210-211`): `runtime.citation_chunks(project_id, chunk_ids)` آن IDهای chunk را از ردیف‌های کانونیکال SQLite دوباره hydrate می‌کند.\n- `citation_chunks` (`api/runtime.py:444-458`): اگر هر chunk_id در SQLite یافت نشود یا relative_path با فایل فعلی نخواند، خطای ۵۰۰ با کد `citation_metadata_missing` می‌دهد؛ یعنی citation فقط از متادیتای parser/index مجاز است.\n- نهایتاً `_citation` (`api/app.py:251-261`) `CitationResponse` استاندارد (file_id، symbol_id، chunk_id، source_file، qualified_name، start_line، end_line) می‌سازد و در `AskResponse` با `method`، `omitted_context_count`، `llm_model` و `finish_reason` (schemas.py:143-151) برگردانده می‌شود.\n\n**جمع‌بندی:** روش بازیابی در schema محدود شده، اجرا در سه retriever قطعی انجام می‌شود، کانتکست با بودجه ساخته و اگر شواهد نبود پاسخ «بدون شواهد» می‌آید، و citation نهایی همیشه از SQLite بازخوانی می‌شود تا قابل‌اعتماد بماند.",
+      "finish_reason": "stop",
+      "model_calls": 8,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\api\\app.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\api\\runtime.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\retrieval\\service.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\qa\\service.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\rag\\context.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\retrieval\\hybrid.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\qa\\prompt.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "method|retrieval_method",
+            "path": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\api\\schemas.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\retrieval\\semantic.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\api\\schemas.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\retrieval\\lexical.py"
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 141636,
+        "input": 30867,
+        "output": 2178,
+        "reasoning": 47,
+        "cache_read": 108544,
+        "cache_write": 0
+      },
+      "raw_sha256": "96e59b18be66a1a10490053359af72bb57233c711443431474deb00327f00ab7",
+      "error": null
+    },
+    {
+      "case_id": "WRA-C-04-EN",
+      "concept_id": "WRA-C-04",
+      "repository_id": "codecompass",
+      "repository_url": "https://github.com/Ftm-Sayadzadeh/codecompass-local.git",
+      "repository_commit": "4b9eba4df4cc7a5afca27ee3d4c60d578caec0f7",
+      "language": "en",
+      "scope": "cross_file",
+      "question": "How does a full reindex avoid replacing a valid metadata/vector snapshot with a partial or changed-repository candidate?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Embeddings are prepared before activation",
+        "A staged vector replacement is validated",
+        "The repository is rescanned and its file snapshot must match the initial scan",
+        "SQLite replacement activates the staged vector generation through a before_commit callback",
+        "Failures discard or roll back staged vectors and clean up a newly reserved project"
+      ],
+      "forbidden_claims": [
+        "Vectors are overwritten in place before validation",
+        "Repository changes during indexing are ignored"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 58.175,
+      "session_id": "ses_f7aa83e03ffedoaVCuIqL51TNe",
+      "answer": "A full reindex never overwrites the live snapshot in place; it builds and verifies a *candidate* first, and only swaps atomically. Evidence:\n\n**1. Candidate is staged, not active** — `_run_full` calls `vector_index.stage_replacement(...)` (`src/codecompass/indexing/coordinator.py:304-308`), which creates a new generation-named staging collection while the active pointer stays untouched (`src/codecompass/vector_index/chroma.py:261-312`). The staging build is verified for exact id set, metadata, and embedding dimensions before it can be a candidate (`chroma.py:281-297`), so a partial index can never be activated.\n\n**2. Changed-repository rejection** — after embedding, the repo is re-scanned and the file snapshot compared; on mismatch the staged candidate is discarded (`discard_staged`) and `repository_changed_during_index` is raised (`coordinator.py:309-318`). The activation closure also re-checks the project binding (`coordinator.py:286-293`).\n\n**3. Atomic cross-store commit** — SQLite `replace_project_index` runs in a `BEGIN IMMEDIATE` transaction; the vector pointer is switched via `before_commit=activate` inside the transaction, and `vector_generation` is written with the metadata (`src/codecompass/storage/sqlite.py:172, 200-213`). If anything fails, SQLite rolls back and `on_rollback` restores the previous vector pointer (`sqlite.py:218-227`; `chroma.py:326-338` `rollback_staged`). The old collection is deleted only after commit succeeds (`finalize_staged`, `chroma.py:340-348`).\n\n**4. Post-commit verification** — after activation, `actual_ids` must equal `expected_ids` and `project.vector_generation` must match the index's active generation, otherwise `VectorIndexStateError` is raised (`coordinator.py:332-335`); remaining failures discard staging and clean up reserved project rows (`coordinator.py:336-347`).",
+      "finish_reason": "stop",
+      "model_calls": 5,
+      "tool_calls": [
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "full_reindex|full reindex|reindex"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\indexing\\coordinator.py",
+            "offset": 280,
+            "limit": 300
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\indexing\\coordinator.py",
+            "limit": 120,
+            "offset": 160
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "def replace_project_index|def begin_activation|def end_activation|def stage_replacement|def activate_staged|def rollback_staged|def finalize_staged|def discard_staged",
+            "path": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\vector_index\\chroma.py",
+            "limit": 200,
+            "offset": 180
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\storage\\sqlite.py",
+            "limit": 190,
+            "offset": 140
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 64705,
+        "input": 22143,
+        "output": 774,
+        "reasoning": 828,
+        "cache_read": 40960,
+        "cache_write": 0
+      },
+      "raw_sha256": "accec5d3e99a951de5e100e08f3b649ba5d9ec10b8d26866bd3e24551f2d2e6d",
+      "error": null
+    },
+    {
+      "case_id": "WRA-C-04-FA",
+      "concept_id": "WRA-C-04",
+      "repository_id": "codecompass",
+      "repository_url": "https://github.com/Ftm-Sayadzadeh/codecompass-local.git",
+      "repository_commit": "4b9eba4df4cc7a5afca27ee3d4c60d578caec0f7",
+      "language": "fa",
+      "scope": "cross_file",
+      "question": "بازایندکس کامل چگونه مانع جایگزینی snapshot سالم metadata/vector با candidate ناقص یا ساخته‌شده از مخزن تغییرکرده می‌شود؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Embeddings are prepared before activation",
+        "A staged vector replacement is validated",
+        "The repository is rescanned and its file snapshot must match the initial scan",
+        "SQLite replacement activates the staged vector generation through a before_commit callback",
+        "Failures discard or roll back staged vectors and clean up a newly reserved project"
+      ],
+      "forbidden_claims": [
+        "Vectors are overwritten in place before validation",
+        "Repository changes during indexing are ignored"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 68.066,
+      "session_id": "ses_f7aa75a8effe3Tp7hU7drujWbh",
+      "answer": "## پاسخ: مکانیزم‌های بازایندکس کامل ایمن\n\n**۱. ساخت candidate در staging ایزوله (بدون دست‌زدن به snapshot فعال)**\n`stage_replacement` یک کالکشن جدید با generation جدید می‌سازد و pointer فعال دست‌نخورده می‌ماند (`src/codecompass/vector_index/chroma.py:261-312`). کاندید پیش از پذیرش verify می‌شود: تطابق کامل IDها با expected_ids (خط ۲۸۲-۲۸۳)، تطابق metadata (۲۸۴-۲۸۶)، ابعاد (۲۸۷-۲۹۷) و binding (۲۹۹). کاندید ناقص همین‌جا رد می‌شود.\n\n**۲. تشخیص تغییر مخزن با recheck نهایی**\nبعد از آماده‌شدن کاندید، مخزن دوباره scan و snapshot بایت‌ها مقایسه می‌شود؛ در صورت تفاوت، `discard_staged` و خطای `repository_changed_during_index` (`src/codecompass/indexing/coordinator.py:309-318` برای full و `477-485` برای incremental).\n\n**۳. وکتورهای reuse شده با SQLite کانونیکال سنجیده می‌شوند**\n`_reuse_vectors` برای هر وکتور، `project_id`، `content_hash`، مدل embedding و ابعاد را با chunkهای SQLite تطبیق می‌دهد و در اختلاف، `VectorIndexStateError` می‌دهد (`coordinator.py:595-617`).\n\n**۴. سوییچ اتمیک دو-فازی SQLite + وکتور**\n`BEGIN IMMEDIATE`، سپس فعال‌سازی staging فقط در `before_commit` داخل تراکنش (`src/codecompass/storage/sqlite.py:200-204, 319-321`)؛ در خطا `rollback()` دیتابیس + `on_rollback` که pointer را به کالکشن قدیمی برمی‌گرداند (`sqlite.py:218-227, 327-336`؛ `chroma.py:326-338`). در incremental، IDs واقعی SQLite باید دقیقاً با کاندید برابر باشند وگرنه `StorageError` و rollback (`sqlite.py:301-309`).\n\n**۵. اعتبارسنجی پایه و پس از فعال‌سازی**\n`_incremental_base` تطابق generation/schema/هویت embedding بین SQLite و Chroma را الزامی می‌کند (`coordinator.py:201-254`) و پس از commit، ناهم‌سانی IDs یا generation فعال را رد می‌کند (`coordinator.py:333-335, 531-533`). تست‌ها حفظ snapshot قدیمی در خرابی فعال‌سازی را تأیید می‌کنند (`tests/test_vector_indexing.py:340-396`).",
+      "finish_reason": "stop",
+      "model_calls": 6,
+      "tool_calls": [
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "candidate|snapshot|replace",
+            "include": "*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\indexing\\coordinator.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\vector_index\\chroma.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "sqlite.py",
+            "pattern": "def replace_project_index|def apply_incremental_project_index|expected_chunk_ids|before_commit|on_rollback|BEGIN IMMEDIATE|rollback",
+            "path": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\storage"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\storage\\sqlite.py",
+            "offset": 140,
+            "limit": 210
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 114932,
+        "input": 35208,
+        "output": 899,
+        "reasoning": 1001,
+        "cache_read": 77824,
+        "cache_write": 0
+      },
+      "raw_sha256": "04f0c19c89f49ee98a8b416672e8e4f751599b5459d4de42bc891ec3cc4acad9",
+      "error": null
+    },
+    {
+      "case_id": "WRA-C-05-EN",
+      "concept_id": "WRA-C-05",
+      "repository_id": "codecompass",
+      "repository_url": "https://github.com/Ftm-Sayadzadeh/codecompass-local.git",
+      "repository_commit": "4b9eba4df4cc7a5afca27ee3d4c60d578caec0f7",
+      "language": "en",
+      "scope": "global",
+      "question": "What roles do SQLite, Chroma, embeddings, and the LLM each play in CodeCompass, and which component is authoritative for citations?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "SQLite stores canonical project, file, symbol, and chunk metadata",
+        "Chroma stores/searches vectors keyed by chunk ids",
+        "Embeddings turn the question and chunks into vectors for semantic retrieval",
+        "The LLM generates an answer only from the selected context",
+        "Citation file paths, symbols, and line ranges are hydrated from SQLite metadata"
+      ],
+      "forbidden_claims": [
+        "Chroma is authoritative for line ranges",
+        "The LLM generates citation metadata"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 54.763,
+      "session_id": "ses_f7aa6512cffeOyHbaCJnhmoxrE",
+      "answer": "**Note:** The maximum number of tool steps for this task was reached before final verification of every source file, but enough evidence was collected to answer confidently. Below is the grounded answer based on the files actually inspected.\n\n## Roles of Each Component in CodeCompass\n\n**SQLite — canonical metadata store (authoritative for citations).**\n`src/codecompass/storage/sqlite.py:1,20-21` defines `SQLiteMetadataStore`, which persists scanner, parser, and chunker metadata (projects, source_files with SHA-256, symbols, chunks — schema at lines 26–60). `PROJECT_BRIEF.md:306` states \"SQLite owns canonical metadata,\" and `README.md:95` states SQLite \"is the canonical source for project, file, symbol, chunk, and citation metadata.\"\n\n**Chroma — vector retrieval index only.**\n`src/codecompass/vector_index/chroma.py:1,45-46` implements `ChromaVectorIndex` to \"store and search precomputed embeddings.\" `README.md:96` and `docs/validation/m8-retrieval-smoke-test.md:84-87` confirm Chroma provides only chunk IDs, similarity, and minimal metadata — never citation fields.\n\n**Embeddings — vectorization behind an abstraction.**\n`src/codecompass/embeddings/base.py:10-42` defines `EmbeddingIdentity`/`EmbeddingProvider`; the project brief (`PROJECT_BRIEF.md:139`) names `bge-m3` as the primary model. `semantic.py:39,44` embeds the query, then searches the vector index; identity mismatch fails safely (`semantic.py:61-80`).\n\n**LLM — natural-language generation only.**\n`src/codecompass/llm/base.py:41-45` defines `LLMProvider.generate()`. `PROJECT_BRIEF.md:310`: \"LLM owns only natural-language generation.\" In `qa/service.py:62-71`, the LLM only receives built context and produces answer text.\n\n**Authoritative component for citations: SQLite.**\nThe pipeline: retrieval → `RAGContextBuilder` (`rag/context.py:43-56`) builds citation blocks from chunks hydrated via SQLite; then `qa/service.py:146-158` derives citations directly from context metadata. `semantic.py:53-57` explicitly raises an error if SQLite metadata for a Chroma-matched chunk is missing — proving Chroma results are always hydrated and validated through SQLite. `README.md:97` confirms: \"The LLM cannot author trusted file paths, identities, line ranges, or citation IDs.\"\n\n**Remaining unverified:** I did not fully read `retrieval/lexical.py`, `retrieval/hybrid.py`, or the indexing coordinator; their behavior is inferred from docs and the semantic retriever.",
+      "finish_reason": "stop",
+      "model_calls": 8,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "SQLite|Chroma|authoritative",
+            "include": "*.md"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\README.md",
+            "offset": 80,
+            "limit": 50
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\PROJECT_BRIEF.md",
+            "offset": 95,
+            "limit": 60
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\PROJECT_BRIEF.md",
+            "limit": 70,
+            "offset": 290
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "src/**/*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\qa\\service.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\vector_index\\chroma.py",
+            "limit": 80
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\rag\\context.py",
+            "limit": 120
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\retrieval\\semantic.py",
+            "limit": 100
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\storage\\sqlite.py",
+            "limit": 60
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\embeddings\\base.py",
+            "limit": 60
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\llm\\base.py",
+            "limit": 70
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\docs\\validation\\m8-retrieval-smoke-test.md",
+            "limit": 40,
+            "offset": 60
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 107339,
+        "input": 26180,
+        "output": 1193,
+        "reasoning": 94,
+        "cache_read": 79872,
+        "cache_write": 0
+      },
+      "raw_sha256": "e5536d43e8ee20d3d8e0da335dc1eef0de749a54de53082041532681f2fc8b6c",
+      "error": null
+    },
+    {
+      "case_id": "WRA-C-05-FA",
+      "concept_id": "WRA-C-05",
+      "repository_id": "codecompass",
+      "repository_url": "https://github.com/Ftm-Sayadzadeh/codecompass-local.git",
+      "repository_commit": "4b9eba4df4cc7a5afca27ee3d4c60d578caec0f7",
+      "language": "fa",
+      "scope": "global",
+      "question": "SQLite، Chroma، embedding و LLM هرکدام در CodeCompass چه نقشی دارند و مرجع معتبر citation کدام جزء است؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "SQLite stores canonical project, file, symbol, and chunk metadata",
+        "Chroma stores/searches vectors keyed by chunk ids",
+        "Embeddings turn the question and chunks into vectors for semantic retrieval",
+        "The LLM generates an answer only from the selected context",
+        "Citation file paths, symbols, and line ranges are hydrated from SQLite metadata"
+      ],
+      "forbidden_claims": [
+        "Chroma is authoritative for line ranges",
+        "The LLM generates citation metadata"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 56.609,
+      "session_id": "ses_f7aa57b0affeVBAjaY0VxNKiHf",
+      "answer": "## نقش هر جزء و مرجع citation\n\n**SQLite — منبعِ حقیقت (canonical) متادیتا:**\n- «SQLite منبع اصلی متادیتای پروژه/کد است» — `AGENTS.md:51` و `docs/m25-retrieval-improvements-spec.md:154`\n- پیاده‌سازی: `src/codecompass/storage/sqlite.py:20-21` (`SQLiteMetadataStore` — ذخیره متادیتای scanner، parser و chunker)\n- `api/runtime.py:444-445`: هیدریشن متادیتای ناوبری citation از «ردیف‌های canonical SQLite»\n\n**ChromaDB — فقط ایندکس برداری:**\n- «ChromaDB ایندکس بازیابی است... منبع حقیقت نیست» — `AGENTS.md:51`؛ «Chroma فقط ذخیره برداری» — `docs/m25-...md:155,157`\n- پیاده‌سازی: `src/codecompass/vector_index/chroma.py:45-46` (`ChromaVectorIndex` — ذخیره و جست‌وجوی embeddingهای از پیش محاسبه‌شده)\n\n**Embedding (bge-m3/محلی) — برداری‌سازی متن:**\n- پروتکل: `src/codecompass/embeddings/base.py:65-72` (`EmbeddingProvider` با `embed_text`/`embed_texts`)\n- مدل تأییدشده اولیه bge-m3 — `docs/RESEARCH_NOTES_SUMMARY.md:113`\n\n**LLM (محلی، Ollama/OpenAI-compatible) — تولید پاسخ:**\n- پروتکل: `src/codecompass/llm/base.py:41-45`؛ اجرای محلی: `llm/ollama.py:14-15`\n- فراخوانی در `qa/service.py:64-71` پس از ساخت RAG context؛ LLM «ممکن است شواهد را توضیح دهد اما نباید مکان منبع را جعل کند» — `AGENTS.md:60`\n\n**مرجع معتبر citation: SQLite است.**\n- `retrieval/semantic.py:14` و `:53-57`: ابتدا جست‌وجوی بردار در Chroma، سپس هیدریشن متادیتای citation از SQLite (`get_chunk_by_chunk_id`)\n- `docs/validation/m8-retrieval-smoke-test.md:76-87`: SQLite تأمین‌کننده `source_file`، `start_line`، `end_line` و... ؛ Chroma فقط `chunk_id` و شباهت\n- تأیید نهایی QA: `docs/validation/m15-demo-smoke-test-report.md:108`",
+      "finish_reason": "stop",
+      "model_calls": 6,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "Chroma|SQLite|chromadb|sqlite",
+            "include": "*.md"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "src/**/*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "src/**/*.py",
+            "pattern": "canonical|citation|Ollama|LLM|llm"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\docs\\validation\\m8-retrieval-smoke-test.md",
+            "offset": 60,
+            "limit": 40
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\qa\\service.py",
+            "limit": 120
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "src/codecompass/qa/*.py",
+            "pattern": "citation|SQLite|metadata"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "src/codecompass/storage/sqlite.py",
+            "pattern": "class SQLiteMetadataStore|canonical|\\\"\\\"\\\""
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\vector_index\\chroma.py",
+            "limit": 60
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\embeddings\\base.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "src/codecompass/retrieval/semantic.py",
+            "pattern": "get_chunk|store|SQLite|hydrat"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "src/codecompass/llm/*.py",
+            "pattern": "class |\\\"\\\"\\\""
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 76941,
+        "input": 22457,
+        "output": 1010,
+        "reasoning": 226,
+        "cache_read": 53248,
+        "cache_write": 0
+      },
+      "raw_sha256": "af63a4b0213898e9bef87338cc154116672afd3ff097aa124f41e547323e10bb",
+      "error": null
+    },
+    {
+      "case_id": "WRA-C-06-EN",
+      "concept_id": "WRA-C-06",
+      "repository_id": "codecompass",
+      "repository_url": "https://github.com/Ftm-Sayadzadeh/codecompass-local.git",
+      "repository_commit": "4b9eba4df4cc7a5afca27ee3d4c60d578caec0f7",
+      "language": "en",
+      "scope": "negative",
+      "question": "How does CodeCompass parse and index Java, JavaScript, and TypeScript source files?",
+      "expected_behavior": "insufficient_evidence",
+      "expected_facts": [
+        "The indexed implementation only accepts Python .py files and uses a Python AST parser"
+      ],
+      "forbidden_claims": [
+        "Tree-sitter parses JavaScript",
+        "Java files are indexed"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 58.054,
+      "session_id": "ses_f7aa49dbaffeXfjsBQEPcDl9MG",
+      "answer": "**CodeCompass does not parse or index Java, JavaScript, or TypeScript files.** The pipeline is Python-only, by design.\n\nEvidence:\n\n1. **Scanner filters to `.py` only** — `src/codecompass/scanner/service.py` line 109: `return path.is_symlink() or path.suffix != \".py\" or is_ignored_file(...)` — any non-`.py` file (`.java`, `.js`, `.ts`, `.jsx`, `.tsx`) is skipped before indexing. The class docstring (line 19) says: *\"Discover Python source files under one repository root.\"*\n\n2. **The parser is Python-AST-only** — `src/codecompass/parser/python_ast.py` line 1: *\"Python AST parser for deterministic source metadata\"*; it uses Python's built-in `ast.parse` (lines 21–30) and `tokenize.open` (line 19). `src/codecompass/parser/__init__.py` exports only `PythonASTParser` — no alternative parsers exist.\n\n3. **Indexing pipeline is hardwired to these two** — `src/codecompass/indexing/service.py` lines 45–46 instantiate `RepositoryScanner()` and `PythonASTParser()`, then scan (line 76), parse (line 93), and chunk (line 109).\n\n4. **This is an explicit project constraint** — `AGENTS.md` line 42: *\"Do not add TypeScript/JavaScript repository-analysis support in the Python MVP.\"* `PROJECT_BRIEF.md` line 289 lists *\"Full multi-language parsing\"* as a non-goal. `docs/RESEARCH_NOTES_SUMMARY.md` line 81 notes Tree-sitter was only *considered* for a future multi-language version.\n\nThe `FreezeMixin.ts` strings appearing in `data/evaluation/results/*.json` are just evaluation-corpus content in result files, not indexing capability. If you feed a Java/TS repository, only Python files in it get indexed.",
+      "finish_reason": "stop",
+      "model_calls": 7,
+      "tool_calls": [
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "java|typescript|javascript|\\.ts|\\.js\\b",
+            "include": "*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\scanner\\service.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "\\.java|\\.ts\\b|\\.tsx|\\.js\\b|\\.jsx"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\parser\\python_ast.py",
+            "limit": 80
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\parser\\__init__.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "tree.sitter|tree_sitter|multi.language|multilingual|Java|TypeScript|JavaScript",
+            "include": "*.{py,md,toml}"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "\\.py\\b",
+            "include": "src/codecompass/indexing/*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "src/codecompass/indexing/service.py",
+            "pattern": "py|parse|scanner"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\PROJECT_BRIEF.md",
+            "offset": 278,
+            "limit": 20
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 67550,
+        "input": 16794,
+        "output": 765,
+        "reasoning": 839,
+        "cache_read": 49152,
+        "cache_write": 0
+      },
+      "raw_sha256": "3f92e5c9d35ef26cd103cf9da8cecba7fcad1c240f7d5136099eaf05a0db60f1",
+      "error": null
+    },
+    {
+      "case_id": "WRA-C-06-FA",
+      "concept_id": "WRA-C-06",
+      "repository_id": "codecompass",
+      "repository_url": "https://github.com/Ftm-Sayadzadeh/codecompass-local.git",
+      "repository_commit": "4b9eba4df4cc7a5afca27ee3d4c60d578caec0f7",
+      "language": "fa",
+      "scope": "negative",
+      "question": "CodeCompass فایل‌های Java، JavaScript و TypeScript را چگونه parse و index می‌کند؟",
+      "expected_behavior": "insufficient_evidence",
+      "expected_facts": [
+        "The indexed implementation only accepts Python .py files and uses a Python AST parser"
+      ],
+      "forbidden_claims": [
+        "Tree-sitter parses JavaScript",
+        "Java files are indexed"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 43.868,
+      "session_id": "ses_f7aa3ba87ffex114RTrfCYdcyC",
+      "answer": "## پاسخ: CodeCompass این زبان‌ها را parse و index نمی‌کند\n\nبررسی مخزن (کامیت `4b9eba4`) نشان می‌دهد که CodeCompass **فقط فایل‌های Python** را پشتیبانی می‌کند و هیچ پشتیبانی برای Java، JavaScript یا TypeScript در پایپ‌لاین parse/index وجود ندارد.\n\n### شواهد\n\n**۱. اسکنر فقط پسوند `.py` را قبول می‌کند**\n- `src/codecompass/scanner/service.py:107-109` — در `_skip_file`:\n  ```python\n  return path.is_symlink() or path.suffix != \".py\" or is_ignored_file(...)\n  ```\n- فقط فایل‌های با پسوند دقیق `.py` به `ScanResult` اضافه می‌شوند (`service.py:29-74`)؛ در واقع `node_modules` هم کلاً نادیده گرفته می‌شود (`src/codecompass/scanner/ignore.py:5-20`).\n\n**۲. تنها پارسر موجود، پارسر Python AST است**\n- فقط `src/codecompass/parser/python_ast.py` در پوشه parser وجود دارد.\n- `python_ast.py:1` — «Python AST parser for deterministic source metadata»\n- `python_ast.py:5,21` — از `import ast` و `ast.parse(source, ...)` ماژول استاندارد Python استفاده می‌کند که فقط سینتکس Python را می‌فهمد.\n- هیچ اثری از tree-sitter، javalang، esprima یا هر پارسر زبان دیگر در کل کد نیست (جستجو بدون نتیجه).\n\n**۳. پایپ‌لاین index بر همین اساس ساخته شده**\n- `src/codecompass/chunker/service.py` و `src/codecompass/indexing/*` فقط روی `Symbol`ها و `ParseResult` خروجی پارسر Python کار می‌کنند.\n\n### نتیجه\n\nطبق `AGENTS.md` هم این عمداً خارج از محدوده است: «Do not add TypeScript/JavaScript repository-analysis support in the Python MVP». اگر ریپازیتوری‌ای شامل فایل‌های JS/TS/Java به آن داده شود، آن فایل‌ها در مرحله اسکن حذف می‌شوند و اصلاً به مرحله parse و index نمی‌رسند.",
+      "finish_reason": "stop",
+      "model_calls": 4,
+      "tool_calls": [
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "(java|javascript|typescript|\\.js\\b|\\.ts\\b|\\.tsx|\\.java)",
+            "include": "*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "*.py",
+            "pattern": "SUPPORTED_EXTENSIONS|extensions"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\scanner\\service.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\parser\\python_ast.py",
+            "limit": 80
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\codecompass\\src\\codecompass\\scanner\\ignore.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "*.py",
+            "pattern": "tree-sitter|tree_sitter|javalang|esprima|typescript"
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 29537,
+        "input": 10054,
+        "output": 760,
+        "reasoning": 291,
+        "cache_read": 18432,
+        "cache_write": 0
+      },
+      "raw_sha256": "f05bd43334494c1fd20a30afd0abc9068823fb0964df032b67565c1d76df6fe7",
+      "error": null
+    }
+  ],
+  "counts": {
+    "total": 36,
+    "attempted": 36,
+    "complete": 33,
+    "failed": 3
+  }
+}

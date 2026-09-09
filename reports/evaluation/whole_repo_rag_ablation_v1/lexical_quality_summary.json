@@ -1,0 +1,31 @@
+{
+  "evaluation_id": "whole_repo_rag_ablation_v1_lexical_quality",
+  "status": "complete",
+  "lexical_reviewable": 32,
+  "lexical_means": {
+    "fact_recall_0_10": 3.047,
+    "correctness_0_10": 4.031,
+    "groundedness_0_10": 9.062
+  },
+  "semantic_minus_lexical": {
+    "paired_responses": 30,
+    "fact_recall_0_10": {
+      "mean_delta": 4.2812,
+      "ci95_low": 2.7812,
+      "ci95_high": 5.7344,
+      "concepts": 16
+    },
+    "correctness_0_10": {
+      "mean_delta": 3.8125,
+      "ci95_low": 2.5938,
+      "ci95_high": 5.125,
+      "concepts": 16
+    },
+    "groundedness_0_10": {
+      "mean_delta": 0.4688,
+      "ci95_low": 0.1562,
+      "ci95_high": 0.8438,
+      "concepts": 16
+    }
+  }
+}

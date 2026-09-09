@@ -1,0 +1,51 @@
+{
+  "evaluation_id": "whole_repo_rag_human_validation_v1",
+  "selection_policy": "Predeclared case IDs selected without using quality scores; balanced by repository, language, and scope where successful paired outputs permit.",
+  "comparison_case_ids": {
+    "whole_vs_semantic": [
+      "WRA-H-01-EN",
+      "WRA-H-02-FA",
+      "WRA-H-03-EN",
+      "WRA-H-04-FA",
+      "WRA-H-05-EN",
+      "WRA-H-06-FA",
+      "WRA-B-01-FA",
+      "WRA-B-02-EN",
+      "WRA-B-03-FA",
+      "WRA-B-04-EN",
+      "WRA-B-05-FA",
+      "WRA-B-06-EN"
+    ],
+    "semantic_vs_lexical": [
+      "WRA-H-01-EN",
+      "WRA-H-03-FA",
+      "WRA-H-05-EN",
+      "WRA-H-06-FA",
+      "WRA-B-01-FA",
+      "WRA-B-03-EN",
+      "WRA-B-05-FA",
+      "WRA-B-06-EN",
+      "WRA-C-01-EN",
+      "WRA-C-02-FA",
+      "WRA-C-03-FA",
+      "WRA-C-05-EN"
+    ],
+    "semantic_vs_agent": [
+      "WRA-H-01-EN",
+      "WRA-H-03-FA",
+      "WRA-H-05-EN",
+      "WRA-H-06-FA",
+      "WRA-B-01-FA",
+      "WRA-B-03-EN",
+      "WRA-B-05-FA",
+      "WRA-B-06-EN",
+      "WRA-C-01-EN",
+      "WRA-C-02-FA",
+      "WRA-C-03-FA",
+      "WRA-C-05-EN"
+    ]
+  },
+  "unique_responses": 54,
+  "expected_pair_ratings": 36,
+  "randomization": "sha256(human-validation-v1|case_id|arm)"
+}

@@ -1,0 +1,411 @@
+{
+  "evaluation_id": "whole_repo_rag_ablation_v1_git_agent_recovery",
+  "status": "complete",
+  "records": [
+    {
+      "case_id": "WRA-H-04-EN",
+      "concept_id": "WRA-H-04",
+      "repository_id": "hospital_system",
+      "repository_url": "https://github.com/AvaGhiasian/Hospital-System.git",
+      "repository_commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633",
+      "language": "en",
+      "scope": "cross_file",
+      "question": "How does automatic reservation choose a doctor slot and update the selected patient and doctor?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Patients.auto_reservation resolves the patient by id",
+        "It asks find_nearest_appointment for a Node containing doctor, day, and hour",
+        "It writes the appointment to the patient",
+        "It removes availability from the selected doctor's schedule"
+      ],
+      "forbidden_claims": [
+        "It records the appointment in the doctor's Appointments object",
+        "It prompts the user to select the hour"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 51.963,
+      "session_id": "ses_f7aa1f50effehEmW6uDv510WOs",
+      "answer": "## Auto reservation flow\n\n**1. Entry point (UI):** Option 7 \"Auto appointment reservation\" (`presentation/CLI.py:53`) triggers `patients_interface.auto_reservation()` (`presentation/commands.py:134-135`).\n\n**2. Doctor candidate filtering:** `presentation/patients_interface.py:173-179` asks for a *city* and *speciality*, reads the logged-in patient id from the session, and calls `manage.speciality_city(city, spc)`, which returns a `DynamicArray` of all doctors matching that city/speciality (`data_access/doctors.py:107-116`, via `logic/management.py:156-157`).\n\n**3. Slot selection:** `logic/management.py:191-192` delegates to `Patients.auto_reservation` (`data_access/patients.py:86-90`):\n- `find_nearest_appointment(doctors)` (`data_access/patients.py:76-84`) builds a `MinHeap`, and for each doctor calls `doctor.schedule.find_nearest()` (`models/doctor.py:118-125`) — this sorts the doctor's days (`sort_days`, `models/doctor.py:101-116`), then scans the earliest day's 12-slot array for the first slot that is not `None`/`\"Not Available\"`, returning `(day, hour)`. Each result is wrapped in a `Node(doctor, day, hour)` (`models/appointment.py:1-12`) and heap-inserted, then `extract_min` picks the node. Note: `return nearest` at line 84 sits *inside* the loop, so effectively only the first doctor's nearest slot is considered.\n\n**4. Updates:** In `data_access/patients.py:89-90`:\n- `patient.appointments.make_appointment(day, hour, doctor.national_id)` writes the doctor id into the patient's day→time array (`models/patient.py:30-34`).\n- `nearest.doctor.schedule.remove_availability(day, hour)` flips that slot to `\"Not Available\"` (`models/doctor.py:65-71`).\n\nUnlike manual booking (`logic/management.py:163-169`), auto reservation does **not** add to `doctor.appointments` nor call `doctor.increment_visits()`.",
+      "finish_reason": "stop",
+      "model_calls": 7,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "reservation|Reservation",
+            "include": "*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_access\\patients.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\presentation\\patients_interface.py",
+            "limit": 40,
+            "offset": 150
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "models/*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "data_structures/*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\logic\\management.py",
+            "limit": 40,
+            "offset": 160
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\models\\appointment.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\models\\doctor.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\models\\patient.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "speciality_city|def speciality_city",
+            "include": "*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_structures\\heap.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\data_access\\doctors.py",
+            "limit": 30,
+            "offset": 100
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\sample-repos\\Hospital-System\\presentation\\commands.py",
+            "limit": 25,
+            "offset": 120
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 38286,
+        "input": 14351,
+        "output": 860,
+        "reasoning": 547,
+        "cache_read": 22528,
+        "cache_write": 0
+      },
+      "raw_sha256": "056e6b40cbe4155a40be7a3c06a28cedb41209ec69c3e224401607fcdcdf7989",
+      "error": null,
+      "recovery_of": "WRA-H-04-EN"
+    },
+    {
+      "case_id": "WRA-B-02-FA",
+      "concept_id": "WRA-B-02",
+      "repository_id": "cs_bookstore",
+      "repository_url": "https://github.com/AvaGhiasian/CS-Bookstore.git",
+      "repository_commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+      "language": "fa",
+      "scope": "local",
+      "question": "قابل‌فروش بودن کتاب، موجودی، قیمت اصلی، تخفیف و قیمت پس از تخفیف با چه فیلدها و مقادیر پیش‌فرضی نمایش داده می‌شوند؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "available is a BooleanField defaulting to true",
+        "inventory is a PositiveIntegerField defaulting to zero",
+        "price, off, and new_price are PositiveIntegerField values defaulting to zero",
+        "The model code does not automatically compute new_price"
+      ],
+      "forbidden_claims": [
+        "new_price is computed in Book.save",
+        "inventory defaults to one"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 44.526,
+      "session_id": "ses_f7aa12978ffe8X1Y64D0gmnKfI",
+      "answer": "Let me also check how these fields are shown in the admin and templates.\n## پاسخ\n\nاین موارد به‌صورت فیلدهای مدل `Book` در `store/models.py` (خطوط 46-51) تعریف شده‌اند و همه پیش‌فرض دارند:\n\n| مفهوم | فیلد | تعریف | پیش‌فرض |\n|---|---|---|---|\n| قابل‌فروش بودن | `available` | `models.BooleanField(default=True)` — خط 46 | `True` (بدون verbose_name فارسی) |\n| موجودی | `inventory` | `models.PositiveIntegerField(default=0, verbose_name='موجودی')` — خط 47 | `0` |\n| قیمت اصلی | `price` | `models.PositiveIntegerField(default=0, verbose_name='قیمت')` — خط 48 | `0` |\n| تخفیف | `off` | `models.PositiveIntegerField(default=0, verbose_name='تخفیف')` — خط 50 | `0` |\n| قیمت پس از تخفیف | `new_price` | `models.PositiveIntegerField(default=0, verbose_name='قیمت پس از تخفیف')` — خط 51 | `0` |\n\nنحوه نمایش:\n\n- **پنل ادمین**: `store/admin.py` خط 10 — `list_display = ['title', 'available', 'price']` و خط 12 `list_editable = ['available']` (فیلد `available` مستقیماً در لیست قابل ویرایش است).\n- **قالب‌ها**: در `store/templates/store/detail.html` (خطوط 17-24)، `index.html` (خطوط 40-45 و 75-80)، `all_books.html` (خطوط 21-23) و `books_by_category.html` (خطوط 20-22): اگر `book.off > 0` باشد، قیمت اصلی در `<span class=\"old-price\">` با پسوند «تومان» و قیمت پس از تخفیف در `<span class=\"new-price\">` نمایش داده می‌شود؛ در غیر این صورت فقط `{{ book.price }} تومان` نشان داده می‌شود.\n\nنکته: فیلدهای `inventory` و `available` در قالب‌های فروشگاه رندر نمی‌شوند (فقط پیام عمومی «کتابی موجود نیست» وجود دارد)؛ نمایش آن‌ها عمدتاً در ادمین/مدل است.",
+      "finish_reason": "stop",
+      "model_calls": 6,
+      "tool_calls": [
+        {
+          "tool": "glob",
+          "input": {
+            "pattern": "**/*.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "is_for_sale|for_sale|قابل"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\models.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\admin.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "available|inventory|new_price|off",
+            "include": "*.html"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\templates\\store\\detail.html"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "*.html",
+            "pattern": "available|موجود"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\templates\\store\\index.html",
+            "limit": 60,
+            "offset": 30
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 34648,
+        "input": 12698,
+        "output": 789,
+        "reasoning": 681,
+        "cache_read": 20480,
+        "cache_write": 0
+      },
+      "raw_sha256": "98d78e023eb3ba23fe9709292df12586915254fe99fc29ba5a05cd3b5b0acf57",
+      "error": null,
+      "recovery_of": "WRA-B-02-FA"
+    },
+    {
+      "case_id": "WRA-B-06-EN",
+      "concept_id": "WRA-B-06",
+      "repository_id": "cs_bookstore",
+      "repository_url": "https://github.com/AvaGhiasian/CS-Bookstore.git",
+      "repository_commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a",
+      "language": "en",
+      "scope": "negative",
+      "question": "How does the application charge a credit card and refund a canceled order?",
+      "expected_behavior": "insufficient_evidence",
+      "expected_facts": [
+        "No payment charging or refund implementation is present in the indexed Python code"
+      ],
+      "forbidden_claims": [
+        "Stripe handles payments",
+        "A refund method is implemented on Order"
+      ],
+      "arm": "git_agent_opencode",
+      "execution_status": "complete",
+      "latency_seconds": 42.365,
+      "session_id": "ses_f7aa07c18ffeKqboFCjy3zm0kq",
+      "answer": "I've reached the maximum number of steps for this agent run, so I'm providing a text-only summary of my findings.\n\n## Summary of Investigation\n\nI inspected the repository at the pinned commit, searching for any credit card charging or refund logic (searching for patterns like `credit_card`, `charge`, `refund`, `payment`, `pay`, `checkout`, `cancel`, `stripe`, `zarinpal`, `gateway`, `card`).\n\n**Key finding: The repository does NOT contain any credit card charging or refund implementation.**\n\n### Evidence\n\n1. **No payment code exists.** Searches for `credit_card|CreditCard|charge|refund` only matched LICENSE boilerplate (\"free of charge\") — no application code.\n2. **No payment libraries.** Grep for payment/checkout/gateway/Stripe/Zarinpal in `*.py` files found nothing relevant.\n3. **Cart app is a stub.** `cart/views.py` (lines 1–3) and `cart/models.py` (lines 1–3) contain only Django's default boilerplate comments — no checkout or payment views.\n4. **Order model has a `paid` flag but no logic.** `store/models.py` line 116–119: the `Order` model has `paid = models.BooleanField(default=False)` (line 119), but nothing in the codebase ever sets it.\n5. **Store views contain no payment flow.** `store/views.py` (107 lines total) only implements listing, detail, search, categories, and reviews — no charge/refund.\n6. **Templates** — all `card` matches are CSS classes (`product-card`, `card-body`), not credit cards.\n\n### Recommendation\n\nThe question appears to assume functionality that doesn't exist in this commit. To implement charging/refunds, you would need to add: a payment gateway SDK (e.g., Stripe), checkout views in `cart/`, and a refund flow for canceled orders — none of which are present. I could not fully inspect `requirements.txt` (unreadable as binary in my environment) or the settings module, so a final confirmation there is the only remaining loose end, but all app-level code shows no payment logic.",
+      "finish_reason": "stop",
+      "model_calls": 9,
+      "tool_calls": [
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "pattern": "credit_card|CreditCard|charge|refund"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\cart"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "*.py",
+            "pattern": "payment|Payment|pay|card"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\cart\\views.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\views.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "*.py",
+            "pattern": "order|Order|checkout|cancel|zarinpal|stripe|gateway|Merchant|sandbox"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\users"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\store\\models.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\cart\\models.py"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "grep",
+          "input": {
+            "include": "*.html",
+            "pattern": "pay|card|پرداخت|پرداختی|credit"
+          },
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "input": {
+            "filePath": "D:\\code-compass\\codecompass-local\\data\\repos\\whole_repo_rag_ablation_v1\\cs_bookstore\\requirements.txt"
+          },
+          "status": "error"
+        },
+        {
+          "tool": "todowrite",
+          "input": {
+            "todos": [
+              {
+                "content": "Search repo for credit card / payment / refund logic",
+                "priority": "high",
+                "status": "completed"
+              },
+              {
+                "content": "Inspect cart, store, users apps and settings for payment flow",
+                "priority": "high",
+                "status": "completed"
+              },
+              {
+                "content": "Provide answer with file/line evidence",
+                "priority": "high",
+                "status": "completed"
+              }
+            ]
+          },
+          "status": "completed"
+        }
+      ],
+      "tokens": {
+        "total": 43306,
+        "input": 17574,
+        "output": 991,
+        "reasoning": 165,
+        "cache_read": 24576,
+        "cache_write": 0
+      },
+      "raw_sha256": "d6620ee039f4786dcf1843308bbad3a67b71505748ce3048ad68e8fa4c96488f",
+      "error": null,
+      "recovery_of": "WRA-B-06-EN"
+    }
+  ]
+}

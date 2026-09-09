@@ -1,0 +1,98 @@
+{
+  "evaluation_id": "whole_repo_rag_ablation_v1_quality",
+  "status": "complete",
+  "arms": {
+    "git_agent_opencode": {
+      "reviewable": 36,
+      "fact_recall_0_10": 7.778,
+      "correctness_0_10": 7.75,
+      "groundedness_0_10": 8.889,
+      "forbidden_claim_rate": 0.0,
+      "unsupported_material_claim_rate": 0.0294,
+      "unsupported_material_claim_reviewable": 34
+    },
+    "semantic_gemini_2": {
+      "reviewable": 33,
+      "fact_recall_0_10": 7.712,
+      "correctness_0_10": 7.848,
+      "groundedness_0_10": 9.576,
+      "forbidden_claim_rate": 0.0,
+      "unsupported_material_claim_rate": 0.0,
+      "unsupported_material_claim_reviewable": 31
+    },
+    "whole_repo": {
+      "reviewable": 23,
+      "fact_recall_0_10": 9.891,
+      "correctness_0_10": 9.957,
+      "groundedness_0_10": 9.826,
+      "forbidden_claim_rate": 0.0,
+      "unsupported_material_claim_rate": 0.0,
+      "unsupported_material_claim_reviewable": 20
+    }
+  },
+  "paired_comparisons": {
+    "semantic_gemini_2_minus_whole_repo": {
+      "paired_responses": 23,
+      "fact_recall_0_10": {
+        "mean_delta": -1.7917,
+        "ci95_low": -3.375,
+        "ci95_high": -0.5208,
+        "concepts": 12
+      },
+      "correctness_0_10": {
+        "mean_delta": -1.7917,
+        "ci95_low": -3.1667,
+        "ci95_high": -0.5833,
+        "concepts": 12
+      },
+      "groundedness_0_10": {
+        "mean_delta": -0.25,
+        "ci95_low": -0.5417,
+        "ci95_high": 0.0,
+        "concepts": 12
+      }
+    },
+    "git_agent_opencode_minus_whole_repo": {
+      "paired_responses": 23,
+      "fact_recall_0_10": {
+        "mean_delta": -3.1458,
+        "ci95_low": -5.5625,
+        "ci95_high": -0.8333,
+        "concepts": 12
+      },
+      "correctness_0_10": {
+        "mean_delta": -3.125,
+        "ci95_low": -5.2917,
+        "ci95_high": -1.1667,
+        "concepts": 12
+      },
+      "groundedness_0_10": {
+        "mean_delta": -1.1667,
+        "ci95_low": -1.9167,
+        "ci95_high": -0.5,
+        "concepts": 12
+      }
+    },
+    "git_agent_opencode_minus_semantic_gemini_2": {
+      "paired_responses": 33,
+      "fact_recall_0_10": {
+        "mean_delta": -0.0735,
+        "ci95_low": -2.25,
+        "ci95_high": 1.9559,
+        "concepts": 17
+      },
+      "correctness_0_10": {
+        "mean_delta": -0.1471,
+        "ci95_low": -2.1471,
+        "ci95_high": 1.7059,
+        "concepts": 17
+      },
+      "groundedness_0_10": {
+        "mean_delta": -0.6471,
+        "ci95_low": -1.2647,
+        "ci95_high": -0.0882,
+        "concepts": 17
+      }
+    }
+  }
+}

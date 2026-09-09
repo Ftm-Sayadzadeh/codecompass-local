@@ -1,0 +1,224 @@
+{
+  "benchmark_id": "whole_repo_rag_ablation_v1",
+  "status": "draft_preflight",
+  "design": {
+    "concepts": 18,
+    "questions": 36,
+    "languages": ["en", "fa"],
+    "concepts_per_repository": 6,
+    "case_mix_per_repository": {"local": 2, "cross_file": 2, "global": 1, "negative": 1},
+    "arms": ["whole_repo", "lexical", "semantic_gemini_2", "hybrid_gemini_2"],
+    "llm_model": "glm-5.3-flash",
+    "thinking_mode": "disabled",
+    "temperature": 0.0,
+    "max_output_tokens": 2400,
+    "retrieval_limit": 5,
+    "rag_context_chars": 6000,
+    "primary_comparisons": ["semantic_gemini_2-minus-lexical", "hybrid_gemini_2-minus-lexical", "hybrid_gemini_2-minus-whole_repo"],
+    "quality_metrics": ["fact_recall", "claim_precision", "f1", "correctness_0_10", "groundedness_0_10", "usefulness_0_10", "readability_0_10", "hallucination", "insufficient_evidence_accuracy", "completeness"],
+    "efficiency_metrics": ["input_tokens", "cached_input_tokens", "output_tokens", "reasoning_tokens", "exact_cost", "latency_median", "latency_p95", "failure_rate", "truncation_rate"],
+    "statistics": {"unit": "bilingual concept mean", "paired_bootstrap_samples": 10000, "seed": 2601, "confidence_interval": 0.95, "noninferiority_margin_f1_points": 5},
+    "stability": {"concepts": 6, "questions": 12, "additional_runs_per_arm": 2, "additional_llm_calls": 96},
+    "pricing_snapshot": {"source": "https://api.avalai.ir/public/models", "captured_on": "2026-09-08", "glm_max_input_tokens": 991000, "glm_input_usd_per_million": 0.075, "glm_cached_input_usd_per_million": 0.015, "glm_output_usd_per_million": 0.25, "embedding_input_usd_per_million": 0.2}
+  },
+  "repositories": [
+    {"repository_id": "hospital_system", "name": "Hospital-System", "commit": "da0b1f8cf04f36d6281a5fd44b797ad195147633", "source_manifest_sha256": "bd91675f2ca42e57b9b12fa1b64c1e272c5e54e1cb0f5f149c6dce618eb4959c"},
+    {"repository_id": "cs_bookstore", "name": "CS-Bookstore", "commit": "56ee148f3b4b8bc1f4eaaf921e22f280fa14ad7a", "source_manifest_sha256": "2e2f647f35f9c752341c15eaf20a91af31b65dd245524b4a3ac6ada8af0fa05c"},
+    {"repository_id": "codecompass", "name": "CodeCompass", "commit": "4b9eba4df4cc7a5afca27ee3d4c60d578caec0f7", "source_manifest_sha256": "fc75e63befc5a6d6c3d0cf79ad3ba4ba06a2d1416da04c8e7b317a9a467b1aa2"}
+  ],
+  "concepts": [
+    {
+      "id": "WRA-H-01", "repository_id": "hospital_system", "scope": "local",
+      "questions": {"en": "How is the current hospital day advanced and persisted?", "fa": "روز جاری بیمارستان چگونه جلو می‌رود و ذخیره می‌شود؟"},
+      "expected_behavior": "answer",
+      "expected_facts": ["DayManager.next_day increments curr_day by one", "It then calls save_day to persist the new value"],
+      "forbidden_claims": ["The day is changed only in memory", "The method accepts the next day as an argument"],
+      "expected_citations": [
+        {"relative_path": "logic/day_manager.py", "qualified_symbol": "DayManager.next_day", "start_line": 27, "end_line": 29, "chunk_id": "c4412c63a3df489c8bac4713e4b7eb9e04dad1b47be79e617a4a923b71bdd817"}
+      ]
+    },
+    {
+      "id": "WRA-H-02", "repository_id": "hospital_system", "scope": "local",
+      "questions": {"en": "What does the array-backed queue return when dequeuing an empty queue, and how does it remove a non-empty item?", "fa": "صفِ مبتنی بر آرایه هنگام dequeue از صف خالی چه برمی‌گرداند و در حالت غیرخالی چگونه عضو را حذف می‌کند؟"},
+      "expected_behavior": "answer",
+      "expected_facts": ["An empty queue returns the string Queue is empty.", "A non-empty dequeue increments front and returns the item at the previous front index"],
+      "forbidden_claims": ["It raises an exception for an empty queue", "It shifts every array element"],
+      "expected_citations": [
+        {"relative_path": "data_structures/queue.py", "qualified_symbol": "QueueArray.dequeue", "start_line": 22, "end_line": 33, "chunk_id": "1df22345e37e9c6c7038efb4a6acb81e56298fbe587c4a4be47acb872f21650b"}
+      ]
+    },
+    {
+      "id": "WRA-H-03", "repository_id": "hospital_system", "scope": "cross_file",
+      "questions": {"en": "When a patient cancels a future appointment, which patient and doctor records are updated?", "fa": "وقتی بیمار یک نوبت آینده را لغو می‌کند، چه رکوردهایی در سمت بیمار و پزشک به‌روزرسانی می‌شوند؟"},
+      "expected_behavior": "answer",
+      "expected_facts": ["Cancellation is rejected when the appointment day is today", "The patient appointment is removed and yields the doctor id", "The doctor's visit count is decremented", "The schedule slot is restored to Available", "The cancellation is recorded in the doctor's canceled appointments"],
+      "forbidden_claims": ["Same-day cancellation is accepted", "The doctor record is left unchanged"],
+      "expected_citations": [
+        {"relative_path": "logic/management.py", "qualified_symbol": "Manage.patient_cancel_appointments", "start_line": 175, "end_line": 185, "chunk_id": "fd33ea24ca0f6ff13adcf030beee817f5e9125a0122707ad08c19a863ee68d11"},
+        {"relative_path": "models/patient.py", "qualified_symbol": "Appointments.cancel_appointment", "start_line": 39, "end_line": 46, "chunk_id": "826e160e4092c8bb346073c102d43bedb0d566b03736e67ed490459fa616a8dc"}
+      ]
+    },
+    {
+      "id": "WRA-H-04", "repository_id": "hospital_system", "scope": "cross_file",
+      "questions": {"en": "How does automatic reservation choose a doctor slot and update the selected patient and doctor?", "fa": "رزرو خودکار چگونه زمان پزشک را انتخاب می‌کند و بیمار و پزشک انتخاب‌شده را به‌روزرسانی می‌کند؟"},
+      "expected_behavior": "answer",
+      "expected_facts": ["Patients.auto_reservation resolves the patient by id", "It asks find_nearest_appointment for a Node containing doctor, day, and hour", "It writes the appointment to the patient", "It removes availability from the selected doctor's schedule"],
+      "forbidden_claims": ["It records the appointment in the doctor's Appointments object", "It prompts the user to select the hour"],
+      "expected_citations": [
+        {"relative_path": "data_access/patients.py", "qualified_symbol": "Patients.find_nearest_appointment", "start_line": 76, "end_line": 84, "chunk_id": "cda9cde936c398901d00043628667d9a1e44db595919396623b015f759b09b0d"},
+        {"relative_path": "data_access/patients.py", "qualified_symbol": "Patients.auto_reservation", "start_line": 86, "end_line": 90, "chunk_id": "ad9288213df4dceedc2b8ec01c3d45dfba5f6190bfd3d3a10ef7be8554aab9f5"}
+      ]
+    },
+    {
+      "id": "WRA-H-05", "repository_id": "hospital_system", "scope": "global",
+      "questions": {"en": "What is the repository's persistence design for doctors, patients, cities, specialities, and the current day?", "fa": "معماری ماندگاری داده برای پزشکان، بیماران، شهرها، تخصص‌ها و روز جاری در کل مخزن چگونه است؟"},
+      "expected_behavior": "answer",
+      "expected_facts": ["Manage.save_data delegates persistence to doctors, patients, cities, and specialities", "Those data-access components serialize to files through the File helper", "DayManager persists curr_day separately when next_day calls save_day", "No database-backed persistence is implemented"],
+      "forbidden_claims": ["Django ORM is used", "All state is stored in one JSON file"],
+      "expected_citations": [
+        {"relative_path": "logic/management.py", "qualified_symbol": "Manage.save_data", "start_line": 196, "end_line": 200, "chunk_id": "7b5c0d4d8a210a66db49ac82aff5e1e653d39ac96a690fd59cc35dead8df8c97"},
+        {"relative_path": "data_access/doctors.py", "qualified_symbol": "Doctors.save_data", "start_line": 32, "end_line": 40, "chunk_id": "e142d16dd788207fdd8477e2ef646a21874a855a5bdfbd85596fc3735ca9ffd2"},
+        {"relative_path": "data_access/patients.py", "qualified_symbol": "Patients.save_data", "start_line": 34, "end_line": 42, "chunk_id": "9e1f550f104b2e0a45b7b88f0b910a8c0f53f82df91f7092d34cc2fc34622527"},
+        {"relative_path": "logic/day_manager.py", "qualified_symbol": "DayManager.next_day", "start_line": 27, "end_line": 29, "chunk_id": "c4412c63a3df489c8bac4713e4b7eb9e04dad1b47be79e617a4a923b71bdd817"}
+      ]
+    },
+    {
+      "id": "WRA-H-06", "repository_id": "hospital_system", "scope": "negative",
+      "questions": {"en": "How are user passwords salted and hashed before they are stored?", "fa": "گذرواژه کاربران پیش از ذخیره چگونه salt و hash می‌شود؟"},
+      "expected_behavior": "insufficient_evidence",
+      "expected_facts": ["No password hashing or salting implementation is present in the indexed Python code"],
+      "forbidden_claims": ["Passwords are hashed with bcrypt", "Passwords are hashed with PBKDF2"],
+      "expected_citations": []
+    },
+    {
+      "id": "WRA-B-01", "repository_id": "cs_bookstore", "scope": "local",
+      "questions": {"en": "How is a blog post slug populated when the post is saved?", "fa": "هنگام ذخیره پست وبلاگ، slug چگونه مقداردهی می‌شود؟"},
+      "expected_behavior": "answer",
+      "expected_facts": ["Post.save only generates a slug when slug is empty", "It applies slugify to the title", "It delegates the actual save to the parent model"],
+      "forbidden_claims": ["The slug is regenerated on every save", "The slug is a random UUID"],
+      "expected_citations": [
+        {"relative_path": "blog/models.py", "qualified_symbol": "Post.save", "start_line": 69, "end_line": 72, "chunk_id": "4c5665b949d56076a539e66f2ffa0967048e1134e268a2218cd1f3ead9e577a5"}
+      ]
+    },
+    {
+      "id": "WRA-B-02", "repository_id": "cs_bookstore", "scope": "local",
+      "questions": {"en": "Which fields and defaults represent whether a book can be sold, its stock, original price, discount, and discounted price?", "fa": "قابل‌فروش بودن کتاب، موجودی، قیمت اصلی، تخفیف و قیمت پس از تخفیف با چه فیلدها و مقادیر پیش‌فرضی نمایش داده می‌شوند؟"},
+      "expected_behavior": "answer",
+      "expected_facts": ["available is a BooleanField defaulting to true", "inventory is a PositiveIntegerField defaulting to zero", "price, off, and new_price are PositiveIntegerField values defaulting to zero", "The model code does not automatically compute new_price"],
+      "forbidden_claims": ["new_price is computed in Book.save", "inventory defaults to one"],
+      "expected_citations": [
+        {"relative_path": "store/models.py", "qualified_symbol": "Book", "start_line": 40, "end_line": 76, "chunk_id": "9b28a4ad93db07e8f65e6f869a7973b48dccd5759e316d2eea35cf2324297049"}
+      ]
+    },
+    {
+      "id": "WRA-B-03", "repository_id": "cs_bookstore", "scope": "cross_file",
+      "questions": {"en": "What data does the book detail page load, and when does it expose the review form?", "fa": "صفحه جزئیات کتاب چه داده‌هایی را بارگذاری می‌کند و فرم نظر را چه زمانی نمایش می‌دهد؟"},
+      "expected_behavior": "answer",
+      "expected_facts": ["The book is selected by id and slug or returns 404", "Only active reviews are loaded and newest reviews come first", "ReviewForm is supplied only for an authenticated user", "The book, form, and reviews are rendered in store/detail.html"],
+      "forbidden_claims": ["Anonymous users receive an enabled ReviewForm", "Inactive reviews are included"],
+      "expected_citations": [
+        {"relative_path": "store/views.py", "qualified_symbol": "book_detail", "start_line": 40, "end_line": 49, "chunk_id": "3524481c298cd6b724f048ac43063fb30f5fe9f9a972992139adc5771ec19375"},
+        {"relative_path": "store/models.py", "qualified_symbol": "Review", "start_line": 95, "end_line": 113, "chunk_id": "2fc2db0ab0373e4cc60c17372a02d577b919345806b2bb094487efc2cf1b2110"}
+      ]
+    },
+    {
+      "id": "WRA-B-04", "repository_id": "cs_bookstore", "scope": "cross_file",
+      "questions": {"en": "Who may add books, authors, categories, and images from the profile area, and what happens after a valid submission?", "fa": "چه کسی می‌تواند از بخش پروفایل کتاب، نویسنده، دسته‌بندی و تصویر اضافه کند و پس از ارسال معتبر چه رخ می‌دهد؟"},
+      "expected_behavior": "answer",
+      "expected_facts": ["All four add views require the user to be a superuser", "Each POST binds the corresponding ModelForm", "A valid form is saved", "The response redirects to users:profile"],
+      "forbidden_claims": ["Any authenticated user can add catalog data", "The views write model fields directly without forms"],
+      "expected_citations": [
+        {"relative_path": "users/views.py", "qualified_symbol": "add_book", "start_line": 107, "end_line": 115, "chunk_id": "e85202532639117ed87018542e7095ca337513644afe3613ba7ecbca8bfdc26c"},
+        {"relative_path": "users/views.py", "qualified_symbol": "add_author", "start_line": 119, "end_line": 127, "chunk_id": "4b0a2bd307262f469b0227b18b867ace79eed388430abf7dc3ab083e38d41968"},
+        {"relative_path": "users/views.py", "qualified_symbol": "add_category", "start_line": 131, "end_line": 139, "chunk_id": "44053c3a1e958c89f2de27386eb45e2875dba086d01392069ea211d16dd048d8"},
+        {"relative_path": "users/views.py", "qualified_symbol": "add_image", "start_line": 143, "end_line": 151, "chunk_id": "188ad9e6797ca240102ed368c3823714a2192e94b0174f717b09fa06078c6e31"}
+      ]
+    },
+    {
+      "id": "WRA-B-05", "repository_id": "cs_bookstore", "scope": "global",
+      "questions": {"en": "What are the main store-domain entities and how are books related to categories, authors, images, reviews, and orders?", "fa": "موجودیت‌های اصلی دامنه فروشگاه چیست و کتاب‌ها چه رابطه‌ای با دسته‌بندی، نویسنده، تصویر، نظر و سفارش دارند؟"},
+      "expected_behavior": "answer",
+      "expected_facts": ["Book has foreign keys to Category and Author", "Image has a foreign key to Book with related_name images", "Review links a Book and the configured User model", "Order links a User and tracks created and paid", "Order has no relation to Book in this code"],
+      "forbidden_claims": ["Order contains order-line items", "Book and Author have a many-to-many relationship"],
+      "expected_citations": [
+        {"relative_path": "store/models.py", "qualified_symbol": "Book", "start_line": 40, "end_line": 76, "chunk_id": "9b28a4ad93db07e8f65e6f869a7973b48dccd5759e316d2eea35cf2324297049"},
+        {"relative_path": "store/models.py", "qualified_symbol": "Image", "start_line": 79, "end_line": 92, "chunk_id": "1501abebc87e10af2a03c4bfd37bbc2c8bd4f04f6789a3f9e184ef174300812a"},
+        {"relative_path": "store/models.py", "qualified_symbol": "Review", "start_line": 95, "end_line": 113, "chunk_id": "2fc2db0ab0373e4cc60c17372a02d577b919345806b2bb094487efc2cf1b2110"},
+        {"relative_path": "store/models.py", "qualified_symbol": "Order", "start_line": 116, "end_line": 126, "chunk_id": "a9a52a5ee8a040f0bd6239bdb15ecf1d7461f2eac4300a97538b47be2589f986"}
+      ]
+    },
+    {
+      "id": "WRA-B-06", "repository_id": "cs_bookstore", "scope": "negative",
+      "questions": {"en": "How does the application charge a credit card and refund a canceled order?", "fa": "برنامه چگونه کارت بانکی را شارژ و مبلغ سفارش لغوشده را بازپرداخت می‌کند؟"},
+      "expected_behavior": "insufficient_evidence",
+      "expected_facts": ["No payment charging or refund implementation is present in the indexed Python code"],
+      "forbidden_claims": ["Stripe handles payments", "A refund method is implemented on Order"],
+      "expected_citations": []
+    },
+    {
+      "id": "WRA-C-01", "repository_id": "codecompass", "scope": "local",
+      "questions": {"en": "Which files and directories are excluded by the repository scanner, and how are symlinks handled?", "fa": "اسکنر مخزن چه فایل‌ها و پوشه‌هایی را کنار می‌گذارد و با symlinkها چگونه رفتار می‌کند؟"},
+      "expected_behavior": "answer",
+      "expected_facts": ["Only .py files are eligible", ".env and .env.* are excluded", "VCS, virtualenv, cache, build, IDE, coverage, and node_modules directories are excluded by default", "Directory and file symlinks are not followed", "Resolved files must remain inside the selected root"],
+      "forbidden_claims": ["The scanner follows symlinks", "All text files are scanned"],
+      "expected_citations": [
+        {"relative_path": "src/codecompass/scanner/service.py", "qualified_symbol": "RepositoryScanner.scan", "start_line": 29, "end_line": 74, "chunk_id": "152d4de07de41b26ea99246c0aed19461067843d3bfb9c98a913b6f0adb6939c"},
+        {"relative_path": "src/codecompass/scanner/service.py", "qualified_symbol": "RepositoryScanner._walkable_dirs", "start_line": 85, "end_line": 105, "chunk_id": "8b1958843794582ae397b122d646392c69c9ccf2c4bb7d5ce334ab8e1635d028"},
+        {"relative_path": "src/codecompass/scanner/service.py", "qualified_symbol": "RepositoryScanner._skip_file", "start_line": 107, "end_line": 109, "chunk_id": "c575c6ff5fde10eac6b8b1800e7d7cb851965bce2b5ae7091dd2b9f7edb0ff26"}
+      ]
+    },
+    {
+      "id": "WRA-C-02", "repository_id": "codecompass", "scope": "local",
+      "questions": {"en": "How does lexical retrieval score a chunk, including the relative weights of symbol name, file path, code, and embedding text?", "fa": "بازیابی واژگانی امتیاز هر chunk را با چه وزن‌هایی برای نام نماد، مسیر فایل، کد و متن embedding محاسبه می‌کند؟"},
+      "expected_behavior": "answer",
+      "expected_facts": ["Query and fields are tokenized case-insensitively into unique token sets", "qualified_name has weight 3", "source_file has weight 2", "code and embedding_text each have weight 1", "The score sums weighted exact token overlaps"],
+      "forbidden_claims": ["It uses BM25", "It uses cosine similarity"],
+      "expected_citations": [
+        {"relative_path": "src/codecompass/retrieval/lexical.py", "qualified_symbol": "LexicalRetriever._score", "start_line": 49, "end_line": 60, "chunk_id": "0cb2dbc52133b71cf4d3debaeecd46e5bd7d01b69897b944bd70276d19db1032"}
+      ]
+    },
+    {
+      "id": "WRA-C-03", "repository_id": "codecompass", "scope": "cross_file",
+      "questions": {"en": "Trace an API question from retrieval selection through answer generation and trusted citation hydration.", "fa": "مسیر یک سؤال API را از انتخاب روش بازیابی تا تولید پاسخ و تکمیل citation قابل‌اعتماد توضیح بده."},
+      "expected_behavior": "answer",
+      "expected_facts": ["The ask route creates a retrieval service for the selected method and embedding configuration", "GroundedQAService retrieves chunks and builds bounded context", "The LLM receives the question and retrieved context", "QA citations are created from context metadata rather than parsed from model text", "The API rehydrates cited chunk metadata through APIRuntime.citation_chunks"],
+      "forbidden_claims": ["The model invents file paths and line numbers", "The entire repository is always sent to the LLM"],
+      "expected_citations": [
+        {"relative_path": "src/codecompass/api/app.py", "qualified_symbol": "create_app.ask", "start_line": 206, "end_line": 211, "chunk_id": "8b05fe4c04577f68e30c7d316d53911edce542199eac70a3d0d744021159b518"},
+        {"relative_path": "src/codecompass/qa/service.py", "qualified_symbol": "GroundedQAService.answer", "start_line": 43, "end_line": 84, "chunk_id": "ca34cd491e0654b2e07ed86a4e6e3f30625a90fa1f40b943b12d1cc115e40b4e"},
+        {"relative_path": "src/codecompass/api/runtime.py", "qualified_symbol": "APIRuntime.citation_chunks", "start_line": 444, "end_line": 458, "chunk_id": "6f4965c72d5b8181bab992395d8047509323c180dcb178a40c5c30c2a915348a"}
+      ]
+    },
+    {
+      "id": "WRA-C-04", "repository_id": "codecompass", "scope": "cross_file",
+      "questions": {"en": "How does a full reindex avoid replacing a valid metadata/vector snapshot with a partial or changed-repository candidate?", "fa": "بازایندکس کامل چگونه مانع جایگزینی snapshot سالم metadata/vector با candidate ناقص یا ساخته‌شده از مخزن تغییرکرده می‌شود؟"},
+      "expected_behavior": "answer",
+      "expected_facts": ["Embeddings are prepared before activation", "A staged vector replacement is validated", "The repository is rescanned and its file snapshot must match the initial scan", "SQLite replacement activates the staged vector generation through a before_commit callback", "Failures discard or roll back staged vectors and clean up a newly reserved project"],
+      "forbidden_claims": ["Vectors are overwritten in place before validation", "Repository changes during indexing are ignored"],
+      "expected_citations": [
+        {"relative_path": "src/codecompass/indexing/coordinator.py", "qualified_symbol": "RepositoryIndexCoordinator._run_full", "start_line": 256, "end_line": 360, "chunk_id": "420c174f5718f12a6bc946049fab75a015a1ace668643617298a5ce993138e97"},
+        {"relative_path": "src/codecompass/storage/sqlite.py", "qualified_symbol": "SQLiteMetadataStore.replace_project_index", "start_line": 155, "end_line": 229, "chunk_id": "81f7a18ab151e2f8d27b00da81ddf788ad4b1d522070ad54818896aa7f2b23a6"}
+      ]
+    },
+    {
+      "id": "WRA-C-05", "repository_id": "codecompass", "scope": "global",
+      "questions": {"en": "What roles do SQLite, Chroma, embeddings, and the LLM each play in CodeCompass, and which component is authoritative for citations?", "fa": "SQLite، Chroma، embedding و LLM هرکدام در CodeCompass چه نقشی دارند و مرجع معتبر citation کدام جزء است؟"},
+      "expected_behavior": "answer",
+      "expected_facts": ["SQLite stores canonical project, file, symbol, and chunk metadata", "Chroma stores/searches vectors keyed by chunk ids", "Embeddings turn the question and chunks into vectors for semantic retrieval", "The LLM generates an answer only from the selected context", "Citation file paths, symbols, and line ranges are hydrated from SQLite metadata"],
+      "forbidden_claims": ["Chroma is authoritative for line ranges", "The LLM generates citation metadata"],
+      "expected_citations": [
+        {"relative_path": "src/codecompass/retrieval/semantic.py", "qualified_symbol": "SemanticRetriever.search", "start_line": 28, "end_line": 59, "chunk_id": "9f355e16d4e29aeda7903bc6d21f54a1d01e64bae0544ef2907b960e9eacaede"},
+        {"relative_path": "src/codecompass/qa/service.py", "qualified_symbol": "GroundedQAService.answer", "start_line": 43, "end_line": 84, "chunk_id": "ca34cd491e0654b2e07ed86a4e6e3f30625a90fa1f40b943b12d1cc115e40b4e"},
+        {"relative_path": "src/codecompass/api/runtime.py", "qualified_symbol": "APIRuntime.citation_chunks", "start_line": 444, "end_line": 458, "chunk_id": "6f4965c72d5b8181bab992395d8047509323c180dcb178a40c5c30c2a915348a"}
+      ]
+    },
+    {
+      "id": "WRA-C-06", "repository_id": "codecompass", "scope": "negative",
+      "questions": {"en": "How does CodeCompass parse and index Java, JavaScript, and TypeScript source files?", "fa": "CodeCompass فایل‌های Java، JavaScript و TypeScript را چگونه parse و index می‌کند؟"},
+      "expected_behavior": "insufficient_evidence",
+      "expected_facts": ["The indexed implementation only accepts Python .py files and uses a Python AST parser"],
+      "forbidden_claims": ["Tree-sitter parses JavaScript", "Java files are indexed"],
+      "expected_citations": []
+    }
+  ]
+}

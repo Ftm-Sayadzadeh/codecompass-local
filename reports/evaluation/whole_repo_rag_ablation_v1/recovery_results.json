@@ -1,0 +1,785 @@
+{
+  "evaluation_id": "whole_repo_rag_ablation_v1",
+  "source_qa_results_sha256": "3419dcdf16242c7adc43db2f04328a365737f4d11487ab8b9daba251c920b5fc",
+  "policy": "one retry for non-capacity failures; raw main records retained",
+  "status": "complete",
+  "records": [
+    {
+      "case_id": "WRA-H-03-FA",
+      "repository_id": "hospital_system",
+      "arm": "hybrid_gemini_2",
+      "original_error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "invalid_response_content"
+      },
+      "recovery_status": "failed",
+      "elapsed_seconds": 25.024599,
+      "answer": null,
+      "citations": [
+        {
+          "source_file": "logic/management.py",
+          "symbol_name": "patient_cancel_appointments",
+          "qualified_name": "Manage.patient_cancel_appointments",
+          "start_line": 175,
+          "end_line": 185,
+          "chunk_id": "fd33ea24ca0f6ff13adcf030beee817f5e9125a0122707ad08c19a863ee68d11"
+        },
+        {
+          "source_file": "presentation/patients_interface.py",
+          "symbol_name": "patient_cancel_appointments",
+          "qualified_name": "PatientsInterface.patient_cancel_appointments",
+          "start_line": 147,
+          "end_line": 158,
+          "chunk_id": "4f60feb097a3d358bce53ef87552b96fb469fb520750dba7089f1969e2ea3b4e"
+        },
+        {
+          "source_file": "models/doctor.py",
+          "symbol_name": "cancel_appointment",
+          "qualified_name": "Schedule.cancel_appointment",
+          "start_line": 81,
+          "end_line": 87,
+          "chunk_id": "20b496edbed8a60a5a573f08d2486158b2d36aab9eb4d8df3b2137bcca447e58"
+        },
+        {
+          "source_file": "logic/management.py",
+          "symbol_name": "doctor_cancel_appointment",
+          "qualified_name": "Manage.doctor_cancel_appointment",
+          "start_line": 92,
+          "end_line": 104,
+          "chunk_id": "94ae91e95f043d741abdc8f5d6995123610b4df86872e23eefb9ab1f69b53829"
+        },
+        {
+          "source_file": "models/patient.py",
+          "symbol_name": "create_cancelled",
+          "qualified_name": "Appointments.create_cancelled",
+          "start_line": 54,
+          "end_line": 57,
+          "chunk_id": "e047075854cfcc1623bf0e5682a83479579763d416d888699d9c1fd07de0777f"
+        }
+      ],
+      "llm_attempt": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "826fa3d91b55099859959da7a9fb3c821914f5e82aeb56e886e9fded58902d98",
+        "status": "failed",
+        "latency_seconds": 25.023188,
+        "raw_response_sanitized": null,
+        "error": {
+          "type": "LLMProviderError",
+          "provider_error_type": "HTTPError",
+          "message": "OpenAI-compatible request failed with HTTP 400"
+        }
+      },
+      "error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      }
+    },
+    {
+      "case_id": "WRA-H-05-FA",
+      "repository_id": "hospital_system",
+      "arm": "hybrid_gemini_2",
+      "original_error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "ConnectionError"
+      },
+      "recovery_status": "failed",
+      "elapsed_seconds": 23.974819,
+      "answer": null,
+      "citations": [
+        {
+          "source_file": "logic/management.py",
+          "symbol_name": "__init__",
+          "qualified_name": "Manage.__init__",
+          "start_line": 7,
+          "end_line": 12,
+          "chunk_id": "e5423fb10dff0fafa428a81cff245fca3072c81c2f53b611630c5e234355f617"
+        },
+        {
+          "source_file": "data_access/doctors.py",
+          "symbol_name": "__init__",
+          "qualified_name": "Doctors.__init__",
+          "start_line": 10,
+          "end_line": 15,
+          "chunk_id": "5b3bad2eb8b81da34caa6bc1def85dc82fceeffbd3e38533921989c856907da2"
+        },
+        {
+          "source_file": "data_access/doctors.py",
+          "symbol_name": "Doctors",
+          "qualified_name": "Doctors",
+          "start_line": 9,
+          "end_line": 171,
+          "chunk_id": "1e570efe8d6a986c3bba0cf29be0d41a8851aceb62a4da7cb77045a1ae433409"
+        },
+        {
+          "source_file": "logic/management.py",
+          "symbol_name": "save_data",
+          "qualified_name": "Manage.save_data",
+          "start_line": 196,
+          "end_line": 200,
+          "chunk_id": "7b5c0d4d8a210a66db49ac82aff5e1e653d39ac96a690fd59cc35dead8df8c97"
+        },
+        {
+          "source_file": "models/doctor.py",
+          "symbol_name": "Doctor",
+          "qualified_name": "Doctor",
+          "start_line": 8,
+          "end_line": 36,
+          "chunk_id": "535991a183a8245dfcb7ab1926dd38362e2020fab077a83cb1109672494e9bba"
+        }
+      ],
+      "llm_attempt": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "61ecfd5f296b08f0f5314489ff7fdb4a90b53a9b101a46719875c50f5a7b59ac",
+        "status": "failed",
+        "latency_seconds": 23.973467,
+        "raw_response_sanitized": null,
+        "error": {
+          "type": "LLMProviderError",
+          "provider_error_type": "HTTPError",
+          "message": "OpenAI-compatible request failed with HTTP 400"
+        }
+      },
+      "error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      }
+    },
+    {
+      "case_id": "WRA-H-06-EN",
+      "repository_id": "hospital_system",
+      "arm": "lexical",
+      "original_error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "ConnectionError"
+      },
+      "recovery_status": "failed",
+      "elapsed_seconds": 23.211035,
+      "answer": null,
+      "citations": [
+        {
+          "source_file": "data_access/doctors.py",
+          "symbol_name": "speciality_city",
+          "qualified_name": "Doctors.speciality_city",
+          "start_line": 107,
+          "end_line": 116,
+          "chunk_id": "dcf8506a751d06a900e36abc7474ede9841bab2c32f97c351907ca35dcce135f"
+        },
+        {
+          "source_file": "data_structures/hash_table.py",
+          "symbol_name": "rehashing",
+          "qualified_name": "DynamicHash.rehashing",
+          "start_line": 129,
+          "end_line": 139,
+          "chunk_id": "b12cba00feb8acd3ce73e7b4645eb9e2017e8a0ab146851a94e460bf4ec515fa"
+        },
+        {
+          "source_file": "data_structures/hash_table.py",
+          "symbol_name": "search",
+          "qualified_name": "DynamicHash.search",
+          "start_line": 165,
+          "end_line": 175,
+          "chunk_id": "cc4e9f02bff2369a9877d24a1afc0767dab0da4e2a94aa7088e0c3c1c117b3f4"
+        },
+        {
+          "source_file": "data_structures/hash_table.py",
+          "symbol_name": "__iter__",
+          "qualified_name": "DynamicHash.__iter__",
+          "start_line": 215,
+          "end_line": 218,
+          "chunk_id": "cfb648707474ad0b9135b25a5e6c700c779442b8b0a95e500818c9c66b02a647"
+        },
+        {
+          "source_file": "data_structures/hash_table.py",
+          "symbol_name": "rehashing",
+          "qualified_name": "ModifiedDynamicHash.rehashing",
+          "start_line": 275,
+          "end_line": 285,
+          "chunk_id": "89af8818f496a582d7d31d2a1aa197871a830316c52e4910969aec8af1235fa2"
+        }
+      ],
+      "llm_attempt": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "807cdabb6db0d40c4fc36ade7e924d3d1d3e3221b95cace26049b97a0cb1e2c7",
+        "status": "failed",
+        "latency_seconds": 23.210401,
+        "raw_response_sanitized": null,
+        "error": {
+          "type": "LLMProviderError",
+          "provider_error_type": "HTTPError",
+          "message": "OpenAI-compatible request failed with HTTP 400"
+        }
+      },
+      "error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      }
+    },
+    {
+      "case_id": "WRA-H-06-EN",
+      "repository_id": "hospital_system",
+      "arm": "whole_repo",
+      "original_error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "TimeoutError"
+      },
+      "recovery_status": "failed",
+      "elapsed_seconds": 23.560724,
+      "answer": null,
+      "citations": [],
+      "llm_attempt": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "c096b005714d95c2999566a5c358773848a19f3d916ee51d9523fb158945cb9e",
+        "status": "failed",
+        "latency_seconds": 23.558484,
+        "raw_response_sanitized": null,
+        "error": {
+          "type": "LLMProviderError",
+          "provider_error_type": "HTTPError",
+          "message": "OpenAI-compatible request failed with HTTP 400"
+        }
+      },
+      "error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      }
+    },
+    {
+      "case_id": "WRA-C-03-EN",
+      "repository_id": "codecompass",
+      "arm": "hybrid_gemini_2",
+      "original_error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      },
+      "recovery_status": "recovered",
+      "elapsed_seconds": 21.06927,
+      "answer": {
+        "text": "**Trace of `POST /projects/{project_id}/ask`**\n\n1. **Retrieval selection** (`create_app.ask`, S4): the handler calls `runtime.retrieval(project_id, runtime.embedding_config(body.embedding), compatible=body.method != \"lexical\")`, so a \"lexical\" request sets `compatible=False`. It then builds `GroundedQAService(retrieval, RAGContextBuilder(), QAPromptBuilder(), create_llm(runtime, body.llm))` and calls `service.answer(QARequest(question=body.question, project_id=project_id, retrieval_method=body.method, max_tokens=body.max_tokens))`.\n\n2. **Answer generation** (`GroundedQAService.answer`, S3): the service validates the request, then runs `_retrieve(request)`, `_focus_on_named_symbol(...)`, `_context(..., request.max_context_chars)`, and `_citations(context)`. If `context.blocks` is empty, it returns a `QAAnswer` with `NO_EVIDENCE_ANSWER`, empty citations, and `llm_model/llm_provider/finish_reason=None` — no LLM call. Otherwise it builds prompts via `self.prompt_builder.build(request.question, context)` and calls `self.llm_provider.generate(LLMRequest(prompt, system_prompt, temperature, max_tokens))`. An `LLMProviderError` is re-raised as `QAError(\"llm\", ...)`. The returned `QAAnswer` carries `response.text`, `citations`, `retrieval_method`, `omitted_context_count`, `llm_model`, `llm_provider`, and `finish_reason`.\n\n3. **Trusted citation hydration** (S4 + `APIRuntime.citation_chunks`, S2): the endpoint collects chunk IDs from `answer.citations` and calls `runtime.citation_chunks(project_id, ...)`, which dedupes IDs, fetches rows via `store.get_chunks_by_chunk_ids`, and validates that every requested chunk exists and each chunk's `file_id` maps to a source file whose `relative_path` matches the chunk's. Any mismatch raises `APIError(500, \"citation_metadata_missing\", ...)`. Valid chunks feed `AskResponse` citations via `_citation(chunks[item.chunk_id])`.\n\nThe test (S1) confirms the hydrated citation's `file_id`/`symbol_id`/`source_file` match the stored chunk and `llm.calls == 1`.",
+        "model": "glm-5.3-flash",
+        "provider": "openai_compatible",
+        "finish_reason": "stop"
+      },
+      "citations": [
+        {
+          "source_file": "tests/test_api.py",
+          "symbol_name": "test_ask_and_documentation_preserve_trusted_citations",
+          "qualified_name": "test_ask_and_documentation_preserve_trusted_citations",
+          "start_line": 402,
+          "end_line": 438,
+          "chunk_id": "3a6bfe5a5b300b0c42e9ea7f639d95a77042e8b100c8fe331ed2dda7aa418db7"
+        },
+        {
+          "source_file": "src/codecompass/api/runtime.py",
+          "symbol_name": "citation_chunks",
+          "qualified_name": "APIRuntime.citation_chunks",
+          "start_line": 444,
+          "end_line": 458,
+          "chunk_id": "6f4965c72d5b8181bab992395d8047509323c180dcb178a40c5c30c2a915348a"
+        },
+        {
+          "source_file": "src/codecompass/qa/service.py",
+          "symbol_name": "answer",
+          "qualified_name": "GroundedQAService.answer",
+          "start_line": 43,
+          "end_line": 84,
+          "chunk_id": "ca34cd491e0654b2e07ed86a4e6e3f30625a90fa1f40b943b12d1cc115e40b4e"
+        },
+        {
+          "source_file": "src/codecompass/api/app.py",
+          "symbol_name": "ask",
+          "qualified_name": "create_app.ask",
+          "start_line": 206,
+          "end_line": 211,
+          "chunk_id": "8b05fe4c04577f68e30c7d316d53911edce542199eac70a3d0d744021159b518"
+        }
+      ],
+      "llm_attempt": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "256e0c8b2d86778e5f10ccb69c951f8c7f69fa9d025c0b8267a1f33b4f103467",
+        "status": "complete",
+        "latency_seconds": 21.069169,
+        "response": {
+          "text": "**Trace of `POST /projects/{project_id}/ask`**\n\n1. **Retrieval selection** (`create_app.ask`, S4): the handler calls `runtime.retrieval(project_id, runtime.embedding_config(body.embedding), compatible=body.method != \"lexical\")`, so a \"lexical\" request sets `compatible=False`. It then builds `GroundedQAService(retrieval, RAGContextBuilder(), QAPromptBuilder(), create_llm(runtime, body.llm))` and calls `service.answer(QARequest(question=body.question, project_id=project_id, retrieval_method=body.method, max_tokens=body.max_tokens))`.\n\n2. **Answer generation** (`GroundedQAService.answer`, S3): the service validates the request, then runs `_retrieve(request)`, `_focus_on_named_symbol(...)`, `_context(..., request.max_context_chars)`, and `_citations(context)`. If `context.blocks` is empty, it returns a `QAAnswer` with `NO_EVIDENCE_ANSWER`, empty citations, and `llm_model/llm_provider/finish_reason=None` — no LLM call. Otherwise it builds prompts via `self.prompt_builder.build(request.question, context)` and calls `self.llm_provider.generate(LLMRequest(prompt, system_prompt, temperature, max_tokens))`. An `LLMProviderError` is re-raised as `QAError(\"llm\", ...)`. The returned `QAAnswer` carries `response.text`, `citations`, `retrieval_method`, `omitted_context_count`, `llm_model`, `llm_provider`, and `finish_reason`.\n\n3. **Trusted citation hydration** (S4 + `APIRuntime.citation_chunks`, S2): the endpoint collects chunk IDs from `answer.citations` and calls `runtime.citation_chunks(project_id, ...)`, which dedupes IDs, fetches rows via `store.get_chunks_by_chunk_ids`, and validates that every requested chunk exists and each chunk's `file_id` maps to a source file whose `relative_path` matches the chunk's. Any mismatch raises `APIError(500, \"citation_metadata_missing\", ...)`. Valid chunks feed `AskResponse` citations via `_citation(chunks[item.chunk_id])`.\n\nThe test (S1) confirms the hydrated citation's `file_id`/`symbol_id`/`source_file` match the stored chunk and `llm.calls == 1`.",
+          "model": "glm-5.3-flash",
+          "provider": "openai_compatible",
+          "finish_reason": "stop"
+        },
+        "raw_response_sanitized": {
+          "model": "glm-5.3-flash",
+          "finish_reason": "stop",
+          "content": "**Trace of `POST /projects/{project_id}/ask`**\n\n1. **Retrieval selection** (`create_app.ask`, S4): the handler calls `runtime.retrieval(project_id, runtime.embedding_config(body.embedding), compatible=body.method != \"lexical\")`, so a \"lexical\" request sets `compatible=False`. It then builds `GroundedQAService(retrieval, RAGContextBuilder(), QAPromptBuilder(), create_llm(runtime, body.llm))` and calls `service.answer(QARequest(question=body.question, project_id=project_id, retrieval_method=body.method, max_tokens=body.max_tokens))`.\n\n2. **Answer generation** (`GroundedQAService.answer`, S3): the service validates the request, then runs `_retrieve(request)`, `_focus_on_named_symbol(...)`, `_context(..., request.max_context_chars)`, and `_citations(context)`. If `context.blocks` is empty, it returns a `QAAnswer` with `NO_EVIDENCE_ANSWER`, empty citations, and `llm_model/llm_provider/finish_reason=None` — no LLM call. Otherwise it builds prompts via `self.prompt_builder.build(request.question, context)` and calls `self.llm_provider.generate(LLMRequest(prompt, system_prompt, temperature, max_tokens))`. An `LLMProviderError` is re-raised as `QAError(\"llm\", ...)`. The returned `QAAnswer` carries `response.text`, `citations`, `retrieval_method`, `omitted_context_count`, `llm_model`, `llm_provider`, and `finish_reason`.\n\n3. **Trusted citation hydration** (S4 + `APIRuntime.citation_chunks`, S2): the endpoint collects chunk IDs from `answer.citations` and calls `runtime.citation_chunks(project_id, ...)`, which dedupes IDs, fetches rows via `store.get_chunks_by_chunk_ids`, and validates that every requested chunk exists and each chunk's `file_id` maps to a source file whose `relative_path` matches the chunk's. Any mismatch raises `APIError(500, \"citation_metadata_missing\", ...)`. Valid chunks feed `AskResponse` citations via `_citation(chunks[item.chunk_id])`.\n\nThe test (S1) confirms the hydrated citation's `file_id`/`symbol_id`/`source_file` match the stored chunk and `llm.calls == 1`.",
+          "usage": {
+            "completion_tokens": 1104,
+            "prompt_tokens": 1564,
+            "total_tokens": 2668,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 605,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            }
+          }
+        },
+        "token_usage": {
+          "completion_tokens": 1104,
+          "prompt_tokens": 1564,
+          "total_tokens": 2668,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": null,
+            "reasoning_tokens": 605,
+            "rejected_prediction_tokens": null
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": null,
+            "cached_tokens": 0
+          }
+        },
+        "error": null
+      },
+      "error": null
+    },
+    {
+      "case_id": "WRA-C-03-EN",
+      "repository_id": "codecompass",
+      "arm": "lexical",
+      "original_error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      },
+      "recovery_status": "failed",
+      "elapsed_seconds": 24.775189,
+      "answer": null,
+      "citations": [
+        {
+          "source_file": "src/codecompass/api/runtime.py",
+          "symbol_name": "citation_chunks",
+          "qualified_name": "APIRuntime.citation_chunks",
+          "start_line": 444,
+          "end_line": 458,
+          "chunk_id": "6f4965c72d5b8181bab992395d8047509323c180dcb178a40c5c30c2a915348a"
+        },
+        {
+          "source_file": "src/codecompass/demo.py",
+          "symbol_name": "_parser",
+          "qualified_name": "_parser",
+          "start_line": 150,
+          "end_line": 168,
+          "chunk_id": "3192deb7b43bed0e804ec6a23e1188529700dcc34139cc7b83123eb7ec479680"
+        }
+      ],
+      "llm_attempt": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "b65f5368a67dc2fce8791f7d186617c99347af116426c826066b39b0a43df26f",
+        "status": "failed",
+        "latency_seconds": 24.773822,
+        "raw_response_sanitized": null,
+        "error": {
+          "type": "LLMProviderError",
+          "provider_error_type": "HTTPError",
+          "message": "OpenAI-compatible request failed with HTTP 400"
+        }
+      },
+      "error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      }
+    },
+    {
+      "case_id": "WRA-C-04-EN",
+      "repository_id": "codecompass",
+      "arm": "semantic_gemini_2",
+      "original_error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      },
+      "recovery_status": "failed",
+      "elapsed_seconds": 24.444803,
+      "answer": null,
+      "citations": [
+        {
+          "source_file": "tests/test_api.py",
+          "symbol_name": "test_project_completeness_sees_every_physical_vector",
+          "qualified_name": "test_project_completeness_sees_every_physical_vector",
+          "start_line": 385,
+          "end_line": 399,
+          "chunk_id": "a2964da467b172369cd472c1705d2e7d3a20369b00601e4d808377677d4587b7"
+        },
+        {
+          "source_file": "src/codecompass/indexing/coordinator.py",
+          "symbol_name": "_run_full",
+          "qualified_name": "RepositoryIndexCoordinator._run_full",
+          "start_line": 256,
+          "end_line": 360,
+          "chunk_id": "420c174f5718f12a6bc946049fab75a015a1ace668643617298a5ce993138e97"
+        }
+      ],
+      "llm_attempt": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "f1212e126e99297ebaa714d1f13478aa57b836ecb47a8dc9aa78e0fb2e30513f",
+        "status": "failed",
+        "latency_seconds": 24.44384,
+        "raw_response_sanitized": null,
+        "error": {
+          "type": "LLMProviderError",
+          "provider_error_type": "HTTPError",
+          "message": "OpenAI-compatible request failed with HTTP 400"
+        }
+      },
+      "error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      }
+    },
+    {
+      "case_id": "WRA-C-04-FA",
+      "repository_id": "codecompass",
+      "arm": "lexical",
+      "original_error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      },
+      "recovery_status": "failed",
+      "elapsed_seconds": 23.30893,
+      "answer": null,
+      "citations": [
+        {
+          "source_file": "src/codecompass/documentation/service.py",
+          "symbol_name": "_prompt",
+          "qualified_name": "FunctionDocumentationService._prompt",
+          "start_line": 253,
+          "end_line": 342,
+          "chunk_id": "3876320c674ad5c313e740aec6c49c6a06de8d66774a230e1c8323c31dc2d108"
+        }
+      ],
+      "llm_attempt": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "fc47448900cb9830890ef232650e94194930da921c43fadebfc65d2283ac677a",
+        "status": "failed",
+        "latency_seconds": 23.308409,
+        "raw_response_sanitized": null,
+        "error": {
+          "type": "LLMProviderError",
+          "provider_error_type": "HTTPError",
+          "message": "OpenAI-compatible request failed with HTTP 400"
+        }
+      },
+      "error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      }
+    },
+    {
+      "case_id": "WRA-C-06-EN",
+      "repository_id": "codecompass",
+      "arm": "semantic_gemini_2",
+      "original_error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      },
+      "recovery_status": "failed",
+      "elapsed_seconds": 21.994888,
+      "answer": null,
+      "citations": [
+        {
+          "source_file": "src/codecompass/indexing/service.py",
+          "symbol_name": "IndexingService",
+          "qualified_name": "IndexingService",
+          "start_line": 34,
+          "end_line": 265,
+          "chunk_id": "9cb402e6af6c2964a9b983fd2f084ecca098c04452c2dbb381082a5db56b706c"
+        },
+        {
+          "source_file": "src/codecompass/parser/python_ast.py",
+          "symbol_name": "PythonASTParser",
+          "qualified_name": "PythonASTParser",
+          "start_line": 13,
+          "end_line": 157,
+          "chunk_id": "b6e497472868cc6aec086e5a1437afd08086454b0a08f967804d7bc8a20c0a0e"
+        },
+        {
+          "source_file": "src/codecompass/indexing/service.py",
+          "symbol_name": "_parse_error",
+          "qualified_name": "IndexingService._parse_error",
+          "start_line": 224,
+          "end_line": 225,
+          "chunk_id": "c641c4a47d738972bf4d7733d350fe1eee047d0e1578b59c2cf6e2e10af2f20f"
+        },
+        {
+          "source_file": "src/codecompass/indexing/cli.py",
+          "symbol_name": "main",
+          "qualified_name": "main",
+          "start_line": 19,
+          "end_line": 100,
+          "chunk_id": "777a396e6a74331397ea1b0f6ddde3a9416da73ae6c64207e2dcd0c3baa2cccf"
+        },
+        {
+          "source_file": "src/codecompass/api/app.py",
+          "symbol_name": "index_project",
+          "qualified_name": "create_app.index_project",
+          "start_line": 140,
+          "end_line": 141,
+          "chunk_id": "6f705b28853c2ff7d4052ba5e0961c395c9b3c5b577e3d9d22196894c1302936"
+        }
+      ],
+      "llm_attempt": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "7ae7a4d8fca4be6db33f887224a3427d800545250584eb7ffb9195446675ba5e",
+        "status": "failed",
+        "latency_seconds": 21.99348,
+        "raw_response_sanitized": null,
+        "error": {
+          "type": "LLMProviderError",
+          "provider_error_type": "HTTPError",
+          "message": "OpenAI-compatible request failed with HTTP 400"
+        }
+      },
+      "error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      }
+    },
+    {
+      "case_id": "WRA-C-06-EN",
+      "repository_id": "codecompass",
+      "arm": "hybrid_gemini_2",
+      "original_error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      },
+      "recovery_status": "failed",
+      "elapsed_seconds": 23.923894,
+      "answer": null,
+      "citations": [
+        {
+          "source_file": "src/codecompass/indexing/service.py",
+          "symbol_name": "IndexingService",
+          "qualified_name": "IndexingService",
+          "start_line": 34,
+          "end_line": 265,
+          "chunk_id": "9cb402e6af6c2964a9b983fd2f084ecca098c04452c2dbb381082a5db56b706c"
+        },
+        {
+          "source_file": "src/codecompass/evaluation/baseline_snapshot.py",
+          "symbol_name": "prepare_snapshot",
+          "qualified_name": "prepare_snapshot",
+          "start_line": 45,
+          "end_line": 124,
+          "chunk_id": "63a9b52e4f727e77477061576ee1981ac991b3fcb23edb05ab6ae5ef283e9a22"
+        },
+        {
+          "source_file": "src/codecompass/parser/python_ast.py",
+          "symbol_name": "PythonASTParser",
+          "qualified_name": "PythonASTParser",
+          "start_line": 13,
+          "end_line": 157,
+          "chunk_id": "b6e497472868cc6aec086e5a1437afd08086454b0a08f967804d7bc8a20c0a0e"
+        }
+      ],
+      "llm_attempt": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "c7a4568536398c153a0b89af6fb741d5cb6906646ac7c455ad194c617be5ef65",
+        "status": "failed",
+        "latency_seconds": 23.921811,
+        "raw_response_sanitized": null,
+        "error": {
+          "type": "LLMProviderError",
+          "provider_error_type": "HTTPError",
+          "message": "OpenAI-compatible request failed with HTTP 400"
+        }
+      },
+      "error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      }
+    },
+    {
+      "case_id": "WRA-C-06-FA",
+      "repository_id": "codecompass",
+      "arm": "lexical",
+      "original_error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      },
+      "recovery_status": "failed",
+      "elapsed_seconds": 25.227536,
+      "answer": null,
+      "citations": [
+        {
+          "source_file": "src/codecompass/documentation/service.py",
+          "symbol_name": "_prompt",
+          "qualified_name": "FunctionDocumentationService._prompt",
+          "start_line": 253,
+          "end_line": 342,
+          "chunk_id": "3876320c674ad5c313e740aec6c49c6a06de8d66774a230e1c8323c31dc2d108"
+        },
+        {
+          "source_file": "src/codecompass/api/runtime.py",
+          "symbol_name": "index",
+          "qualified_name": "APIRuntime.index",
+          "start_line": 131,
+          "end_line": 137,
+          "chunk_id": "b2b35a4c4fa6ef010665433a0f28521a21a575a524e7ee4824529dc13c09b4ca"
+        }
+      ],
+      "llm_attempt": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "07a4f8434e87493fa67726d29d3db723a789e0964de11e72cd7b7cb7d8854f48",
+        "status": "failed",
+        "latency_seconds": 25.226654,
+        "raw_response_sanitized": null,
+        "error": {
+          "type": "LLMProviderError",
+          "provider_error_type": "HTTPError",
+          "message": "OpenAI-compatible request failed with HTTP 400"
+        }
+      },
+      "error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      }
+    },
+    {
+      "case_id": "WRA-C-06-FA",
+      "repository_id": "codecompass",
+      "arm": "semantic_gemini_2",
+      "original_error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      },
+      "recovery_status": "failed",
+      "elapsed_seconds": 24.701589,
+      "answer": null,
+      "citations": [
+        {
+          "source_file": "src/codecompass/indexing/service.py",
+          "symbol_name": "_parse_error",
+          "qualified_name": "IndexingService._parse_error",
+          "start_line": 224,
+          "end_line": 225,
+          "chunk_id": "c641c4a47d738972bf4d7733d350fe1eee047d0e1578b59c2cf6e2e10af2f20f"
+        },
+        {
+          "source_file": "src/codecompass/indexing/service.py",
+          "symbol_name": "IndexingService",
+          "qualified_name": "IndexingService",
+          "start_line": 34,
+          "end_line": 265,
+          "chunk_id": "9cb402e6af6c2964a9b983fd2f084ecca098c04452c2dbb381082a5db56b706c"
+        },
+        {
+          "source_file": "src/codecompass/parser/python_ast.py",
+          "symbol_name": "PythonASTParser",
+          "qualified_name": "PythonASTParser",
+          "start_line": 13,
+          "end_line": 157,
+          "chunk_id": "b6e497472868cc6aec086e5a1437afd08086454b0a08f967804d7bc8a20c0a0e"
+        },
+        {
+          "source_file": "src/codecompass/api/app.py",
+          "symbol_name": "index_project",
+          "qualified_name": "create_app.index_project",
+          "start_line": 140,
+          "end_line": 141,
+          "chunk_id": "6f705b28853c2ff7d4052ba5e0961c395c9b3c5b577e3d9d22196894c1302936"
+        },
+        {
+          "source_file": "src/codecompass/api/runtime.py",
+          "symbol_name": "index",
+          "qualified_name": "APIRuntime.index",
+          "start_line": 131,
+          "end_line": 137,
+          "chunk_id": "b2b35a4c4fa6ef010665433a0f28521a21a575a524e7ee4824529dc13c09b4ca"
+        }
+      ],
+      "llm_attempt": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "92ac4879b7e5510f2ad8c8a119e0806e3f0fbf7e0bd1beea694a8f637be47aff",
+        "status": "failed",
+        "latency_seconds": 24.700157,
+        "raw_response_sanitized": null,
+        "error": {
+          "type": "LLMProviderError",
+          "provider_error_type": "HTTPError",
+          "message": "OpenAI-compatible request failed with HTTP 400"
+        }
+      },
+      "error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      }
+    },
+    {
+      "case_id": "WRA-C-06-FA",
+      "repository_id": "codecompass",
+      "arm": "hybrid_gemini_2",
+      "original_error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      },
+      "recovery_status": "failed",
+      "elapsed_seconds": 23.919816,
+      "answer": null,
+      "citations": [
+        {
+          "source_file": "src/codecompass/api/runtime.py",
+          "symbol_name": "index",
+          "qualified_name": "APIRuntime.index",
+          "start_line": 131,
+          "end_line": 137,
+          "chunk_id": "b2b35a4c4fa6ef010665433a0f28521a21a575a524e7ee4824529dc13c09b4ca"
+        },
+        {
+          "source_file": "src/codecompass/documentation/service.py",
+          "symbol_name": "_prompt",
+          "qualified_name": "FunctionDocumentationService._prompt",
+          "start_line": 253,
+          "end_line": 342,
+          "chunk_id": "3876320c674ad5c313e740aec6c49c6a06de8d66774a230e1c8323c31dc2d108"
+        },
+        {
+          "source_file": "src/codecompass/indexing/service.py",
+          "symbol_name": "_parse_error",
+          "qualified_name": "IndexingService._parse_error",
+          "start_line": 224,
+          "end_line": 225,
+          "chunk_id": "c641c4a47d738972bf4d7733d350fe1eee047d0e1578b59c2cf6e2e10af2f20f"
+        },
+        {
+          "source_file": "src/codecompass/indexing/service.py",
+          "symbol_name": "IndexingService",
+          "qualified_name": "IndexingService",
+          "start_line": 34,
+          "end_line": 265,
+          "chunk_id": "9cb402e6af6c2964a9b983fd2f084ecca098c04452c2dbb381082a5db56b706c"
+        }
+      ],
+      "llm_attempt": {
+        "system_prompt_sha256": "8e7582633aeeb7ee199d61a7cd54e8238de1f91154e54ad6927522f49196407c",
+        "user_prompt_sha256": "34c706672373be94e7b0e1a87070eb3f7a5517b2bf4dbfebc957a6f71d2a2c3e",
+        "status": "failed",
+        "latency_seconds": 23.919031,
+        "raw_response_sanitized": null,
+        "error": {
+          "type": "LLMProviderError",
+          "provider_error_type": "HTTPError",
+          "message": "OpenAI-compatible request failed with HTTP 400"
+        }
+      },
+      "error": {
+        "type": "LLMProviderError",
+        "provider_error_type": "HTTPError"
+      }
+    }
+  ],
+  "counts": {
+    "eligible": 13,
+    "attempted": 13,
+    "recovered": 1,
+    "failed": 12
+  }
+}

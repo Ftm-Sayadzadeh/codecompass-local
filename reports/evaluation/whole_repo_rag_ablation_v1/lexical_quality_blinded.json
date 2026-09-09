@@ -1,0 +1,508 @@
+{
+  "evaluation_id": "whole_repo_rag_ablation_v1_lexical_quality",
+  "status": "frozen",
+  "records": [
+    {
+      "question": "وقتی بیمار یک نوبت آینده را لغو می‌کند، چه رکوردهایی در سمت بیمار و پزشک به‌روزرسانی می‌شوند؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Cancellation is rejected when the appointment day is today",
+        "The patient appointment is removed and yields the doctor id",
+        "The doctor's visit count is decremented",
+        "The schedule slot is restored to Available",
+        "The cancellation is recorded in the doctor's canceled appointments"
+      ],
+      "forbidden_claims": [
+        "Same-day cancellation is accepted",
+        "The doctor record is left unchanged"
+      ],
+      "generated_output": "پاسخی بر اساس کدهای ارائه‌شده قابل استخراج نیست. هیچ قطعه کد یا زمینه‌ای در مواد مرجع ارائه نشده است که نشان دهد هنگام لغو نوبت توسط بیمار، کدام رکوردها در سمت بیمار یا پزشک به‌روزرسانی می‌شوند (مانند وضعیت نوبت، فهرست نوبت‌های بیمار، یا تقویم پزشک).\n\nبرای پاسخ دقیق، لازم است کد مربوط به منطق لغو نوبت (Cancellation) ارائه شود.",
+      "blind_id": "WRA-L-001"
+    },
+    {
+      "question": "What roles do SQLite, Chroma, embeddings, and the LLM each play in CodeCompass, and which component is authoritative for citations?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "SQLite stores canonical project, file, symbol, and chunk metadata",
+        "Chroma stores/searches vectors keyed by chunk ids",
+        "Embeddings turn the question and chunks into vectors for semantic retrieval",
+        "The LLM generates an answer only from the selected context",
+        "Citation file paths, symbols, and line ranges are hydrated from SQLite metadata"
+      ],
+      "forbidden_claims": [
+        "Chroma is authoritative for line ranges",
+        "The LLM generates citation metadata"
+      ],
+      "generated_output": "Based on the retrieved context, only part of this question can be answered.\n\n**Chroma:** The context shows `ChromaVectorIndex` (src/codecompass/vector_index/chroma.py) acting as the vector index backend. Its `stage_replacement` method builds a new physical collection, upserts `VectorRecord`s into it, sets index metadata, and verifies the staged collection (matching expected IDs, matching metadata, and consistent embedding dimensions via the `codecompass:embedding_dimensions` key) before the active pointer is switched. This indicates Chroma stores and serves the vector search data with a safe, atomic replacement mechanism.\n\n**Embeddings:** Only indirectly visible — the staged collection's stored dimension is validated against the `codecompass:embedding_dimensions` metadata value. The context does not describe how embeddings are generated or what model produces them.\n\n**SQLite:** Not covered by the retrieved context. There is not enough retrieved evidence to state SQLite's role in CodeCompass.\n\n**LLM:** Not covered by the retrieved context. There is not enough retrieved evidence to state the LLM's role.\n\n**Authoritative component for citations:** The retrieved context contains no information about citations or which component is authoritative for them. This cannot be determined from the provided code.\n\nIn summary: the context establishes Chroma as the vector index with staged, verified collection replacement, but the roles of SQLite and the LLM, the embedding pipeline, and the citation authority are not evidenced in the supplied material.",
+      "blind_id": "WRA-L-002"
+    },
+    {
+      "question": "برنامه چگونه کارت بانکی را شارژ و مبلغ سفارش لغوشده را بازپرداخت می‌کند؟",
+      "expected_behavior": "insufficient_evidence",
+      "expected_facts": [
+        "No payment charging or refund implementation is present in the indexed Python code"
+      ],
+      "forbidden_claims": [
+        "Stripe handles payments",
+        "A refund method is implemented on Order"
+      ],
+      "generated_output": "بر اساس کدهای بازیابی‌شده، **شواهد کافی برای پاسخ به این سؤال وجود ندارد**.\n\nمحتوای ارائه‌شده شامل موارد زیر است:\n\n- یک migration از اپلیکیشن `blog` که مدل‌های `Post`، `Image` و `Comment` را ایجاد می‌کند (S1).\n- مدل `Post` در `blog/models.py` با فیلدهایی مانند عنوان، توضیحات، اسلاگ، تاریخ انتشار، وضعیت و دسته‌بندی (S2).\n- فرم `ReviewForm` در `store/forms.py` که فقط فیلدهای `rating` و `body` را برای ثبت نظر دارد (S3).\n\nدر هیچ‌کدام از این بلوک‌های کد، موارد زیر دیده نمی‌شود:\n\n- منطق شارژ کارت بانکی یا اتصال به درگاه پرداخت (payment gateway)\n- تابع یا متدی برای بازپرداخت (refund) مبلغ سفارش لغوشده\n- مدلی مربوط به سفارش (Order) یا تراکنش مالی\n- فیلدی مرتبط با موجودی کارت یا مبلغ پرداختی\n\nتنها اپلیکیشن `store` در کد آمده مربوط به فرم `Review` است که صرفاً برای ثبت امتیاز و متن نظر استفاده می‌شود و ارتباطی با پرداخت یا بازپرداخت ندارد.\n\nبنابراین، برای پاسخ به این که برنامه چگونه کارت بانکی را شارژ و مبلغ سفارش لغوشده را بازپرداخت می‌کند، به کدهای مربوط به پرداخت، سفارش‌ها یا تراکنش‌های مالی نیاز است که در context ارائه‌شده موجود نیستند.",
+      "blind_id": "WRA-L-003"
+    },
+    {
+      "question": "What are the main store-domain entities and how are books related to categories, authors, images, reviews, and orders?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Book has foreign keys to Category and Author",
+        "Image has a foreign key to Book with related_name images",
+        "Review links a Book and the configured User model",
+        "Order links a User and tracks created and paid",
+        "Order has no relation to Book in this code"
+      ],
+      "forbidden_claims": [
+        "Order contains order-line items",
+        "Book and Author have a many-to-many relationship"
+      ],
+      "generated_output": "Based on the provided context, the visible store-domain entities are:\n\n- **Book** — queried in `store/views.py` (`Book.objects.filter(available=True)...`), having fields such as `available` and `created`.\n- **Category** — queried in `index` (`Category.objects.all()`).\n- **Post** — queried in `index` (`Post.objects.order_by('-created')[:4]`).\n- **Review** — defined in migration `0005_alter_review_book_alter_review_rating` with:\n  - `book`: a `ForeignKey` to `store.book` with `on_delete=CASCADE` and `related_name='reviews'` (verbose name \"کتاب\").\n  - `rating`: an `IntegerField` with choices `(1,1) … (5,5)` (verbose name \"امتیاز\").\n- **Image** — defined in migration `0007_alter_image_book` with:\n  - `book`: a `ForeignKey` to `store.book` with `on_delete=CASCADE` and `related_name='images'` (verbose name \"کتاب\").\n\n**Relationships that are explicitly evidenced:**\n- Review → Book: each `Review` is linked to a `Book`; from a book you can access its reviews via `related_name='reviews'`; deleting a book cascades to its reviews.\n- Image → Book: each `Image` is linked to a `Book`; accessible via `related_name='images'`; deletion cascades.\n\n**Not enough retrieved evidence:** The provided context does not show the `Book` model's own definition, so the relationships between `Book` and `Category`, `Author` (no Author model appears anywhere in the context), or any `Order` entity cannot be confirmed. No order-related model or foreign keys to orders are visible in the retrieved material.",
+      "blind_id": "WRA-L-004"
+    },
+    {
+      "question": "هنگام ذخیره پست وبلاگ، slug چگونه مقداردهی می‌شود؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Post.save only generates a slug when slug is empty",
+        "It applies slugify to the title",
+        "It delegates the actual save to the parent model"
+      ],
+      "forbidden_claims": [
+        "The slug is regenerated on every save",
+        "The slug is a random UUID"
+      ],
+      "generated_output": "با توجه به کد موجود، مقداردهی `slug` از طریق **پنل ادمین جنگو** انجام می‌شود.\n\nدر فایل `blog/admin.py` در کلاس `PostAdmin` این تنظیم وجود دارد:\n\n```python\nprepopulated_fields = {\"slug\": ['title']}  # auto generating slug\n```\n\n**نحوه کار:**\n\n- فیلد `slug` به‌طور خودکار بر اساس فیلد `title` (عنوان پست) پر می‌شود.\n- یعنی هنگام ایجاد یا ویرایش پست در ادمین جنگو، همان‌طور که کاربر عنوان را تایپ می‌کند، جاوااسکریپتِ ادمین به‌صورت زنده مقدار `slug` را از عنوان تولید و در فیلد اسلاگ قرار می‌دهد.\n\n**فیلد slug در مدل:**\n\nطبق فایل مایگریشن `blog/migrations/0001_initial.py`، فیلد slug به این صورت تعریف شده است:\n\n```python\n('slug', models.SlugField(max_length=250, verbose_name='اسلاگ')),\n```\n\nیعنی یک `SlugField` با حداکثر طول ۲۵۰ کاراکتر.\n\n**نکته مهم:** `prepopulated_fields` فقط در رابط ادمین جنگو عمل می‌کند و مکانیزم آن پر کردن خودکار فیلد از طریق جاوااسکریپت هنگام تایپ عنوان است؛ بنابراین این مقداردهی در سطح فرم ادمین انجام می‌شود و در کد `models.py` (که فقط شامل `Meta` با ترتیب‌بندی و ایندکس است) منطق خاصی برای تولید خودکار slug هنگام ذخیره دیده نمی‌شود.",
+      "blind_id": "WRA-L-005"
+    },
+    {
+      "question": "How does CodeCompass parse and index Java, JavaScript, and TypeScript source files?",
+      "expected_behavior": "insufficient_evidence",
+      "expected_facts": [
+        "The indexed implementation only accepts Python .py files and uses a Python AST parser"
+      ],
+      "forbidden_claims": [
+        "Tree-sitter parses JavaScript",
+        "Java files are indexed"
+      ],
+      "generated_output": "There is not enough retrieved evidence to answer this question.\n\nThe provided code context contains nothing about parsing or indexing Java, JavaScript, or TypeScript source files. Specifically:\n\n- **S1** (`prepare_snapshot` in `src/codecompass/evaluation/baseline_snapshot.py`) deals only with preparing a hashed snapshot manifest: verifying directories are byte-identical, redacting SQLite `projects.root_path` values, and recording provenance, embedding, and file-hash metadata. It does not parse any programming-language source files.\n- **S2** (`validate_pinned_repository` in `src/codecompass/indexing/repository.py`) is the only indexing-related code shown, and it concerns a prerequisite to indexing rather than the indexing process itself: it requires an exact Git commit (`rev-parse HEAD` matching the expected commit) and a clean worktree (`status --porcelain`) before indexing proceeds. It does not describe how any file types are parsed, chunked, or indexed.\n\nNo retrieved code mentions Java, JavaScript, or TypeScript parsers, language-specific indexers, AST handling, symbol extraction, or any file-type dispatch logic. Therefore, the mechanism by which CodeCompass parses and indexes Java, JavaScript, and TypeScript sources cannot be determined from the provided context.",
+      "blind_id": "WRA-L-006"
+    },
+    {
+      "question": "صفحه جزئیات کتاب چه داده‌هایی را بارگذاری می‌کند و فرم نظر را چه زمانی نمایش می‌دهد؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "The book is selected by id and slug or returns 404",
+        "Only active reviews are loaded and newest reviews come first",
+        "ReviewForm is supplied only for an authenticated user",
+        "The book, form, and reviews are rendered in store/detail.html"
+      ],
+      "forbidden_claims": [
+        "Anonymous users receive an enabled ReviewForm",
+        "Inactive reviews are included"
+      ],
+      "generated_output": "بر اساس کدهای بازیابی‌شده، **اطلاعات کافی برای پاسخ کامل به این سؤال وجود ندارد**.\n\nدر زمینه‌های ارائه‌شده، هیچ کدی از ویو (view) صفحه جزئیات کتاب یا قالب (template) آن موجود نیست؛ بنابراین نمی‌توان به‌طور قطعی گفت:\n\n- صفحه جزئیات کتاب چه داده‌هایی را (مثلاً خود کتاب، نظرات فعال و…) بارگذاری می‌کند؛\n- فرم نظر دقیقاً تحت چه شرطی (مثلاً کاربر واردشده باشد یا قبلاً نظر نداده باشد) نمایش داده می‌شود.\n\nتنها چیزهایی که از کد موجود قابل بیان است:\n\n1. **فرم نظر (`ReviewForm.Meta`)** — فیلدهای `rating` و `body` را دارد؛ فیلد امتیاز یک `Select` با گزینه‌های ۱ تا ۵ ستاره و فیلد متن، یک `Textarea` با ۴ سطر است (store/forms.py، خطوط ۷-۱۳).\n\n2. **مدل `Review`** — شامل فیلدهای `book` (کلید خارجی به `Book` با `related_name=\"reviews\"`)، `user`، `rating` (انتخاب ۱ تا ۵)، `body`، `created`، `updated` و `active` (پیش‌فرض `False`) است (store/models.py، خطوط ۹۵-۱۱۳).\n\n3. مدل `Review` دارای ترتیب‌بندی `['created']` و نام‌های فارسی «نظر/نظرات» است (migration خطوط ۶-۲۵) و مدل `Book` با `ordering = ['-created']` مرتب می‌شود (migration خطوط ۶-۱۷).\n\nبرای تعیین دقیق داده‌های بارگذاری‌شده در صفحه جزئیات کتاب و شرط نمایش فرم نظر، به کد ویو یا قالب مربوطه نیاز است که در زمینه‌های بازیابی‌شده وجود ندارد.",
+      "blind_id": "WRA-L-007"
+    },
+    {
+      "question": "روز جاری بیمارستان چگونه جلو می‌رود و ذخیره می‌شود؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "DayManager.next_day increments curr_day by one",
+        "It then calls save_day to persist the new value"
+      ],
+      "forbidden_claims": [
+        "The day is changed only in memory",
+        "The method accepts the next day as an argument"
+      ],
+      "generated_output": "متأسفانه در متن بازیابی‌شده (کد ارائه‌شده) هیچ اطلاعات یا بلوک کدی موجود نیست که بتوان بر اساس آن توضیح داد «روز جاری بیمارستان» چگونه پیش می‌رود یا ذخیره می‌شود.\n\nطبق دستورالعمل، پاسخ باید فقط بر اساس کد بازیابی‌شده ارائه شود و از حدس زدن یا ساختن رفتار ناموجود خودداری شود؛ بنابراین شواهد بازیابی‌شده کافی برای پاسخ به این پرسش وجود ندارد.\n\nبرای پاسخ دقیق، لطفاً بخش‌های مرتبط از کد (مثلاً کلاس‌ها یا متدهایی مربوط به روزانه/شیفت/بستن روز در سیستم بیمارستان) را در اختیار قرار دهید.",
+      "blind_id": "WRA-L-008"
+    },
+    {
+      "question": "How is a blog post slug populated when the post is saved?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Post.save only generates a slug when slug is empty",
+        "It applies slugify to the title",
+        "It delegates the actual save to the parent model"
+      ],
+      "forbidden_claims": [
+        "The slug is regenerated on every save",
+        "The slug is a random UUID"
+      ],
+      "generated_output": "When a `Post` is saved, its `save()` method (blog/models.py, `Post.save`, lines 69-72) populates the slug automatically if it hasn't been set:\n\n```python\ndef save(self, *args, **kwargs):\n    if not self.slug:\n        self.slug = slugify(self.title)\n    super().save(*args, **kwargs)\n```\n\nSpecifically:\n- Before calling the parent model's `save()`, it checks whether `self.slug` is empty (`if not self.slug`).\n- If the slug is empty, it generates one by applying `slugify()` to the post's `title` and assigns the result to `self.slug`.\n- It then calls `super().save(*args, **kwargs)` to persist the object, including the generated slug.\n\nThe `slug` field itself is defined on the `Post` model as `models.SlugField(max_length=250, verbose_name=\"اسلاگ\")` (blog/models.py, lines 22-78), so it stores the slugified version of the title whenever the user did not provide a slug. If a slug was already provided (i.e., `self.slug` is truthy), it is left unchanged and only saved as-is.",
+      "blind_id": "WRA-L-009"
+    },
+    {
+      "question": "What is the repository's persistence design for doctors, patients, cities, specialities, and the current day?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Manage.save_data delegates persistence to doctors, patients, cities, and specialities",
+        "Those data-access components serialize to files through the File helper",
+        "DayManager persists curr_day separately when next_day calls save_day",
+        "No database-backed persistence is implemented"
+      ],
+      "forbidden_claims": [
+        "Django ORM is used",
+        "All state is stored in one JSON file"
+      ],
+      "generated_output": "The retrieved context does not contain enough evidence to fully describe the repository's persistence design. What can be stated from the provided code:\n\n- **Specialities**: The only persistence-related evidence is `Specialities.load` (S4), which reads lines from the file `\"test_files/Specialties.txt\"` via `File(path).read_line()`, strips newline characters from each line, and inserts each name into `self.specialities`. So specialities are loaded from a text file into an in-memory structure.\n\n- **Doctors**: The context only shows in-memory structures. `Doctors.speciality_city` (S2) accesses `self.table[city][speciality]`, a nested mapping from city to speciality to a linked-list of entries, filtered against `self.doctors` (a keyed collection of doctor objects). No file reading/writing for doctors is visible.\n\n- **Patients**: `Patients.find_nearest_appointment` (S1) and `Patients.auto_reservation` (S5) operate purely on in-memory objects — a `MinHeap` of `Node(doctor, day, hour)`, `patient.appointments.make_appointment(...)`, and `doctor.schedule.remove_availability(...)`. No file I/O for patients is shown.\n\n- **Cities**: There is no dedicated cities repository in the context. Cities only appear as keys in `self.table` in S2 and as a local variable `cities` in S4, which holds the lines read from the Specialities file. Whether cities are persisted elsewhere cannot be determined.\n\n- **Current day**: There is no evidence in the retrieved context regarding how the current day is stored or persisted.\n\nIn summary, only specialities demonstrably come from a file (`test_files/Specialties.txt`); for doctors, patients, cities, and the current day, the retrieved evidence only shows in-memory data structures and is insufficient to describe their persistence.",
+      "blind_id": "WRA-L-010"
+    },
+    {
+      "question": "When a patient cancels a future appointment, which patient and doctor records are updated?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Cancellation is rejected when the appointment day is today",
+        "The patient appointment is removed and yields the doctor id",
+        "The doctor's visit count is decremented",
+        "The schedule slot is restored to Available",
+        "The cancellation is recorded in the doctor's canceled appointments"
+      ],
+      "forbidden_claims": [
+        "Same-day cancellation is accepted",
+        "The doctor record is left unchanged"
+      ],
+      "generated_output": "When a patient cancels a future appointment (i.e., the current day differs from the appointment day), the following records are updated:\n\n**Patient record:**\n- `patient.appointments` — the appointment is removed via `cancel_appointment(day, time)`, which also returns the doctor's ID.\n\n**Doctor records:**\n- `doctor.visits` — decremented via `doctor.decrement_visits()`.\n- `doctor.schedule` — the time slot is freed via `doctor.schedule.restore_availability(day, time)`.\n- `doctor.appointments` — a canceled appointment entry is created via `doctor.appointments.create_canceled(day, time, patient_id)`.\n\nIf the appointment is for the current day, nothing is updated and the method returns `False`; otherwise it returns `True` after these updates.",
+      "blind_id": "WRA-L-011"
+    },
+    {
+      "question": "How does lexical retrieval score a chunk, including the relative weights of symbol name, file path, code, and embedding text?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Query and fields are tokenized case-insensitively into unique token sets",
+        "qualified_name has weight 3",
+        "source_file has weight 2",
+        "code and embedding_text each have weight 1",
+        "The score sums weighted exact token overlaps"
+      ],
+      "forbidden_claims": [
+        "It uses BM25",
+        "It uses cosine similarity"
+      ],
+      "generated_output": "The retrieved context does not contain enough evidence to answer this question.\n\nThe only provided code block (S1, `prepare_snapshot` in `src/codecompass/evaluation/baseline_snapshot.py`) concerns preparing and validating a hashed snapshot manifest: verifying directory hashes, redacting `projects.root_path` in SQLite stores, and building a manifest with schema version, provenance, embedding metadata (provider/model/digest/dimensions), and file records. It does not define any lexical retrieval scoring function, nor any weights for symbol name, file path, code, or embedding text.\n\nTo answer how lexical retrieval scores chunks and what relative weights are assigned to those components, code implementing that scoring logic (e.g., a lexical scoring/ranking function) would need to be provided.",
+      "blind_id": "WRA-L-012"
+    },
+    {
+      "question": "چه کسی می‌تواند از بخش پروفایل کتاب، نویسنده، دسته‌بندی و تصویر اضافه کند و پس از ارسال معتبر چه رخ می‌دهد؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "All four add views require the user to be a superuser",
+        "Each POST binds the corresponding ModelForm",
+        "A valid form is saved",
+        "The response redirects to users:profile"
+      ],
+      "forbidden_claims": [
+        "Any authenticated user can add catalog data",
+        "The views write model fields directly without forms"
+      ],
+      "generated_output": "بر اساس کدهای بازیابی‌شده، پاسخ کافی برای این سؤال موجود نیست.\n\nفقط تعریف مدل‌ها در دسترس است:\n- مدل `Book` شامل فیلدهایی مانند `category` (کلید خارجی به `Category`)، `author` (کلید خارجی به `Author`)، عنوان، اسلاگ، توضیحات و... است.\n- مدل `Category` شامل فیلدهای `name` و `slug` است.\n\nاما در کدهای ارائه‌شده هیچ اطلاعات‌ای درباره موارد زیر وجود ندارد:\n- بخش پروفایل کاربر یا رابط افزودن کتاب، نویسنده، دسته‌بندی و تصویر\n- مجوزها یا نقش‌هایی که مشخص کند چه کسی اجازه افزودن این موارد را دارد\n- رفتار سیستم پس از ارسال معتبر فرم (مانند ریدایرکت یا پیام موفقیت)\n\nهمچنین مدل `Image` که در کد هست مربوط به اپ `blog` (تصاویر پست‌های وبلاگ) است، نه فروشگاه کتاب، و هیچ ویو یا فرمی برای آن ارائه نشده است.\n\nبنابراین با شواهد موجود نمی‌توان مشخص کرد چه کسی از بخش پروفایل این موارد را اضافه می‌کند و پس از ارسال معتبر چه اتفاقی می‌افتد.",
+      "blind_id": "WRA-L-013"
+    },
+    {
+      "question": "Who may add books, authors, categories, and images from the profile area, and what happens after a valid submission?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "All four add views require the user to be a superuser",
+        "Each POST binds the corresponding ModelForm",
+        "A valid form is saved",
+        "The response redirects to users:profile"
+      ],
+      "forbidden_claims": [
+        "Any authenticated user can add catalog data",
+        "The views write model fields directly without forms"
+      ],
+      "generated_output": "There is not enough retrieved evidence to answer this question.\n\nThe provided context does not contain any code showing functionality for adding books, authors, categories, or images from the profile area, nor any form submission handling that would describe what happens after a valid submission.\n\nThe only relevant context block is the `profile` view in `users/views.py` (S1), which simply:\n- Gets the current datetime and converts it to a Persian (Jalali) date\n- Builds a context containing `request.user` and a formatted Persian date string\n- Renders the `users/profile.html` template\n\nNothing in this view restricts or grants permission for adding content, and it does not process any submissions. The remaining context blocks (manage.py, the User model migration, and the blog `Post.Meta`) do not describe profile-area content management or submission behavior either.",
+      "blind_id": "WRA-L-014"
+    },
+    {
+      "question": "How does the application charge a credit card and refund a canceled order?",
+      "expected_behavior": "insufficient_evidence",
+      "expected_facts": [
+        "No payment charging or refund implementation is present in the indexed Python code"
+      ],
+      "forbidden_claims": [
+        "Stripe handles payments",
+        "A refund method is implemented on Order"
+      ],
+      "generated_output": "There is not enough retrieved evidence to answer this question.\n\nThe provided code context does not contain any logic for charging credit cards or refunding canceled orders. Specifically:\n\n- **No payment processing code**: There is no payment gateway integration, no credit card charging functions, and no view or service code that handles transactions anywhere in the retrieved context.\n\n- **Order model is minimal**: The only order-related code visible is the `Order` model in `store/models.py`, which contains just three fields:\n  - `user` (ForeignKey to the auth user model)\n  - `created` (auto-added datetime of order registration)\n  - `paid` (BooleanField, default `False`)\n\n- **No refund or cancellation logic**: There are no methods, views, signals, or models in the context that handle order cancellation, refunds, or reversal of payments. The `Order` model shown has no status field, cancellation field, or refund-related methods — only a `__str__` method and a `Meta` class with Persian verbose names.\n\nThe remaining context blocks (the `users` initial migration and `manage.py`) relate to user accounts and Django's command-line entry point, and contain nothing relevant to payments.\n\nTo answer how credit card charging and refunds work, additional code would be needed — for example, payment views, a payment gateway integration (e.g., a bank/merchant API), checkout logic, or order cancellation/refund views or services.",
+      "blind_id": "WRA-L-015"
+    },
+    {
+      "question": "What does the array-backed queue return when dequeuing an empty queue, and how does it remove a non-empty item?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "An empty queue returns the string Queue is empty.",
+        "A non-empty dequeue increments front and returns the item at the previous front index"
+      ],
+      "forbidden_claims": [
+        "It raises an exception for an empty queue",
+        "It shifts every array element"
+      ],
+      "generated_output": "There is not enough retrieved evidence to answer this question.\n\nThe provided code context contains only:\n\n- **`Array`** methods from `data_structures/array.py` (`__getitem__`, `__contains__`, `__repr__`, `get`) — none of which implement queue dequeue behavior or empty-queue handling.\n- **`SLL.remove`** from `data_structures/linked_list.py` — a singly linked list removal method, not an array-backed queue.\n\nNo queue class, `dequeue` method, or related logic (e.g., returning `None` or raising an exception on an empty queue, or how an item is removed from the front) appears anywhere in the retrieved context. Therefore, the dequeue behavior of an array-backed queue cannot be determined from the given code.",
+      "blind_id": "WRA-L-016"
+    },
+    {
+      "question": "بازیابی واژگانی امتیاز هر chunk را با چه وزن‌هایی برای نام نماد، مسیر فایل، کد و متن embedding محاسبه می‌کند؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Query and fields are tokenized case-insensitively into unique token sets",
+        "qualified_name has weight 3",
+        "source_file has weight 2",
+        "code and embedding_text each have weight 1",
+        "The score sums weighted exact token overlaps"
+      ],
+      "forbidden_claims": [
+        "It uses BM25",
+        "It uses cosine similarity"
+      ],
+      "generated_output": "بر اساس مستندات بازیابی‌شده، پاسخی برای این سؤال وجود ندارد.\n\nبخش‌های ارائه‌شده شامل موارد زیر است:\n- `FunctionDocumentationService._prompt` در `src/codecompass/documentation/service.py` که فقط پرامپت تولید مستندات را می‌سازد و هیچ منطق امتیازدهی واژگانی یا وزنی ندارد.\n- تست `test_persian_generation_retries_one_wrong_language_response` در `tests/test_function_documentation.py` که رفتار تلاش مجدد برای پاسخ با زبان اشتباه را بررسی می‌کند.\n\nدر هیچ‌یک از این بخش‌ها، وزن‌ها یا محاسبه امتیاز بازیابی واژگانی برای نام نماد، مسیر فایل، کد یا متن embedding دیده نمی‌شود. بنابراین شواهد بازیابی‌شده کافی نیست و باید بخش کد مربوط به موتور جست‌وجو/امتیازدهی (مانند ماژول retrieval یا index) ارائه شود.",
+      "blind_id": "WRA-L-017"
+    },
+    {
+      "question": "صفِ مبتنی بر آرایه هنگام dequeue از صف خالی چه برمی‌گرداند و در حالت غیرخالی چگونه عضو را حذف می‌کند؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "An empty queue returns the string Queue is empty.",
+        "A non-empty dequeue increments front and returns the item at the previous front index"
+      ],
+      "forbidden_claims": [
+        "It raises an exception for an empty queue",
+        "It shifts every array element"
+      ],
+      "generated_output": "**صف مبتنی بر آرایه (`QueueArray.dequeue` — سطرهای ۲۲ تا ۳۳ از `data_structures/queue.py`):**\n\n- **صف خالی:** متد ابتدا `self.is_empty()` را بررسی می‌کند و اگر صف خالی باشد، رشته‌ی متنی `\"Queue is empty.\"` را برمی‌گرداند.\n\n- **صف غیرخالی:** عضو ابتدایی را با جابه‌جا کردن نشانگر `front` حذف می‌کند:\n  1. ابتدا `self.front += 1` اجرا می‌شود (یعنی نشانگر جلو یک واحد جلو می‌رود)؛\n  2. سپس مقدار `self.queue[self.front - 1]` را برمی‌گرداند — یعنی همان عنصری که پیش از افزایش نشانگر در موقعیت `front` قرار داشت.\n\nبه بیان دیگر، به‌جای خواندن عنصر و سپس جابه‌جا کردن نشانگر، این کد ابتدا `front` را افزایش می‌دهد و با استفاده از `self.front - 1` به عنصر قبلی دسترسی پیدا کرده و آن را برمی‌گرداند. (در کد، نسخه‌ی جایگزینِ کامنت‌شده‌ای نیز دیده می‌شود که عنصر را می‌خواند و `front` را کم می‌کند، اما این بخش اجرا نمی‌شود.)",
+      "blind_id": "WRA-L-018"
+    },
+    {
+      "question": "Which files and directories are excluded by the repository scanner, and how are symlinks handled?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Only .py files are eligible",
+        ".env and .env.* are excluded",
+        "VCS, virtualenv, cache, build, IDE, coverage, and node_modules directories are excluded by default",
+        "Directory and file symlinks are not followed",
+        "Resolved files must remain inside the selected root"
+      ],
+      "forbidden_claims": [
+        "The scanner follows symlinks",
+        "All text files are scanned"
+      ],
+      "generated_output": "There is not enough retrieved evidence. The provided context covers snapshot preparation (`prepare_snapshot`), repository validation (`validate_pinned_repository`), and the `ScanResult` dataclass, but none of these show which files or directories the repository scanner excludes or how symlinks are handled. No exclusion lists (e.g., ignore patterns, `.gitignore` handling) or symlink logic appear in the retrieved code.",
+      "blind_id": "WRA-L-019"
+    },
+    {
+      "question": "How is the current hospital day advanced and persisted?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "DayManager.next_day increments curr_day by one",
+        "It then calls save_day to persist the new value"
+      ],
+      "forbidden_claims": [
+        "The day is changed only in memory",
+        "The method accepts the next day as an argument"
+      ],
+      "generated_output": "There is not enough retrieved evidence to answer this question.\n\nThe provided code context does not contain any logic that advances or persists a \"current hospital day.\" The closest related material is `Schedule.find_nearest` (models/doctor.py, lines 118-125), which only searches the doctor's sorted schedule days for the first day with an available (non-None, non-\"Not Available\") time slot and returns that day and slot index. It does not increment, update, or store any \"current day\" value.\n\nThe remaining blocks (doctor registration UI in `DoctorsInterface.register_doctor`, and hash table operations `HashTable.insert_last`, `DynamicHash.rehashing`, `ModifiedDynamicHash.rehashing`) are unrelated to hospital day progression or persistence.\n\nNo code in the retrieved context shows a day counter being incremented, a current-day attribute being assigned, or any save/persistence mechanism for such a value.",
+      "blind_id": "WRA-L-020"
+    },
+    {
+      "question": "رزرو خودکار چگونه زمان پزشک را انتخاب می‌کند و بیمار و پزشک انتخاب‌شده را به‌روزرسانی می‌کند؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Patients.auto_reservation resolves the patient by id",
+        "It asks find_nearest_appointment for a Node containing doctor, day, and hour",
+        "It writes the appointment to the patient",
+        "It removes availability from the selected doctor's schedule"
+      ],
+      "forbidden_claims": [
+        "It records the appointment in the doctor's Appointments object",
+        "It prompts the user to select the hour"
+      ],
+      "generated_output": "پاسخ کوتاه: شواهد بازیابی‌شده کافی نیست.\n\nدر متن کد ارائه‌شده (زمینه کد خالی است)، هیچ قطعه کدی مربوط به منطق «رزرو خودکار» یافت نمی‌شود؛ بنابراین نمی‌توان به‌طور دقیق توضیح داد که:\n\n- رزرو خودکار چگونه بازه زمانی پزشک را انتخاب می‌کند (مثلاً بررسی تقویم، اولین اسلات آزاد، قواعد اولویت و…)\n- چگونه شیء بیمار به‌روزرسانی می‌شود (کدام فیلدها تغییر می‌کنند)\n- چگونه پزشک انتخاب‌شده در داده‌های بیمار یا سیستم ذخیره می‌شود\n\nهر توضیحی در این زمینه بدون دیدن کد واقعی، حدس و خارج از محدوده شواهد خواهد بود. لطفاً کد مربوط به کلاس یا تابع رزرو خودکار (مثلاً متدی با نامی مانند auto_reserve / book و ساختار داده‌های Doctor و Patient) را ارائه دهید تا بتوانم رفتار دقیق انتخاب زمان و به‌روزرسانی بیمار و پزشک را بر اساس کد توضیح دهم.",
+      "blind_id": "WRA-L-021"
+    },
+    {
+      "question": "Which fields and defaults represent whether a book can be sold, its stock, original price, discount, and discounted price?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "available is a BooleanField defaulting to true",
+        "inventory is a PositiveIntegerField defaulting to zero",
+        "price, off, and new_price are PositiveIntegerField values defaulting to zero",
+        "The model code does not automatically compute new_price"
+      ],
+      "forbidden_claims": [
+        "new_price is computed in Book.save",
+        "inventory defaults to one"
+      ],
+      "generated_output": "Based on the `Book` model in `store/models.py` (S2), the relevant fields and defaults are:\n\n- **Whether the book can be sold:** `available = models.BooleanField(default=True)` — a boolean indicating the book is available for sale, defaulting to `True`.\n- **Stock:** `inventory = models.PositiveIntegerField(default=0, verbose_name='موجودی')` — a positive integer for stock quantity, defaulting to `0`.\n- **Original price:** `price = models.PositiveIntegerField(default=0, verbose_name='قیمت')` — a positive integer for the price, defaulting to `0`.\n- **Discount:** `off = models.PositiveIntegerField(default=0, verbose_name='تخفیف')` — a positive integer representing the discount, defaulting to `0`.\n- **Discounted price:** `new_price = models.PositiveIntegerField(default=0, verbose_name='قیمت پس از تخفیف')` — a positive integer for the price after discount, defaulting to `0`.\n\nAll of these are fields on the `Book` model (`store/models.py`), and each uses a `default`: `available` defaults to `True`, while `inventory`, `price`, `off`, and `new_price` all default to `0`.",
+      "blind_id": "WRA-L-022"
+    },
+    {
+      "question": "گذرواژه کاربران پیش از ذخیره چگونه salt و hash می‌شود؟",
+      "expected_behavior": "insufficient_evidence",
+      "expected_facts": [
+        "No password hashing or salting implementation is present in the indexed Python code"
+      ],
+      "forbidden_claims": [
+        "Passwords are hashed with bcrypt",
+        "Passwords are hashed with PBKDF2"
+      ],
+      "generated_output": "متأسفانه در متن کد ارائه‌شده (کانتکست) هیچ بخشی درباره‌ی نحوه‌ی salt یا hash شدن گذرواژه‌ی کاربران یافت نمی‌شود؛ بنابراین شواهد کافی برای پاسخ به این پرسش وجود ندارد.\n\nبرای پاسخ دقیق، به کدی نیاز است که یکی از موارد زیر را به‌وضوح نشان دهد:\n- استفاده از تابعی مانند `hashlib.pbkdf2_hmac`، `bcrypt`، `scrypt` یا `argon2`\n- نحوه‌ی تولید salt (مثلاً `os.urandom` یا `secrets.token_bytes`)\n- محل ذخیره‌ی salt یا ترکیب آن با hash\n\nلطفاً بخش مرتبط کد (مانند مدل کاربر، سرویس احراز هویت یا توابع ثبت‌نام/تنظیم گذرواژه) را ارائه دهید تا بتوانم پاسخ دقیقی بدهم.",
+      "blind_id": "WRA-L-023"
+    },
+    {
+      "question": "How does automatic reservation choose a doctor slot and update the selected patient and doctor?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Patients.auto_reservation resolves the patient by id",
+        "It asks find_nearest_appointment for a Node containing doctor, day, and hour",
+        "It writes the appointment to the patient",
+        "It removes availability from the selected doctor's schedule"
+      ],
+      "forbidden_claims": [
+        "It records the appointment in the doctor's Appointments object",
+        "It prompts the user to select the hour"
+      ],
+      "generated_output": "There is not enough retrieved evidence to answer this question.\n\nThe provided code context only covers:\n- `DoctorsInterface.register_doctor` (presentation/doctors_interface.py), which handles registering a new doctor via console input, validating city/speciality, and printing a confirmation.\n- The `Doctor` and `Patient` model classes, but their attribute definitions/bodies are not shown, and only their `__repr__`/`__str__` string representations are visible.\n\nNothing in the retrieved context shows any automatic reservation logic, such as selecting an available doctor slot, assigning a slot to a patient, or updating a selected patient's or doctor's fields (e.g., visits or appointments). To answer how the automatic reservation chooses a doctor slot and updates the patient and doctor, additional code (e.g., a reservation manager/controller or related methods) would need to be provided.",
+      "blind_id": "WRA-L-024"
+    },
+    {
+      "question": "موجودیت‌های اصلی دامنه فروشگاه چیست و کتاب‌ها چه رابطه‌ای با دسته‌بندی، نویسنده، تصویر، نظر و سفارش دارند؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Book has foreign keys to Category and Author",
+        "Image has a foreign key to Book with related_name images",
+        "Review links a Book and the configured User model",
+        "Order links a User and tracks created and paid",
+        "Order has no relation to Book in this code"
+      ],
+      "forbidden_claims": [
+        "Order contains order-line items",
+        "Book and Author have a many-to-many relationship"
+      ],
+      "generated_output": "بر اساس کدهای بازیابی‌شده، از دامنه فروشگاه (اپ `store`) فقط این موجودیت‌ها در کانتکست دیده می‌شوند:\n\n- **Category (دسته‌بندی)**: در `store/models.py` با `Meta` شامل `ordering = ['name']`، ایندکس روی فیلد `name` و `verbose_name` «دسته بندی».\n- **Author (نویسنده)**: در مایگریشن `store/0002` با `verbose_name` «نویسنده».\n- **Order (سفارش)**: در همان مایگریشن با `verbose_name` «سفارش».\n- **Review (نظر)**: در همان مایگریشن با `ordering = ['created']` و `verbose_name` «نظر».\n\n**درباره روابط کتاب (Book):** در کانتکست ارائه‌شده هیچ تعریفی از مدل `Book` — نه فیلدها و نه هیچ `ForeignKey` یا رابطه‌ای با دسته‌بندی، نویسنده، تصویر، نظر یا سفارش — وجود ندارد. بنابراین **شواهد کافی برای توصیف روابط کتاب با این موجودیت‌ها در کانتکست موجود نیست** و نمی‌توان بدون حدس، نوع این روابط (مثلاً یک‌به‌چند یا چند‌به‌چند) را بیان کرد.\n\nنکته تکمیلی: مدل‌های `Image` و `Comment` که در کانتکست هستند (بخش S1) متعلق به اپ `blog` و مرتبط با مدل `Post` هستند (با `related_name='images'` و `related_name='comments'`)، نه با کتاب‌های فروشگاه؛ بنابراین نمی‌توان آن‌ها را به موجودیت‌های فروشگاه نسبت داد.",
+      "blind_id": "WRA-L-025"
+    },
+    {
+      "question": "SQLite، Chroma، embedding و LLM هرکدام در CodeCompass چه نقشی دارند و مرجع معتبر citation کدام جزء است؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "SQLite stores canonical project, file, symbol, and chunk metadata",
+        "Chroma stores/searches vectors keyed by chunk ids",
+        "Embeddings turn the question and chunks into vectors for semantic retrieval",
+        "The LLM generates an answer only from the selected context",
+        "Citation file paths, symbols, and line ranges are hydrated from SQLite metadata"
+      ],
+      "forbidden_claims": [
+        "Chroma is authoritative for line ranges",
+        "The LLM generates citation metadata"
+      ],
+      "generated_output": "بر اساس کد بازیابی‌شده:\n\n**SQLite، Chroma و embedding:** در بستر ارائه‌شده (فقط S1: متد `FunctionDocumentationService._prompt` در `src/codecompass/documentation/service.py`) هیچ اشاره‌ای به SQLite، Chroma یا embedding نشده است؛ بنابراین شواهد کافی برای بیان نقش این اجزا در CodeCompass موجود نیست.\n\n**LLM:** نقش قابل‌مشاهده‌ی آن تولید مستندات است. متد `_prompt` یک پرامپت می‌سازد که از مدل می‌خواهد دقیقاً یک شیء JSON شامل `summary`، `detailed_description`، `parameters`، `return_value`، `raises`، `side_effects`، `dependencies` و `notes` تولید کند، بدون Markdown یا توضیح اضافه، و در حالت فارسی همه مقادیر متنی به خط فارسی باشند.\n\n**مرجع معتبر citation:** مرجع، خودِ مدل زبانی نیست؛ بلکه «واقعیت‌های استخراج‌شدهٔ مورد اطمینان» (Trusted extracted facts) از منبع است که در پرامپت درج می‌شود:\n\n- `documentation_role` و `symbol_type` از `target`\n- `qualified_name`، `relative_source_path` از `target.citation`\n- `signature` و `return_annotation` از `target`\n- بازهٔ خطوط `start_line`–`end_line` از `target.citation`\n- `target.source_code` به‌عنوان «Source evidence»\n\nپرامپت صراحتاً می‌گوید: «Use only the supplied source evidence; do not invent a purpose or behavior» و در صورت نبود شواهد باید `null` یا لیست خالی برگردانده شود. یعنی اعتبار citation (نام مؤهل، مسیر فایل منبع و خطوط) از داده‌های استخراج‌شده از سورس می‌آید و خروجی LLM باید صرفاً بر همان شواهد بنا شود.",
+      "blind_id": "WRA-L-026"
+    },
+    {
+      "question": "معماری ماندگاری داده برای پزشکان، بیماران، شهرها، تخصص‌ها و روز جاری در کل مخزن چگونه است؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Manage.save_data delegates persistence to doctors, patients, cities, and specialities",
+        "Those data-access components serialize to files through the File helper",
+        "DayManager persists curr_day separately when next_day calls save_day",
+        "No database-backed persistence is implemented"
+      ],
+      "forbidden_claims": [
+        "Django ORM is used",
+        "All state is stored in one JSON file"
+      ],
+      "generated_output": "پاسخی بر اساس شواهد بازیابی‌شده در دسترس نیست. بخش «Code context» ارائه‌شده خالی است و هیچ کد، کلاس، مدل داده، لایه دسترسی به داده یا ساختار ذخیره‌سازی مربوط به پزشکان، بیماران، شهرها، تخصص‌ها یا روز جاری در آن وجود ندارد.\n\nبرای پاسخ به این پرسش درباره معماری ماندگاری داده (Persistence Architecture)، به کد منبع مرتبط نیاز است — برای مثال تعریف مدل‌ها/کلاس‌های Doctor، Patient، City، Specialty، نحوه ذخیره‌سازی «روز جاری»، و لایه‌های Repository یا ORM مورد استفاده. لطفاً متن کد مربوطه را ارائه دهید تا بتوانم بر اساس آن پاسخ دهم.",
+      "blind_id": "WRA-L-027"
+    },
+    {
+      "question": "قابل‌فروش بودن کتاب، موجودی، قیمت اصلی، تخفیف و قیمت پس از تخفیف با چه فیلدها و مقادیر پیش‌فرضی نمایش داده می‌شوند؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "available is a BooleanField defaulting to true",
+        "inventory is a PositiveIntegerField defaulting to zero",
+        "price, off, and new_price are PositiveIntegerField values defaulting to zero",
+        "The model code does not automatically compute new_price"
+      ],
+      "forbidden_claims": [
+        "new_price is computed in Book.save",
+        "inventory defaults to one"
+      ],
+      "generated_output": "بر اساس مدل `Book` در فایل `store/models.py` (خطوط 40-76)، این موارد با فیلدها و مقادیر پیش‌فرض زیر نمایش داده می‌شوند:\n\n- **قابل‌فروش بودن**: فیلد `available` از نوع `BooleanField` با مقدار پیش‌فرض `True` (بدون verbose_name)\n- **موجودی**: فیلد `inventory` از نوع `PositiveIntegerField` با مقدار پیش‌فرض `0` و برچسب «موجودی»\n- **قیمت اصلی**: فیلد `price` از نوع `PositiveIntegerField` با مقدار پیش‌فرض `0` و برچسب «قیمت»\n- **تخفیف**: فیلد `off` از نوع `PositiveIntegerField` با مقدار پیش‌فرض `0` و برچسب «تخفیف»\n- **قیمت پس از تخفیف**: فیلد `new_price` از نوع `PositiveIntegerField` با مقدار پیش‌فرض `0` و برچسب «قیمت پس از تخفیف»",
+      "blind_id": "WRA-L-028"
+    },
+    {
+      "question": "What data does the book detail page load, and when does it expose the review form?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "The book is selected by id and slug or returns 404",
+        "Only active reviews are loaded and newest reviews come first",
+        "ReviewForm is supplied only for an authenticated user",
+        "The book, form, and reviews are rendered in store/detail.html"
+      ],
+      "forbidden_claims": [
+        "Anonymous users receive an enabled ReviewForm",
+        "Inactive reviews are included"
+      ],
+      "generated_output": "Based on `book_detail` in `store/views.py` (S5):\n\n**Data loaded:**\n1. **The book** — fetched via `get_object_or_404(Book, id=pk, slug=slug)`, so it returns a 404 if no book matches both the id and slug.\n2. **Reviews** — only active reviews are loaded: `book.reviews.filter(active=True).order_by('-created')` (i.e., newest first). This relies on the `Review` model's `related_name=\"reviews\"` (S1).\n3. These are passed to the template `store/detail.html` in a context containing `book`, `form`, and `reviews`.\n\n**Review form exposure:**\n- The form is included in the context as `ReviewForm()` **only if the user is authenticated** (`request.user.is_authenticated`).\n- For anonymous (unauthenticated) users, `form` is set to `None`, so the review form is not exposed.\n\nIn short, the page loads a book plus its active reviews (ordered newest first), and it exposes the review form only to logged-in users; unauthenticated visitors get `form=None`.",
+      "blind_id": "WRA-L-029"
+    },
+    {
+      "question": "اسکنر مخزن چه فایل‌ها و پوشه‌هایی را کنار می‌گذارد و با symlinkها چگونه رفتار می‌کند؟",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Only .py files are eligible",
+        ".env and .env.* are excluded",
+        "VCS, virtualenv, cache, build, IDE, coverage, and node_modules directories are excluded by default",
+        "Directory and file symlinks are not followed",
+        "Resolved files must remain inside the selected root"
+      ],
+      "forbidden_claims": [
+        "The scanner follows symlinks",
+        "All text files are scanned"
+      ],
+      "generated_output": "بر اساس بخش‌های بازیابی‌شده از کد، پاسخی برای این پرسش وجود ندارد.\n\nمتن ارائه‌شده فقط شامل دو بخش است:\n1. متد `_prompt` از `FunctionDocumentationService` در `src/codecompass/documentation/service.py` که مربوط به ساخت پرامپت تولید مستندات است.\n2. یک تست در `tests/test_function_documentation.py` درباره تلاش مجدد تولید مستندات فارسی.\n\nهیچ‌کدام از این بخش‌ها اطلاعاتی درباره اسکنر مخزن، فایل‌ها یا پوشه‌های نادیده‌گرفته‌شده، یا نحوه رفتار با symlinkها ندارند. بنابراین شواهد بازیابی‌شده کافی نیست و نمی‌توان به این پرسش پاسخ داد.",
+      "blind_id": "WRA-L-030"
+    },
+    {
+      "question": "How does a full reindex avoid replacing a valid metadata/vector snapshot with a partial or changed-repository candidate?",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "Embeddings are prepared before activation",
+        "A staged vector replacement is validated",
+        "The repository is rescanned and its file snapshot must match the initial scan",
+        "SQLite replacement activates the staged vector generation through a before_commit callback",
+        "Failures discard or roll back staged vectors and clean up a newly reserved project"
+      ],
+      "forbidden_claims": [
+        "Vectors are overwritten in place before validation",
+        "Repository changes during indexing are ignored"
+      ],
+      "generated_output": "**Not enough retrieved evidence for the reindex-specific behavior.** The provided context contains no code for a \"full reindex\" flow or any logic that decides whether to replace an existing metadata/vector snapshot with a candidate. The only relevant symbol is `prepare_snapshot` (src/codecompass/evaluation/baseline_snapshot.py, lines 45–124), which prepares and validates a snapshot but does not perform or govern a reindex.\n\nWhat the context does show are guards that would prevent an invalid/partial snapshot candidate from being accepted:\n\n1. **Byte-identity of the copy** – before any work, `directory_hash(source_root)` must equal `directory_hash(snapshot_root)`; otherwise `BaselineSnapshotError` is raised (\"initial snapshot copy is not byte-identical to the source state\").\n2. **Per-repository identity check** – for each repository, the SQLite `projects` table must contain exactly one row whose `name` matches the official record's `repository_name`; any partial or mismatched store is rejected.\n3. **No concurrent source mutation** – after building the manifest, `directory_hash(source_root)` is re-computed and must equal `source_before`; a change during preparation raises an error.\n4. **Manifest verification** – `verify_manifest(snapshot_root)` runs after `_write_json`, and `baseline._validate_portable_payload(manifest, ...)` runs before writing.\n\nThe manifest also records hashes (`source_state_initial_sha256`, per-file records, `aggregate_snapshot_sha256`) enabling later integrity checks.\n\nHowever, nothing in the retrieved context describes how a reindex process compares against or atomically replaces a valid snapshot, so that specific mechanism cannot be confirmed from this evidence.",
+      "blind_id": "WRA-L-031"
+    },
+    {
+      "question": "مسیر یک سؤال API را از انتخاب روش بازیابی تا تولید پاسخ و تکمیل citation قابل‌اعتماد توضیح بده.",
+      "expected_behavior": "answer",
+      "expected_facts": [
+        "The ask route creates a retrieval service for the selected method and embedding configuration",
+        "GroundedQAService retrieves chunks and builds bounded context",
+        "The LLM receives the question and retrieved context",
+        "QA citations are created from context metadata rather than parsed from model text",
+        "The API rehydrates cited chunk metadata through APIRuntime.citation_chunks"
+      ],
+      "forbidden_claims": [
+        "The model invents file paths and line numbers",
+        "The entire repository is always sent to the LLM"
+      ],
+      "generated_output": "بر اساس کد بازیابی‌شده، توضیح کامل این مسیر ممکن نیست؛ گام «انتخاب روش بازیابی» در کد ارائه‌شده دیده نمی‌شود و شواهد کافی برای آن وجود ندارد. اما دو گام دیگر قابل‌توصیف هستند:\n\n**تولید پاسخ (ساخت پرامپت):** در `FunctionDocumentationService._prompt` (service.py):\n- زبان مستندسازی تعیین می‌شود («Persian» برای «fa») و نقش نماد مشخص می‌گردد؛ اگر نام با `test_` شروع شود یا «tests» در مسیر نسبی منبع باشد، نقش «test function» در نظر گرفته می‌شود.\n- قواعد خروجی اعمال می‌شود: فقط یک شیء JSON، بدون Markdown یا کامنت، خلاصه یک‌جمله‌ای و توضیح حداکثر سه‌جمله‌ای، استفاده صرفاً از شواهد منبع، و null/لیست خالی در نبود شواهد.\n- برای حالت retry قانون «زبان پاسخ قبلی نادرست بود؛ متن فارسی الزامی است» اضافه می‌شود.\n- ساختار JSON (summary، detailed_description، parameters، return_value و…) به همراه «Trusted extracted facts» (نقش مستندسازی، symbol_type، qualified_name، signature، مسیر فایل و بازه خطوط) و «Source evidence» (کد منبع) در پرامپت قرار می‌گیرد.\n\n**تکمیل citation قابل‌اعتماد:** در `APIRuntime.citation_chunks` (runtime.py):\n- ابتدا `require_project` پروژه را اعتبارسنجی می‌کند و شناسه‌های chunk یکتاسازی می‌شوند.\n- chunkها از SQLite از طریق `store.get_chunks_by_chunk_ids` وابازیابی و فایل‌های منبع فهرست می‌شوند.\n- اگر هر chunk درخواستی یافت نشود یا `file_id`/`relative_path` با فایل منبع مطابقت نداشته باشد، خطای `APIError(500, \"citation_metadata_missing\")` صادر می‌شود؛ در غیر این صورت نگاشت chunk_id به `StoredChunk` بازگردانده می‌شود.",
+      "blind_id": "WRA-L-032"
+    }
+  ]
+}
