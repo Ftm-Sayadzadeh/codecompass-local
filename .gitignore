@@ -48,3 +48,11 @@ coverage/
 # OS
 .DS_Store
 Thumbs.db
+
+# Local authoring artifacts
+/.codex-artifacts/
+/.codex-docx-work/
+/deliverables/
+
+# Private evaluation artifacts
+/reports/evaluation/whole_repo_rag_ablation_v1/human_validation_v1_private/
