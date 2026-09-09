@@ -174,6 +174,7 @@ describe("CodeCompass SPA", () => {
     expect(screen.queryByText("Frozen scientific evidence")).not.toBeInTheDocument();
     expect(screen.getByText("Best measured").closest(".method-label")).toHaveTextContent("hybrid");
     expect(screen.getByText("283.1 ms")).toBeInTheDocument();
+    expect(screen.getByText(/Hybrid retrieval was strongest overall/)).toBeInTheDocument();
     fireEvent.click(screen.getByText(/View 1 benchmark questions/));
     expect(screen.getByText("How does escaping work?")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Show Persian evaluation" }));
@@ -184,6 +185,7 @@ describe("CodeCompass SPA", () => {
     expect(screen.getByRole("region", { name: "English retrieval results" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Final thesis evaluation" }));
     expect(screen.getByText("3 repositories · 36 search queries · 90 human-review records")).toBeInTheDocument();
+    expect(screen.getByText(/There was no universal model winner/)).toBeInTheDocument();
     expect(screen.getByText("71/72")).toBeInTheDocument();
     fireEvent.click(screen.getByText(/View 1 benchmark questions/));
     expect(screen.getByText("بازیابی ترکیبی چگونه کار می‌کند؟")).toBeInTheDocument();
