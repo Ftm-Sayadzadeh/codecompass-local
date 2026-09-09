@@ -129,6 +129,12 @@ function FinalThesisView({ result }: { result: FinalThesisEvaluationResponse }) 
           ))}
         </div>
       </div>
+      <div className="experiment-purpose">
+        <strong>Research question</strong>
+        <span>How do three embedding models and two LLMs affect retrieval, grounded QA, Persian readability, documentation, and execution reliability under frozen conditions?</span>
+        <strong>Conclusion</strong>
+        <span>There was no universal model winner: Gemini Embedding 2 led pure semantic retrieval, Gemini Embedding 001 produced the highest mean downstream QA correctness, and GLM outperformed Qwen on matched QA quality. Missing executions remain unavailable rather than being scored as zero.</span>
+      </div>
 
       {section === "overview" ? <>
         <div className="scientific-summary">
@@ -341,6 +347,12 @@ export function EvaluationPanel({ summary, performance, finalThesis, contextStra
               <button type="button" aria-label="Show English evaluation" className={perspective === "en" ? "active" : ""} onClick={() => setPerspective("en")} aria-pressed={perspective === "en"}>English</button>
               <button type="button" aria-label="Compare Persian and English evaluation" className={perspective === "compare" ? "active" : ""} onClick={() => setPerspective("compare")} aria-pressed={perspective === "compare"}>Compare</button>
             </div>
+          </div>
+          <div className="experiment-purpose">
+            <strong>Research question</strong>
+            <span>Which retrieval strategy—lexical, semantic, or hybrid—ranks the expected code evidence most accurately for Persian and English questions?</span>
+            <strong>Conclusion</strong>
+            <span>Hybrid retrieval was strongest overall: 63.3% Top-1, 78.3% Top-3, and 0.732 MRR@10. It also kept Persian and English Top-3 performance close (76.7% vs 80.0%), supporting hybrid as the best default within this frozen Nomic benchmark.</span>
           </div>
 
           <div className="scientific-summary" aria-label="Scientific benchmark summary">
