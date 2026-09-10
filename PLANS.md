@@ -25,6 +25,14 @@ The planned thesis implementation is complete. This file records delivered miles
 | M29 | Final multi-repository thesis evaluation and publication report | DONE_WITH_LIMITATIONS | `v1.0.0-thesis-evaluation-complete` |
 | M30 | Official and final evaluation dashboard | DONE | `v1.1.0-evaluation-dashboard` |
 
+## Post-Thesis Completed Work
+
+| Work | Final status | Evidence or release |
+|---|---|---|
+| Provider presets and evaluation UX | DONE | Backend-resolved embedding/LLM presets and clarified experiment views |
+| Context-strategy evaluation | DONE_WITH_LIMITATIONS | Frozen whole-repository, lexical, semantic, hybrid, and Git-agent comparison with independent blind human validation |
+| Documentation refresh | DONE | `v1.1.2-context-strategy-evaluation` |
+
 ## Final Deliverables
 
 - Complete local repository-to-answer workflow.
@@ -35,9 +43,10 @@ The planned thesis implementation is complete. This file records delivered miles
 - Human-scored QA and documentation evidence.
 - Publication-quality Markdown and PDF reports.
 - Reproducible hashes, manifests, raw records, recovery history, and explicit unavailable measurements.
+- Frozen context-strategy comparison covering retrieval quality, final-answer quality, cost, latency, scalability, and a tool-using agent baseline.
 
 ## Current Policy
 
 There is no active thesis milestone. New work is maintenance-only unless the project owner explicitly approves a new scope. Do not tune against frozen benchmark cases, overwrite evaluation artifacts, or reinterpret unavailable executions as zero scores.
 
-Optional future research, if ever required, should use a new benchmark version and a separate milestone. Candidate topics are broader repositories, additional human reviewers, ranking calibration, and evaluation of newer models.
+Optional future research, if ever required, should use a new benchmark version and a separate milestone. Candidate topics are broader repositories, additional human reviewers, ranking calibration, and evaluation of newer models. The completed post-thesis context-strategy experiment remains frozen and is not an active product milestone.

@@ -2,7 +2,7 @@
 
 CodeCompass is a local-first system for understanding Python repositories through Persian or English questions. It combines deterministic code analysis, lexical and semantic retrieval, grounded answer generation, function documentation, and verified navigation to the exact source file, symbol, and line range.
 
-The project was developed as a bachelor's thesis and is complete. The latest release is [`v1.1.1-final-documentation`](https://github.com/Ftm-Sayadzadeh/codecompass-local/tree/v1.1.1-final-documentation).
+The project was developed as a bachelor's thesis and is complete. The latest release is [`v1.1.2-context-strategy-evaluation`](https://github.com/Ftm-Sayadzadeh/codecompass-local/tree/v1.1.2-context-strategy-evaluation).
 
 ![CodeCompass workspace](docs/assets/codecompass-workspace.png)
 
@@ -16,7 +16,7 @@ The project was developed as a bachelor's thesis and is complete. The latest rel
 - Generates function documentation by combining deterministic facts with model-written explanations.
 - Opens cited code directly in a Monaco-based source explorer.
 - Supports Ollama and OpenAI-compatible embedding and generation providers independently.
-- Exposes frozen official and final-thesis evaluation results in the UI.
+- Exposes frozen official, final-thesis, and post-thesis context-strategy evaluation results in the UI.
 
 ## Architecture
 
@@ -43,14 +43,17 @@ SQLite remains the source of truth for file, symbol, chunk, and citation metadat
 
 ## Research Results
 
-The repository contains two complementary frozen evaluations:
+The repository contains two thesis evaluations and one post-thesis context-strategy evaluation:
 
 | Evaluation | Scope | Key result |
 |---|---|---|
 | Official bilingual retrieval benchmark | 60 questions, 30 concepts | Hybrid Top-1 63.3%, Top-3 78.3%, MRR@10 0.732 with the recorded Nomic local setup |
 | Final thesis evaluation | 3 repositories, 36 search queries, 72 QA combinations, 18 documentation executions | Gemini Embedding 2 semantic Top-3 94.4%; 71/72 usable QA outputs; 80/90 human-scored outputs |
+| Context-strategy evaluation | 3 repositories, 18 concepts, 36 bilingual questions | Semantic retrieval raised evidence recall from 22.2% lexical to 64.7%; independent blind review found higher quality than lexical, while whole-repository context was strongest on small repositories |
 
 The final study found a model-dependent trade-off rather than a universal winner: Gemini Embedding 2 produced the strongest semantic retrieval, Gemini Embedding 001 led selected hybrid ranking metrics, and GLM 5.3 Flash produced stronger measured QA and Persian documentation quality than the evaluated local Qwen 3B setup. Missing executions were retained as unavailable and never converted into zero-valued quality scores.
+
+The post-thesis experiment compared whole-repository context, lexical RAG, semantic RAG, hybrid RAG, and a tool-using Git agent. Semantic RAG offered the best measured balance of quality, latency, cost, and repository scale. The agent did not show a significant quality advantage over Semantic RAG in the independent human sample and cost roughly 8.5-10 times more per effective answer.
 
 ![Frozen evaluation dashboard](docs/assets/codecompass-final-evaluation.png)
 
@@ -134,6 +137,7 @@ npm run build
 - [Embedding-model comparisons](reports/evaluation/controlled_embedding_comparison_v1/)
 - [M25 retrieval study](reports/evaluation/m25_final_research_report/)
 - [M26 documentation study](reports/evaluation/m26_final_evidence/)
+- [Context-strategy and Git-agent evaluation](reports/evaluation/whole_repo_rag_ablation_v1/)
 - [PDF reports](reports/evaluation/pdf/)
 
 Frozen metrics describe specific datasets, model versions, providers, and execution environments. They are not per-answer confidence scores and do not establish universal model quality.
@@ -158,6 +162,7 @@ Frozen metrics describe specific datasets, model versions, providers, and execut
 - The final Qwen documentation arm is unavailable because all nine recorded local-provider executions failed; this is an execution-availability result, not a zero quality score or a claim about the current UI.
 - The final QA set contains one unavailable GLM combination and seven usable outputs with provider-confirmed token-limit truncation.
 - The frontend production bundle includes Monaco and may emit a non-blocking large-chunk warning during Vite build.
+- Context-strategy results cover three frozen repositories and one generation model; whole-repository execution was unavailable for the largest repository, and the independent blind validation used one reviewer.
 
 ## Project Documents
 
@@ -175,3 +180,4 @@ Frozen metrics describe specific datasets, model versions, providers, and execut
 - `v1.0.0-thesis-evaluation-complete`: frozen final thesis evaluation.
 - `v1.1.0-evaluation-dashboard`: dual official/final evaluation dashboard.
 - `v1.1.1-final-documentation`: finalized project documentation and handoff materials.
+- `v1.1.2-context-strategy-evaluation`: frozen context-strategy, Git-agent, and independent blind-review results with updated project documentation.

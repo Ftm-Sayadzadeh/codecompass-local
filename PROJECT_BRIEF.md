@@ -61,7 +61,7 @@ CodeCompass therefore aims to:
 - File and symbol explorer.
 - Ask, Search, and Documentation workflows.
 - Monaco source viewer with cited-range highlighting.
-- Responsive official/final evaluation dashboard.
+- Responsive official, final-thesis, and context-strategy evaluation dashboard.
 
 ## Final Architecture
 
@@ -103,10 +103,12 @@ The LLM owns only natural-language explanation based on supplied evidence. Provi
 
 ## Evaluation Design
 
-Two frozen evaluation layers are retained:
+Two frozen thesis evaluation layers are retained:
 
 1. **Official bilingual retrieval benchmark:** 60 questions over 30 concepts, reporting Top-1, Top-3, and MRR@10 for lexical, semantic, and hybrid methods under the recorded Nomic local setup.
 2. **Final thesis evaluation:** three pinned repositories, 36 bilingual search queries, 12 QA cases expanded across three embedding and two LLM arms, and nine documentation cases for each LLM arm.
+
+A separate **post-thesis context-strategy validation** compares whole-repository context, lexical RAG, semantic RAG, hybrid RAG, and a tool-using Git agent over 18 concepts and 36 bilingual questions. It extends the evidence base without changing the approved thesis scope or product trust boundary.
 
 The final study includes easy, medium, and hard cases; English and Persian slices; provider reliability; latency; hallucination labels; human-scored correctness, groundedness, readability, and usefulness; and SHA-256 provenance for frozen artifacts.
 
@@ -118,6 +120,7 @@ Key measured findings:
 - Human-reviewed GLM QA averages exceeded the evaluated local Qwen 3B averages for correctness, groundedness, Persian readability, and usefulness.
 - GLM completed all nine Persian documentation cases with zero citation mismatches in the frozen evaluation.
 - Qwen documentation quality was not estimated because all nine local-provider executions failed.
+- In the post-thesis validation, Semantic retrieval raised evidence recall from 22.2% for Lexical to 64.7%. Whole-repository context gave the strongest raw answer quality on small repositories but was unavailable on the largest; the Git agent showed no significant quality advantage over Semantic RAG in the independent human sample and used materially more time and tokens.
 
 These results apply only to the frozen repositories, prompts, models, providers, and settings. They do not establish universal model superiority.
 
@@ -148,4 +151,4 @@ These results apply only to the frozen repositories, prompts, models, providers,
 
 ## Completion Definition
 
-The project is complete because a user can index a real Python repository, retrieve evidence in Persian or English, obtain a grounded answer, verify citations against exact source lines, generate fact-backed function documentation, and inspect reproducible evaluation results. Core behavior is covered by backend and frontend automated tests, and the thesis evidence is frozen in Markdown, JSON, spreadsheet, and PDF artifacts.
+The project is complete because a user can index a real Python repository, retrieve evidence in Persian or English, obtain a grounded answer, verify citations against exact source lines, generate fact-backed function documentation, and inspect reproducible evaluation results. Core behavior is covered by backend and frontend automated tests, and the thesis and post-thesis evaluation evidence is frozen in Markdown, JSON, spreadsheet, and PDF artifacts.

@@ -25,6 +25,10 @@ The thesis implementation and final evaluation are complete. The principal check
 - `v0.26.0-m26-complete`
 - `v1.0.0-thesis-evaluation-complete`
 - `v1.1.0-evaluation-dashboard`
+- `v1.1.1-final-documentation`
+- `v1.1.2-context-strategy-evaluation`
+
+The post-thesis context-strategy evaluation is complete and frozen. It is research validation, not a multi-agent product feature.
 
 New work is maintenance-only unless the project owner explicitly approves another milestone.
 
@@ -69,6 +73,7 @@ The delivered system includes:
 - Deterministic function facts plus model-rendered documentation.
 - FastAPI and React/Vite application surfaces.
 - Official and final-thesis evaluation dashboards.
+- Post-thesis whole-repository, RAG, and Git-agent context-strategy evaluation dashboard.
 - Frozen retrieval, generation, reliability, human-review, and publication artifacts.
 
 ## Testing

@@ -50,7 +50,7 @@ Open `http://127.0.0.1:5173/`.
 
 ## 4. Configure Providers
 
-Configure embedding and LLM providers independently in **Provider settings**.
+Configure embedding and LLM providers independently in **Provider settings**. The UI offers presets for the three evaluated embedding models and two LLMs. Copy `.env.example` to `.env` and fill only the remote-provider values you intend to use; preset URLs and credentials remain on the backend.
 
 For the evaluated local embedding configuration:
 
@@ -63,7 +63,7 @@ For the evaluated local embedding configuration:
 
 Use an installed instruction-following chat model for local Q&A and Function Documentation. A malformed or completion-only Ollama template may ignore system-role instructions and produce poor or unbounded output.
 
-OpenAI-compatible API keys must be entered only in the password field. The frontend keeps them in memory, does not persist them, and forgets them on refresh.
+For a custom OpenAI-compatible configuration, enter the API key only in the password field. The frontend keeps that request-scoped key in memory and forgets it on refresh. Named presets instead resolve their credentials from the backend `.env` file and send only the preset name from the browser.
 
 Changing the LLM does not require re-indexing. Changing embedding provider, endpoint identity, model, or dimensions requires a compatible index or an explicit re-index.
 
@@ -77,7 +77,7 @@ Changing the LLM does not require re-indexing. Changing embedding provider, endp
 6. Ask one Persian or English question in **Ask**.
 7. Open a returned citation and confirm Monaco displays the relative source path and highlighted line range.
 8. Generate structured documentation for one unambiguous function or method.
-9. Show **Evaluation and performance** and state that benchmark metrics are not per-answer confidence.
+9. Show **Evaluation and performance**, including the official benchmark, final thesis evaluation, and context-strategy experiment; state that benchmark metrics are not per-answer confidence.
 
 Do not tune retrieval controls during the demo. The UI intentionally exposes only lexical, semantic, or hybrid method selection and a bounded result limit.
 
@@ -104,7 +104,7 @@ The merged MVP was validated from fresh backend and frontend processes using exi
 - Grounded Ask completed with a trusted citation.
 - Citation navigation opened `src/markupsafe/__init__.py` and highlighted lines 48-61 in Monaco.
 - Function Documentation preserved extracted identity and trusted source metadata.
-- Frozen evaluation and performance projections loaded.
+- Frozen official, final-thesis, and context-strategy evaluation projections loaded.
 - No browser console errors or horizontal overflow were observed at a 1280x720 viewport.
 
 This smoke verifies the recorded environment and workflow; it is not a general performance or correctness guarantee.
@@ -113,7 +113,8 @@ This smoke verifies the recorded environment and workflow; it is not a general p
 
 - Synchronous indexing exposes no progress percentage and can take time.
 - Local 3B generation can be slow and was not ready on the frozen CS-Bookstore strict matrix.
-- GLM 5.3 Flash was ready with limitations in that matrix, but cloud use requires an ephemeral user-supplied API key and incurs provider cost.
+- GLM 5.3 Flash was ready with limitations in that matrix, but cloud use requires either a backend preset credential or an ephemeral request-scoped API key and incurs provider cost.
+- The context-strategy experiment used three frozen repositories and one generation model. Whole-repository execution was unavailable for the largest repository, and the independent blind validation used one reviewer.
 - Function Documentation latency can be materially higher than Ask latency on a small local model.
 - A recorded Persian Function Documentation diagnostic using GLM 5.3 Flash through the OpenAI-compatible path returned `invalid_response_content`. CodeCompass failed closed and exposed only that safe provider error category; this does not characterize other providers, models, or Persian requests.
 - Monaco increases the frontend bundle size; the current Vite warning is non-blocking.

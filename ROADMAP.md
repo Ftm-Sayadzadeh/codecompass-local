@@ -58,6 +58,14 @@ This roadmap is a retrospective record of the completed thesis project. The orig
 
 **Checkpoints:** `v1.0.0-thesis-evaluation-complete` and `v1.1.0-evaluation-dashboard`.
 
+## Phase 8 - Post-Thesis Context-Strategy Validation
+
+**Completed:** provider presets; a frozen comparison of whole-repository context, lexical RAG, semantic RAG, hybrid RAG, and a tool-using Git agent; provider-failure recovery records; model-blind quality assessment; and an independent blind human review.
+
+**Finding:** whole-repository context produced the strongest raw answer quality on the two smaller repositories but was unavailable on the largest. Semantic RAG substantially outperformed lexical retrieval and provided the best measured balance of quality, cost, latency, and scale. The Git agent handled the large repository but did not establish a quality advantage over Semantic RAG and required materially more time and tokens.
+
+**Checkpoint:** `v1.1.2-context-strategy-evaluation`.
+
 ## Final Gate
 
 The final workflow is complete:
@@ -75,4 +83,4 @@ Select repository
 
 ## Post-Thesis Scope
 
-No additional feature is required for the approved thesis. Future work must be explicitly approved, isolated from frozen artifacts, and evaluated on a newly versioned dataset. Authentication, multi-user deployment, additional languages, full call graphs, autonomous coding, and large multi-agent systems remain out of scope.
+No additional feature is required for the approved thesis. The completed context-strategy study is post-thesis validation, not an expansion of the product into autonomous coding or multi-agent operation. Future work must be explicitly approved, isolated from frozen artifacts, and evaluated on a newly versioned dataset. Authentication, multi-user deployment, additional languages, full call graphs, autonomous coding, and large multi-agent systems remain out of scope.
