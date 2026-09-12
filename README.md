@@ -2,7 +2,7 @@
 
 CodeCompass is a local-first system for understanding Python repositories through Persian or English questions. It combines deterministic code analysis, lexical and semantic retrieval, grounded answer generation, function documentation, and verified navigation to the exact source file, symbol, and line range.
 
-The project was developed as a bachelor's thesis and is complete. The latest release is [`v1.1.2-context-strategy-evaluation`](https://github.com/Ftm-Sayadzadeh/codecompass-local/tree/v1.1.2-context-strategy-evaluation).
+The project was developed as a bachelor's thesis and is complete. The [final thesis report is available as a PDF](docs/Fatemeh_Sayadzadeh_CodeCompass_Final_Report.pdf). The latest release is [`v1.1.3-final-thesis-report`](https://github.com/Ftm-Sayadzadeh/codecompass-local/releases/tag/v1.1.3-final-thesis-report).
 
 ![CodeCompass workspace](docs/assets/codecompass-workspace.png)
 
